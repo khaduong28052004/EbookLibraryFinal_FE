@@ -1,16 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router } from 'react-router-dom';
-import App from './App';
-import './css/style.css';
-import './css/satoshi.css';
-import 'jsvectormap/dist/css/jsvectormap.css';
-import 'flatpickr/dist/flatpickr.min.css';
+import AOS from "aos";
+import "aos/dist/aos.css";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+AOS.init();
 import "./index.css";
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
-  </React.StrictMode>,
+
+const root = document.getElementById("root");
+ReactDOM.createRoot(root).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
 );
