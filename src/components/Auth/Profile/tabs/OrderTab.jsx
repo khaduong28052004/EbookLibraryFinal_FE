@@ -86,21 +86,23 @@ export default function OrderTab() {
             <table className="w-full text-sm text-left text-white dark:text-gray-400 bg-white shadow border">
               <tbody>
                 {/* table heading */}
-                <tr className="text-[17px] text-gray-900 whitespace-nowrap px-2 border-b default-border-bottom ">
-                  <td className="py-4 block whitespace-nowrap text-center"> Đơn hàng </td>
-                  <td className="py-4 whitespace-nowrap text-center">Ngày mua</td>
-                  <td className="py-4 whitespace-nowrap text-center">Tổng tiền</td>
-                  <td className="py-4 whitespace-nowrap text-center">Trạng thái</td>
-                  <td className="py-4 whitespace-nowrap  text-center">Phương thức thanh toán</td>
+                <tr className="text-[15px] text-gray-900 whitespace-nowrap px-2 border-b default-border-bottom   justify-center">
+                  <td className="py-4 px-2 block whitespace-nowrap text-center"> Đơn hàng </td>
+                  <td className="py-4 px-2 whitespace-nowrap text-center">Ngày mua</td>
+                  <td className="py-4 px-2 whitespace-nowrap text-center">Tổng tiền</td>
+                  <td className="py-4 px-2 whitespace-nowrap text-center">Trạng thái</td>
+                  <td className="py-4 px-2 whitespace-nowrap  text-center">Phương thức </td>
+                  <td className="py-4 px-2 whitespace-nowrap  text-center">Tùy chọn</td>
                 </tr>
                 {orders.map((order) =>
-                  <tr className="text-[18px]  border-b  hover:bg-gray-100 hover:cursor-pointer " key={order.billID} onClick={() => setOrderDetailId(order.billID)}
+                  <tr className="text-sm  border-b  hover:bg-gray-100  hover:cursor-pointer leading-relaxed" key={order.billID} onClick={() => setOrderDetailId(order.billID)}
                   >
+
                     <td className="text-center py-4">
                       <span className=" text-qgray font-medium">#{order.billID}</span>
                     </td>
                     <td className="text-center py-4 px-2">
-                      <span className="text-base text-qgray  whitespace-nowrap">
+                      <span className="text-sm text-qgray  whitespace-nowrap">
                         {order.createdDatetime}
                       </span>
                     </td>
@@ -113,17 +115,33 @@ export default function OrderTab() {
                       </span>
                     </td>
                     <td className="text-center py-4 px-2">
-                      <span className=" rounded text-green-700  p-2 ">
+                      <span className=" rounded text-green-700 ">
                         {order.billOrderStatus}
                       </span>
                     </td>
 
                     <td className="text-center py-4 px-2">
-                      <span className="text-base text-qgray  whitespace-nowrap">
+                      <span className="text-sm text-qgray  whitespace-nowrap">
                         {order.billPaymentMethod}
                       </span>
                     </td>
-                    <td className="text-center py-4">
+                    <td className="text-center py-4 px-2">
+                      <div className="  text-cyan-800 text-[10px] font-bold text-center mx-1 min-w-[120px]">
+                        {(order.billOrderStatus === "Hủy" || order.billOrderStatus === "Hoàn thành") && (
+                          <button className="border border-cyan-800  px-2 py-1 rounded min-w-[120px] hover:bg-gray-100">Mua lại</button>
+                        )}
+                        {order.billOrderStatus === "Chờ duyệt" && (
+                          <button  className="border border-cyan-800  px-2 py-1 rounded min-w-[120px] hover:bg-gray-100">Hủy đơn</button>
+                        )}
+                        {order.billOrderStatus === "Đã giao" && (
+                          <button  className="border border-cyan-800  px-2 py-1 rounded min-w-[120px] hover:bg-gray-100">Xác nhận</button>
+                        )}
+                        {order.billOrderStatus == null && (
+                          <button className="h-[35px] w-[100%] pointer-events-none opacity-0">
+                            <span>Không thao tác</span>
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )
@@ -137,7 +155,7 @@ export default function OrderTab() {
               <div className="">
                 <img className="w-[88px] h-fit items-center" src="https://st3.depositphotos.com/5532432/17972/v/450/depositphotos_179728282-stock-illustration-web-search-flat-vector-icon.jpg" alt="" />
               </div>
-              <div> <p className="text-base text-gray-400">Chưa có đơn hàng</p></div>
+              <div> <p className="text-sm text-gray-400">Chưa có đơn hàng</p></div>
             </div>
           </div>
         )

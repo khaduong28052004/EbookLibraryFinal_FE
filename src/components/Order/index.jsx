@@ -128,7 +128,7 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                                     <div className="productImage-wrapper flex p-2 rounded border  justify-between" >
                                                         <div className="productInfo-1 w-[15%] ">
                                                             <a href="">
-                                                                <div className="productImage-container hover:cursor-pointer hover:cursor-pointer ">
+                                                                <div className="productImage-container hover:cursor-pointer">
                                                                     <img className="w-[80px] h-[100px] rounded  object-cover " src={product.productImageURL} alt="product-image" />
                                                                 </div>
                                                             </a>
@@ -146,11 +146,16 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                                                 </div>
                                                             </div>
                                                             <div className="productInfo-3 ">
-                                                                <div className="productInfo-butoton w-[100%] flex items-end content-between">
-                                                                    <div className="productInfo-rating">
-                                                                        <button className="w-[100px] h-[35px] rounded text-[#608BC1] text-[15px]  px-2 py-0 border border-[#608BC1] transition-all duration-500 ease-in-out hover:bg-gray-200 w-[100%]">Đánh giá</button>
-                                                                    </div>
-                                                                </div>
+                                                                {product.isEvaluate == false && bill.billOrderStatus === "Hoàn thành" ?
+                                                                    (
+                                                                        <div className="productInfo-butoton w-[100%] flex items-end content-between">
+                                                                            <div className="productInfo-rating">
+                                                                                <button className="w-[100px] h-[35px] rounded text-[#608BC1] text-[15px]  px-2 py-0 border border-[#608BC1] transition-all duration-500 ease-in-out hover:bg-gray-200 w-[100%]">Đánh giá</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    )
+                                                                    : <></>}
+
                                                             </div>
                                                         </div>
                                                     </div>
@@ -209,9 +214,22 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                     <div className="orderInfo-1-container flex inline-block justify-end items-center">
                                         <div className="orderInfo-1-item h-100px  ">
                                             <div className="orderStatus-container flex justify-end">
-                                                <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
-                                                    <button>Mua lại</button>
-                                                </div>
+                                                {(bill.billOrderStatus === "Hủy") || (bill.billOrderStatus === "Hoàn thành") && (
+                                                    <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
+                                                        <button>Mua lại</button>
+                                                    </div>
+                                                )}
+                                                {bill.billOrderStatus === "Chờ duyệt" && (
+                                                    <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
+                                                        <button>Hủy đơn</button>
+                                                    </div>
+                                                )}
+                                                
+                                                {bill.billOrderStatus === "Đã giao" && (
+                                                    <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
+                                                        <button>Xác nhận đã nhận hàng</button>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
