@@ -2,34 +2,6 @@ import React, { useState, useEffect } from "react";
 import OrderNavigation from '../../../Order/orderNavigation';
 import OrderDetail from '../../../Order/index';
 
-const userId = 5;
-
-const orderSample = [{
-  id: 1,
-  date: 'Fub 05,2021',
-  status: 'Complated',
-  amount: '$757',
-},
-{
-  id: 2,
-  date: 'Fub 05,2021',
-  status: 'Complated',
-  amount: '$757',
-},
-{
-  id: 3,
-  date: 'Fub 05,2021',
-  status: 'Complated',
-  amount: '$757',
-},
-{
-  id: 4,
-  date: 'Fub 05,2021',
-  status: 'Complated',
-  amount: '$757',
-},
-]
-
 
 export const NavItems = [
   { name: "Tất cả", tabName: "TATCA" },
@@ -50,7 +22,6 @@ export default function OrderTab() {
   const clearOrderDetailId = () => setOrderDetailId(undefined);
 
   const fetchOrders = async () => {
-    // Bla bla bla fetch order, put user id to api
     try {
       setLoading(true);
 
@@ -68,7 +39,6 @@ export default function OrderTab() {
           'Content-Type': 'application/json'
         }
       });
-      
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -92,6 +62,10 @@ export default function OrderTab() {
     console.log(orders);
     fetchOrders();
   }, [activeMenu]);
+
+  useEffect(() => {
+    console.log(orderDetailId);
+  }, [orderDetailId]);
 
   // if (loading) return <div>LOADING ...</div>
 
@@ -132,7 +106,10 @@ export default function OrderTab() {
                     </td>
                     <td className="text-center py-4 px-2">
                       <span className=" text-qblack whitespace-nowrap px-2 ">
-                        {order.billTotalPrice}
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(order.billTotalPrice)}
                       </span>
                     </td>
                     <td className="text-center py-4 px-2">
@@ -163,7 +140,7 @@ export default function OrderTab() {
               <div> <p className="text-base text-gray-400">Chưa có đơn hàng</p></div>
             </div>
           </div>
-          )
+        )
         }
       </div>
     </>
