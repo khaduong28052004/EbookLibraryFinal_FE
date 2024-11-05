@@ -61,17 +61,14 @@ export default function OrderTab() {
 
       const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-      const response = await fetch('http://localhost:8080/api/v1/user/bill/read', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:8080/api/v1/bill/read?userId=${userID}&orderStatusFind=${orderStatusId}`, {
+        method: 'GET',
         headers: {
           'Authorization': basicAuth,
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          userID: userID,
-          orderStatusFind: orderStatusId
-        })
+        }
       });
+      
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
