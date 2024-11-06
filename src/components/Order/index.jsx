@@ -153,17 +153,14 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
             </div>
         );
     }
-    if (!loading && !order) return
-    <div>
-        <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center gap-2">
-                <div className="">
-                    <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
-                </div>
-                <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
+    if (!loading && !order) return <div>  <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center gap-2">
+            <div className="">
+                <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
             </div>
+            <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
         </div>
-    </div>
+    </div></div>
 
     return (
         <>
@@ -324,7 +321,7 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                     <div className="orderInfo-1-container flex inline-block justify-end items-center">
                                         <div className="orderInfo-1-item h-100px  ">
                                             <div className="orderStatus-container flex justify-end">
-                                                {((bill.billOrderStatus === "Hủy") || (bill.billOrderStatus === "Hoàn thành") )? (
+                                                {((bill.billOrderStatus === "Hủy") || (bill.billOrderStatus === "Hoàn thành")) ? (
                                                     <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
                                                         <button onClick={() => reOrder(bill.billID)}>Mua lại</button>
                                                     </div>
