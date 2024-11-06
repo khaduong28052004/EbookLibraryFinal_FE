@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react"
-// npm install @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
+import BeatLoader from "react-spinners/BeatLoader";
 
 
 export default function OrderDetail({ orderId, clearOrderDetailId }) {
     const [order, setOrder] = useState();
     const [loading, setLoading] = useState(false);
+    const [taskCompleted, setTaskCompleted] = useState(false);
 
     const fetchOrderDetail = async () => {
         try {
@@ -40,29 +41,138 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
     }
 
 
+    const confirmOrder = async (billId) => {
+        try {
+            setLoading(true);
+
+            const username = 'thu'; // Tài khoản của bạn
+            const password = '123'; // Mật khẩu của bạn      
+            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+
+            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/confirm/${billId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': basicAuth,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+                return;
+            }
+            setTaskCompleted(true);
+
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const cancelOrder = async (billId) => {
+        try {
+            setLoading(true);
+
+            const username = 'thu'; // Tài khoản của bạn
+            const password = '123'; // Mật khẩu của bạn      
+            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+
+            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/cancel/${billId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': basicAuth,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+                return;
+            }
+
+            setTaskCompleted(true);
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const reOrder = async (billId) => {
+        try {
+
+            const username = 'thu'; // Tài khoản của bạn
+            const password = '123'; // Mật khẩu của bạn      
+            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+
+            const response = await fetch(`http://localhost:8080/api/v1/bill/create/reorder/${billId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': basicAuth,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+                return;
+            }
+
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         fetchOrderDetail();
     }, [])
 
 
     useEffect(() => {
-        console.log('hello world 2');
         console.log(order);
     }, [order])
 
-    if (loading) return <div>LOADING ...</div>
+    useEffect(() => {
+        if (taskCompleted) {
+            // Khi task hoàn thành, bạn có thể cập nhật lại dữ liệu
+            fetchOrderDetail(); // Tải lại dữ liệu đơn hàng sau khi task hoàn thành
+            setTaskCompleted(false);
+        }
+    }, [taskCompleted]);
 
-    if (!loading && !order) return <div>Cannot find</div>
-
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen ">
+                <BeatLoader color="#56A0D3" />
+            </div>
+        );
+    }
+    if (!loading && !order) return
+    <div>
+        <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center gap-2">
+                <div className="">
+                    <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
+                </div>
+                <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
+            </div>
+        </div>
+    </div>
 
     return (
         <>
             {order && order.length > 0 ? (
                 order.map((bill) =>
                     <div className="" key={bill.billID}>
-                        <div className="border-b hover: cursor-pointer">
-                            <div className="rounded text-gray-500 font-light text-[5px] pb-2" onClick={clearOrderDetailId}>
-                                TRỞ LẠI
+                        <div className="border-b">
+                            <div className="rounded text-gray-500 font-light text-[5px] pb-2 flex inline-block  hover: cursor-pointer w-[100px]" onClick={clearOrderDetailId}>
+                                <img src="https://cdn-icons-png.flaticon.com/128/10728/10728732.png" alt="" className="w-[10px] mr-2" /> TRỞ LẠI
                             </div>
                         </div>
                         <div className="detail-wrapper grid gap-5 py-2">
@@ -145,10 +255,10 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                                                     <div className="productQuantity"><p className="text-gray-500 font-light text-[15px] ">Số lượng: <span className="font-normal">{product.productQuantity}</span></p></div>
                                                                 </div>
                                                             </div>
-                                                            <div className="productInfo-3 ">
+                                                            <div className="productInfo-3 flex flex-col justify-between mr-0">
                                                                 {product.isEvaluate == false && bill.billOrderStatus === "Hoàn thành" ?
                                                                     (
-                                                                        <div className="productInfo-butoton w-[100%] flex items-end content-between">
+                                                                        <div className="productInfo-butoton w-[100%] flex items-end mt-auto">
                                                                             <div className="productInfo-rating">
                                                                                 <button className="w-[100px] h-[35px] rounded text-[#608BC1] text-[15px]  px-2 py-0 border border-[#608BC1] transition-all duration-500 ease-in-out hover:bg-gray-200 w-[100%]">Đánh giá</button>
                                                                             </div>
@@ -214,20 +324,20 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                     <div className="orderInfo-1-container flex inline-block justify-end items-center">
                                         <div className="orderInfo-1-item h-100px  ">
                                             <div className="orderStatus-container flex justify-end">
-                                                {(bill.billOrderStatus === "Hủy") || (bill.billOrderStatus === "Hoàn thành") && (
+                                                {((bill.billOrderStatus === "Hủy") || (bill.billOrderStatus === "Hoàn thành") )? (
                                                     <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
-                                                        <button>Mua lại</button>
+                                                        <button onClick={() => reOrder(bill.billID)}>Mua lại</button>
                                                     </div>
-                                                )}
-                                                {bill.billOrderStatus === "Chờ duyệt" && (
+                                                ) : <></>}
+                                                {bill.billOrderStatus === "Chờ duyệt" ? (
                                                     <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
-                                                        <button>Hủy đơn</button>
+                                                        <button onClick={() => cancelOrder(bill.billID)}>Hủy đơn</button>
                                                     </div>
-                                                )}
+                                                ) : <></>}
 
                                                 {bill.billOrderStatus === "Đã giao" && (
                                                     <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
-                                                        <button>Xác nhận đã nhận hàng</button>
+                                                        <button onClick={() => confirmOrder(bill.billID)}>Xác nhận đã nhận hàng</button>
                                                     </div>
                                                 )}
                                             </div>
