@@ -128,13 +128,13 @@ export default function OrderTab() {
                     <td className="text-center py-4 px-2">
                       <div className="  text-cyan-800 text-[10px] font-bold text-center mx-1 min-w-[120px]">
                         {(order.billOrderStatus === "Hủy" || order.billOrderStatus === "Hoàn thành") && (
-                          <button className="border border-cyan-800  px-2 py-1 rounded min-w-[120px] hover:bg-gray-100">Mua lại</button>
+                          <button className="border border-cyan-800  px-2 py-1 rounded min-w-[120px] hover:bg-gray-300">Mua lại</button>
                         )}
                         {order.billOrderStatus === "Chờ duyệt" && (
-                          <button  className="border border-cyan-800  px-2 py-1 rounded min-w-[120px] hover:bg-gray-100">Hủy đơn</button>
+                          <button  className="border border-cyan-800  px-2 py-1 rounded min-w-[120px] hover:bg-gray-300">Hủy đơn</button>
                         )}
                         {order.billOrderStatus === "Đã giao" && (
-                          <button  className="border border-cyan-800  px-2 py-1 rounded min-w-[120px] hover:bg-gray-100">Xác nhận</button>
+                          <button  className="border border-cyan-800  px-2 py-1 rounded min-w-[120px] hover:bg-gray-300">Xác nhận</button>
                         )}
                         {order.billOrderStatus == null && (
                           <button className="h-[35px] w-[100%] pointer-events-none opacity-0">

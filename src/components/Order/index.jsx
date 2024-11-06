@@ -176,7 +176,7 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                                     {new Intl.NumberFormat("vi-VN", {
                                                         style: "currency",
                                                         currency: "VND",
-                                                    }).format(0)}
+                                                    }).format(bill.billTempPrice)}
                                                 </div>
                                             </div>
                                             <div className="summary-2 flex inline-block  justify-between  gap-5">
@@ -224,7 +224,7 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                                         <button>Hủy đơn</button>
                                                     </div>
                                                 )}
-                                                
+
                                                 {bill.billOrderStatus === "Đã giao" && (
                                                     <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
                                                         <button>Xác nhận đã nhận hàng</button>
