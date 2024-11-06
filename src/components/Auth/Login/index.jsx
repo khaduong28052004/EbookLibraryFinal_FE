@@ -19,40 +19,36 @@ export default function Login() {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      // const response = await axios.post("/api/v1/login", {
       const response = await AuthService.login({
         username,
         password,
       });
       if (response.status) {
-        console.log("lỉ",response);
+        console.log("lỉ be", response);
+        setTimeout(() => {
+          console.log("lỏ",response.roles);
+          if (response.data.roles == "USER") {
+            navigate('/');
+          } else if (response.data.roles === "SELLER") {
+            navigate('/seller');
+          } else {
+            navigate('/admin');
+          }
+        }, 2000);
         toast.success("Đăng nhập thành công!");
-      }else{
-        console.log("ly",response);
+      } else {
+        console.log("ly", response);
         toast.success("Đăng nhập thành công!");
       }
-      
       // Assuming AuthService handles setting the token or user data in local storage
       AuthService.setItem(response.data);
-
-      console.log("Login successful:", response.data);
-      // Add navigation logic or additional handling as needed
     } catch (error) {
-      if (error.response) {
-        toast.error("lổ", error.response.error);
-        console.error('Error Response:', error.response.error);
-    } else {
-        console.error('General Error:', error.message);
-    }
-      // if (error.response) {
-      //   toast.error("lỗi rồi!");
-      //   setError(error.response.data || "Login failed. Please check your credentials.");
-      //   console.error("Error Response:", error.response.data);
-      // } else {
-      //   setError("Network error. Please try again later.");
-      //   toast.error("lỗi rồi!");
-      //   console.error("General Error:", error.message);
-      // }
+        // console.error('Error Response1:', error.response.data.message);
+      if(error.response.data.error =="UnAuthorzed"){
+        toast.error(error.response.data.message);// đăng nhập thất bại 
+      } else {
+            toast.error("Đăng nhập thất bại vui lòng kiểm tra lại !");// đăng nhập thất bại
+      }
     }
   };
 
