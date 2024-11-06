@@ -22,6 +22,7 @@ import ProfileTab from "./tabs/ProfileTab";
 import ReviewTab from "./tabs/ReviewTab";
 import SupportTab from "./tabs/SupportTab";
 import WishlistTab from "./tabs/WishlistTab";
+import AuthService from "../../../service/authService";
 
 export default function Profile() {
   const [switchDashboard, setSwitchDashboard] = useState(false);
@@ -35,6 +36,10 @@ export default function Profile() {
         : "dashboard"
     );
   }, [getHashContent]);
+
+  const handlogoout = () =>{
+    AuthService.logout();
+  }
   return (
     <Layout childrenClasses="pt-0 pb-0">
       <div className="profile-page-wrapper w-full">
@@ -178,7 +183,7 @@ export default function Profile() {
                     </div>
                     <div className="item group">
                       <Link to="/profile#profile">
-                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
+                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack" onClick={handlogoout}>
                           <span>
                             <IcoLogout />
                           </span>
