@@ -7,6 +7,9 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import LoginGG from "./loginGG";
+import FaceBookSingIn from "./FaceBookSingIn";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -35,6 +38,9 @@ export default function Login() {
             navigate('/admin');
           }
         }, 2000);
+
+        console.log("lỉ", response);
+
         toast.success("Đăng nhập thành công!");
       } else {
         console.log("ly", response);
@@ -115,9 +121,21 @@ export default function Login() {
                     Log In
                   </button>
                 </form>
-                <a href="#" className="w-full border border-qgray-border h-[50px] flex space-x-3 justify-center bg-[#FAFAFA] items-center">
-                  <span>Continue with Google</span>
-                </a>
+                <div className="social-login-buttons flex space-x-4 mt-6">
+                  <button className=" w-full   flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
+                    {/* <span>Continue with Google</span>
+                     */}
+                    <GoogleOAuthProvider clientId="802515130057-2djim3amjrd5pinc6rmspgid56l1rkdl.apps.googleusercontent.com">
+                      <LoginGG />
+                    </GoogleOAuthProvider>
+                  </button>
+
+                  <button className=" w-full   flex justify-center items-center  text-bg-[#3b5998] font-medium rounded-md">
+                    {/* <span>Continue with Facebook</span> */}
+                    <FaceBookSingIn />
+                  </button>
+                </div>
+
               </div>
             </div>
             <Thumbnail />

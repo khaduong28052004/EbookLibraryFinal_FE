@@ -12,6 +12,10 @@ const AuthService = {
     const url = "/api/v1/register"; // Update if the endpoint is for registration
     return axiosAuth("", "post", url, { username, password });
   },
+  GoogleLogin: (email)=>{
+    const url = "/api/v1/user/loginGoogle";
+    return  axiosAuth("","post",url, email);
+  },
   setItem: (response) => {
     // Tạo đối tượng user từ các thuộc tính của response
     const user = {
@@ -37,6 +41,8 @@ const AuthService = {
     const data = sessionStorage.getItem(key);
     return data;
   },
+
+  
 };
 
 export default AuthService;
