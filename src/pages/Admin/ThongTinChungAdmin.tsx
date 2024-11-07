@@ -3,10 +3,10 @@ import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import CoverOne from '../../images/cover/cover-01.png';
 import userSix from '../../images/user/user-06.png';
 
-const ThongTinShopSeller = () => {
+const ThongTinChungAdmin = () => {
   return (
     <>
-      <Breadcrumb pageName="Thông Tin Shop" status='Người Bán' />
+      <Breadcrumb pageName="Thông Tin Chung" status='Quản Trị' />
 
       <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="relative z-20 h-35 md:h-65">
@@ -284,4 +284,4 @@ const ThongTinShopSeller = () => {
   );
 };
 
-export default ThongTinShopSeller;
+export default ThongTinChungAdmin;

@@ -373,7 +373,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       </clipPath>
                     </defs>
                   </svg>
-                  Setting
+                  Cài Đặt
                 </NavLink>
               </li>
 

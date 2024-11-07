@@ -9,12 +9,13 @@ import VoucherSeller from "./pages/Seller/VocuherSeller"
 import ThongKeDonHangSeller from "./pages/Seller/ThongKeDonHangSeller"
 import ThongKeSanPham from "./pages/Seller/ThongKeSanPhamSeller"
 import ThongKeKhachHang from "./pages/Seller/ThongKeKhachHangSeller"
+import DanhGiaSeller from "./pages/Seller/DanhGiaSeller"
 export default function RouterSellers() {
   return (
     <SellerLayout>
       <Routes>
         <Route
-          path="/home"
+          path="/"
           element={
             <>
               <PageTitle title="Trang Chủ" />
@@ -55,6 +56,15 @@ export default function RouterSellers() {
             <>
               <PageTitle title="Thông Tin Shop" />
               <ThongTinShopSeller />
+            </>
+          }
+        />
+        <Route
+          path="/danhGia"
+          element={
+            <>
+              <PageTitle title="Đánh Giá" />
+              <DanhGiaSeller />
             </>
           }
         />
