@@ -1,4 +1,4 @@
-export default function InputCom({
+export default function InputCom({  // name lá id , id là name
   label,
   type,
   name,
@@ -8,6 +8,7 @@ export default function InputCom({
   value,
   inputClasses,
   labelClasses = "text-qgray text-[13px] font-normal",
+  id
 }) {
   return (
     <div className="input-com w-full h-full">
@@ -29,6 +30,7 @@ export default function InputCom({
           }`}
           type={type}
           id={name}
+          name={id}
         />
         {children && children}
       </div>

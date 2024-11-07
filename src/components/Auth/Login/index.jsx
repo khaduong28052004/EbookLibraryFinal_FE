@@ -5,17 +5,22 @@ import Thumbnail from "./Thumbnail";
 import AuthService from "../../../service/authService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import LoginGG from "./loginGG";
 import FaceBookSingIn from "./FaceBookSingIn";
+import { EyeIcon, EyeOffIcon } from "@heroicons/react/outline";
+// import { EyeIcon, EyeOffIcon } from "@heroicons/react/24/outline";
+
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [checked, setChecked] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
   const rememberMe = () => setChecked(!checked);
 
@@ -27,10 +32,8 @@ export default function Login() {
         password,
       });
       if (response.status) {
-        console.log("lỉ be", response);
         setTimeout(() => {
-          console.log("lỏ",response.roles);
-          if (response.data.roles == "USER") {
+          if (response.data.roles === "USER") {
             navigate('/');
           } else if (response.data.roles === "SELLER") {
             navigate('/seller');
@@ -38,30 +41,30 @@ export default function Login() {
             navigate('/admin');
           }
         }, 2000);
-
-        console.log("lỉ", response);
-
         toast.success("Đăng nhập thành công!");
       } else {
-        console.log("ly", response);
-        toast.success("Đăng nhập thành công!");
+        toast.error("Đăng nhập thất bại vui lòng kiểm tra lại!");
       }
-      // Assuming AuthService handles setting the token or user data in local storage
       AuthService.setItem(response.data);
     } catch (error) {
-        // console.error('Error Response1:', error.response.data.message);
-      if(error.response.data.error =="UnAuthorzed"){
-        toast.error(error.response.data.message);// đăng nhập thất bại 
-      } else {
-            toast.error("Đăng nhập thất bại vui lòng kiểm tra lại !");// đăng nhập thất bại
-      }
+      toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
     }
   };
 
   return (
-
     <Layout childrenClasses="pt-0 pb-0">
-      <ToastContainer />
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{ zIndex: 9999 }} // Ensure the toast container has the highest z-index
+      />
       <div className="login-page-wrapper w-full py-10">
         <div className="container-x mx-auto">
           <div className="lg:flex items-center relative">
@@ -88,16 +91,25 @@ export default function Login() {
                       inputHandler={(e) => setUsername(e.target.value)}
                     />
                   </div>
-                  <div className="input-item mb-5">
+                  <div className="input-item mb-5 relative">
                     <InputCom
                       placeholder="Password"
                       label="Password*"
                       name="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       inputClasses="h-[50px]"
                       value={password}
                       inputHandler={(e) => setPassword(e.target.value)}
-                    />
+                    >
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                      </button>
+                    </InputCom>
+
                   </div>
                   {error && (
                     <div className="text-red-500 text-sm mb-5">
@@ -115,27 +127,27 @@ export default function Login() {
                       </button>
                       <span onClick={rememberMe} className="text-base text-black">Remember Me</span>
                     </div>
-                    <a href="/forgot-password" className="text-base text-qyellow">Forgot Password</a>
+                    <Link to="/forgot-password" className="text-base text-qyellow">Forgot Password</Link>
                   </div>
                   <button type="submit" className="black-btn mb-6 text-sm text-white w-full h-[50px] font-semibold flex justify-center bg-purple items-center">
                     Log In
                   </button>
                 </form>
                 <div className="social-login-buttons flex space-x-4 mt-6">
-                  <button className=" w-full   flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
-                    {/* <span>Continue with Google</span>
-                     */}
+                  <button className=" w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
                     <GoogleOAuthProvider clientId="802515130057-2djim3amjrd5pinc6rmspgid56l1rkdl.apps.googleusercontent.com">
                       <LoginGG />
                     </GoogleOAuthProvider>
                   </button>
-
-                  <button className=" w-full   flex justify-center items-center  text-bg-[#3b5998] font-medium rounded-md">
-                    {/* <span>Continue with Facebook</span> */}
+                  <h1>||</h1>
+                  <button className=" w-full flex justify-center items-center text-bg-[#3b5998] font-medium rounded-md">
                     <FaceBookSingIn />
                   </button>
                 </div>
+                <div className="social-login-buttons flex space-x-4 mt-6">
 
+                  <Link to="/signup" className="text-base text-qyellow">signup</Link>
+                </div>
               </div>
             </div>
             <Thumbnail />

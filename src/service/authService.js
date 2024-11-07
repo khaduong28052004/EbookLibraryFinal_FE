@@ -41,6 +41,19 @@ const AuthService = {
     const data = sessionStorage.getItem(key);
     return data;
   },
+  register: (data) => {
+    const url = "/api/v1/user/register";
+    return axiosAuth("", "post", url, data);
+  },
+  UpdatePass: (id, repass, oldpass) => {
+    const url = `/api/v1/user/updatePass?id=${encodeURIComponent(id)}&repass=${encodeURIComponent(repass)}&oldpass=${encodeURIComponent(oldpass)}`;
+    return axiosAuth("null", "post", url);
+  },
+  Otp: (email) => {
+    const url = `/api/v1/otp/generate?email=${encodeURIComponent(email)}`;
+    return axiosAuth("null", "post", url);
+  },
+  
 
   
 };

@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PasswordSvg from "./PasswordSvg";
-
+import { Link, useNavigate } from "react-router-dom";
+import AuthService from "../../../../service/authService";
+import { toast, ToastContainer } from "react-toastify";
 export default function PasswordTab() {
   const [oldPass, setOldPass] = useState("hide-password");
   const [newPass, setNewPass] = useState("hide-password");
   const [confirmPass, setConfirmPass] = useState("hide-password");
+  const navigate = useNavigate(); // Hook for navigation
   const showPassword = (value) => {
     const password = document.getElementById(`${value}`);
     if (value && value === "old_password") {
@@ -35,8 +38,68 @@ export default function PasswordTab() {
       }
     }
   };
+  const [data, setData] = useState({
+    old_password: '',
+    confirm_password: '',
+    new_password: '',
+    id: sessionStorage.getItem('id_account') || ''
+  });
+
+  const handleData = (event) => {
+    const { name, value } = event.target;
+    setData({ ...data, [name]: value });
+    console.log(data);
+  };
+
+  // useEffect to monitor changes to data and log them
+  useEffect(() => {
+    console.log("Updated data:", data);
+  }, [data]);
+
+  const handleClick = async () => {
+    // if (data.id="") {
+    //   toast.warn("Vui lòng đăng nhập để cập nhật mật khẩu!");
+    //   return;
+    // }
+    if (checkForm(data)) {
+      try {
+        const response = await AuthService.UpdatePass(data.id, data.new_password, data.old_password);
+        if (response.status === 200) {
+          toast.success("Cập nhật mật khẩu thành công!");
+          setTimeout(() => {
+            navigate('/profile#dashboard');
+          }, 2000);
+        } else {
+          toast.warning("Cập nhật mật khẩu thất bại!");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error(error.response.data|| "lỗi! ");
+      }
+    }
+  };
+
+
+  const checkForm = (data) => {
+    if (!data.old_password) {
+      toast.warn("Mật khẩu không được để trống!");
+      return false;
+    }
+    if (!data.new_password) {
+      toast.warn("Mật khẩu không được để trống!");
+      return false;
+    }
+    if (data.confirm_password !== data.new_password) {
+      toast.warn("Xác nhận mật khẩu không khớp!");
+      return false;
+    }
+    return true;
+  };
+
+
   return (
     <div className="changePasswordTab w-full">
+      <ToastContainer></ToastContainer>
       <div className="w-full flex xl:flex-row flex-col-reverse space-x-5 xl:items-center">
         <div className="w-[397px] mb-10">
           <div className="input-field mb-6">
@@ -52,6 +115,8 @@ export default function PasswordTab() {
                 className="input-field placeholder:text-base text-bese px-4 text-dark-gray w-full h-full bg-[#FAFAFA] focus:ring-0 focus:outline-none"
                 type="password"
                 id="old_password"
+                name="old_password"
+                onChange={handleData}
               />
               <div
                 className="absolute right-6 bottom-[17px] z-10 cursor-pointer"
@@ -123,6 +188,8 @@ export default function PasswordTab() {
                 className="input-field placeholder:text-base text-bese px-4 text-dark-gray w-full h-full bg-[#FAFAFA] focus:ring-0 focus:outline-none"
                 type="password"
                 id="new_password"
+                name="new_password"
+                onChange={handleData}
               />
               <div
                 className="absolute right-6 bottom-[17px] z-10 cursor-pointer"
@@ -194,6 +261,8 @@ export default function PasswordTab() {
                 className="input-field placeholder:text-base text-bese px-4 text-dark-gray w-full h-full bg-[#FAFAFA] focus:ring-0 focus:outline-none"
                 type="password"
                 id="confirm_password"
+                name="confirm_password"
+                onChange={handleData}
               />
               <div
                 className="absolute right-6 bottom-[17px] z-10 cursor-pointer"
@@ -255,7 +324,7 @@ export default function PasswordTab() {
           <div className="w-full mt-[30px] flex justify-start">
             <div className="sm:flex sm:space-x-[30px] items-center">
               <div className="w-[180px] h-[50px]">
-                <button type="button" className="yellow-btn">
+                <button type="button" onClick={handleClick} className="yellow-btn">
                   <div className="w-full text-sm font-semibold">
                     Upldate Password
                   </div>
