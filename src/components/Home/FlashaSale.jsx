@@ -3,7 +3,7 @@ import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import CountDown from "../Helpers/CountDown";
 import DataIteration from "../Helpers/DataIteration";
 
-export default function FlashSale({ saleItems, lastDate }) {
+export default function FlashSale({ products, lastDate,totalProducts }) {
     const { showHour, showMinute, showSecound } = CountDown(lastDate);
 
     return (
@@ -20,19 +20,19 @@ export default function FlashSale({ saleItems, lastDate }) {
                                 <div className="flex items-center space-x-2">
                                     <div className="text-center">
                                         <span className="text-lg font-bold">{showHour}</span>
-                                        <p className="text-xs">Hours</p>
+                                        <p className="text-xs">tiếng</p>
                                     </div>
                                     <div className="text-center">
                                         <span className="text-lg font-bold">{showMinute}</span>
-                                        <p className="text-xs">Minutes</p>
+                                        <p className="text-xs">phút</p>
                                     </div>
                                     <div className="text-center">
                                         <span className="text-lg font-bold">{showSecound}</span>
-                                        <p className="text-xs">Seconds</p>
+                                        <p className="text-xs">giây</p>
                                     </div>
                                 </div>
                                 <Link to="/flash-sale" className="text-sm text-red-500 underline">
-                                    See All
+                            Xem tất cả
                                 </Link>
                             </div>
                         </div>
@@ -78,10 +78,10 @@ export default function FlashSale({ saleItems, lastDate }) {
                             ))} */}
 
 
-                        <DataIteration datas={saleItems} startLength={0} endLength={8}>
+                        <DataIteration datas={products} startLength={0} endLength={4}>
                             {({ datas }) => (
                                 <div data-aos="fade-up" key={datas.id} className="item">
-                                    <ProductCardStyleOne datas={datas} />
+                                    <ProductCardStyleOne datas={datas.product} />
                                 </div>
                             )}
                         </DataIteration>
