@@ -24,7 +24,7 @@ export default function RouterAdmins() {
     <DefaultLayout>
       <Routes>
         <Route
-          path="/"
+          path="/home"
           element={
             <>
               <PageTitle title="Trang Chủ" />

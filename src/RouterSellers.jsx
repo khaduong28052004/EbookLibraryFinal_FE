@@ -15,7 +15,7 @@ export default function RouterSellers() {
     <SellerLayout>
       <Routes>
         <Route
-          path="/"
+          path="/home"
           element={
             <>
               <PageTitle title="Trang Chủ" />
