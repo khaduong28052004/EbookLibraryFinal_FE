@@ -4,7 +4,7 @@ import CardDataStats from '../../components/CardDataStats';
 const SanPhamSeller = () => {
   return (
     <>
-      <Breadcrumb pageName="Thống Kê Sản Phẩm" status='Người Bán' />
+      <Breadcrumb pageName="Thống Kê Khách Hàng" status='Quản Trị' />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
           <svg
