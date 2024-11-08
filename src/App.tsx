@@ -4,6 +4,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import Loader from './common/Loader';
 
 import RouterAdmins from './RouterAdmins';
+import RouterSellers from './RouterSellers';
 import Routers from "./Routers";
 function App() {
   const [loading, setLoading] = useState(true);
@@ -30,6 +31,13 @@ function App() {
       } />
       <Route path='/admin' element={
         <RouterAdmins />
+      } />
+
+      <Route path='/seller/*' element={
+        <RouterSellers />
+      } />
+      <Route path='/seller' element={
+        <RouterSellers />
       } />
 
       <Route path='/*' element={
