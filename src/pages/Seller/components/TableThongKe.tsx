@@ -100,14 +100,14 @@ const TableTwo = () => {
             />
           </div>
         </form>
-        <div className="flex items-center justify-between space-x-2">
+        <div className="flex items-center justify-between space-x-4">
           <button
-            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/4 mb-2 md:mb-0"
+            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4 md:mb-0"
           >
             Excel
           </button>
           <button
-            className=" inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/4 mb-2 md:mb-0"
+            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4  md:mb-0"
           >
             PDF
           </button>
