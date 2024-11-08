@@ -77,7 +77,7 @@ export default function ForgotPassword() {
                         </button>
                     </form>
                     <div className="text-center mt-6">
-                        <span className="text-base text-qyellow">Remembered your password? <a href="/login" className="text-blue-500">Login</a></span>
+                        <span className="text-base text-qyellow">Remembered your password? <Link to="/login" className="text-blue-500">Login</Link></span>
                     </div>
                 </div>
             </div>

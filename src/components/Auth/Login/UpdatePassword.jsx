@@ -123,7 +123,7 @@ export default function UpdatePassword() {
                             </button>
                         </form>
                         <div className="text-center mt-6">
-                            <span className="text-base text-qyellow">Nhớ mật khẩu? <a href="/login" className="text-blue-500">Đăng nhập</a></span>
+                            <span className="text-base text-qyellow">Nhớ mật khẩu? <Link to="/login" className="text-blue-500">Đăng nhập</Link></span>
                         </div>
                     </div>
                 </div>
