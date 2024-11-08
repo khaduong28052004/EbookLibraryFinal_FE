@@ -28,7 +28,7 @@ export default function InputCom({
             inputClasses || ""
           }`}
           type={type}
-          id={name}
+          id={name}name={name}
         />
         {children && children}
       </div>
