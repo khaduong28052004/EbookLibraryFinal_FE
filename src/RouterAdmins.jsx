@@ -113,7 +113,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/quanLy/thongTinChung"
+          path="/thongTinChung"
           element={
             <>
               <PageTitle title="Thông Tin Chung" />
