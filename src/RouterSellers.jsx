@@ -24,7 +24,7 @@ export default function RouterSellers() {
           }
         />
         <Route
-          path="/product"
+          path="/quanLy/product"
           element={
             <>
               <PageTitle title="Sản Phẩm" />
@@ -33,7 +33,7 @@ export default function RouterSellers() {
           }
         />
         <Route
-          path="/bill"
+          path="/quanLy/bill"
           element={
             <>
               <PageTitle title="Đơn Hàng" />
@@ -42,7 +42,7 @@ export default function RouterSellers() {
           }
         />
         <Route
-          path="/voucher"
+          path="/quanLy/voucher"
           element={
             <>
               <PageTitle title="Voucher" />
