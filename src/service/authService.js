@@ -49,11 +49,15 @@ const AuthService = {
     const url = `/api/v1/user/updatePass?id=${encodeURIComponent(id)}&repass=${encodeURIComponent(repass)}&oldpass=${encodeURIComponent(oldpass)}`;
     return axiosAuth("null", "post", url);
   },
-  Otp: (email) => {
-    const url = `/api/v1/otp/generate?email=${encodeURIComponent(email)}`;
-    return axiosAuth("null", "post", url);
+  Otp: ({email}) => {
+    const url = "/api/v1/otp/generate";
+    return axiosAuth("null", "post", url,{email});
   },
-  
+  verifyOTP: (data) => {
+    const url = "/api/v1/otp/verify";
+    return axiosAuth("null", "post", url,data);
+  },
+
 
   
 };

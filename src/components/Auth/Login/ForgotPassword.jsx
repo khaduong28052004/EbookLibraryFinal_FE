@@ -30,7 +30,7 @@ export default function ForgotPassword() {
     };
 
     return (
-        <Layout childrenClasses=" pt-0 pb-0">
+        <Layout>
             <ToastContainer
                 position="bottom-center"
                 autoClose={5000}
@@ -43,47 +43,41 @@ export default function ForgotPassword() {
                 pauseOnHover
                 style={{ zIndex: 9999 }}
             />
-            <div className="forgot-password-page-wrapper w-full py-10">
-                <div className="container-x mx-auto justify-center">
-                    <div className="lg:flex items-center relative">
-                        <div className="lg:w-[572px] w-full h-[783px] bg-white flex flex-col justify-center sm:p-10 p-5 border border-[#E0E0E0]">
-                            <div className="w-full ">
-                                {/* <div className="title-area flex flex-col justify-center items-center relative text-center mb-7">
-                  <h1 className="text-[34px] font-bold leading-[74px] text-qblack">Quên mật khẩu</h1>
-                  <div className="shape -mt-6">
-                    <svg width="172" height="29" viewBox="0 0 172 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 5.08742C17.6667 19.0972 30.5 31.1305 62.5 27.2693C110.617 21.4634 150 -10.09 171 5.08727" stroke="#FFBB38" />
-                    </svg>
-                  </div>
-                </div> */}
-
-                                <form onSubmit={handleForgotPassword}>
-                                    <div className="input-item mb-5">
-                                        <label htmlFor="email" className="text-sm text-black">Nhập email : </label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            placeholder="Enter your email"
-                                            className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
-                                            required
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        className="black-btn mb-6 text-sm text-white w-full h-[50px] font-semibold flex justify-center bg-purple items-center"
-                                        disabled={loading}
-                                    >
-                                        {loading ? 'Sending...' : 'Send Reset Link'}
-                                    </button>
-                                </form>
-                                <div className="social-login-buttons flex justify-center mt-6">
-                                    <span className="text-base text-qyellow">Remembered your password? <a href="/login" className="text-blue-500">Login</a></span>
-                                </div>
-                            </div>
+            <div className="flex justify-center items-center min-h-screen bg-gray-100">
+                <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8 border border-[#E0E0E0]">
+                    <div className="text-center mb-7">
+                        <h1 className="text-2xl font-bold text-qblack">Quên mật khẩu</h1>
+                        <div className="mt-2 mb-4">
+                            <svg width="172" height="29" viewBox="0 0 172 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 5.08742C17.6667 19.0972 30.5 31.1305 62.5 27.2693C110.617 21.4634 150 -10.09 171 5.08727" stroke="#FFBB38" />
+                            </svg>
                         </div>
+                    </div>
+
+                    <form onSubmit={handleForgotPassword}>
+                        <div className="mb-5">
+                            <label htmlFor="email" className="block text-sm text-black mb-1">Nhập email:</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className={`w-full h-[50px] font-semibold bg-black text-white rounded-md ${loading ? 'bg-gray-400' : 'bg-purple'}`}
+                            disabled={loading}
+                        >
+                            {loading ? 'Sending...' : 'Send Reset Link'}
+                        </button>
+                    </form>
+                    <div className="text-center mt-6">
+                        <span className="text-base text-qyellow">Remembered your password? <a href="/login" className="text-blue-500">Login</a></span>
                     </div>
                 </div>
             </div>
