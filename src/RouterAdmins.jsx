@@ -1,130 +1,187 @@
 import { Route, Routes } from "react-router-dom";
-import SignIn from './pages/Authentication/SignIn';
-import SignUp from './pages/Authentication/SignUp';
-import Calendar from './pages/Calendar';
-import Chart from './pages/Chart';
-import ECommerce from './pages/Dashboard/ECommerce';
-import FormElements from './pages/Form/FormElements';
-import FormLayout from './pages/Form/FormLayout';
-import ProfileAdmin from './pages/Profile';
-import Settings from './pages/Settings';
-import Tables from './pages/Tables';
-import Alerts from './pages/UiElements/Alerts';
-import Buttons from './pages/UiElements/Buttons';
 import PageTitle from './components/PageTitle';
 import DefaultLayout from './layout/DefaultLayout';
-
-
-
+import TrangChuAdmin from "./pages/Admin/TrangChuAdmin"
+import ShopAdmin from "./pages/Admin/ShopAdmin"
+import DanhMucAdmin from "./pages/Admin/DanhMucAdmin"
+import SanPhamAdmin from "./pages/Admin/SanPhamAdmin"
+import KhachHangAdmin from "./pages/Admin/KhachHangAdmin"
+import FlashSaleAdmin from "./pages/Admin/FlashSaleAdmin"
+import NhanVienAdmin from "./pages/Admin/NhanVienAdmin"
+import VoucherAdmin from "./pages/Admin/VoucherAdmin"
+import ReportAdmin from "./pages/Admin/ReportAdmin"
+import PhanQuyenAdmin from "./pages/Admin/PhanQuyenAdmin"
+import ThongTinChungAdmin from "./pages/Admin/ThongTinChungAdmin"
+import SettingAdmin from "./pages/Admin/SettingAdmin"
+import ThongKeDoanhThuAdmin from "./pages/Admin/ThongKeDoanhThuAdmin"
+import ThongKeKhachHangAdmin from "./pages/Admin/ThongKeKhachHangAdmin"
+import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
+import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
+import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
+import ThongKeDanhGiaAdmin from "./pages/Admin/ThongKeDanhGiaAdmin"
 export default function RouterAdmins() {
   return (
     <DefaultLayout>
       <Routes>
         <Route
-          path="/"
+          path="/home"
           element={
             <>
-              <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ECommerce />
+              <PageTitle title="Trang Chủ" />
+              <TrangChuAdmin />
             </>
           }
         />
         <Route
-          path="/calendar"
+          path="/nhanVien"
           element={
             <>
-              <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Calendar />
+              <PageTitle title="Nhân Viên" />
+              <NhanVienAdmin />
             </>
           }
         />
         <Route
-          path="/profile"
+          path="/voucher"
           element={
             <>
-              <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ProfileAdmin />
+              <PageTitle title="Voucher" />
+              <VoucherAdmin />
             </>
           }
         />
         <Route
-          path="/forms/form-elements"
+          path="/product"
           element={
             <>
-              <PageTitle title="Form Elements | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <FormElements />
+              <PageTitle title="Sản Phẩm" />
+              <SanPhamAdmin />
             </>
           }
         />
         <Route
-          path="/forms/form-layout"
+          path="/flashSale"
           element={
             <>
-              <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <FormLayout />
+              <PageTitle title="Flash Sale" />
+              <FlashSaleAdmin />
             </>
           }
         />
         <Route
-          path="/tables"
+          path="/khachHang"
           element={
             <>
-              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Tables />
+              <PageTitle title="Khách Hàng" />
+              <KhachHangAdmin />
             </>
           }
         />
         <Route
-          path="/settings"
+          path="/shop"
           element={
             <>
-              <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Settings />
+              <PageTitle title="Shop" />
+              <ShopAdmin />
             </>
           }
         />
         <Route
-          path="/chart"
+          path="/report"
           element={
             <>
-              <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Chart />
+              <PageTitle title="Report" />
+              <ReportAdmin />
             </>
           }
         />
         <Route
-          path="/ui/alerts"
+          path="/phanQuyen"
           element={
             <>
-              <PageTitle title="Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Alerts />
+              <PageTitle title="Phân Quyền" />
+              <PhanQuyenAdmin />
             </>
           }
         />
         <Route
-          path="/ui/buttons"
+          path="/danhMuc"
           element={
             <>
-              <PageTitle title="Buttons | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Buttons />
+              <PageTitle title="Danh Mục" />
+              <DanhMucAdmin />
             </>
           }
         />
         <Route
-          path="/auth/signin"
+          path="/thongTinChung"
           element={
             <>
-              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <SignIn />
+              <PageTitle title="Thông Tin Chung" />
+              <ThongTinChungAdmin />
             </>
           }
         />
         <Route
-          path="/auth/signup"
+          path="/setting"
           element={
             <>
-              <PageTitle title="Signup | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <SignUp />
+              <PageTitle title="Cài Đặt" />
+              <SettingAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/thongKe/doanhThu"
+          element={
+            <>
+              <PageTitle title="Thống Kê Doanh Thu" />
+              <ThongKeDoanhThuAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/thongKe/sanPham"
+          element={
+            <>
+              <PageTitle title="Thống Kê Sản Phẩm" />
+              <ThongKeSanPhamAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/thongKe/danhGia"
+          element={
+            <>
+              <PageTitle title="Thống Kê Đánh Giá" />
+              <ThongKeDanhGiaAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/thongKe/donHang"
+          element={
+            <>
+              <PageTitle title="Thống Kê Đơn Hàng" />
+              <ThongKeDonHangAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/thongKe/seller"
+          element={
+            <>
+              <PageTitle title="Thống Kê Người Bán" />
+              <ThongKeNguoiBanAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/thongKe/khachHang"
+          element={
+            <>
+              <PageTitle title="Thống Kê Khách Hàng" />
+              <ThongKeKhachHangAdmin />
             </>
           }
         />
