@@ -9,13 +9,12 @@ import {
     putAddress,
     getOneAddress,
 } from "../../../../service/addressService";
-
 const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
     const accountId = localStorage.getItem('accountId'); // ID của tài khoản đăng nhập
     const [addresses, setAddresses] = useState([]);
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
-    const [wards, setWards] = useState([]);
+    const [wardCode, setWards] = useState([]);
     const [selectedProvince, setSelectedProvince] = useState({
         id: "",
         name: "",
@@ -27,7 +26,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
     const [selectedWard, setSelectedWard] = useState({ id: "", name: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
     const [addressData, setAddressData] = useState({
         id: null,
         status: false, // trang tái của địa chỉ mặt định có được tích không
@@ -37,6 +35,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         province: "", // lưu id của nó
         district: "", // lưu id của nó
         commune: "", // lưu id của nó
+        wardCode: "",
         background: "",
         avatar: "",
     });
@@ -76,22 +75,19 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             console.log(data);
             setAddressData(data);
             setSelectedProvince(data.province);
-
             console.log("ID Province: " + data.province);
             const districtsData = await loadDistricts(parseInt(data.province, 10));
             setDistricts(districtsData);
             setSelectedDistrict(data.district);
-
             const wardsData = await loadWards(parseInt(data.district, 10));
             setWards(wardsData);
-            setSelectedWard(data.commune);
+            setSelectedWard(data.wardCode);
             toast.success("Tải dữ liệu chỉnh sửa thành công");
         } catch (error) {
             console.log("Error editing address: ", error);
             toast.error("Lỗi khi tải dữ liệu chỉnh sửa");
         }
     };
-
     useEffect(() => {
         const fetchProvinces = async () => {
             setLoading(true);
@@ -108,7 +104,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         };
         fetchProvinces();
     }, []);
-
     useEffect(() => {
         const fetchDistricts = async () => {
             if (selectedProvince.id) {
@@ -132,7 +127,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         };
         fetchDistricts();
     }, [selectedProvince]);
-
     useEffect(() => {
         const fetchWards = async () => {
             if (selectedDistrict.id) {
@@ -153,29 +147,26 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         };
         fetchWards();
     }, [selectedDistrict]);
-
     // Update addressData with selected province, district, and ward
     useEffect(() => {
         setAddressData((prevData) => ({
             ...prevData,
             province: selectedProvince.id,
             district: selectedDistrict.id,
-            commune: selectedWard.id,
+            wardCode: selectedWard.id,
         }));
     }, [
         selectedProvince,
         selectedDistrict,
         selectedWard,
     ]);
-
-
     const handleSave = async (event) => {
         event.preventDefault();
         const id = sessionStorage.getItem("id_account") || 1;
         try {
             let data;
             if (addressData.id) {
-                const fullNameAddress = `${addressData.fullNameAddress},${selectedWard.name}, ${selectedDistrict.name}, ${selectedProvince.name}`;
+                const fullNameAddress = `${addressData.fullNameAddress}`;
                 // Tạo một bản sao của addressData và cập nhật fullNameAddress
                 const updatedAddressData = {
                     ...addressData,
@@ -211,20 +202,41 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             console.error("Error processing address:", error);
             toast.error("Lỗi khi xử lý địa chỉ");
         }
-
     };
+    // useEffect(() => {
+    //     const fetchAddressData = async () => {
+    //         if (editingAddressId) {
+    //             try {
+    //                 const data = await getOneAddress(editingAddressId);
+    //                 setAddressData(data);
+    //                 setSelectedProvince({ id: data.province, name: data.provinceName });
+    //                 setSelectedDistrict({ id: data.district, name: data.districtName });
+    //                 setSelectedWard({ id: data.wardCode, name: data.wardsName });
+    //                 //toast.success("Tải dữ liệu chỉnh sửa thành công");
+    //                 console.log("Tải dữ liệu chỉnh sửa thành công")
+    //             } catch (error) {
+    //                 console.log("Lỗi khi tải dữ liệu chỉnh sửa");
+    //             }
+    //         }
+    //     };
+    //     fetchAddressData();
+    // }, [editingAddressId]);
+
+
 
     useEffect(() => {
         const fetchAddressData = async () => {
             if (editingAddressId) {
                 try {
                     const data = await getOneAddress(editingAddressId);
-                    setAddressData(data);
+                    setAddressData((prevData) => ({
+                        ...prevData,
+                        ...data, // cập nhật đầy đủ dữ liệu từ API
+                    }));
                     setSelectedProvince({ id: data.province, name: data.provinceName });
                     setSelectedDistrict({ id: data.district, name: data.districtName });
-                    setSelectedWard({ id: data.commune, name: data.communeName });
-                    //toast.success("Tải dữ liệu chỉnh sửa thành công");
-                    console.log("Tải dữ liệu chỉnh sửa thành công")
+                    setSelectedWard({ id: data.wardCode, name: data.wardsName });
+                    console.log("Tải dữ liệu chỉnh sửa thành công");
                 } catch (error) {
                     console.log("Lỗi khi tải dữ liệu chỉnh sửa");
                 }
@@ -232,6 +244,10 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         };
         fetchAddressData();
     }, [editingAddressId]);
+    
+
+
+
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -240,7 +256,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             [id]: value,
         }));
     };
-
     const handleProvinceChange = (e) => {
         const selectedOption = e.target.options[e.target.selectedIndex];
         setSelectedProvince({
@@ -248,7 +263,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             name: selectedOption.getAttribute("data-name"),
         });
     };
-
     const handleDistrictChange = (e) => {
         const selectedOption = e.target.options[e.target.selectedIndex];
         setSelectedDistrict({
@@ -256,7 +270,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             name: selectedOption.getAttribute("data-name"),
         });
     };
-
     const handleWardChange = (e) => {
         const selectedOption = e.target.options[e.target.selectedIndex];
         setSelectedWard({
@@ -264,9 +277,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             name: selectedOption.getAttribute("data-name"),
         });
     };
-
-    if (!isVisible) return null;
-
+    if (!isVisible) return null; 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
             <div className="w-[600px] flex flex-col">
@@ -281,7 +292,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                         <h2 className="p-2.5 font-bold text-lg">Địa Chỉ</h2>
                         <hr className="border-gray-500" />
                     </div>
-
                     <div className="p-2.5">
                         {loading && <p>Loading...</p>}
                         {error && <p className="text-red-500">{error}</p>}
@@ -297,6 +307,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     placeholder="Vui lòng nhập số điện thoại"
                                     value={addressData.phone}
                                     onChange={handleChange}
+                                    required
                                 />
                             </div>
                             <div className="col-span-6">
@@ -310,20 +321,22 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     placeholder="Vui lòng nhập số nhà/đường"
                                     value={addressData.fullNameAddress}
                                     onChange={handleChange}
+                                    required
                                 />
                             </div>
                             <div className="col-span-6">
-                                <label className="text-base" htmlFor="commune">
+                                <label className="text-base" htmlFor="wardCode">
                                     Xã/Phường
                                 </label>
                                 <select
                                     className="my-2 placeholder-gray-500 border border-gray-400 rounded-sm p-2 w-full"
-                                    id="commune"
+                                    id="wardCode"
                                     value={selectedWard.id}
                                     onChange={handleWardChange}
+                                    required
                                 >
                                     <option value="">Chọn xã/phường</option>
-                                    {wards.map((ward) => (
+                                    {wardCode.map((ward) => (
                                         <option
                                             key={ward.WardCode}
                                             value={ward.WardCode}
@@ -332,7 +345,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                             {ward.WardName}
                                         </option>
                                     ))}
-
                                 </select>
                             </div>
                             <div className="col-span-6">
@@ -344,6 +356,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     id="province"
                                     value={selectedProvince.id}
                                     onChange={handleProvinceChange}
+                                    required
                                 >
                                     <option value="">Chọn tỉnh/thành phố</option>
                                     {provinces.map((province) => (
@@ -366,6 +379,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     id="district"
                                     value={selectedDistrict.id}
                                     onChange={handleDistrictChange}
+                                    required
                                 >
                                     <option value="">Chọn quận/huyện</option>
                                     {districts.map((district) => (
@@ -385,11 +399,18 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                         type="checkbox" value={addressData.status}
                                         checked={addressData.status}
                                         id="flexCheckChecked"
+                                        // onChange={() =>
+                                        //     setAddressData({
+                                        //         ...addressData,
+                                        //         status: !addressData.status,
+                                        //     })
+                                        // }
+
                                         onChange={() =>
-                                            setAddressData({
-                                                ...addressData,
-                                                status: !addressData.status,
-                                            })
+                                            setAddressData((prevData) => ({
+                                                ...prevData,
+                                                status: !prevData.status,
+                                            }))
                                         }
 
                                         className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
@@ -410,6 +431,4 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         </div>
     );
 };
-
 export default ModelAddress;
-
