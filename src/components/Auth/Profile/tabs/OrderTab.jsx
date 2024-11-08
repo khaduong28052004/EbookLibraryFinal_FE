@@ -4,7 +4,6 @@ import OrderDetail from '../../../Order/index';
 import BeatLoader from "react-spinners/BeatLoader";
 // npm install --save react-spinners
 
-
 export const NavItems = [
   { name: "Tất cả", tabName: "TATCA" },
   { name: "Chờ duyệt", tabName: "CHODUYET" },
@@ -16,13 +15,13 @@ export const NavItems = [
 ];
 
 export default function OrderTab() {
-  const [orderDetailId, setOrderDetailId] = useState(undefined);
+  const [orderId, setOrderId] = useState(undefined);
   const [orders, setOrders] = useState();
   const [loading, setLoading] = useState(false);
   const [activeMenu, setActiveMenu] = useState(NavItems[0].tabName);
   const [taskCompleted, setTaskCompleted] = useState(false);
 
-  const clearOrderDetailId = () => setOrderDetailId(undefined);
+  const clearOrderId = () => setOrderId(undefined);
 
   const fetchOrders = async () => {
     try {
@@ -30,7 +29,7 @@ export default function OrderTab() {
 
       const username = 'thu'; // Tài khoản của bạn
       const password = '123'; // Mật khẩu của bạn
-      const userID = 6;
+      const userID = 8;
       const orderStatusId = activeMenu;
 
       const basicAuth = 'Basic ' + btoa(username + ':' + password);
@@ -56,9 +55,6 @@ export default function OrderTab() {
       setLoading(false);
     }
   }
-
-
-
 
   const confirmOrder = async (billId) => {
     try {
@@ -159,8 +155,8 @@ export default function OrderTab() {
 
   useEffect(() => {
     fetchOrders();
-    console.log(orderDetailId);
-  }, [orderDetailId]);
+    console.log(orderId);
+  }, [orderId]);
 
   useEffect(() => {
     if (taskCompleted) {
@@ -187,7 +183,8 @@ export default function OrderTab() {
     </div>
   </div></div>
 
-  if (orderDetailId) return <OrderDetail orderId={orderDetailId} clearOrderDetailId={clearOrderDetailId}></OrderDetail>
+  if (orderId) return <OrderDetail orderId={orderId} clearOrderId={clearOrderId}></OrderDetail>
+  // if (orderId) return <div>Hello orderdetail</div>
 
   return (
     <>
@@ -214,7 +211,7 @@ export default function OrderTab() {
                   <tr
                     key={order.billID}
                     className="text-sm border-b hover:bg-gray-100 hover:cursor-pointer leading-relaxed transform transition-all duration-300"
-                    onClick={() => setOrderDetailId(order.billID)}
+                    onClick={() => setOrderId(order.billID)}
                   >
                     <td className="text-center py-4">
                       <span className="text-qgray font-medium">#{order.billID}</span>

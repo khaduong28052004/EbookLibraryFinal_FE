@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react"
+import Evaluate from '../Evaluate/evaluate';
 import BeatLoader from "react-spinners/BeatLoader";
 
 
-export default function OrderDetail({ orderId, clearOrderDetailId }) {
+export default function OrderDetail({ orderId, clearOrderId }) {
     const [order, setOrder] = useState();
     const [loading, setLoading] = useState(false);
     const [taskCompleted, setTaskCompleted] = useState(false);
+    const [orderDetailId, setOrderDetailId] = useState();
+    const [productId, setProductId] = useState();
 
     const fetchOrderDetail = async () => {
         try {
@@ -29,8 +32,6 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
 
             const data = await response.json();
             setOrder(data.data);
-            typeof (data.data)
-            console.log('hello world 1');
 
 
         } catch (error) {
@@ -129,19 +130,35 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
         }
     }
 
+    const setValue = (billDetailId, productId) => {
+        setOrderDetailId(billDetailId);
+        setProductId(productId);
+    }
+
+    const clearValue = () => {
+        setOrderDetailId(undefined);
+        setProductId(undefined);
+    };
+
     useEffect(() => {
         fetchOrderDetail();
     }, [])
 
-
+    
     useEffect(() => {
         console.log(order);
     }, [order])
 
     useEffect(() => {
+        fetchOrderDetail();
+        console.log("đã đánh giá");
+    }, [orderDetailId])
+
+    
+
+    useEffect(() => {
         if (taskCompleted) {
-            // Khi task hoàn thành, bạn có thể cập nhật lại dữ liệu
-            fetchOrderDetail(); // Tải lại dữ liệu đơn hàng sau khi task hoàn thành
+            fetchOrderDetail(); 
             setTaskCompleted(false);
         }
     }, [taskCompleted]);
@@ -160,7 +177,11 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
             </div>
             <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
         </div>
-    </div></div>
+    </div>
+    </div>
+
+
+    if (orderDetailId) return <Evaluate orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue}></Evaluate>
 
     return (
         <>
@@ -168,7 +189,7 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                 order.map((bill) =>
                     <div className="" key={bill.billID}>
                         <div className="border-b">
-                            <div className="rounded text-gray-500 font-light text-[5px] pb-2 flex inline-block  hover: cursor-pointer w-[100px]" onClick={clearOrderDetailId}>
+                            <div className="rounded text-gray-500 font-light text-[5px] pb-2 flex inline-block  hover: cursor-pointer w-[100px]" onClick={clearOrderId}>
                                 <img src="https://cdn-icons-png.flaticon.com/128/10728/10728732.png" alt="" className="w-[10px] mr-2" /> TRỞ LẠI
                             </div>
                         </div>
@@ -222,16 +243,16 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                             <div className="dropArrow font-bold"> <span>V</span></div>
                         </div> */}
                                     <div className="cardInfo-container pb-5 px-5">
-                                        <a href="#">
+                                        <a>
                                             <div className="shopInfo-container inline-flex  flex gap-6 items-center border-b-2  pb-2 pt-5">
                                                 <div className="shopName font-bold text-gray-900 text-[18px] hover:cursor-pointer"><p>{bill.shopName}</p></div>
                                             </div>
                                         </a>
                                     </div>
                                     {bill.products.map((product) =>
-                                        <div className="mb-5">
-                                            <div className="productInfo-container  grid gap-3 px-5 " key={product.productId}>
-                                                <a href="#">
+                                        <div className="mb-5" key={product.productId}>
+                                            <div className="productInfo-container  grid gap-3 px-5 ">
+                                                <div>
                                                     <div className="productImage-wrapper flex p-2 rounded border  justify-between" >
                                                         <div className="productInfo-1 w-[15%] ">
                                                             <a href="">
@@ -257,7 +278,8 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                                                     (
                                                                         <div className="productInfo-butoton w-[100%] flex items-end mt-auto">
                                                                             <div className="productInfo-rating">
-                                                                                <button className="w-[100px] h-[35px] rounded text-[#608BC1] text-[15px]  px-2 py-0 border border-[#608BC1] transition-all duration-500 ease-in-out hover:bg-gray-200 w-[100%]">Đánh giá</button>
+                                                                                <button onClick={() => setValue(product.billDetailId, product.productId)} className="w-[100px] h-[35px] rounded text-[#608BC1] text-[15px]  
+                                                                                px-2 py-0 border border-[#608BC1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">Đánh giá</button>
                                                                             </div>
                                                                         </div>
                                                                     )
@@ -266,7 +288,7 @@ export default function OrderDetail({ orderId, clearOrderDetailId }) {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </a>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
