@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from 'react-toastify';
 import Order from '../../../Order/index';
 import OrderNavigation from '../../../OrderDetail/orderNavigation';
-
-import BeatLoader from "react-spinners/BeatLoader";
 // npm install --save react-spinners
 
 export const NavItems = [

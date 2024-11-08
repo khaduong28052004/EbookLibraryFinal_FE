@@ -190,8 +190,8 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     if (orderDetailId) return <Evaluate orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} isSuccessfully={evaluateSuccessfully}></Evaluate>
 
     return (
-        <>               
-         <ToastContainer></ToastContainer>
+        <>
+            <ToastContainer></ToastContainer>
             {order && order.length > 0 ? (
                 order.map((bill) =>
                     <div className="" key={bill.billID}>
