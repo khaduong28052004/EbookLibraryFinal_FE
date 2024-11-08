@@ -18,7 +18,6 @@ import ThongKeKhachHangAdmin from "./pages/Admin/ThongKeKhachHangAdmin"
 import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
 import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
-import ThongKeDanhGiaAdmin from "./pages/Admin/ThongKeDanhGiaAdmin"
 export default function RouterAdmins() {
   return (
     <DefaultLayout>
