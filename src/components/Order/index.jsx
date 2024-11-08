@@ -1,385 +1,290 @@
-import { useState, useEffect } from "react"
-import Evaluate from '../Evaluate/evaluate';
+import React, { useState, useEffect } from "react";
+import { toast, ToastContainer } from 'react-toastify';
+import OrderDetail from '../OrderDetail/index';
 import BeatLoader from "react-spinners/BeatLoader";
+// npm install --save react-spinners
 
 
-export default function OrderDetail({ orderId, clearOrderId }) {
-    const [order, setOrder] = useState();
-    const [loading, setLoading] = useState(false);
-    const [taskCompleted, setTaskCompleted] = useState(false);
-    const [orderDetailId, setOrderDetailId] = useState();
-    const [productId, setProductId] = useState();
-
-    const fetchOrderDetail = async () => {
-        try {
-            setLoading(true);
-
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
-
-            const response = await fetch(`http://localhost:8080/api/v1/billdetail/read?billId=${orderId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
-            setOrder(data.data);
+export default function OrderPage({activeMenu, setActiveMenu, setIsInDetailMode}) {
+  const [orderId, setOrderId] = useState(undefined);
+  const [orders, setOrders] = useState();
+  const [loading, setLoading] = useState(false);
+  const [taskCompleted, setTaskCompleted] = useState(false);
 
 
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+
+      const username = 'thu'; // Tài khoản của bạn
+      const password = '123'; // Mật khẩu của bạn
+      const userID = 8;
+      const orderStatusId = activeMenu;
+
+      const basicAuth = 'Basic ' + btoa(username + ':' + password);
+
+      const response = await fetch(`http://localhost:8080/api/v1/bill/read?userId=${userID}&orderStatusFind=${orderStatusId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': basicAuth,
+          'Content-Type': 'application/json'
         }
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setOrders(data.data);
+      typeof (data.data)
+    } catch (error) {
+
+    } finally {
+      setLoading(false);
     }
+  }
 
+  const confirmOrder = async (billId) => {
+    try {
+      setLoading(true);
 
-    const confirmOrder = async (billId) => {
-        try {
-            setLoading(true);
+      const username = 'thu'; // Tài khoản của bạn
+      const password = '123'; // Mật khẩu của bạn      
+      const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
-
-            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/confirm/${billId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-                return;
-            }
-            setTaskCompleted(true);
-
-
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
+      const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/confirm/${billId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': basicAuth,
+          'Content-Type': 'application/json'
         }
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+        return;
+      }
+      setTaskCompleted(true);
+      toast.success('Đơn hàng đã được xác nhận thành công');
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    const cancelOrder = async (billId) => {
-        try {
-            setLoading(true);
+  const cancelOrder = async (billId) => {
+    try {
+      setLoading(true);
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+      const username = 'thu'; // Tài khoản của bạn
+      const password = '123'; // Mật khẩu của bạn      
+      const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/cancel/${billId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-                return;
-            }
-
-            setTaskCompleted(true);
-
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
+      const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/cancel/${billId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': basicAuth,
+          'Content-Type': 'application/json'
         }
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+        return;
+      }
+
+      setTaskCompleted(true);
+      toast.success('Đơn hàng đã được hủy');
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    const reOrder = async (billId) => {
-        try {
+  const reOrder = async (billId) => {
+    try {
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+      const username = 'thu'; // Tài khoản của bạn
+      const password = '123'; // Mật khẩu của bạn      
+      const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/create/reorder/${billId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-                return;
-            }
-
-
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
+      const response = await fetch(`http://localhost:8080/api/v1/bill/create/reorder/${billId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': basicAuth,
+          'Content-Type': 'application/json'
         }
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+        return;
+      }
+
+      toast.success('Đã thêm vào giỏ hàng');
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    const setValue = (billDetailId, productId) => {
-        setOrderDetailId(billDetailId);
-        setProductId(productId);
-    }
+  const setValue = (billID) => {
+    setOrderId(billID);
+    setIsInDetailMode(false); // Chuyển sang chế độ xem chi tiết
+}
 
-    const clearValue = () => {
-        setOrderDetailId(undefined);
-        setProductId(undefined);
-    };
+const clearOrderId = () => {
+ setOrderId(undefined);
+ setIsInDetailMode(true); // Chuyển sang chế độ xem chi tiết
+}
 
-    useEffect(() => {
-        fetchOrderDetail();
-    }, [])
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
-    
-    useEffect(() => {
-        console.log(order);
-    }, [order])
+  useEffect(() => {
+    fetchOrders();
+    console.log(orderId);
+  }, [orderId]);
 
-    useEffect(() => {
-        fetchOrderDetail();
-        console.log("đã đánh giá");
-    }, [orderDetailId])
-
-    
-
-    useEffect(() => {
-        if (taskCompleted) {
-            fetchOrderDetail(); 
-            setTaskCompleted(false);
-        }
-    }, [taskCompleted]);
-
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen ">
-                <BeatLoader color="#56A0D3" />
-            </div>
-        );
-    }
-    if (!loading && !order) return <div>  <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
-        <div className="flex flex-col items-center justify-center gap-2">
-            <div className="">
-                <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
-            </div>
-            <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
-        </div>
-    </div>
-    </div>
+  useEffect(() => {
+    console.log(orders);
+    fetchOrders();
+    if (taskCompleted) {
+        setTaskCompleted(false);
+      }
+  }, [activeMenu, taskCompleted]);
 
 
-    if (orderDetailId) return <Evaluate orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue}></Evaluate>
-
+  if (loading) {
     return (
-        <>
-            {order && order.length > 0 ? (
-                order.map((bill) =>
-                    <div className="" key={bill.billID}>
-                        <div className="border-b">
-                            <div className="rounded text-gray-500 font-light text-[5px] pb-2 flex inline-block  hover: cursor-pointer w-[100px]" onClick={clearOrderId}>
-                                <img src="https://cdn-icons-png.flaticon.com/128/10728/10728732.png" alt="" className="w-[10px] mr-2" /> TRỞ LẠI
-                            </div>
-                        </div>
-                        <div className="detail-wrapper grid gap-5 py-2">
-                            <div className="orderInfo-container  border-gray-100 px-1">
-                                <div className="orderInfo  ">
-                                    <div className="orderInfo-1-container flex inline-block justify-between items-center">
-                                        <div className="orderInfo-1-item   h-100px w-[70%]">
-                                            <div className="orderId-container inline-flex text-[24px] flex gap-2">
-                                                <div className="orderId-title text-gray-900 font-bold ">Mã đơn hàng</div>
-                                                <div className="orderId text-gray-500 font-light"><span>#</span>{bill.billID}</div>
-                                            </div>
-                                        </div>
-                                        <div className="orderInfo-1-item h-100px w-[30%] ">
-                                            <div className="orderStatus-container flex justify-end px-5">
-                                                <div className=" bg-[#C6E7FF] rounded-full text-cyan-800  text-sm font-bold text-center px-4 py-1 ">
-                                                    <p>{bill.billOrderStatus}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="orderInfo-date text-[15px] text-gray-600">
-                                        <p>Ngày tạo đơn: {bill.createdDatetime}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="customerInfo-container h-300px w-100%  border-t-2  border-b-2 py-2">
-                                {/* <div className="customerInfo-title flex inline-block justify-between px-5 py-2 bg-gray-50 rounded-t-xl  items-center">
-                            <div className="title font-medium text-[18px] ">Thông tin người nhận</div>
-                        </div> */}
-                                <div className="customerInfo grid gap-1 text-[15px] px-5 py-2">
-                                    <div className="username-info flex inline-block gap-5">
-                                        <div className="username-tag text-gray-900  font-medium w-30">Tên người nhận</div>
-                                        <div className="username text-gray-600">{bill.userFullname}</div>
-                                    </div>
-                                    <div className="phoneNumber-info flex inline-block  gap-5">
-                                        <div className="phoneNumber-tag text-gray-900 font-medium w-30">Số điện thoại</div>
-                                        <div className="phoneNumber text-gray-600">{bill.userPhone}</div>
-                                    </div>
-                                    <div className="address-info flex inline-block  gap-5">
-                                        <div className="address-tag text-gray-900 font-medium  w-30">Địa chỉ</div>
-                                        <div className="address text-gray-600">{bill.billAddress}</div>
-                                    </div>
-                                </div>
-                            </div>
+      <div className="flex justify-center items-center h-screen ">
+        <BeatLoader color="#56A0D3" />
+      </div>
+    );
+  }
 
-                            <div className="border rounded-lg border-t-2 px-2">
-                                <div className="customerInfo-container h-300px w-100%  border-b-2 pb-5 ">
-                                    {/* <div className="card-title flex inline-block justify-between  px-5 py-3 items-center ">
-                            <div className="title font-medium text-[18px]">Chi tiết</div>
-                            <div className="dropArrow font-bold"> <span>V</span></div>
-                        </div> */}
-                                    <div className="cardInfo-container pb-5 px-5">
-                                        <a>
-                                            <div className="shopInfo-container inline-flex  flex gap-6 items-center border-b-2  pb-2 pt-5">
-                                                <div className="shopName font-bold text-gray-900 text-[18px] hover:cursor-pointer"><p>{bill.shopName}</p></div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    {bill.products.map((product) =>
-                                        <div className="mb-5" key={product.productId}>
-                                            <div className="productInfo-container  grid gap-3 px-5 ">
-                                                <div>
-                                                    <div className="productImage-wrapper flex p-2 rounded border  justify-between" >
-                                                        <div className="productInfo-1 w-[15%] ">
-                                                            <a href="">
-                                                                <div className="productImage-container hover:cursor-pointer">
-                                                                    <img className="w-[80px] h-[100px] rounded  object-cover " src={product.productImageURL} alt="product-image" />
-                                                                </div>
-                                                            </a>
-                                                        </div>
-                                                        <div className="productInfo-1 flex justify-between w-[85%]">
-                                                            <div className="productInfo-2 text-[18px] grid text-gray-500 font-medium  ">
-                                                                <div className="productName text-gray-900 "><p>{product.productName}</p></div>
-                                                                <div className="flex-col content-end">
-                                                                    <div className="productPrice"><p className="text-gray-500 font-light text-[15px] ">Đơn giá: <span className="font-normal">
-                                                                        {new Intl.NumberFormat("vi-VN", {
-                                                                            style: "currency",
-                                                                            currency: "VND",
-                                                                        }).format(product.productPrice)}</span></p></div>
-                                                                    <div className="productQuantity"><p className="text-gray-500 font-light text-[15px] ">Số lượng: <span className="font-normal">{product.productQuantity}</span></p></div>
-                                                                </div>
-                                                            </div>
-                                                            <div className="productInfo-3 flex flex-col justify-between mr-0">
-                                                                {product.isEvaluate == false && bill.billOrderStatus === "Hoàn thành" ?
-                                                                    (
-                                                                        <div className="productInfo-butoton w-[100%] flex items-end mt-auto">
-                                                                            <div className="productInfo-rating">
-                                                                                <button onClick={() => setValue(product.billDetailId, product.productId)} className="w-[100px] h-[35px] rounded text-[#608BC1] text-[15px]  
-                                                                                px-2 py-0 border border-[#608BC1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">Đánh giá</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    )
-                                                                    : <></>}
+  if (!loading && !orders) return <div>  <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
+    <div className="flex flex-col items-center justify-center gap-2">
+      <div className="">
+        <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
+      </div>
+      <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
+    </div>
+  </div></div>
 
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="summary-wrapper">
-                                    <div className="summary-container h-300px w-100%   ">
-                                        <div className="summary-title flex inline-block justify-between px-5 py-2 rounded-xl  items-center">
-                                            <div className="title font-medium text-[18px] ">Tóm tắt đơn hàng</div>
-                                        </div>
-                                        <div className="summary grid gap-1 text-[15px] px-5 py-1">
-                                            <div className="summary-1 flex inline-block  justify-between gap-5">
-                                                <div className="summary-tag  text-gray-600  font-medium w-30">Tạm tính</div>
-                                                <div className="summary text-gray-600">
-                                                    {new Intl.NumberFormat("vi-VN", {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    }).format(bill.billTempPrice)}
-                                                </div>
-                                            </div>
-                                            <div className="summary-2 flex inline-block  justify-between  gap-5">
-                                                <div className="summary-tag  text-gray-600 font-medium w-30">Phí vận chuyển</div>
-                                                <div className="summary text-gray-600">
-                                                    {new Intl.NumberFormat("vi-VN", {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    }).format(bill.billTotalShippingPrice)}</div>
-                                            </div>
-                                            <div className="summary-3 flex inline-block  justify-between  gap-5">
-                                                <div className="summary-tag  text-gray-600 font-medium  w-30">Giảm giá</div>
-                                                <div className="summary text-gray-600">
-                                                    {new Intl.NumberFormat("vi-VN", {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    }).format(bill.billDiscountPrice)}</div>
-                                            </div>
-                                        </div>
-                                        <div className="summary-2 grid gap-1 text-[15px] py-2 border-t mx-5 ">
-                                            <div className="summary-3 flex inline-block  justify-between  text-gray-900 font-medium  gap-5">
-                                                <div className="summary-tag   w-30">Tổng tiền</div>
-                                                <div className="summary ">  {new Intl.NumberFormat("vi-VN", {
-                                                    style: "currency",
-                                                    currency: "VND",
-                                                }).format(bill.billTotalPrice)}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+  if (orderId) return <OrderDetail orderId={orderId} clearOrderId={clearOrderId}></OrderDetail>
 
-                            <div className="orderInfo-container  border-gray-100 px-1">
-                                <div className="orderInfo  ">
-                                    <div className="orderInfo-1-container flex inline-block justify-end items-center">
-                                        <div className="orderInfo-1-item h-100px  ">
-                                            <div className="orderStatus-container flex justify-end">
-                                                {((bill.billOrderStatus === "Hủy") || (bill.billOrderStatus === "Hoàn thành")) ? (
-                                                    <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
-                                                        <button onClick={() => reOrder(bill.billID)}>Mua lại</button>
-                                                    </div>
-                                                ) : <></>}
-                                                {bill.billOrderStatus === "Chờ duyệt" ? (
-                                                    <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
-                                                        <button onClick={() => cancelOrder(bill.billID)}>Hủy đơn</button>
-                                                    </div>
-                                                ) : <></>}
+  return (
+    <>
+      <div className="relative w-full overflow-x-auto border-t mt-5 pt-5">
+        {orders && orders.length > 0 ? (
+          <>
+            <table className="w-full text-sm text-left rounded-xl text-white dark:text-gray-400 bg-white shadow border">
+              <tbody>
+                {/* table heading */}
+                <tr className="text-[15px] text-gray-900 whitespace-nowrap px-2 border-b default-border-bottom justify-center">
+                  <td className="py-4 px-2 block whitespace-nowrap text-center">Đơn hàng</td>
+                  <td className="py-4 px-2 whitespace-nowrap text-center">Ngày mua</td>
+                  <td className="py-4 px-2 whitespace-nowrap text-center">Tổng tiền</td>
+                  <td className="py-4 px-2 whitespace-nowrap text-center">Trạng thái</td>
+                  <td className="py-4 px-2 whitespace-nowrap text-center">Phương thức</td>
+                  <td className="py-4 px-2 whitespace-nowrap text-center">Tùy chọn</td>
+                </tr>
+                {orders.map((order) => (
+                  <tr
+                    key={order.billID}
+                    className="text-sm border-b hover:bg-gray-100 hover:cursor-pointer leading-relaxed transform transition-all duration-300"
+                    onClick={() => setValue(order.billID)}
+                  >
+                    <td className="text-center py-4">
+                      <span className="text-qgray font-medium">#{order.billID}</span>
+                    </td>
+                    <td className="text-center py-4 px-2">
+                      <span className="text-sm text-qgray whitespace-nowrap">
+                        {order.createdDatetime}
+                      </span>
+                    </td>
+                    <td className="text-center py-4 px-2">
+                      <span className="text-qblack whitespace-nowrap px-2">
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(order.billTotalPrice)}
+                      </span>
+                    </td>
+                    <td className="text-center py-4 px-2">
+                      <span className="rounded text-green-700">
+                        {order.billOrderStatus}
+                      </span>
+                    </td>
+                    <td className="text-center py-4 px-2">
+                      <span className="text-sm text-qgray whitespace-nowrap">
+                        {order.billPaymentMethod}
+                      </span>
+                    </td>
+                    <td className="text-center py-4 px-2">
+                      <div className="text-cyan-800 text-[10px] font-bold text-center mx-1 min-w-[120px]">
+                        {order.billOrderStatus === "Hủy" || order.billOrderStatus === "Hoàn thành" ? (
+                          <button className="border border-cyan-800 shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              reOrder(order.billID);
+                            }}
+                          >
+                            Mua lại
+                          </button>
+                        ) : null}
+                        {order.billOrderStatus === "Chờ duyệt" ? (
+                          <button className="border border-cyan-800 shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              cancelOrder(order.billID);
+                            }} >
+                            Hủy đơn
+                          </button>
+                        ) : null}
+                        {order.billOrderStatus === "Đã giao" ? (
+                          <button className="border border-cyan-800 shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              confirmOrder(order.billID);
+                            }}
+                          >
+                            Xác nhận
+                          </button>
+                        ) : null}
+                        {order.billOrderStatus == null ? (
+                          <button className="h-[35px] w-[100%] pointer-events-none opacity-0">
+                            <span>Không thao tác</span>
+                          </button>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-                                                {bill.billOrderStatus === "Đã giao" && (
-                                                    <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
-                                                        <button onClick={() => confirmOrder(bill.billID)}>Xác nhận đã nhận hàng</button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div >
-                )
-            )
-                : (
-                    <>
-                        <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
-                            <div className="flex flex-col items-center justify-center gap-2">
-                                <div className="">
-                                    <img className="w-[88px] h-fit items-center" src="https://st3.depositphotos.com/5532432/17972/v/450/depositphotos_179728282-stock-illustration-web-search-flat-vector-icon.jpg" alt="" />
-                                </div>
-                                <div> <p className="text-base text-gray-400">Không có dữ liệu</p></div>
-                            </div>
-                        </div>
-                    </>
-                )}
-        </>
-    )
+          </>
+        ) : (
+          <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center gap-2">
+              <div className="">
+                <img className="w-[88px] h-fit items-center" src="https://st3.depositphotos.com/5532432/17972/v/450/depositphotos_179728282-stock-illustration-web-search-flat-vector-icon.jpg" alt="" />
+              </div>
+              <div> <p className="text-sm text-gray-400">Chưa có đơn hàng</p></div>
+            </div>
+          </div>
+        )
+        }
+      </div>
+    </>
+  );
 }

@@ -4,7 +4,7 @@ import { NavItems } from "../Auth/Profile/tabs/OrderTab";
 
 export default function OrderNavigation({ activeMenu, setActiveMenu }) {
   return (
-    <nav className="p-1 bg-gray-100 shadow md:items-center md:flex md:justify-center rounded-full">
+    <nav className="p-1 border-b bg-gray-100 shadow md:items-center md:flex md:justify-center rounded-full">
       {NavItems.map((status) => (
         <ul key={status.name}>
           <li
