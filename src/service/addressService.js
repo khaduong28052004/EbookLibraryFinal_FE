@@ -1,8 +1,11 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://online-gateway.ghn.vn/shiip/public-api/master-data";
-const API_JAVA = "http://localhost:8080/api/v1/user/rest/address";
-const token = "fef32ec4-536b-11ef-9303-6e4f5409b172";
+// const API_BASE_URL = "https://online-gateway.ghn.vn/shiip/public-api/master-data";
+// const API_JAVA = "http://localhost:8080/api/v1/user/rest/address";
+// const token = "fef32ec4-536b-11ef-9303-6e4f5409b172";
+let API_BASE_URL = import.meta.env.VITE_API_BASE_URL_ADDRESS;
+let API_JAVA = import.meta.env.VITE_API_JAVA;
+let token = import.meta.env.VITE_TOKEN;
 
 // Load provinces
 export const loadProvinces = async () => {
