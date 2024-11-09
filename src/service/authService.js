@@ -12,6 +12,10 @@ const AuthService = {
     const url = "/api/v1/register"; // Update if the endpoint is for registration
     return axiosAuth("", "post", url, { username, password });
   },
+  GoogleLogin: (email)=>{
+    const url = "/api/v1/user/loginGoogle";
+    return  axiosAuth("","post",url, email);
+  },
   setItem: (response) => {
     // Tạo đối tượng user từ các thuộc tính của response
     console.log("USEERRRRRRRRR", response);
@@ -40,6 +44,25 @@ const AuthService = {
     const data = sessionStorage.getItem(key);
     return data;
   },
+  register: (data) => {
+    const url = "/api/v1/user/register";
+    return axiosAuth("", "post", url, data);
+  },
+  UpdatePass: (id, repass, oldpass) => {
+    const url = `/api/v1/user/updatePass?id=${encodeURIComponent(id)}&repass=${encodeURIComponent(repass)}&oldpass=${encodeURIComponent(oldpass)}`;
+    return axiosAuth("null", "post", url);
+  },
+  Otp: ({email}) => {
+    const url = "/api/v1/otp/generate";
+    return axiosAuth("null", "post", url,{email});
+  },
+  verifyOTP: (data) => {
+    const url = "/api/v1/otp/verify";
+    return axiosAuth("null", "post", url,data);
+  },
+
+
+  
 };
 
 export default AuthService;

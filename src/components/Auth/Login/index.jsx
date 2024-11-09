@@ -5,61 +5,69 @@ import Thumbnail from "./Thumbnail";
 import AuthService from "../../../service/authService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import LoginGG from "./loginGG";
+import FaceBookSingIn from "./FaceBookSingIn";
+// import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
+// import { EyeIcon,EyeSlashIcon } from "@heroicons/react/24/outline";
+// import EyeIcon
+// import { EyeIcon, EyeSlashIcon } from "";
+// import { EyeIcon, EyeOffIcon } from "@heroicons/react/24/outline";
+
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [checked, setChecked] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
   const rememberMe = () => setChecked(!checked);
 
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      // const response = await axios.post("/api/v1/login", {
       const response = await AuthService.login({
         username,
         password,
       });
       if (response.status) {
-        console.log("lỉ",response);
+        setTimeout(() => {
+          if (response.data.roles === "USER") {
+            navigate('/');
+          } else if (response.data.roles === "SELLER") {
+            navigate('/seller');
+          } else {
+            navigate('/admin');
+          }
+        }, 2000);
         toast.success("Đăng nhập thành công!");
-      }else{
-        console.log("ly",response);
-        toast.success("Đăng nhập thành công!");
+      } else {
+        toast.error("Đăng nhập thất bại vui lòng kiểm tra lại!");
       }
-      
-      // Assuming AuthService handles setting the token or user data in local storage
       AuthService.setItem(response.data);
-
-      console.log("Login successful:", response.data);
-      // Add navigation logic or additional handling as needed
     } catch (error) {
-      if (error.response) {
-        toast.error("lổ", error.response.error);
-        console.error('Error Response:', error.response.error);
-    } else {
-        console.error('General Error:', error.message);
-    }
-      // if (error.response) {
-      //   toast.error("lỗi rồi!");
-      //   setError(error.response.data || "Login failed. Please check your credentials.");
-      //   console.error("Error Response:", error.response.data);
-      // } else {
-      //   setError("Network error. Please try again later.");
-      //   toast.error("lỗi rồi!");
-      //   console.error("General Error:", error.message);
-      // }
+      toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
     }
   };
 
   return (
-
     <Layout childrenClasses="pt-0 pb-0">
-      <ToastContainer />
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{ zIndex: 9999 }} // Ensure the toast container has the highest z-index
+      />
       <div className="login-page-wrapper w-full py-10">
         <div className="container-x mx-auto">
           <div className="lg:flex items-center relative">
@@ -86,16 +94,32 @@ export default function Login() {
                       inputHandler={(e) => setUsername(e.target.value)}
                     />
                   </div>
-                  <div className="input-item mb-5">
+                  <div className="input-item mb-5 relative">
                     <InputCom
                       placeholder="Password"
                       label="Password*"
                       name="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       inputClasses="h-[50px]"
                       value={password}
                       inputHandler={(e) => setPassword(e.target.value)}
-                    />
+                    >
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                        </svg>
+                          : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                          </svg>
+                        }
+                      </button>
+                    </InputCom>
+
                   </div>
                   {error && (
                     <div className="text-red-500 text-sm mb-5">
@@ -113,15 +137,27 @@ export default function Login() {
                       </button>
                       <span onClick={rememberMe} className="text-base text-black">Remember Me</span>
                     </div>
-                    <a href="/forgot-password" className="text-base text-qyellow">Forgot Password</a>
+                    <Link to="/forgot-password" className="text-base text-qyellow">Forgot Password</Link>
                   </div>
                   <button type="submit" className="black-btn mb-6 text-sm text-white w-full h-[50px] font-semibold flex justify-center bg-purple items-center">
                     Log In
                   </button>
                 </form>
-                <a href="#" className="w-full border border-qgray-border h-[50px] flex space-x-3 justify-center bg-[#FAFAFA] items-center">
-                  <span>Continue with Google</span>
-                </a>
+                <div className="social-login-buttons flex space-x-4 mt-6">
+                  <button className=" w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
+                    <GoogleOAuthProvider clientId="802515130057-2djim3amjrd5pinc6rmspgid56l1rkdl.apps.googleusercontent.com">
+                      <LoginGG />
+                    </GoogleOAuthProvider>
+                  </button>
+                  <h1>||</h1>
+                  <button className=" w-full flex justify-center items-center text-bg-[#3b5998] font-medium rounded-md">
+                    <FaceBookSingIn />
+                  </button>
+                </div>
+                <div className="social-login-buttons flex space-x-4 mt-6">
+
+                  <Link to="/signup" className="text-base text-qyellow">signup</Link>
+                </div>
               </div>
             </div>
             <Thumbnail />

@@ -7,7 +7,7 @@ import ProductFour from '../../../images/product/product-04.png';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
-import ModalSanPham from './ModalSanPham';
+// import ModalSanPham from './ModalSanPham';
 const productData: Product[] = [
   {
     image: ProductOne,
@@ -289,13 +289,13 @@ const TableTwo = () => {
         buttonBgColor={statusProduct ? 'bg-red-600' : 'bg-yellow-600'}
       />
 
-      <ModalSanPham
+      {/* <ModalSanPham
         open={isOpenModalSP}
         setOpen={setIsOpenModalSP}
         title="Thêm Sản Phẩm Mới"
         confirmText="Lưu"
         cancelText="Hủy"
-      />
+      /> */}
     </div>
   );
 };

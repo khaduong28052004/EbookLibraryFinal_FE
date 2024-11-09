@@ -1,27 +1,50 @@
 import React, { Dispatch, SetStateAction, ReactNode, FormEvent, useState } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
-import SelectGroupOne from '../../../components/Forms/SelectGroup/SelectGroupOne';
+import accountService from '../../../service/admin/Account';
 
-interface ModalProps {
-    open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>;
-    title: string;
-    confirmText?: string;
-    cancelText?: string;
-}
-
-const ModalSanPham: React.FC<ModalProps> = ({
+const ModalSanPham = ({
     open,
     setOpen,
     title,
     confirmText = 'Confirm',
     cancelText = 'Cancel',
 }) => {
-    const handleSubmit = (e: FormEvent) => {
+    const initialFormData = {
+        username: '',
+        password: '',
+        fullname: '',
+        gender: '',
+        email: '',
+        phone: '',
+    };
+    const [formData, setFormData] = useState(initialFormData);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: name === "gender" ? value === "true" : value,
+        }));
+    };
+
+    const postNhanVien = async () => {
+        try {
+            const response = await accountService.post({ data: formData });
+            console.log("Code: " + response.data.result.code);
+            console.log("Data: " + response.data.result.content);
+            findAllAccount();
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }
+
+    const handleSubmit = (e) => {
+        console.log("formData.gender " + formData.gender);
+        postNhanVien(formData);
+        setFormData(initialFormData);
         e.preventDefault(); // Chặn hành vi reload trang khi submit form
         setOpen(false); // Đóng modal sau khi submit
     };
-
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
@@ -39,78 +62,109 @@ const ModalSanPham: React.FC<ModalProps> = ({
                                 <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
-                                            Tên Sản Phẩm
+                                            Tên Tài khoản
                                         </label>
                                         <input
+                                            name="username"
+                                            value={formData.username}
+                                            onChange={handleChange}
                                             type="text"
-                                            placeholder="Tên sản phẩm..."
-                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                        />
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                        <SelectGroupOne />
-                                    </div>
-                                </div>
-
-                                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                        <label className="mb-2.5 block text-black dark:text-white">
-                                            Giá
-                                        </label>
-                                        <input
-                                            type="number"
-                                            placeholder="Giá..."
+                                            placeholder="Tên Tài khoản..."
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
 
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
-                                            Số Lượng
+                                            Password
                                         </label>
                                         <input
-                                            type="number"
-                                            placeholder="Số lượng..."
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            type="password"
+                                            placeholder="password..."
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
-                                            Giảm Giá
+                                            Họ và tên
                                         </label>
                                         <input
-                                            type="number"
-                                            placeholder="Giảm giá..."
+                                            name="fullname"
+                                            value={formData.fullname}
+                                            onChange={handleChange}
+                                            type="text"
+                                            placeholder="Họ và tên..."
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+                                    <div className="w-full xl:w-1/2">
+                                        <label className="mb-2.5 block text-black dark:text-white">
+                                            Số điện thoại
+                                        </label>
+                                        <input
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            type="text"
+                                            placeholder="Số điện thoại..."
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                                    <div className="w-full xl:w-1/2">
+                                        <label className="mb-2.5 block text-black dark:text-white">
+                                            Email
+                                        </label>
+                                        <input
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            type="email"
+                                            placeholder="Email..."
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
 
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
-                                            Khối lượng
+                                            Giới tính
                                         </label>
-                                        <input
-                                            type="number"
-                                            placeholder="Khối lượng..."
-                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                        />
+                                        <label className="flex items-center">
+                                            <input
+                                                name="gender"
+                                                value="false"
+                                                checked={formData.gender === false}
+                                                onChange={handleChange}
+                                                type="radio"
+                                                className="mr-2"
+                                            />
+                                            Nữ
+                                        </label>
+
+                                        <label className="flex items-center">
+                                            <input
+                                                name="gender"
+                                                value="true"
+                                                checked={formData.gender === true}
+                                                onChange={handleChange}
+                                                type="radio"
+                                                className="mr-2"
+                                            />
+                                            Nam
+                                        </label>
                                     </div>
                                 </div>
 
-                                <div className="mb-6">
-                                    <label className="mb-2.5 block text-black dark:text-white">
-                                        Mô tả
-                                    </label>
-                                    <textarea
-                                        rows={4}
-                                        placeholder="Nội dung..."
-                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                    ></textarea>
-                                </div>
+
                             </div>
 
                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
