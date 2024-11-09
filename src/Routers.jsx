@@ -22,6 +22,8 @@ import SingleProductPage from "./components/SingleProductPage/index.jsx";
 import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
+import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
+import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
 
 export default function Routers() {
   return (
@@ -52,6 +54,8 @@ export default function Routers() {
       <Route exact path="/become-saller" element={<BecomeSaller />} />
       <Route exact path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route exact path="/terms-condition" element={<TermsCondition />} />
+      <Route exact path="/forgot-password" element={<ForgotPassword />} />
+      <Route exact path="/change-password/*" element={<UpdatePassword />} />
       <Route exact path="*" element={<FourZeroFour />} />
     </Routes>
   );

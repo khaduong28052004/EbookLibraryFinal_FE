@@ -18,8 +18,11 @@ const AuthService = {
   },
   setItem: (response) => {
     // Tạo đối tượng user từ các thuộc tính của response
+    console.log("USEERRRRRRRRR", response);
     const user = {
       username: response.username || null,
+      fullname: response.fullname,
+      avatar: response.avatar,
       id_account: response.id_account,
       avatar: response.avatar,
       roles: response.roles,
@@ -41,6 +44,23 @@ const AuthService = {
     const data = sessionStorage.getItem(key);
     return data;
   },
+  register: (data) => {
+    const url = "/api/v1/user/register";
+    return axiosAuth("", "post", url, data);
+  },
+  UpdatePass: (id, repass, oldpass) => {
+    const url = `/api/v1/user/updatePass?id=${encodeURIComponent(id)}&repass=${encodeURIComponent(repass)}&oldpass=${encodeURIComponent(oldpass)}`;
+    return axiosAuth("null", "post", url);
+  },
+  Otp: ({email}) => {
+    const url = "/api/v1/otp/generate";
+    return axiosAuth("null", "post", url,{email});
+  },
+  verifyOTP: (data) => {
+    const url = "/api/v1/otp/verify";
+    return axiosAuth("null", "post", url,data);
+  },
+
 
     //CÂP NHẬT TK
     updateAccount: (id, data) => {

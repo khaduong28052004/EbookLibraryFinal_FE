@@ -18,7 +18,6 @@ import ThongKeKhachHangAdmin from "./pages/Admin/ThongKeKhachHangAdmin"
 import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
 import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
-import ThongKeDanhGiaAdmin from "./pages/Admin/ThongKeDanhGiaAdmin"
 export default function RouterAdmins() {
   return (
     <DefaultLayout>
@@ -33,7 +32,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/nhanVien"
+          path="/quanLy/nhanVien"
           element={
             <>
               <PageTitle title="Nhân Viên" />
@@ -42,7 +41,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/voucher"
+          path="/quanLy/voucher"
           element={
             <>
               <PageTitle title="Voucher" />
@@ -51,7 +50,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/product"
+          path="/quanLy/product"
           element={
             <>
               <PageTitle title="Sản Phẩm" />
@@ -60,7 +59,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/flashSale"
+          path="/quanLy/flashSale"
           element={
             <>
               <PageTitle title="Flash Sale" />
@@ -69,7 +68,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/khachHang"
+          path="/quanLy/khachHang"
           element={
             <>
               <PageTitle title="Khách Hàng" />
@@ -78,7 +77,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/shop"
+          path="/quanLy/shop"
           element={
             <>
               <PageTitle title="Shop" />
@@ -87,7 +86,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/report"
+          path="/quanLy/report"
           element={
             <>
               <PageTitle title="Report" />
@@ -96,7 +95,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/phanQuyen"
+          path="/quanLy/phanQuyen"
           element={
             <>
               <PageTitle title="Phân Quyền" />
@@ -105,7 +104,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/danhMuc"
+          path="/quanLy/danhMuc"
           element={
             <>
               <PageTitle title="Danh Mục" />
@@ -146,15 +145,6 @@ export default function RouterAdmins() {
             <>
               <PageTitle title="Thống Kê Sản Phẩm" />
               <ThongKeSanPhamAdmin />
-            </>
-          }
-        />
-        <Route
-          path="/thongKe/danhGia"
-          element={
-            <>
-              <PageTitle title="Thống Kê Đánh Giá" />
-              <ThongKeDanhGiaAdmin />
             </>
           }
         />

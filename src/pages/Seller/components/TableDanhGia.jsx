@@ -1,61 +1,65 @@
-import React, { useState } from 'react';
-import { Product } from '../../../types/product';
-import ProductOne from '../..//../images/product/product-01.png';
-import ProductTwo from '../../../images/product/product-02.png';
-import ProductThree from '../../../images/product/product-03.png';
-import ProductFour from '../../../images/product/product-04.png';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import React, { useEffect, useState } from 'react';
+import { ArrowLongDownIcon, ArrowLongUpIcon, StarIcon } from '@heroicons/react/24/solid'
+import { ArrowPathIcon, TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
-import ModalSanPham from './ModalSanPham';
-const productData: Product[] = [
-  {
-    image: ProductOne,
-    name: 'Apple Watch Series 7',
-    category: 'Electronics',
-    price: 296,
-    sold: 22,
-    status: true,
-  },
-  {
-    image: ProductTwo,
-    name: 'Macbook Pro M1',
-    category: 'Electronics',
-    price: 546,
-    sold: 12,
-    status: false,
-  },
-  {
-    image: ProductThree,
-    name: 'Dell Inspiron 15',
-    category: 'Electronics',
-    price: 443,
-    sold: 64,
-    status: true,
-  },
-  {
-    image: ProductFour,
-    name: 'HP Probook 450',
-    category: 'Electronics',
-    price: 499,
-    sold: 72,
-    status: false,
-  },
-];
+import ModalSanPham from './ModalDanhGia';
+import DanhGiaService from '../../../service/Seller/danhGiaService';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusProduct, setStatusProduct] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+  const [listDanhGia, setListDanhGia] = useState([]);
+  const [search, setSearch] = useState("");
+  const [dataPhanHoi, setDataPhanHoi] = useState({
+    idParent: null,
+    content: '',
+    account: null,
+    product: null
+  });
+  const [isStatus, setIsStatus] = useState(false);
+
+  useEffect(() => {
+    getList();
+  }, [search]);
+  useEffect(() => {
+    if (isStatus) {
+      getList();
+      toast.success("Phản Hồi Đánh Giá Thành Công");
+    }
+  }, [search, isStatus]);
+
+  const getList = async () => {
+    const response = await DanhGiaService.getData(search);
+    console.log(response);
+    setListDanhGia(response.data.result.content);
+  }
   const handleConfirm = () => {
     setIsOpen(false);
   };
+  const handSearch = (event) => {
+    const value = event.target.value;
+    setSearch(value);
+  }
+
+  const openModal = (danhGia) => {
+    setDataPhanHoi({
+      id: danhGia.id,
+      content: '',
+      account: danhGia.account.id,
+      product: danhGia.product.id
+    });
+    setIsOpenModalSP(true);
+    setIsStatus(false);
+  }
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="py-6 flex flex-col md:flex-row justify-between px-4 md:px-6 xl:px-7.5 space-y-4 md:space-y-0">
+      <ToastContainer />
+      <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
         <form action="https://formbold.com/s/unique_form_id" method="POST">
-          <div className="relative pt-3 flex items-center space-x-4">
+          <div className="relative pt-3">
             <button className="absolute left-0 top-6 -translate-y-1/2">
               <svg
                 className="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary"
@@ -79,35 +83,22 @@ const TableTwo = () => {
                 />
               </svg>
             </button>
-
-            {/* Input Start Date */}
             <input
-              type="date"
-              placeholder="Start Date"
-              name="startDate"
-              className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-            />
-
-            {/* Arrow Icon from Heroicons */}
-            <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
-
-            {/* Input End Date */}
-            <input
-              type="date"
-              placeholder="End Date"
-              name="endDate"
-              className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+              type="text"
+              placeholder="Tìm kiếm..."
+              onChange={handSearch}
+              className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
             />
           </div>
         </form>
-        <div className="flex items-center justify-between space-x-4">
+        <div className="flex items-center space-x-2">
           <button
-            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4 md:mb-0"
+            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
           </button>
           <button
-            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4  md:mb-0"
+            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             PDF
           </button>
@@ -117,12 +108,11 @@ const TableTwo = () => {
       <table className="w-full border-collapse border border-stroke dark:border-strokedark">
         <thead>
           <tr className="border-t border-stroke dark:border-strokedark">
-            <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1">
-                <span className="text-sm text-black dark:text-white">Product Name</span>
+                <span className="text-sm text-black dark:text-white">Khách Hàng</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -130,7 +120,7 @@ const TableTwo = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white ">Category</span>
+                <span className="text-sm text-black dark:text-white ">Sản Phẩm</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -138,7 +128,14 @@ const TableTwo = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Price</span>
+                <span className="text-sm text-black dark:text-white">Hình Ảnh Đánh Giá</span>
+                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+              </div>
+            </th>
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+              <div className="flex items-center gap-1 hidden xl:flex">
+                <span className="text-sm text-black dark:text-white">Nội Dung Đánh Giá</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -146,66 +143,53 @@ const TableTwo = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden lg:flex">
-                <span className="text-sm text-black dark:text-white">Status</span>
+                <span className="text-sm text-black dark:text-white">Số Sao</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
             </th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <span className="text-sm text-black dark:text-white truncate w-24">Actions</span>
+              <span className="text-sm text-black dark:text-white truncate w-24"></span>
             </th>
           </tr>
         </thead>
 
         <tbody>
-          {productData.map((product, index) => (
+          {listDanhGia.map((danhGia, index) => (
             <tr key={index} className="border-t border-stroke dark:border-strokedark">
-              <td className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                {
-                  product.status ? (
-                    <ChevronRightIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
-                  ) : (
-                    <ChevronDownIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
-                  )
-                }
-              </td>
+
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 {index + 1}
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                <img className="h-12.5 w-15 rounded-md" src={product.image} alt="Product" />
-                <p className="text-sm text-black dark:text-white truncate w-24">{product.name}</p>
+                <p className="text-sm text-black dark:text-white truncate w-24">{danhGia.account.fullname}</p>
               </td>
-
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 <div className="flex items-center gap-1 hidden xl:flex">
-
-                  {product.category}
+                  {danhGia.product.name}
+                </div>
+              </td>
+              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                <div className="flex items-center gap-1 hidden xl:flex">
+                  {danhGia.imageEvalues.map((image) => {
+                    <img className="h-12.5 w-15 rounded-md" src={image.name} alt="Evalue" />
+                  })}
                 </div>
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                 <div className="flex items-center gap-1 hidden xl:flex">
-                  ${product.price}
+                  {danhGia.content}
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
+              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                 <div className="flex items-center gap-1 hidden lg:flex">
-
-                  <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${product.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                    {product.status ? 'Hoạt Động' : 'Đã Ngừng'}
-                  </span>
+                  {danhGia.star}/5 <StarIcon className='w-5 h-5 text-yellow-500' />
                 </div>
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                 <div className="flex space-x-3.5">
-                  <button>
-                    <EyeIcon className='w-5 h-5  text-black hover:text-blue-600  dark:text-white' />
-                  </button>
-                  <button onClick={() => { setIsOpen(true); setStatusProduct(product.status) }}>
-                    {product.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
-                  </button>
-                  <button onClick={() => setIsOpenModalSP(true)}>
+                  <button onClick={() => openModal(danhGia)}>
                     <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
                   </button>
                 </div>
@@ -292,9 +276,12 @@ const TableTwo = () => {
       <ModalSanPham
         open={isOpenModalSP}
         setOpen={setIsOpenModalSP}
-        title="Thêm Sản Phẩm Mới"
-        confirmText="Lưu"
+        title="Phản Hồi Khách Hàng"
+        confirmText="Gửi"
         cancelText="Hủy"
+        data={dataPhanHoi}
+        status={isStatus}
+        setStatus={setIsStatus}
       />
     </div>
   );
