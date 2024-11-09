@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import Evaluate from '../Evaluate/evaluate';
 import BeatLoader from "react-spinners/BeatLoader";
 import { toast, ToastContainer } from 'react-toastify';
+// npm install --save react-spinners
 
 
 export default function OrderDetail({ orderId, clearOrderId }) {

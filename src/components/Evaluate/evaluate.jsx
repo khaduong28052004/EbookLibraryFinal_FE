@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { Fragment } from "react";
 import { toast, ToastContainer } from 'react-toastify';
+// npm install --save react-spinners
 
 export default function Evaluate({ orderDetailId, productId, clearOrderDetailId, isSuccessfully }) {
     // const [order, setOrder] = useState();
