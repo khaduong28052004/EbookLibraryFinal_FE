@@ -14,8 +14,11 @@ const AuthService = {
   },
   setItem: (response) => {
     // Tạo đối tượng user từ các thuộc tính của response
+    console.log("USEERRRRRRRRR", response);
     const user = {
       username: response.username || null,
+      fullname: response.fullname,
+      avatar: response.avatar,
       id_account: response.id_account,
       avatar: response.avatar,
       roles: response.roles,
