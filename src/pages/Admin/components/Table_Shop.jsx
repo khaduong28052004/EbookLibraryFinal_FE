@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import accountService from '../../../service/admin/Account';
@@ -15,6 +15,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
+    const [isStatus, setStatus] = useState(true);
     const [statusentity, setStatusentity] = useState(false);
     const handleConfirm = () => {
         setIsOpen(false);
@@ -70,7 +71,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
         }
     }
     // const { toPDF, targetRef } = usePDF({ filename: 'Thống kê doanh thu admin.pdf' });
-
+    const toggleExpand = (id) => {
+        setExpandedRows(prevState => 
+            prevState.includes(id) ? prevState.filter(rowId => rowId !== id) : [...prevState, id]
+        );
+    };
+    
     const handleSubmit = (e) => {
         e.preventDefault();
     };
@@ -120,7 +126,13 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                     >
                         Excel
                     </button>
-     
+                    {/* <button
+            onClick={() => toPDF()}
+            type="button"
+            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+          >
+            PDF
+          </button> */}
                 </form>
 
 
@@ -129,28 +141,16 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
             <table className="w-full border-collapse border border-stroke dark:border-strokedark">
                 <thead>
                     <tr className="border-t border-stroke dark:border-strokedark">
+                        <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("username");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th>
-
                         <th
                             onClick={() => {
                                 setSortColumn("fullname");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white ">Họ và tên</span>
+                            <div className="flex items-center gap-1">
+                                <span className="text-sm text-black dark:text-white">Tên shop</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -158,12 +158,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("gender");
+                                setSortColumn("sumProduct");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white">Giới tính</span>
+                                <span className="text-sm text-black dark:text-white">Sản phẩm</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -171,12 +171,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("email");
+                                setSortColumn("sumFollower");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Email</span>
+                                <span className="text-sm text-black dark:text-white">Foller</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -184,16 +184,52 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("phone");
+                                setSortColumn("avgStar");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Số điện thoại</span>
+                                <span className="text-sm text-black dark:text-white">Đáng giá</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
+                        <th
+                            onClick={() => {
+                                setSortColumn("sumReport");
+                                setSortBy(!sortBy);
+                            }}
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden lg:flex">
+                                <span className="text-sm text-black dark:text-white">Report</span>
+                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                            </div>
+                        </th>
+                        {/* <th
+                            onClick={() => {
+                                setSortColumn("doanhThu");
+                                setSortBy(!sortBy);
+                            }}
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden lg:flex">
+                                <span className="text-sm text-black dark:text-white">Doanh thu</span>
+                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                            </div>
+                        </th>
+                        <th
+                            onClick={() => {
+                                setSortColumn("doanhSo");
+                                setSortBy(!sortBy);
+                            }}
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden lg:flex">
+                                <span className="text-sm text-black dark:text-white">Doanh số</span>
+                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                            </div>
+                        </th> */}
                         <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Trạng thái</span>
@@ -208,35 +244,55 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 <tbody>
                     {entityData?.content?.map((entity, index) => (
                         <tr key={index} className="border-t border-stroke dark:border-strokedark">
+                            <td
+                                onClick={() => setStatus(!isStatus)}
+                                className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                {
+                                    isStatus ? (
+                                        <ChevronRightIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
+                                    ) : (
+                                        <ChevronDownIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
+                                    )
+                                }
+                            </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 {index + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                 <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
+                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.shopName}</p>
                             </td>
-
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.fullname}
+                                    {entity.sumProduct}
                                 </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.gender ? 'Nam' : 'Nữ'}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.email}
+                                    {entity.sumFollower}
                                 </div>
                             </td>
 
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.phone}
+                                    {entity.avgStar}
                                 </div>
                             </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.sumReport}
+                                </div>
+                            </td>
+                            {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.doanhThu}
+                                </div>
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.doanhSo}
+                                </div>
+                            </td> */}
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
                                 <div className="flex items-center gap-1 hidden lg:flex">
                                     <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
@@ -252,6 +308,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                 </div>
                             </td>
                         </tr>
+                        
                     ))}
                 </tbody>
             </table>
