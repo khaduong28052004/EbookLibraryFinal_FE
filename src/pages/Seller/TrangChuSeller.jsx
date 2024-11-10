@@ -1,17 +1,41 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import CardDataStats from '../../components/CardDataStats';
-import ChartOne from '../../components/Charts/ChartOne';
+import ChartOne from './components/ChartOne';
 import ChartThree from '../../components/Charts/ChartThree';
-import ChartTwo from '../../components/Charts/ChartTwo';
-import ChatCard from '../../components/Chat/ChatCard';
-import MapOne from '../../components/Maps/MapOne';
-import TableOne from '../../components/Tables/TableOne';
+import HomeService from "../../service/Seller/homeService";
 
-const ECommerce: React.FC = () => {
+const TrangChuSeller = () => {
+  const [listYears, setListYears] = useState([]);
+  const [datas, setDatas] = useState([]);
+  useEffect(() => {
+    getYears();
+  }, []);
+  const getData = async (year) => {
+    try {
+      const response = await HomeService.getData(year);
+      console.log("Data:", response.data.result);
+      setDatas(response.data.result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const getYears = async () => {
+    try {
+      const response = await HomeService.getYears();
+      console.log("Years", response.data.result);
+      setListYears(response.data.result);
+      getData(response.data.result[0].year);
+    } catch (error) {
+      console.error("Error fetching years:", error);
+    }
+  };
+
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+        <CardDataStats title="Đơn Chờ Duyệt" total={datas.donChoDuyet} rate="0.43%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -30,7 +54,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
+        <CardDataStats title="Doanh Số" total={datas.doanhSo} rate="4.35%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -53,7 +77,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
+        <CardDataStats title="Doanh Thu" total={datas.doanhThu} rate="2.59%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -72,7 +96,7 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats title="Lượt Yêu Thích" total={datas.luotYeuThich} rate="0.95%" levelDown>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -98,14 +122,11 @@ const ECommerce: React.FC = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <ChartOne />
-        {/* <ChartTwo /> */}
+        <ChartOne data={datas} years={listYears} getData={getData}/>
         <ChartThree />
-        {/* <MapOne /> */}
-
       </div>
     </>
   );
 };
 
-export default ECommerce;
+export default TrangChuSeller;

@@ -60,7 +60,7 @@ export default function RouterSellers() {
           }
         />
         <Route
-          path="/danhGia"
+          path="/quanLy/danhGia"
           element={
             <>
               <PageTitle title="Đánh Giá" />

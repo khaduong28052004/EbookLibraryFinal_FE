@@ -24,6 +24,8 @@
     "aos": "^2.3.4",
     "apexcharts": "^3.41.0",
     "axios": "^1.7.7",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.5",
     "firebase": "^11.0.1",
     "flatpickr": "^4.6.13",
     "headlessui": "^0.0.0",
@@ -44,7 +46,8 @@
     "react-toastify": "^9.1.3",
     "slick-carousel": "^1.8.1",
     "sort-by": "^0.0.2",
-    "tailadmin-react-free": "file:"
+    "tailadmin-react-free": "file:",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.17",
