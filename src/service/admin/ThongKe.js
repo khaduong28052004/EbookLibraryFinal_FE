@@ -30,6 +30,34 @@ const Thongke = {
         console.log(token);
         console.log(url);
         return axiosAuth(token, "get", url);
+    },
+    bill: ({ dateStart, dateEnd, orderStatusId, currentPage, size, sortColumn, sortBy }) => {
+        if (sortBy == null || sortBy == undefined) {
+            sortBy = '';
+        } else if (sortColumn == null || sortColumn == undefined) {
+            sortColumn = '';
+        } else {
+            sortBy = sortBy;
+            sortColumn = sortColumn;
+        }
+        const url = `/api/v1/admin/orderstatistacal/bill?dateStart=${dateStart}&dateEnd=${dateEnd}&orderStatusId=${orderStatusId}&page=${currentPage}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}`;
+        console.log(token);
+        console.log(url);
+        return axiosAuth(token, "get", url);
+    },
+    khachHang: ({ dateStart, dateEnd, searchItem, option, currentPage, size, sortColumn, sortBy }) => {
+        if (sortBy == null || sortBy == undefined) {
+            sortBy = '';
+        } else if (sortColumn == null || sortColumn == undefined) {
+            sortColumn = '';
+        } else {
+            sortBy = sortBy;
+            sortColumn = sortColumn;
+        }
+        const url = `/api/v1/admin/orderstatistacal/account?dateStart=${dateStart}&dateEnd=${dateEnd}&search=${searchItem}&option=${option}&page=${currentPage}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}`;
+        console.log(token);
+        console.log(url);
+        return axiosAuth(token, "get", url);
     }
 
 }
