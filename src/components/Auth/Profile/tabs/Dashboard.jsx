@@ -1,49 +1,91 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import AuthService from "../../../../service/authService";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 export default function Dashboard() {
+  const [index1, setIndex1] = useState(0);
+  const [index2, setIndex2] = useState(0);
+  const [index3, setIndex3] = useState(0);
+  const [user, setUser] = useState({});
+  const [formData, setFormData] = useState({});
+  useEffect(() => {
+    const user = sessionStorage.getItem("user");
+    if (user) {   // Parse the JSON string back into an object if it exists
+      setUser(JSON.parse(user));
+    };
+    const idaccount = sessionStorage.getItem("id_account");
+    loadDATA(1, idaccount, setIndex1); // Load data for index1
+    loadDATA(2, idaccount, setIndex2); // Load data for index2
+    loadDATA(1, idaccount, setIndex3); // Load data for index3
+    fetchData(idaccount);
+  }, []);
+
+  const fetchData = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/user/${id}`);
+      const userData = response.data;
+      console.log("Fetched User Data:", userData);
+      setFormData(userData);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }
+  const loadDATA = async (ID, IDACCOUNT, setIndexFunction) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/user/bill/countOder/${ID}/${IDACCOUNT}`);
+      console.log("Data received:", response.data.quantity);
+      setIndexFunction(response.data.quantity);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   return (
     <>
       <div className="welcome-msg w-full">
         <div>
-          <p className="text-qblack text-lg">Hello, Shovo</p>
+          <p className="text-qblack text-lg">Chào,  {user ? user.fullname : "userEX"}</p>
           <h1 className="font-bold text-[24px] text-qblack">
-            Welcome to your Profile
+            Chào bạn đến với thông tin của bạn
           </h1>
         </div>
       </div>
       <div className="quick-view-grid w-full flex justify-between items-center mt-3 ">
-        <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
-          <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
-            <span>
-              <svg
-                width="36"
-                height="37"
-                viewBox="0 0 36 37"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M32.4473 8.03086C32.482 8.37876 32.5 8.73144 32.5 9.08829C32.5 14.919 27.7564 19.6625 21.9258 19.6625C16.0951 19.6625 11.3516 14.919 11.3516 9.08829C11.3516 8.73144 11.3695 8.37876 11.4042 8.03086H8.98055L8.05537 0.628906H0.777344V2.74375H6.18839L8.56759 21.7774H34.1868L35.8039 8.03086H32.4473Z"
-                  fill="#FFBB38"
-                />
-                <path
-                  d="M9.09669 26.0074H6.06485C4.31566 26.0074 2.89258 27.4305 2.89258 29.1797C2.89258 30.9289 4.31566 32.352 6.06485 32.352H6.24672C6.12935 32.6829 6.06485 33.0386 6.06485 33.4094C6.06485 35.1586 7.48793 36.5816 9.23711 36.5816C11.4247 36.5816 12.9571 34.4091 12.2274 32.352H22.1081C21.377 34.413 22.9157 36.5816 25.0985 36.5816C26.8476 36.5816 28.2707 35.1586 28.2707 33.4094C28.2707 33.0386 28.2061 32.6829 28.0888 32.352H30.3856V30.2371H6.06485C5.48178 30.2371 5.00742 29.7628 5.00742 29.1797C5.00742 28.5966 5.48178 28.1223 6.06485 28.1223H33.4407L33.9384 23.8926H8.83233L9.09669 26.0074Z"
-                  fill="#FFBB38"
-                />
-                <path
-                  d="M21.9262 17.5477C26.5907 17.5477 30.3856 13.7528 30.3856 9.08829C30.3856 4.42378 26.5907 0.628906 21.9262 0.628906C17.2616 0.628906 13.4668 4.42378 13.4668 9.08829C13.4668 13.7528 17.2617 17.5477 21.9262 17.5477ZM20.8688 5.91602H22.9836V8.6503L24.7886 10.4554L23.2932 11.9508L20.8687 9.5262V5.91602H20.8688Z"
-                  fill="#FFBB38"
-                />
-              </svg>
+        <Link to="/profile#order">
+          <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
+            <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
+              <span>
+                <svg
+                  width="36"
+                  height="37"
+                  viewBox="0 0 36 37"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M32.4473 8.03086C32.482 8.37876 32.5 8.73144 32.5 9.08829C32.5 14.919 27.7564 19.6625 21.9258 19.6625C16.0951 19.6625 11.3516 14.919 11.3516 9.08829C11.3516 8.73144 11.3695 8.37876 11.4042 8.03086H8.98055L8.05537 0.628906H0.777344V2.74375H6.18839L8.56759 21.7774H34.1868L35.8039 8.03086H32.4473Z"
+                    fill="#FFBB38"
+                  />
+                  <path
+                    d="M9.09669 26.0074H6.06485C4.31566 26.0074 2.89258 27.4305 2.89258 29.1797C2.89258 30.9289 4.31566 32.352 6.06485 32.352H6.24672C6.12935 32.6829 6.06485 33.0386 6.06485 33.4094C6.06485 35.1586 7.48793 36.5816 9.23711 36.5816C11.4247 36.5816 12.9571 34.4091 12.2274 32.352H22.1081C21.377 34.413 22.9157 36.5816 25.0985 36.5816C26.8476 36.5816 28.2707 35.1586 28.2707 33.4094C28.2707 33.0386 28.2061 32.6829 28.0888 32.352H30.3856V30.2371H6.06485C5.48178 30.2371 5.00742 29.7628 5.00742 29.1797C5.00742 28.5966 5.48178 28.1223 6.06485 28.1223H33.4407L33.9384 23.8926H8.83233L9.09669 26.0074Z"
+                    fill="#FFBB38"
+                  />
+                  <path
+                    d="M21.9262 17.5477C26.5907 17.5477 30.3856 13.7528 30.3856 9.08829C30.3856 4.42378 26.5907 0.628906 21.9262 0.628906C17.2616 0.628906 13.4668 4.42378 13.4668 9.08829C13.4668 13.7528 17.2617 17.5477 21.9262 17.5477ZM20.8688 5.91602H22.9836V8.6503L24.7886 10.4554L23.2932 11.9508L20.8687 9.5262V5.91602H20.8688Z"
+                    fill="#FFBB38"
+                  />
+                </svg>
+              </span>
+            </div>
+            <p className="text-xl text-white group-hover:text-qblacktext mt-5">
+              Đang giao
+            </p>
+            <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">
+              {index1}
             </span>
           </div>
-          <p className="text-xl text-white group-hover:text-qblacktext mt-5">
-            New Orders
-          </p>
-          <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">
-            656
-          </span>
-        </div>
+        </Link>
+        <Link to="/profile#order">
         <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
           <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
             <span>
@@ -62,12 +104,14 @@ export default function Dashboard() {
             </span>
           </div>
           <p className="text-xl text-white group-hover:text-qblacktext mt-5">
-            New Orders
+            Đã mua
           </p>
           <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">
-            656
+            {index3}
           </span>
         </div>
+        </Link>
+        <Link to="/profile#order">
         <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
           <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
             <span>
@@ -94,108 +138,72 @@ export default function Dashboard() {
             </span>
           </div>
           <p className="text-xl text-white group-hover:text-qblacktext mt-5">
-            New Orders
+            Đang chờ xử lý
           </p>
           <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">
-            656
+            {index2}
           </span>
         </div>
+        </Link>
       </div>
-      <div className="dashboard-info mt-8 flex justify-between items-center bg-primarygray px-7 py-7">
-        <div className="">
-          <p className="title text-[22px] font-semibold">
-            Parsonal Information
-          </p>
-          <div className="mt-5">
-            <table>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>Name:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">
-                  Shuvo khan
-                </td>
-              </tr>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>Email:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">
-                  rafiqulislamsuvobd@gmail.com
-                </td>
-              </tr>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>Phone:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">
-                  01792166627
-                </td>
-              </tr>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>City:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">
-                  Dhaka,Bangladesh
-                </td>
-              </tr>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>Zip:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">4040</td>
-              </tr>
-            </table>
+      <div className="dashboard-info mt-8 bg-primarygray px-7 py-7 rounded-lg shadow-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          {/* Personal Info Section */}
+          <Link to="/profile#profile">
+          <div>
+            <p className="title text-2xl font-semibold text-gray-800 mb-5">Thông tin cá nhân</p>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="label text-sm font-medium text-gray-500">Tên:</span>
+                <span className="value text-base font-semibold text-gray-900">{formData.fullname || "N/A"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="label text-sm font-medium text-gray-500">Email:</span>
+                <span className="value text-base font-semibold text-gray-900">{formData.email || "N/A"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="label text-sm font-medium text-gray-500">Điện thoại:</span>
+                <span className="value text-base font-semibold text-gray-900">{formData.phone || "N/A"}</span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="w-[1px] h-[164px] bg-[#E4E4E4]"></div>
-        <div className="ml-6">
-          <p className="title text-[22px] font-semibold">Shop Info</p>
-          <div className="mt-5">
-            <table>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>Name:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">
-                  Shuvo khan
-                </td>
-              </tr>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>Email:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">
-                  rafiqulislamsuvobd@gmail.com
-                </td>
-              </tr>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>Phone:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">
-                  01792166627
-                </td>
-              </tr>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>City:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">
-                  Dhaka,Bangladesh
-                </td>
-              </tr>
-              <tr className="inline-flex mb-5">
-                <td className="text-base text-qgraytwo w-[100px] block">
-                  <div>Zip:</div>
-                </td>
-                <td className="text-base text-qblack font-medium">4040</td>
-              </tr>
-            </table>
+          </Link>
+          {/* Store Info Section */}
+          <div>
+            <p className="title text-2xl font-semibold text-gray-800 mb-5">Thông tin cửa hàng</p>
+            <div className="space-y-4">
+              {user.roles === "SELLER" ? (
+                <>
+                  <div className="flex justify-between">
+                    <span className="label text-sm font-medium text-gray-500">Tên cửa hàng:</span>
+                    <span className="value text-base font-semibold text-gray-900">{formData.shopname || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="label text-sm font-medium text-gray-500">Email:</span>
+                    <span className="value text-base font-semibold text-gray-900">{formData.numberId || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="label text-sm font-medium text-gray-500">Số điện thoại:</span>
+                    <span className="value text-base font-semibold text-gray-900">{formData.createAtSeller || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="label text-sm font-medium text-gray-500">Zip:</span>
+                    <span className="value text-base font-semibold text-gray-900">4040</span>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center mt-4">
+                  <Link to='/become-saller' className="text-primary font-medium text-lg hover:underline">
+                    Đăng ký bán hàng ngay!
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
     </>
   );
 }
