@@ -3,10 +3,11 @@ import BeatLoader from "react-spinners/BeatLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { Fragment } from "react";
+import userEvaluateService from '../../service/user/evaluate';
 import { toast, ToastContainer } from 'react-toastify';
 // npm install --save react-spinners
 
-export default function Evaluate({ orderDetailId, productId, clearOrderDetailId, isSuccessfully }) {
+export default function Evaluate({ orderDetailId, productId, clearOrderDetailId }) {
     // const [order, setOrder] = useState();
     const [loading, setLoading] = useState(false);
     const [star, setStar] = useState(0);
@@ -15,7 +16,6 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId,
     const [listImage, setListImage] = useState([]);
     const [message, setMessage] = useState("");
     const [taskCompleted, setTaskCompleted] = useState(false);
-
 
     const getIdAccountFromSession = () => {
         const user = sessionStorage.getItem("user");
@@ -28,70 +28,58 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId,
         return null;
     };
 
-    const fetchEvaluate = async () => {
-        try {
-            setLoading(true);
+const fetchEvaluate = async () => {
+    console.log("Calling createEvaluate");  // Check if this runs
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
-            const accountId = 8;
-            // const accountId = getIdAccountFromSession().getId;
+    try {
+        setLoading(true);
 
-
-            if (!star || star <= 0) {
-                toast.warn("Vui lòng đánh giá sao trước khi gửi");
-                setLoading(false);
-                return; // Ngừng thực hiện nếu không có đánh giá
-            }
-
-            const formData = new FormData();
-            formData.append('star', star);
-            formData.append('content', content || "");
-            formData.append('billDetailId', orderDetailId);
-            formData.append('productId', productId);
-            formData.append('accountId', accountId);
-
-            if (images && images.length > 0) {
-                images.forEach((image, index) => {
-                    formData.append(`images[${index}]`, image);
-                });
-            }
-
-            const response = await fetch(`http://localhost:8080/api/v1/evaluate/create`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth
-                },
-                body: formData
-            })
-
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Error message from server:', errorData);
-
-                if (errorData.status === "fail") {
-                    const errorMessages = Object.values(errorData)
-                        .filter(value => typeof value === 'string'); // Chỉ lấy các giá trị là chuỗi
-                    console.error('Lỗi từ server:', errorMessages.join(', '));
-                }
-
-                throw new Error(errorData.message || 'Đã xảy ra lỗi không xác định');
-            }
-
-            const data = await response.json();
-            toast.success("Gửi đánh giá thành công");
-            isSuccessfully();
-            clearOrderDetailId();
-
-        } catch (error) {   
-            console.log('Caught error:', error.message);
-            alert(`Lỗi xảy ra: ${error.message}`); // Thông báo lỗi cho người dùng
-        } finally {
+        const accountId = getIdAccountFromSession().id_account;
+        if (!star || star <= 0) {
+            toast.warn("Vui lòng đánh giá sao trước khi gửi");
             setLoading(false);
+            return;
         }
+        console.log('1');
+
+        console.log('star:', star);
+        console.log('content:', content);
+        console.log('billDetailId:', orderDetailId);
+        console.log('productId:', productId);
+        console.log('accountId:', accountId);
+        console.log('images:', images);
+
+        const response = await userEvaluateService.createEvaluate({
+            star,
+            content: content || "",
+            orderDetailId,
+            productId,
+            accountId:accountId,
+            images : images,
+        });
+        console.log('2');
+        console.log("Response:", response);
+
+        // In axios, a status outside of 2xx range triggers the catch block.
+        if (response.status !== 200 && response.status !== 201) {
+            console.error('Server error:', response.data);
+            const errorMessages = Object.values(response.data)
+                .filter(value => typeof value === 'string');
+            console.error('Lỗi từ server:', errorMessages.join(', '));
+            throw new Error(response.data.message || 'Đã xảy ra lỗi không xác định');
+        }
+
+        // Assuming response.data contains the response JSON.
+        toast.success("Gửi đánh giá thành công");
+        clearOrderDetailId();
+    } catch (error) {
+        console.log('Caught error:', error.message);
+        toast.error(error.message || "Đã xảy ra lỗi khi gửi đánh giá");
+    } finally {
+        setLoading(false);
     }
+};
+
 
     const handleStarClick = (value) => {
         setStar(value);
@@ -99,43 +87,46 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId,
     };
 
     const handleImageChange = (event) => {
-        const totalImages = images.length + event.target.files.length;
-        console.log(listImage);
-
+        const maxSize = 5 * 1024 * 1024; // Giới hạn kích thước ảnh là 5MB
+        const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+    
+        const uploadImages = Array.from(event.target.files); // Lấy tất cả ảnh người dùng chọn
+        const totalImages = images.length + uploadImages.length;
+    
         if (totalImages > 4) {
             setMessage("Chỉ có thể tải tối đa 4 ảnh. Vui lòng chọn lại");
+            event.target.value = ""; // Reset lại input file
             return;
         }
-
-        const maxSize = 5 * 1024 * 1024;
-        const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-
-        const uploadImages = [...event.target.files];
-        const hasError = uploadImages.some((image) => {
+    
+        const validImages = [];
+        let hasError = false;
+    
+        // Kiểm tra từng ảnh và thêm vào validImages nếu hợp lệ
+        uploadImages.forEach((image) => {
             if (image.size > maxSize) {
                 setMessage("Kích thước ảnh không được vượt quá 5MB");
-                return true;
+                hasError = true;
+            } else if (!allowedTypes.includes(image.type)) {
+                setMessage("Chỉ chấp nhận file ảnh có định dạng PNG, JPEG hoặc JPG");
+                hasError = true;
+            } else {
+                validImages.push(image); // Thêm ảnh hợp lệ vào danh sách
             }
-
-            if (!allowedTypes.includes(image.type)) {
-                setMessage(
-                    "Chỉ chấp nhận file ảnh có định dạng PNG, JPEG hoặc JPG. Vui lòng chọn lại"
-                );
-                return true;
-            }
-
-            return false;
         });
-
+    
         if (hasError) {
+            event.target.value = ""; // Reset lại input file nếu có lỗi
             return;
         }
-
-        setImages((images) => {
-            return [...images, ...uploadImages];
-        });
-        refresh();
+    
+        // Cập nhật images với các ảnh hợp lệ
+        setImages((prevImages) => [...prevImages, ...validImages]);
+        refresh(); // Nếu cần làm mới ảnh sau khi thêm
+        event.target.value = ""; // Reset lại input file
     };
+    
+    
 
 
     const removeImage = (index) => {
