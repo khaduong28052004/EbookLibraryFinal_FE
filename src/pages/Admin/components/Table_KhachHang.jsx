@@ -120,7 +120,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                     >
                         Excel
                     </button>
-     
+
                 </form>
 
 
@@ -209,7 +209,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                     {entityData?.content?.map((entity, index) => (
                         <tr key={index} className="border-t border-stroke dark:border-strokedark">
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {index + 1}
+                                {entityData.size * entityData?.pageable?.pageNumber + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                 <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
