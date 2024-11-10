@@ -53,11 +53,11 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
 
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách Thống Kê Doanh Thu'];
+        const sheetNames = ['Danh Sách Thống Kê Sản Phẩm'];
         try {
             console.log("totalElements: " + entityData.totalElements);
-            const response = await Thongke.doanhThu({ dateStart, dateEnd, option, currentPage, size: entityData.totalElements, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Thống Kê Doanh Thu.xlsx", sheetNames, [response.data.result.result.content]);
+            const response = await Thongke.product({ dateStart, dateEnd, option, currentPage, size: entityData.totalElements, searchItem, sortColumn, sortBy });
+            return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -269,7 +269,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 }
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {entityData.size * entityData?.pageable?.pageNumber + 1}
+                                {entityData.pageable.pageNumber * entityData.size + index + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                 <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0]} alt="entity" />

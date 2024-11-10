@@ -256,7 +256,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                 }
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {entityData.size * entityData?.pageable?.pageNumber + 1}
+                                {entityData.pageable.pageNumber * entityData.size + index + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                 <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
