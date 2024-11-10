@@ -1,57 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLongDownIcon, ArrowLongUpIcon, StarIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
-import ModalSanPham from './ModalDanhGia';
-import DanhGiaService from '../../../service/Seller/danhGiaService';
+import VoucherService from "../../../service/Seller/voucherService"
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
+import { format, parse } from 'date-fns';
 import { toast, ToastContainer } from 'react-toastify';
+import { useLocation, useNavigate } from 'react-router-dom';
+const TableVoucher = () => {
+  const [listVoucherDetail, setListVoucherDetail] = useState([]);
+  const [search, setSearch] = useState('');
+  const location = useLocation();  // Dùng useLocation để lấy thông tin URL hiện tại
+  const navigate = useNavigate();
 
-const TableTwo = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [statusProduct, setStatusProduct] = useState(false);
-  const [isOpenModalSP, setIsOpenModalSP] = useState(false);
-  const [listDanhGia, setListDanhGia] = useState([]);
-  const [search, setSearch] = useState("");
-  const [dataPhanHoi, setDataPhanHoi] = useState({
-    idParent: null,
-    content: '',
-    account: null,
-    product: null
-  });
-  const [isStatus, setIsStatus] = useState(false);
+  // Lấy voucher_id từ query parameters
+  const searchParams = new URLSearchParams(location.search);
+  const voucher_id = searchParams.get('voucher_id');
 
-  useEffect(() => {
-    getList();
-  }, [search]);
-  useEffect(() => {
-    if (isStatus) {
-      getList();
-      toast.success("Phản Hồi Đánh Giá Thành Công");
-    }
-  }, [search, isStatus]);
-
-  const getList = async () => {
-    const response = await DanhGiaService.getData(search);
-    console.log(response);
-    setListDanhGia(response.data.result.content);
-  }
-  const handleConfirm = () => {
-    setIsOpen(false);
+  const handleGoBack = () => {
+    navigate(-1);  // "-1" để quay lại trang trước đó
   };
+  useEffect(() => {
+    loadListVoucherDetail();
+  }, [search]);
+
+  const loadListVoucherDetail = async () => {
+    try {
+      const response = await VoucherService.getDetail(voucher_id, search);
+      setListVoucherDetail(response.data.result);
+      console.log("SUCCESSFULLY LOAD LIST VOUCHER DETAIL", response.data.result);
+    } catch (error) {
+      console.log("ERROR LOAD LIST VOUCHER DETAIL", error);
+    }
+  }
+
   const handSearch = (event) => {
     const value = event.target.value;
     setSearch(value);
-  }
-
-  const openModal = (danhGia) => {
-    setDataPhanHoi({
-      id: danhGia.id,
-      content: '',
-      account: danhGia.account.id,
-      product: danhGia.product.id
-    });
-    setIsOpenModalSP(true);
-    setIsStatus(false);
   }
 
   return (
@@ -85,8 +70,8 @@ const TableTwo = () => {
             </button>
             <input
               type="text"
-              placeholder="Tìm kiếm..."
               onChange={handSearch}
+              placeholder="Tìm kiếm..."
               className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
             />
           </div>
@@ -97,12 +82,13 @@ const TableTwo = () => {
           >
             Excel
           </button>
-          <button
+          <button onClick={handleGoBack}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
-            PDF
+            Quay Lại
           </button>
         </div>
+
       </div>
 
       <table className="w-full border-collapse border border-stroke dark:border-strokedark">
@@ -112,7 +98,7 @@ const TableTwo = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1">
-                <span className="text-sm text-black dark:text-white">Khách Hàng</span>
+                <span className="text-sm text-black dark:text-white">Tên</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -120,7 +106,7 @@ const TableTwo = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white ">Sản Phẩm</span>
+                <span className="text-sm text-black dark:text-white ">Khách Hàng</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -128,14 +114,7 @@ const TableTwo = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Hình Ảnh Đánh Giá</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-              </div>
-            </th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Nội Dung Đánh Giá</span>
+                <span className="text-sm text-black dark:text-white">Điều Kiện</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -143,64 +122,53 @@ const TableTwo = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden lg:flex">
-                <span className="text-sm text-black dark:text-white">Số Sao</span>
+                <span className="text-sm text-black dark:text-white">Giảm Giá</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
-            </th>
-
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <span className="text-sm text-black dark:text-white truncate w-24"></span>
             </th>
           </tr>
         </thead>
 
         <tbody>
-          {listDanhGia.map((danhGia, index) => (
-            <tr key={index} className="border-t border-stroke dark:border-strokedark">
+          {
+            listVoucherDetail?.content?.length === 0 ? (
+              <tr className="border-t border-stroke dark:border-strokedark">
+                <td colSpan="5" className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-center text-sm text-black dark:text-white ">
+                  Không có dữ liệu
+                </td>
+              </tr>
+            ) : (listVoucherDetail?.content?.map((item, index) => (
+              <tr key={index} className="border-t border-stroke dark:border-strokedark">
+                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                  {index + 1}
+                </td>
+                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                  <p className="text-sm text-black dark:text-white truncate w-24">{item.voucher.name}</p>
+                </td>
 
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                {index + 1}
-              </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                <p className="text-sm text-black dark:text-white truncate w-24">{danhGia.account.fullname}</p>
-              </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {danhGia.product.name}
-                </div>
-              </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {danhGia.imageEvalues.map((image) => (
-                    <img className="h-12.5 w-12.5 rounded-md" src={image.name} alt="Evalue"  />
-                  ))}
-                </div>
-              </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {danhGia.content}
-                </div>
-              </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden lg:flex">
-                  {danhGia.star}/5 <StarIcon className='w-5 h-5 text-yellow-500' />
-                </div>
-              </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                <div className="flex space-x-3.5">
-                  <button onClick={() => openModal(danhGia)}>
-                    <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
+                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                  <div className="flex items-center gap-1 hidden xl:flex">
+
+                    {item.account.fullname}
+                  </div>
+                </td>
+                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                  <div className="flex items-center gap-1 hidden xl:flex">
+                    {item.totalPriceOrder}
+                  </div>
+                </td>
+                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                  <div className="flex items-center gap-1 hidden xl:flex">
+                    {item.sale}
+                  </div>
+                </td>
+              </tr>
+            )))}
         </tbody>
       </table>
 
       <div className="py-6 flex border-t border-stroke  dark:border-strokedark  px-4 md:px-6 xl:px-7.5">
-        {/* <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"> */}
         <div className="flex flex-1 justify-between sm:hidden">
           <a href="#" className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
           <a href="#" className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
@@ -225,7 +193,6 @@ const TableTwo = () => {
                   <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
                 </svg>
               </a>
-
               <a href="#" aria-current="page" className="relative dark:text-white z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">1</a>
               <a href="#" className="relative dark:text-white inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">2</a>
               <a href="#" className="relative dark:text-white hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex">3</a>
@@ -243,48 +210,8 @@ const TableTwo = () => {
           </div>
         </div>
       </div>
-
-      <Modal
-        open={isOpen}
-        setOpen={setIsOpen}
-        title={
-          statusProduct
-            ? 'Ngừng Hoạt Động'
-            : 'Khôi Phục'
-        }
-        message={
-          statusProduct
-            ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-            : 'Bạn có chắc muốn khôi phục sản phẩm này không?'
-        }
-        onConfirm={handleConfirm}
-        confirmText={
-          statusProduct ? 'Xác Nhận' : 'Khôi Phục'
-        }
-        cancelText="Thoát"
-        icon={
-          statusProduct ? (
-            <TrashIcon className="h-6 w-6 text-red-600" />
-          ) : (
-            <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
-          )
-        }
-        iconBgColor={statusProduct ? 'bg-red-100' : 'bg-yellow-100'}
-        buttonBgColor={statusProduct ? 'bg-red-600' : 'bg-yellow-600'}
-      />
-
-      <ModalSanPham
-        open={isOpenModalSP}
-        setOpen={setIsOpenModalSP}
-        title="Phản Hồi Khách Hàng"
-        confirmText="Gửi"
-        cancelText="Hủy"
-        data={dataPhanHoi}
-        status={isStatus}
-        setStatus={setIsStatus}
-      />
     </div>
   );
 };
 
-export default TableTwo;
+export default TableVoucher;

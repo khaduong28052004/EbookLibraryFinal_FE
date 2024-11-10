@@ -2,31 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
-import VoucherService from "../../../service/Seller/voucherService"
+import SanPhamService from "../../../service/Seller/sanPhamService"
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { format, parse } from 'date-fns';
 import { toast, ToastContainer } from 'react-toastify';
 import { Link } from 'react-router-dom';
-const TableVoucher = () => {
+const TableSanPham = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusVoucher, setStatusVoucher] = useState(false);
-  const [isOpenModalSP, setIsOpenModalSP] = useState(false);
-  const [listVoucher, setListVoucher] = useState([]);
-  const [dataVoucher, setDataVoucher] = useState({
-    id: null,
-    name: "",
-    note: "",
-    totalPriceOrder: null,
-    sale: null,
-    quantity: null,
-    dateStart: '',
-    dateEnd: '',
-    typeVoucher: 1,
-    account: sessionStorage.getItem("id_account")
-  });
+  const [listProduct, setListProduct] = useState([]);
   const [search, setSearch] = useState('');
   const [isStatus, setIsStatus] = useState(false);
-  const [voucherId, setVoucherId] = useState(null);
+  const [productId, setProductId] = useState(null);
   const [pageNumber, setPageNumber] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
@@ -45,18 +32,17 @@ const TableVoucher = () => {
 
 
   useEffect(() => {
-    loadListVoucher();
+    loadListProduct();
   }, [search, pageNumber]);
 
-  const loadListVoucher = async () => {
+  const loadListProduct = async () => {
     try {
-      const response = await VoucherService.getData(search, pageNumber);
-      setListVoucher(response.data.result);
+      const response = await SanPhamService.getAll(search, pageNumber);
+      setListProduct(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
-      console.log('SUCCESSFULLY GET LIST VOUCHER', response);
     } catch (error) {
-      console.log('ERROR GET LIST VOUCHER', error);
+      console.log('ERROR GET LIST PRODUCT', error);
     }
   }
 
@@ -64,18 +50,18 @@ const TableVoucher = () => {
     try {
       const response = await VoucherService.edit(voucher_id);
       const voucher = response.data.result;
-      setDataVoucher({
-        id: voucher.id,
-        name: voucher.name,
-        note: voucher.note,
-        totalPriceOrder: voucher.totalPriceOrder,
-        sale: voucher.sale,
-        quantity: voucher.quantity,
-        dateStart: voucher.dateStart,
-        dateEnd: voucher.dateEnd,
-        typeVoucher: voucher.typeVoucher.id,
-        account: voucher.account.id
-      })
+      // setDataVoucher({
+      //   id: voucher.id,
+      //   name: voucher.name,
+      //   note: voucher.note,
+      //   totalPriceOrder: voucher.totalPriceOrder,
+      //   sale: voucher.sale,
+      //   quantity: voucher.quantity,
+      //   dateStart: voucher.dateStart,
+      //   dateEnd: voucher.dateEnd,
+      //   typeVoucher: voucher.typeVoucher.id,
+      //   account: voucher.account.id
+      // })
       setIsOpenModalSP(true);
       console.log("SUCCESSFULLY GET EDIT VOUCHER", response.data.result);
     } catch (error) {
@@ -107,12 +93,12 @@ const TableVoucher = () => {
     }
   }
 
-  const deleteVoucher = async () => {
+  const deleteProduct = async () => {
     try {
-      const response = await VoucherService.delete(voucherId);
+      const response = await SanPhamService.delete(productId);
       toast.success(response.data.message);
       console.log("SUCCESSFULLY DELETE VOUCHER", response.data.result);
-      loadListVoucher();
+      loadListProduct();
     } catch (error) {
       console.log("ERROR DELETE VOUCHER", error);
     }
@@ -185,20 +171,7 @@ const TableVoucher = () => {
             PDF
           </button>
           <button
-            onClick={() => {
-              setIsOpenModalSP(true); setIsStatus(false); setDataVoucher(setDataVoucher({
-                id: null,
-                name: "",
-                note: "",
-                totalPriceOrder: null,
-                sale: null,
-                quantity: null,
-                dateStart: '',
-                dateEnd: '',
-                typeVoucher: 1,
-                account: sessionStorage.getItem("id_account")
-              }))
-            }}
+            onClick={() => { setIsOpenModalSP(true); setIsStatus(false) }}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Thêm
@@ -220,7 +193,7 @@ const TableVoucher = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Điều Kiện</span>
+                <span className="text-sm text-black dark:text-white">Tác Giả</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -228,12 +201,19 @@ const TableVoucher = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Giảm Giá</span>
+                <span className="text-sm text-black dark:text-white">Thể Loại</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
             </th>
 
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+              <div className="flex items-center gap-1 hidden lg:flex">
+                <span className="text-sm text-black dark:text-white">Giá</span>
+                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+              </div>
+            </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượng</span>
@@ -254,54 +234,62 @@ const TableVoucher = () => {
           </tr>
         </thead>
 
-        <tbody className="min-h-[400px]"> {/* Set minimum height for the table body */}
-          {listVoucher?.content?.length === 0 ? (
+        <tbody className="min-h-[400px]">
+          {listProduct?.content?.length === 0 ? (
             <tr className="border-t border-stroke dark:border-strokedark">
               <td colSpan="7" className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-center text-sm text-black dark:text-white ">
                 Không có dữ liệu
               </td>
             </tr>
           ) : (
-            listVoucher?.content?.map((voucher, index) => (
+            listProduct?.content?.map((item, index) => (
               <tr key={index} className="border-t border-stroke dark:border-strokedark">
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   {index + 1 + pageNumber * pageSize}
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                  <p className="text-sm text-black dark:text-white truncate w-24">{voucher.name}</p>
+                  <p className="text-sm text-black dark:text-white truncate w-24">{item.name}</p>
                 </td>
 
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {voucher.totalPriceOrder}
+                    {item.writerName}
+                  </div>
+                </td>
+                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                  <div className="flex items-center gap-1 hidden xl:flex">
+                    {item.category.name}
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {voucher.sale}
+                    {item.quantity}
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {voucher.quantity}
+                    {item.price}
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
                   <div className="flex items-center gap-1 hidden lg:flex">
-                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${!voucher.delete ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                      {!voucher.delete ? 'Hoạt Động' : 'Đã Ngừng'}
+                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${item.isActive ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
+                      {item.isActive ? 'Đã Duyệt' : 'Chưa Duyệt'}
                     </span>
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                   <div className="flex space-x-3.5">
-                    <button>
-                      <Link to={`/seller/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
+                    <button onClick={() => {
+                      setIsOpen(true);
+                      setProductId(item.id);
+                      //  setStatusVoucher(voucher.delete) 
+                    }}>
+                      <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
                     </button>
-                    <button onClick={() => { setIsOpen(true); setVoucherId(voucher.id); setStatusVoucher(voucher.delete) }}>
-                      {!voucher.isDelete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600 dark:text-white' />)}
-                    </button>
-                    <button onClick={() => { editVoucher(voucher.id); setIsStatus(true) }}>
+                    <button onClick={() => {
+                      // editVoucher(voucher.id); setIsStatus(true)
+                    }}>
                       <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
                     </button>
                   </div>
@@ -384,25 +372,21 @@ const TableVoucher = () => {
         open={isOpen}
         setOpen={setIsOpen}
         title={
-          !statusVoucher ? "Khôi Phục Hoạt Động" :
-            'Ngừng Hoạt Động'
+          "Xoá Sản Phẩm"
         }
-        message={!statusVoucher ? 'Bạn chắc chắn muốn ngừng hoạt động voucher này không?' : 'Bạn chắc chắn muốn khôi phục hoạt động voucher này không?'}
-        onConfirm={deleteVoucher}
+        message={'Bạn chắc chắn muốn xóa sản phẩm này không?'}
+        onConfirm={deleteProduct}
         confirmText={
           'Xác Nhận'
         }
         cancelText="Thoát"
         icon={
-          statusVoucher ?
-            <TrashIcon className="h-6 w-6 text-red-600" />
-            :
-            <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
+          <TrashIcon className="h-6 w-6 text-red-600" />
         }
-        iconBgColor={!statusVoucher ? 'bg-green-100' : 'bg-red-100'}
-        buttonBgColor={!statusVoucher ? 'bg-green-600' : 'bg-red-600'}
+        iconBgColor={'bg-red-100'}
+        buttonBgColor={'bg-red-600'}
       />
-
+      {/* 
       <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-999999">
         <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
@@ -540,9 +524,9 @@ const TableVoucher = () => {
             </DialogPanel>
           </div>
         </div>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };
 
-export default TableVoucher;
+export default TableSanPham;

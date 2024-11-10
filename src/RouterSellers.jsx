@@ -10,6 +10,7 @@ import ThongKeDonHangSeller from "./pages/Seller/ThongKeDonHangSeller"
 import ThongKeSanPham from "./pages/Seller/ThongKeSanPhamSeller"
 import ThongKeKhachHang from "./pages/Seller/ThongKeKhachHangSeller"
 import DanhGiaSeller from "./pages/Seller/DanhGiaSeller"
+import VoucherDetailSeller from "./pages/Seller/VoucherDetailSeller"
 export default function RouterSellers() {
   return (
     <SellerLayout>
@@ -92,6 +93,15 @@ export default function RouterSellers() {
             <>
               <PageTitle title="Thông Tin Shop" />
               <ThongKeSanPham />
+            </>
+          }
+        />
+        <Route
+          path="/quanLy/voucherDetail"
+          element={
+            <>
+              <PageTitle title="Chi Tiết Voucher" />
+              <VoucherDetailSeller />
             </>
           }
         />

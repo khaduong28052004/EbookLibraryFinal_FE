@@ -12,7 +12,7 @@ const axiosConfig = axios.create({
 });
 
 
-const axiosAuth = (TOKEN, method, url, data) => {
+const axiosAuth = (TOKEN, method, url, data, status) => {
   const token = sessionStorage.getItem("accessToken");
   let headers = {
     "Access-Control-Allow-Origin": "*",
@@ -33,11 +33,10 @@ const axiosAuth = (TOKEN, method, url, data) => {
     };
   }
 
-  //  "Content-Type": "multipart/form-data",
-  if (url.includes('/saveImg')) {
-    headers["Content-Type"] = "multipart/form-data"; // Thay đổi Content-Type cho multipart
+  if (status) {
+    headers["Content-Type"] = "multipart/form-data"; 
   } else {
-    headers["Content-Type"] = "application/json"; // Giữ nguyên cho các yêu cầu JSON
+    headers["Content-Type"] = "application/json"; 
   }
 
   return axiosConfig({
