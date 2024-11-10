@@ -32,6 +32,7 @@
     "jsvectormap": "^1.6.0",
     "jwt-decode": "^4.0.0",
     "match-sorter": "^6.3.1",
+    "npm": "^10.9.0",
     "query-string": "^9.1.1",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",

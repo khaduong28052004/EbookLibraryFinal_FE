@@ -1,12 +1,54 @@
+import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import TableThongKe from './components/TableThongKe';
 import CardDataStats from '../../components/CardDataStats';
-const SanPhamSeller = () => {
+import TableThongKe from './components/Table_ThongKe_KhachHang';
+import Thongke from '../../service/admin/ThongKe';
+const DoanhThuKhachHang = () => {
+  const [data, setData] = useState([]);
+  const [header, setHeader] = useState([]);
+
+  const [dateStart, setDateStart] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
+  const [searchItem, setSearchItem] = useState('');
+  const [option, setOption] = useState('');
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortBy, setSortBy] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const findAllDoanhThu = async () => {
+    try {
+      const response = await Thongke.khachHang({ dateStart, dateEnd, searchItem, option, currentPage, size: 2, sortColumn, sortBy });
+      setData(response.data.result.thongke);
+      setHeader(response.data.result);
+    } catch (error) {
+      console.log("Error: " + error);
+    }
+  }
+
+  const handleChange = (dateStart, dateEnd, option, searchItem, currentPage, sortBy, sortColumn) => {
+    setOption(option);
+    setDateStart(dateStart);
+    setDateEnd(dateEnd);
+    setCurrentPage(currentPage);
+    setSortBy(sortBy);
+    setSortColumn(sortColumn);
+    setSearchItem(searchItem);
+  }
+
+  useEffect(() => {
+    findAllDoanhThu();
+  }, [dateStart, dateEnd, option, searchItem, currentPage, sortBy, sortColumn]);
+
   return (
     <>
-      <Breadcrumb pageName="Thống Kê Sản Phẩm" status='Quản Trị' />
+      <Breadcrumb pageName="Thống Kê Khách Hàng" status='Quản Trị' />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+        <CardDataStats
+          title="Khách hàng"
+          total={`${header.tongKhachHang}`}
+        // rate={`${header.rateShop}`} 
+        // levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -25,7 +67,10 @@ const SanPhamSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
+        <CardDataStats title="Đang hoạt động"
+          total={header.khachHangDangHoatDong}
+        // rate={formatNumber(header.rateDoanhThu)} levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -48,7 +93,10 @@ const SanPhamSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
+        <CardDataStats title="Ngừng hoạt động"
+          total={header.khachHangNgungHoatDong}
+        // rate={formatNumber(header.ratePhi)} levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -67,7 +115,10 @@ const SanPhamSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats title="Đơn hàng"
+          total={header.tongDonHang}
+        // rate={formatNumber(header.rateLoiNhuan)} levelDown
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -92,10 +143,11 @@ const SanPhamSeller = () => {
         </CardDataStats>
       </div>
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <TableThongKe />
+        <TableThongKe onPageChange={handleChange} entityData={data}
+        />
       </div>
     </>
   );
 };
 
-export default SanPhamSeller;
+export default DoanhThuKhachHang;
