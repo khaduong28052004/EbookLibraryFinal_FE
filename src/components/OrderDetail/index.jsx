@@ -12,6 +12,17 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     const [orderDetailId, setOrderDetailId] = useState();
     const [productId, setProductId] = useState();
 
+    const getIdAccountFromSession = () => {
+        const user = sessionStorage.getItem("user");
+
+        if (user) {
+            const userObject = JSON.parse(user);
+            return userObject; // Trả về id_account
+        }
+
+        return null;
+    };
+
     const fetchOrderDetail = async () => {
         try {
             setLoading(true);
@@ -19,8 +30,9 @@ export default function OrderDetail({ orderId, clearOrderId }) {
             const username = 'thu'; // Tài khoản của bạn
             const password = '123'; // Mật khẩu của bạn      
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
+            // const accountId = getIdAccountFromSession().getId;
 
-            const response = await fetch(`http://localhost:8080/api/v1/billdetail/read?billId=${orderId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/billdetail/read?billId=${orderId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': basicAuth,
@@ -53,7 +65,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
             const password = '123'; // Mật khẩu của bạn      
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/confirm/${billId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/bill/update_status/confirm/${billId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': basicAuth,
@@ -83,7 +95,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
             const password = '123'; // Mật khẩu của bạn      
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/cancel/${billId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/bill/update_status/cancel/${billId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': basicAuth,
@@ -113,7 +125,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
             const password = '123'; // Mật khẩu của bạn      
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/create/reorder/${billId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/bill/create/reorder/${billId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': basicAuth,
@@ -136,7 +148,6 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     }
 
     const setValue = (billDetailId, productId) => {
-        set
         setOrderDetailId(billDetailId);
         setProductId(productId);
     }
@@ -146,9 +157,9 @@ export default function OrderDetail({ orderId, clearOrderId }) {
         setProductId(undefined);
     };
 
-    const evaluateSuccessfully = () => {
-        toast.success("Gửi đánh giá thành công");
-    }
+    // const evaluateSuccessfully = () => {
+    //     toast.success("Gửi đánh giá thành công");
+    // }
 
     useEffect(() => {
         fetchOrderDetail();
@@ -188,7 +199,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     </div>
 
 
-    if (orderDetailId) return <Evaluate orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} isSuccessfully={evaluateSuccessfully}></Evaluate>
+    if (orderDetailId) return <Evaluate orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} /**isSuccessfully={evaluateSuccessfully} */></Evaluate>
 
     return (
         <>

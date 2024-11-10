@@ -6,7 +6,7 @@ import { Fragment } from "react";
 import { toast, ToastContainer } from 'react-toastify';
 // npm install --save react-spinners
 
-export default function Evaluate({ orderDetailId, productId, clearOrderDetailId, isSuccessfully }) {
+export default function Evaluate({ orderDetailId, productId, clearOrderDetailId }) {
     // const [order, setOrder] = useState();
     const [loading, setLoading] = useState(false);
     const [star, setStar] = useState(0);
@@ -15,7 +15,6 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId,
     const [listImage, setListImage] = useState([]);
     const [message, setMessage] = useState("");
     const [taskCompleted, setTaskCompleted] = useState(false);
-
 
     const getIdAccountFromSession = () => {
         const user = sessionStorage.getItem("user");
@@ -32,8 +31,8 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId,
         try {
             setLoading(true);
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
+            const username = 'thu';
+            const password = '123';
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
             const accountId = 8;
             // const accountId = getIdAccountFromSession().getId;
@@ -42,7 +41,7 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId,
             if (!star || star <= 0) {
                 toast.warn("Vui lòng đánh giá sao trước khi gửi");
                 setLoading(false);
-                return; // Ngừng thực hiện nếu không có đánh giá
+                return;
             }
 
             const formData = new FormData();
@@ -58,7 +57,7 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId,
                 });
             }
 
-            const response = await fetch(`http://localhost:8080/api/v1/evaluate/create`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/evaluate/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': basicAuth
@@ -82,12 +81,11 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId,
 
             const data = await response.json();
             toast.success("Gửi đánh giá thành công");
-            isSuccessfully();
             clearOrderDetailId();
 
-        } catch (error) {   
+        } catch (error) {
             console.log('Caught error:', error.message);
-            alert(`Lỗi xảy ra: ${error.message}`); // Thông báo lỗi cho người dùng
+            alert(`Lỗi xảy ra: ${error.message}`);
         } finally {
             setLoading(false);
         }

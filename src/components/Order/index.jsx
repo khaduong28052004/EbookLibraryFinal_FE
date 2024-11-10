@@ -13,6 +13,16 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     const [sortOrder, setSortOrder] = useState("asc");
     const [sortField, setSortField] = useState(null);
 
+    const getIdAccountFromSession = () => {
+        const user = sessionStorage.getItem("user");
+
+        if (user) {
+            const userObject = JSON.parse(user);
+            return userObject; // Trả về id_account
+        }
+
+        return null;
+    };
 
     const fetchOrders = async () => {
         try {
@@ -22,10 +32,11 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             const password = '123'; // Mật khẩu của bạn
             const userID = 8;
             const orderStatusId = activeMenu;
+            // const accountId = getIdAccountFromSession().getId;
 
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/read?userId=${userID}&orderStatusFind=${orderStatusId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/bill/read?userId=${userID}&orderStatusFind=${orderStatusId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': basicAuth,
@@ -55,7 +66,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             const password = '123'; // Mật khẩu của bạn      
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/confirm/${billId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/bill/update_status/confirm/${billId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': basicAuth,
@@ -85,7 +96,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             const password = '123'; // Mật khẩu của bạn      
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/cancel/${billId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/bill/update_status/cancel/${billId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': basicAuth,
@@ -115,7 +126,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             const password = '123'; // Mật khẩu của bạn      
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/create/reorder/${billId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/bill/create/reorder/${billId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': basicAuth,
