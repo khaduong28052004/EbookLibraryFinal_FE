@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from 'react-toastify';
 import OrderDetail from '../OrderDetail/index';
 import BeatLoader from "react-spinners/BeatLoader";
+import userOrderService from "../../service/user/order";
 // npm install --save react-spinners
 
 
@@ -28,31 +29,43 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
         try {
             setLoading(true);
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn
-            const userID = 8;
             const orderStatusId = activeMenu;
-            // const accountId = getIdAccountFromSession().getId;
+            const userID = getIdAccountFromSession().id_account;
 
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+            const response = await userOrderService.fetchOrder({ userID, orderStatusId });
 
-            const response = await fetch(`http://localhost:8080/api/v1/user/bill/read?userId=${userID}&orderStatusFind=${orderStatusId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
+            if (response && response.data && response.data.data) {
+                const data = response.data.data;
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+                setOrders(Array.isArray(data) ? data : []);
+            } else {
+                toast.warn('Lỗi truyền tải dữ liệu');
+                throw new Error('Không có dữ liệu');
             }
-
-            const data = await response.json();
-            setOrders(Array.isArray(data.data) ? data.data : []);  // Ensure it's an array
-            typeof (data.data)
         } catch (error) {
 
+        } finally {
+            setLoading(false);
+        }
+    }
+    
+    const cancelOrder = async (billId) => {
+        try {
+            setLoading(true);
+
+            const response = await userOrderService.cancelOrder({ billId });
+
+           
+            if (response.data.status === "successfully") {
+                setTaskCompleted(true);
+                toast.success('Đơn hàng đã được hủy');
+            } else {
+                toast.warn('Lỗi truyền tải dữ liệu');
+                throw new Error('Unexpected data format');
+            }
+
+        } catch (error) {
+            console.log(error);
         } finally {
             setLoading(false);
         }
@@ -62,24 +75,16 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
         try {
             setLoading(true);
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+            const response = await userOrderService.confirmOrder({ billId });
 
-            const response = await fetch(`http://localhost:8080/api/v1/user/bill/update_status/confirm/${billId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-                return;
+            if (response.data.status === "successfully") {
+                setTaskCompleted(true);
+                toast.success('Đơn hàng đã được xác nhận');
+            } else {
+                toast.warn('Lỗi truyền tải dữ liệu');
+                throw new Error('Unexpected data format');
             }
-            setTaskCompleted(true);
-            toast.success('Đơn hàng đã được xác nhận thành công');
+
 
         } catch (error) {
             console.log(error);
@@ -88,58 +93,20 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
         }
     }
 
-    const cancelOrder = async (billId) => {
-        try {
-            setLoading(true);
-
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
-
-            const response = await fetch(`http://localhost:8080/api/v1/user/bill/update_status/cancel/${billId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-                return;
-            }
-
-            setTaskCompleted(true);
-            toast.success('Đơn hàng đã được hủy');
-
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
-    }
 
     const reOrder = async (billId) => {
         try {
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
-
-            const response = await fetch(`http://localhost:8080/api/v1/user/bill/create/reorder/${billId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-                return;
+            const response = await userOrderService.reOrder({ billId });
+          
+            if (response.data.status === "successfully") {
+                setTaskCompleted(true);
+                toast.success('Đã thêm vào giỏ hàng');
+            } else {
+                toast.warn('Lỗi truyền tải dữ liệu');
+                throw new Error('Unexpected data format');
             }
 
-            toast.success('Đã thêm vào giỏ hàng');
         } catch (error) {
             console.log(error);
         } finally {
@@ -149,12 +116,12 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
     const setValue = (billID) => {
         setOrderId(billID);
-        setIsInDetailMode(false); // Chuyển sang chế độ xem chi tiết
+        setIsInDetailMode(false); 
     }
 
     const clearOrderId = () => {
         setOrderId(undefined);
-        setIsInDetailMode(true); // Chuyển sang chế độ xem chi tiết
+        setIsInDetailMode(true); 
     }
 
 
