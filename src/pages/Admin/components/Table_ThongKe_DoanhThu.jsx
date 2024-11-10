@@ -10,7 +10,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
-    const currentPage = entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber;
+    const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
     const [isStatus, setStatus] = useState(true);
 
     const handlePageChange = (newPage) => {
@@ -134,6 +134,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             value={searchItem}
                             onChange={(e) => {
                                 setSearchItem(e.target.value);
+                                setCurrentPage(0);
                             }}
                             type="text"
                             placeholder="Tìm kiếm..."
