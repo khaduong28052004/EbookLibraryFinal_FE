@@ -7,6 +7,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
     const [dateStart, setDateStart] = useState('');
     const [dateEnd, setDateEnd] = useState('');
     const [searchItem, setSearchItem] = useState('');
+    const [option, setOption] = useState('');
 
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
@@ -15,7 +16,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < entityData.totalPages) {
-            onPageChange(dateStart, dateEnd, searchItem, newPage, sortBy, sortColumn);
+            onPageChange(dateStart, dateEnd, option, searchItem, newPage, sortBy, sortColumn);
         }
     };
 
@@ -47,16 +48,15 @@ const TableTwo = ({ onPageChange, entityData }) => {
     };
 
     useEffect(() => {
-        onPageChange(dateStart, dateEnd, searchItem, currentPage, sortBy, sortColumn);
-    }, [dateStart, dateEnd, searchItem, currentPage, sortBy, sortColumn]);
-    ;
+        onPageChange(dateStart, dateEnd, option, searchItem, currentPage, sortBy, sortColumn);
+    }, [dateStart, dateEnd, option, searchItem, currentPage, sortBy, sortColumn]);
 
 
     const handleExport = async () => {
         const sheetNames = ['Danh Sách Thống Kê Doanh Thu'];
         try {
             console.log("totalElements: " + entityData.totalElements);
-            const response = await Thongke.doanhThu({ dateStart, dateEnd, currentPage, size: entityData.totalElements, searchItem, sortColumn, sortBy });
+            const response = await Thongke.doanhThu({ dateStart, dateEnd, option, currentPage, size: entityData.totalElements, searchItem, sortColumn, sortBy });
             return ExportExcel("Danh Sách Thống Kê Doanh Thu.xlsx", sheetNames, [response.data.result.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -137,7 +137,19 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             }}
                             type="text"
                             placeholder="Tìm kiếm..."
-                            className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125" />
+                            className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-50" />
+                        {/* Dropdown Option */}
+                        <select
+                            value={option}
+                            onChange={(e) => setOption(e.target.value)}
+                            className="w-70 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+                        >
+                            <option value="" disabled>Lọc theo</option>
+                            <option value="sanpham">Sản phẩm mới</option>
+                            <option value="bill">Sản phẩm bán chạy</option>
+                            <option value="danhgia">Sản phẩm đánh giá cao</option>
+                            <option value="yeuthich">Sản phẩm yêu thích</option>
+                        </select>
                     </div>
                 </form>
                 <form onSubmit={handleSubmit}
@@ -161,12 +173,12 @@ const TableTwo = ({ onPageChange, entityData }) => {
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
-                                setSortColumn("shopName");
+                                setSortColumn("name");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Tên shop</span>
+                                <span className="text-sm text-black dark:text-white">Sản phẩm</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -174,12 +186,12 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("fullname");
+                                setSortColumn("price");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white">Chủ shop</span>
+                                <span className="text-sm text-black dark:text-white">Giá</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -187,12 +199,12 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("dtshop");
+                                setSortColumn("sumBill");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Doanh thu shop</span>
+                                <span className="text-sm text-black dark:text-white">Lượt mua</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -200,41 +212,40 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("dtsan");
+                                setSortColumn("sumEvalue");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Doanh thu sàn</span>
+                                <span className="text-sm text-black dark:text-white">Lượt đánh giá</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
                         <th
                             onClick={() => {
-                                setSortColumn("phi");
+                                setSortColumn("sumLike");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Phí</span>
+                                <span className="text-sm text-black dark:text-white">Lượt yêu thích</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
                         <th
                             onClick={() => {
-                                setSortColumn("loiNhuan");
+                                setSortColumn("avgStar");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Lợi nhuận</span>
+                                <span className="text-sm text-black dark:text-white">Đánh giá</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
-
                         {/* <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Trạng thái</span>
@@ -261,34 +272,34 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 {entityData.size * entityData?.pageable?.pageNumber + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.shopName}</p>
+                                <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0]} alt="entity" />
+                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.fullname}
+                                    {`${formatNumber(entity.price)} VNĐ`}
                                 </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {formatNumber(entity.dtshop)}
-                                </div>
-                            </td>
-
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {formatNumber(entity.dtsan)}
+                                    {entity.sumBill}
                                 </div>
                             </td>
 
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {formatNumber(entity.phi)}
+                                    {entity.sumEvalue}
+                                </div>
+                            </td>
+
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.sumLike}
                                 </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {formatNumber(entity.loiNhuan)}
+                                    {formatNumber(entity.avgStar)}
                                 </div>
                             </td>
                             {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">

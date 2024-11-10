@@ -72,11 +72,11 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     }
     // const { toPDF, targetRef } = usePDF({ filename: 'Thống kê doanh thu admin.pdf' });
     const toggleExpand = (id) => {
-        setExpandedRows(prevState => 
+        setExpandedRows(prevState =>
             prevState.includes(id) ? prevState.filter(rowId => rowId !== id) : [...prevState, id]
         );
     };
-    
+
     const handleSubmit = (e) => {
         e.preventDefault();
     };
@@ -256,7 +256,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                 }
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {index + 1}
+                                {entityData.size * entityData?.pageable?.pageNumber + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                 <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
@@ -308,7 +308,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                 </div>
                             </td>
                         </tr>
-                        
+
                     ))}
                 </tbody>
             </table>
