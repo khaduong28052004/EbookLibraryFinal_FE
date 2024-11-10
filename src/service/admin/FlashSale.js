@@ -11,22 +11,27 @@ const flashSale = {
         console.log(token);
         return axiosAuth(token, "get", url);
     },
+    findListByIdParent: ({ id }) => {
+        const url = `/api/v1/admin/category/getListByIdParent?idParent=${id}`;
+        console.log(token);
+        return axiosAuth(token, "get", url);
+    },
     findById: ({ id }) => {
         const url = `/api/v1/admin/flashsale?id=${id}`;
         console.log(token);
         return axiosAuth(token, "get", url);
     },
-    postFlashSale: ({ data }) => {
+    post: ({ data }) => {
         const url = `/api/v1/admin/flashsale`;
         console.log(token);
         return axiosAuth(token, "post", url, data);
     },
-    putFlashSale: ({ data }) => {
+    put: ({ data }) => {
         const url = `/api/v1/admin/flashsale`;
         console.log(token);
         return axiosAuth(token, "put", url, data);
     },
-    deleteFlashSale: ({ id }) => {
+    delete: ({ id }) => {
         const url = `/api/v1/admin/flashsale?id=${id}`;
         console.log(token);
         return axiosAuth(token, "delete", url);
