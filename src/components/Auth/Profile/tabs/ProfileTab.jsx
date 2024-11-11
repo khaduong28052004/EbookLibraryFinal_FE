@@ -81,17 +81,17 @@ export default function ProfileTab() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setNotification({ message: "", type: "" });
-    setFormErrors({});
+    setNotification({ message: "", type: "" }); 
+    setFormErrors({});  
     let isValid = true;
 
     const validations = {
-      nameShop: () => {
-        if (!formData.nameShop) {
-          setFormErrors((prev) => ({ ...prev, nameShop: 'Vui lòng nhập tên shop.' }));
-          isValid = false;
-        }
-      },
+      // nameShop: () => {
+      //   if (!formData.nameShop) {
+      //     setFormErrors((prev) => ({ ...prev, nameShop: 'Vui lòng nhập tên shop.' }));
+      //     isValid = false;
+      //   }
+      // },
       username: () => {
         if (!formData.username) {
           setFormErrors((prev) => ({ ...prev, username: 'Vui lòng nhập username.' }));
@@ -126,11 +126,13 @@ export default function ProfileTab() {
         }
       }
     };
-
-
-    Object.values(validations).forEach(validate => validate());
-    if (!isValid) {
-      setNotification({ message: 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.', type: 'error' });
+    console.log("Bắt đầu kiểm tra từng trường dữ liệu...");
+    Object.values(validations).forEach((validate) => validate());
+    console.log("Trạng thái hợp lệ sau khi kiểm tra:", isValid);
+    console.log("Danh sách lỗi chi tiết:", formErrors);
+        if (!isValid) {
+      // setNotification({ message: 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.', type: 'error' });
+      toast.error("Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.");// đăng nhập thất bại
       return;
     }
     try {
@@ -142,9 +144,10 @@ export default function ProfileTab() {
         await uploadImages1(id, formDataImages);
       }
       const response = await AuthService.updateAccount(id, formData);
+      console.log("data"+response )
       toast.success( 'Cập nhật tài khoản thành công!' );
       // setNotification({ message: "Cập nhật tài khoản thành công!", type: "success" });
-      fetchData();
+      fetchData(); 
     } catch (error) {
       toast.error("Cập nhật thất bại vui lòng kiểm tra lại !");// đăng nhập thất bại
       // setNotification({ message: "Lỗi khi cập nhật tài khoản. Vui lòng thử lại.", type: "error" });
