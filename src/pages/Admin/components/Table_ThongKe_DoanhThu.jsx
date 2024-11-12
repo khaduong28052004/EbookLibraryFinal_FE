@@ -11,7 +11,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
-    const [isStatus, setStatus] = useState(true);
+    const [expandedRowId, setExpandedRowId] = useState(null);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < entityData.totalPages) {
@@ -68,6 +68,13 @@ const TableTwo = ({ onPageChange, entityData }) => {
         e.preventDefault();
     };
 
+    const toggleRow = (id) => {
+        if (expandedRowId === id) {
+            setExpandedRowId(null); // Nếu đã mở thì click lại sẽ đóng
+        } else {
+            setExpandedRowId(id); // Mở hàng chi tiết
+        }
+    };
 
     const formatNumber = (number, decimals = 2) => {
         if (number === null || number === undefined || isNaN(number)) {
@@ -246,62 +253,72 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
                 <tbody>
                     {entityData?.content?.map((entity, index) => (
-                        <tr key={index} className="border-t border-stroke dark:border-strokedark">
-                            <td
-                                onClick={() => setStatus(!isStatus)}
-                                className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {
-                                    isStatus ? (
-                                        <ChevronRightIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
-                                    ) : (
+                        <>
+                            <tr key={index} className={`border-t border-stroke dark:border-strokedark ${expandedRowId === entity.id ? `bg-slate-100` : `bg-white`}`} onClick={() => toggleRow(entity.id)}>
+                                <td
+                                    className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    {expandedRowId === entity.id ? (
                                         <ChevronDownIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
+                                    ) : (
+                                        <ChevronRightIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
                                     )
-                                }
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {entityData.pageable.pageNumber * entityData.size + index + 1}
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.shopName}</p>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.fullname}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {formatNumber(entity.dtshop)}
-                                </div>
-                            </td>
+                                    }
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    {entityData.pageable.pageNumber * entityData.size + index + 1}
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                                    <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
+                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.shopName}</p>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.fullname}
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {formatNumber(entity.dtshop)}
+                                    </div>
+                                </td>
 
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {formatNumber(entity.dtsan)}
-                                </div>
-                            </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {formatNumber(entity.dtsan)}
+                                    </div>
+                                </td>
 
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {formatNumber(entity.phi)}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {formatNumber(entity.loiNhuan)}
-                                </div>
-                            </td>
-                            {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                                <div className="flex items-center gap-1 hidden lg:flex">
-                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                        {entity.status ? 'Hoạt Động' : 'Đã Ngừng'}
-                                    </span>
-                                </div>
-                            </td> */}
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {formatNumber(entity.phi)}
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {formatNumber(entity.loiNhuan)}
+                                    </div>
+                                </td>
 
-                        </tr>
+                            </tr>
+                            {expandedRowId === entity.id && (
+                                <tr>
+                                    <td colSpan="8">
+                                        <div className="p-5 border border-gray-100 hover:bg-slate-100">
+                                            <p><strong>Thông tin chi tiết:</strong></p>
+                                            <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
+                                                <p>Trạng thái : {entity.status ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
+                                                <p>Ngày tạo: {entity.createAt}</p>
+                                                <p>Họ tên chủ shop: {entity.fullname}</p>
+                                                <p>Giới tính: {entity.gender ? 'Nam' : 'Nữ'}</p>
+                                                <p>Email: {entity.email}</p>
+                                                <p>Số điện thoại: {entity.phone}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
 
+                        </>
                     ))}
                 </tbody>
             </table>

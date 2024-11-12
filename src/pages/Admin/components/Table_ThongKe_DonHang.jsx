@@ -11,7 +11,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
     const currentPage = entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber;
-    const [isStatus, setStatus] = useState(true);
+    const [expandedRowId, setExpandedRowId] = useState(null);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < entityData.totalPages) {
@@ -74,6 +74,14 @@ const TableTwo = ({ onPageChange, entityData }) => {
         }
         return number.toFixed(decimals);
     };
+    const toggleRow =
+        (id) => {
+            if (expandedRowId === id) {
+                setExpandedRowId(null); // Nếu đã mở thì click lại sẽ đóng
+            } else {
+                setExpandedRowId(id); // Mở hàng chi tiết
+            }
+        };
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
@@ -245,53 +253,52 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
                 <tbody>
                     {entityData?.content?.map((entity, index) => (
-                        <tr key={index} className="border-t border-stroke dark:border-strokedark">
-                            <td
-                                onClick={() => setStatus(!isStatus)}
-                                className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {
-                                    isStatus ? (
-                                        <ChevronRightIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
-                                    ) : (
+                        <>
+                            <tr key={index} className={`border-t border-stroke dark:border-strokedark ${expandedRowId === entity.id ? `bg-slate-100` : `bg-white`}`} onClick={() => toggleRow(entity.id)}>
+                                <td
+                                    className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    {expandedRowId === entity.id ? (
                                         <ChevronDownIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
+                                    ) : (
+                                        <ChevronRightIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
                                     )
-                                }
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {entityData.pageable.pageNumber * entityData.size + index + 1}
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                {/* <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0]} alt="entity" /> */}
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.totalPrice}</p>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {`${formatNumber(entity.discountPrice)} VNĐ`}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.totalQuantity}
-                                </div>
-                            </td>
+                                    }
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    {entityData.pageable.pageNumber * entityData.size + index + 1}
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                                    {/* <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0]} alt="entity" /> */}
+                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.totalPrice}</p>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {`${formatNumber(entity.discountPrice)} VNĐ`}
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.totalQuantity}
+                                    </div>
+                                </td>
 
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.orderStatus.name}
-                                </div>
-                            </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.orderStatus.name}
+                                    </div>
+                                </td>
 
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.account.username}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {`${entity.discountRate.discount} %`}
-                                </div>
-                            </td>
-                            {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.account.username}
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {`${entity.discountRate.discount} %`}
+                                    </div>
+                                </td>
+                                {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
                                 <div className="flex items-center gap-1 hidden lg:flex">
                                     <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
                                         {entity.status ? 'Hoạt Động' : 'Đã Ngừng'}
@@ -299,8 +306,26 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 </div>
                             </td> */}
 
-                        </tr>
+                            </tr>
+                            {expandedRowId === entity.id && (
+                                <tr>
+                                    <td colSpan="9">
+                                        <div className="p-5 border border-gray-100 hover:bg-slate-100">
+                                            <p><strong>Thông tin chi tiết:</strong></p>
+                                            <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
+                                                <p>Họ tên: {entity.account.fullname}</p>
+                                                <p>Email: {entity.account.email}</p>
+                                                <p>Số điện thoại: {entity.account.phone}</p>
+                                                <p>Phương thức thanh toán: {entity.paymentMethod.name}</p>
+                                                <p>Ngày tạo: {entity.createAt}</p>
+                                                <p>Ngày hoàn thành: {entity.finishAt}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
 
+                        </>
                     ))}
                 </tbody>
             </table>
