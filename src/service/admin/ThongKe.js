@@ -58,6 +58,20 @@ const Thongke = {
         console.log(token);
         console.log(url);
         return axiosAuth(token, "get", url);
+    },
+    nguoiban: ({ dateStart, dateEnd, searchItem, option, currentPage, size, sortColumn, sortBy }) => {
+        if (sortBy == null || sortBy == undefined) {
+            sortBy = '';
+        } else if (sortColumn == null || sortColumn == undefined) {
+            sortColumn = '';
+        } else {
+            sortBy = sortBy;
+            sortColumn = sortColumn;
+        }
+        const url = `/api/v1/admin/orderstatistacal/seller?dateStart=${dateStart}&dateEnd=${dateEnd}&search=${searchItem}&option=${option}&page=${currentPage}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}`;
+        console.log(token);
+        console.log(url);
+        return axiosAuth(token, "get", url);
     }
 
 }

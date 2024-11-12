@@ -1,22 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
-import Thongke from '../../../service/admin/ThongKe';
+import product from '../../../service/admin/Product';
+import Modal from "./ModalThongBao";
+import ModalDuyet from "./Modal_Duyet";
 
-const TableTwo = ({ onPageChange, entityData }) => {
-    const [dateStart, setDateStart] = useState('');
-    const [dateEnd, setDateEnd] = useState('');
+
+const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
     const [searchItem, setSearchItem] = useState('');
     const [option, setOption] = useState('');
-
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
     const [expandedRowId, setExpandedRowId] = useState(null);
 
+    const [id, setId] = useState('');
+    const [isOpen, setIsOpen] = useState(false);
+    const [statusentity, setStatusentity] = useState(false);
+    const [optionModal, setOptionModal] = useState(null);
+    const handleConfirm = () => {
+        setIsOpen(false);
+        onIdChange(id, optionModal, true);
+    };
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < entityData.totalPages) {
-            onPageChange(dateStart, dateEnd, option, searchItem, newPage, sortBy, sortColumn);
+            onPageChange(option, searchItem, newPage, sortBy, sortColumn);
         }
     };
 
@@ -48,8 +57,8 @@ const TableTwo = ({ onPageChange, entityData }) => {
     };
 
     useEffect(() => {
-        onPageChange(dateStart, dateEnd, option, searchItem, currentPage, sortBy, sortColumn);
-    }, [dateStart, dateEnd, option, searchItem, currentPage, sortBy, sortColumn]);
+        onPageChange(option, searchItem, currentPage, sortBy, sortColumn);
+    }, [option, searchItem, currentPage, sortBy, sortColumn]);
 
     const toggleRow = (id) => {
         if (expandedRowId === id) {
@@ -63,7 +72,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
         const sheetNames = ['Danh Sách Thống Kê Sản Phẩm'];
         try {
             console.log("totalElements: " + entityData.totalElements);
-            const response = await Thongke.product({ dateStart, dateEnd, option, currentPage, size: entityData.totalElements, searchItem, sortColumn, sortBy });
+            const response = await product.findAllProduct({ searchItem, option, currentPage, size: entityData.totalElements, sortColumn, sortBy });
             return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -111,32 +120,6 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             </svg>
                         </button>
 
-                        {/* Input Start Date */}
-                        <input
-                            value={dateStart}
-                            onChange={(e) => {
-                                setDateStart(e.target.value);
-                            }}
-                            type="date"
-                            placeholder="Start Date"
-                            name="startDate"
-                            className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-                        />
-
-                        {/* Arrow Icon from Heroicons */}
-                        <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
-
-                        {/* Input End Date */}
-                        <input
-                            value={dateEnd}
-                            onChange={(e) => {
-                                setDateEnd(e.target.value);
-                            }}
-                            type="date"
-                            placeholder="End Date"
-                            name="endDate"
-                            className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-                        />
                         <input
                             value={searchItem}
                             onChange={(e) => {
@@ -152,11 +135,10 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             onChange={(e) => setOption(e.target.value)}
                             className="w-70 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
                         >
-                            <option value="" disabled>Lọc theo</option>
-                            <option value="sanpham">Sản phẩm mới</option>
-                            <option value="bill">Sản phẩm bán chạy</option>
-                            <option value="danhgia">Sản phẩm đánh giá cao</option>
-                            <option value="yeuthich">Sản phẩm yêu thích</option>
+                            <option value="choduyet" disabled>Lọc theo</option>
+                            <option value="tatca">Tất cả</option>
+                            <option value="daduyet">Đã duyệt</option>
+                            <option value="choduyet">Chờ duyệt</option>
                         </select>
                     </div>
                 </form>
@@ -212,7 +194,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Lượt mua</span>
+                                <span className="text-sm text-black dark:text-white">Thể loại</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -225,40 +207,19 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Lượt đánh giá</span>
+                                <span className="text-sm text-black dark:text-white">Tác giả</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("sumLike");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Lượt yêu thích</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("avgStar");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Đánh giá</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th>
-                        {/* <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                        <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Trạng thái</span>
                             </div>
-                        </th> */}
+                        </th>
+                        <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
+                        </th>
                     </tr>
                 </thead>
 
@@ -289,34 +250,41 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.sumBill}
+                                        {entity.category.name}
                                     </div>
                                 </td>
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.sumEvalue}
+                                        {entity.writerName}
                                     </div>
                                 </td>
 
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.sumLike}
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
+                                    <div className="flex items-center gap-1 hidden lg:flex">
+                                        {entity.active ? (
+                                            <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.delete == false ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
+                                                {entity.delete == false ? 'Hoạt Động' : 'Đã Ngừng'}
+                                            </span>)
+                                            :
+                                            (
+                                                <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium bg-yellow-300 text-yellow-700`}>
+                                                    {entity.delete == false ? 'Chờ duyệt' : ''}
+                                                </span>)}
                                     </div>
                                 </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
-                                        {formatNumber(entity.avgStar)}
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                                    <div className="flex space-x-3.5">
+                                        <button onClick={() => {
+                                            setId(entity.id);
+                                            setIsOpen(true);
+                                            setStatusentity(!entity.delete);
+                                            setOptionModal(entity.active ? true : false);
+                                        }}>
+                                            {entity.delete == false ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                        </button>
                                     </div>
                                 </td>
-                                {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                                <div className="flex items-center gap-1 hidden lg:flex">
-                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                        {entity.status ? 'Hoạt Động' : 'Đã Ngừng'}
-                                    </span>
-                                </div>
-                            </td> */}
-
                             </tr>
                             {expandedRowId === entity.id && (
                                 <tr>
@@ -324,12 +292,13 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                         <div className="p-5 border border-gray-100 hover:bg-slate-100">
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
-                                                <p>Shop: {entity.account.shopName}</p>
-                                                <p>Ngày tạo: {entity.createAt}</p>
-                                                <p>Trạng thái : {entity.delete == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
-                                                <p>Giới thiệu: {entity.introduce}</p>
-                                                <p>Tác giả: {entity.writerName}</p>
                                                 <p>Nhà xuất bản: {entity.publishingCompany}</p>
+                                                <p>Giới thiệu: {entity.introduce}</p>
+                                                <p>Shop: {entity.account.shopName}</p>
+                                                <p>Trạng thái : {entity.account.status == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
+                                                <p>Họ tên chủ shop: {entity.account.fullname}</p>
+                                                <p>Email: {entity.account.email}</p>
+                                                <p>Số điện thoại: {entity.account.phone}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -390,6 +359,47 @@ const TableTwo = ({ onPageChange, entityData }) => {
                     </div>
                 </div>
             </div>
+            {optionModal ? (
+                <Modal
+                    open={isOpen}
+                    setOpen={setIsOpen}
+                    title={statusentity ? 'Ngừng Hoạt Động' : 'Khôi Phục'}
+                    message={statusentity
+                        ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
+                        : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+                    onConfirm={handleConfirm}
+                    confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
+                    cancelText="Thoát"
+                    icon={statusentity ? (
+                        <TrashIcon className="h-6 w-6 text-red-600" />
+                    ) : (
+                        <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+                    )}
+                    iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
+                    buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+            ) : (
+                <ModalDuyet
+                    open={isOpen}
+                    setOpen={setIsOpen}
+                    title={statusentity ? 'Hủy' : 'Duyệt'}
+                    message={statusentity
+                        ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
+                        : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
+                    onConfirm={handleConfirm}
+                    onCancel={() => {
+                        setIsOpen(false);
+                        onIdChange(id, optionModal, false);
+                    }}
+            confirmText={'Duyệt'}
+            cancelText={"Hủy"}
+            icon={statusentity ? (
+                <TrashIcon className="h-6 w-6 text-red-600" />
+            ) : (
+                <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+            )}
+            iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
+            buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+            )}
         </div>
     );
 };

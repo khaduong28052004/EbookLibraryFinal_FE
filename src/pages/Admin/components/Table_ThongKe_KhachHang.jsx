@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRightIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon, ChevronDownIcon, ArrowRightIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Thongke from '../../../service/admin/ThongKe';
@@ -9,6 +9,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
     const [dateEnd, setDateEnd] = useState('');
     const [searchItem, setSearchItem] = useState('');
     const [option, setOption] = useState('');
+    const [expandedRowId, setExpandedRowId] = useState(null);
 
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
@@ -68,6 +69,14 @@ const TableTwo = ({ onPageChange, entityData }) => {
         e.preventDefault();
     };
 
+    const toggleRow =
+        (id) => {
+            if (expandedRowId === id) {
+                setExpandedRowId(null); // Nếu đã mở thì click lại sẽ đóng
+            } else {
+                setExpandedRowId(id); // Mở hàng chi tiết
+            }
+        };
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
@@ -162,6 +171,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
             <table className="w-full border-collapse border border-stroke dark:border-strokedark">
                 <thead>
                     <tr className="border-t border-stroke dark:border-strokedark">
+                        <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
@@ -239,52 +249,81 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
                 <tbody>
                     {entityData?.content?.map((entity, index) => (
-                        <tr key={index} className="border-t border-stroke dark:border-strokedark">
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {entityData.pageable.pageNumber * entityData.size + index + 1}
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
-                            </td>
+                        <>
+                            <tr key={index} className={`border-t border-stroke dark:border-strokedark ${expandedRowId === entity.id ? `bg-slate-100` : `bg-white`}`} onClick={() => toggleRow(entity.id)}>
+                                <td
+                                    className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    {expandedRowId === entity.id ? (
+                                        <ChevronDownIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
+                                    ) : (
+                                        <ChevronRightIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
+                                    )
+                                    }
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    {entityData.pageable.pageNumber * entityData.size + index + 1}
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                                    <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
+                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
+                                </td>
 
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.fullname}
-                                </div>
-                            </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.fullname}
+                                    </div>
+                                </td>
 
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.avgdonhang}
-                                </div>
-                            </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.avgdonhang}
+                                    </div>
+                                </td>
 
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.avgStar}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.sumDonHang}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                                <div className="flex items-center gap-1 hidden lg:flex">
-                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                        {entity.status ? 'Hoạt Động' : 'Đã Ngừng'}
-                                    </span>
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                                <div className="flex space-x-3.5">
-                                    <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
-                                        {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.avgStar}
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.sumDonHang}
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
+                                    <div className="flex items-center gap-1 hidden lg:flex">
+                                        <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
+                                            {entity.status ? 'Hoạt Động' : 'Đã Ngừng'}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                                    <div className="flex space-x-3.5">
+                                        <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
+                                            {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {expandedRowId === entity.id && (
+                                <tr>
+                                    <td colSpan="9">
+                                        <div className="p-5 border border-gray-100 hover:bg-slate-100">
+                                            <p><strong>Thông tin chi tiết:</strong></p>
+                                            <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
+                                                <p>Họ tên: {entity.fullname}</p>
+                                                <p>Giới tính: {entity.gender ? 'Nam' : 'Nữ'}</p>
+                                                <p>Email: {entity.email}</p>
+                                                <p>Số điện thoại: {entity.phone}</p>
+                                                <p>Trạng thái : {entity.status ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
+                                                <p>Ngày tạo: {entity.createAt}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+
+                        </>
                     ))}
                 </tbody>
             </table>
