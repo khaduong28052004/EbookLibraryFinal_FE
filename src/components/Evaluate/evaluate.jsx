@@ -87,22 +87,19 @@ const fetchEvaluate = async () => {
     };
 
     const handleImageChange = (event) => {
-        const maxSize = 5 * 1024 * 1024; // Giới hạn kích thước ảnh là 5MB
+        const maxSize = 5 * 1024 * 1024; 
         const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-    
-        const uploadImages = Array.from(event.target.files); // Lấy tất cả ảnh người dùng chọn
+        const uploadImages = Array.from(event.target.files); 
         const totalImages = images.length + uploadImages.length;
     
         if (totalImages > 4) {
             setMessage("Chỉ có thể tải tối đa 4 ảnh. Vui lòng chọn lại");
-            event.target.value = ""; // Reset lại input file
+            event.target.value = ""; 
             return;
         }
     
         const validImages = [];
         let hasError = false;
-    
-        // Kiểm tra từng ảnh và thêm vào validImages nếu hợp lệ
         uploadImages.forEach((image) => {
             if (image.size > maxSize) {
                 setMessage("Kích thước ảnh không được vượt quá 5MB");
@@ -111,19 +108,19 @@ const fetchEvaluate = async () => {
                 setMessage("Chỉ chấp nhận file ảnh có định dạng PNG, JPEG hoặc JPG");
                 hasError = true;
             } else {
-                validImages.push(image); // Thêm ảnh hợp lệ vào danh sách
+                validImages.push(image); 
             }
         });
     
         if (hasError) {
-            event.target.value = ""; // Reset lại input file nếu có lỗi
+            event.target.value = ""; 
             return;
         }
     
         // Cập nhật images với các ảnh hợp lệ
         setImages((prevImages) => [...prevImages, ...validImages]);
-        refresh(); // Nếu cần làm mới ảnh sau khi thêm
-        event.target.value = ""; // Reset lại input file
+        refresh(); 
+        event.target.value = "";
     };
     
     
