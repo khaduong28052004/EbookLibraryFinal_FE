@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon, ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import SanPhamService from "../../../service/Seller/sanPhamService"
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
-import { format, parse } from 'date-fns';
 import { toast, ToastContainer } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import CategoryService from "../../../service/Seller/categoryService";
+import Pagination from './pagination';
 const TableSanPham = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [statusVoucher, setStatusVoucher] = useState(false);
+  const [isOpenModalSP, setIsOpenModalSP] = useState(false);
   const [listProduct, setListProduct] = useState([]);
   const [search, setSearch] = useState('');
   const [isStatus, setIsStatus] = useState(false);
@@ -18,6 +18,26 @@ const TableSanPham = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize, setPageSize] = useState(5);
+  const [dataProduct, setDataProduct] = useState({
+    id: null,
+    price: null,
+    sale: null,
+    weight: null,
+    name: "",
+    introduce: "",
+    writerName: "",
+    publishingCompany: "",
+    isDelete: false,
+    quantity: null,
+    isActive: false,
+    account: sessionStorage.getItem("id_account"),
+    category: null,
+    imageProducts: []
+  });
+  const [listDoanhMuc, setListDoanhMuc] = useState([]);
+  const [listTheLoai, setListTheLoai] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [idCategory, setIdCategory] = useState(0);
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -30,10 +50,27 @@ const TableSanPham = () => {
     }
   };
 
-
   useEffect(() => {
     loadListProduct();
   }, [search, pageNumber]);
+
+  const loadListDoanhMuc = async () => {
+    try {
+      const response = await CategoryService.getList();
+      setListDoanhMuc(response.data.result);
+      setListTheLoai([]);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const loadListTheLoai = async (value) => {
+    try {
+      const response = await CategoryService.getListByIdParent(value);
+      setListTheLoai(response.data.result);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const loadListProduct = async () => {
     try {
@@ -41,31 +78,61 @@ const TableSanPham = () => {
       setListProduct(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
+      loadListDoanhMuc();
     } catch (error) {
       console.log('ERROR GET LIST PRODUCT', error);
     }
   }
+  const handleAddFiles = (files) => {
+    const selectedFiles = Array.from(files);
+    const totalFiles = dataProduct.imageProducts.length + selectedFiles.length;
 
-  const editVoucher = async (voucher_id) => {
+    if (totalFiles > 4) {
+      setErrorMessage("Bạn chỉ được chọn tối đa 4 ảnh.");
+      return;
+    }
+
+    if (selectedFiles.length < 1) {
+      setErrorMessage("Bạn cần chọn ít nhất 1 ảnh.");
+      return;
+    }
+
+    setErrorMessage("");
+
+    setDataProduct(prevData => ({
+      ...prevData,
+      imageProducts: [...prevData.imageProducts, ...selectedFiles]
+    }));
+  };
+
+  const editProduct = async (product_id) => {
     try {
-      const response = await VoucherService.edit(voucher_id);
-      const voucher = response.data.result;
-      // setDataVoucher({
-      //   id: voucher.id,
-      //   name: voucher.name,
-      //   note: voucher.note,
-      //   totalPriceOrder: voucher.totalPriceOrder,
-      //   sale: voucher.sale,
-      //   quantity: voucher.quantity,
-      //   dateStart: voucher.dateStart,
-      //   dateEnd: voucher.dateEnd,
-      //   typeVoucher: voucher.typeVoucher.id,
-      //   account: voucher.account.id
-      // })
+      const response = await SanPhamService.edit(product_id);
+      const product = response.data.result;
+      console.log("Product", product);
+      setDataProduct({
+        id: product.id,
+        price: product.price,
+        sale: product.sale,
+        weight: product.weight,
+        name: product.name,
+        introduce: product.introduce,
+        writerName: product.writerName,
+        publishingCompany: product.publishingCompany,
+        isDelete: product.delete,
+        quantity: product.quantity,
+        isActive: product.active,
+        account: sessionStorage.getItem("id_account"),
+        category: product.category.id,
+        imageProducts: []
+      });
+
+      setIdCategory(product.category.idParent);
+      loadListTheLoai(product.category.idParent);
       setIsOpenModalSP(true);
-      console.log("SUCCESSFULLY GET EDIT VOUCHER", response.data.result);
+      console.log(dataProduct);
     } catch (error) {
-      console.log("ERROR EDIT VOUCHER", error);
+      console.error(error);
 
     }
   }
@@ -74,22 +141,23 @@ const TableSanPham = () => {
     e.preventDefault();
     try {
       let response;
-      const formattedData = {
-        ...dataVoucher,
-        dateStart: formatDateForDisplay(dataVoucher.dateStart),
-        dateEnd: formatDateForDisplay(dataVoucher.dateEnd),
-      };
-      console.log("DATA VOUCHER", formattedData);
+      const formData = new FormData();
+      dataProduct.imageProducts.forEach((file, index) => {
+        formData.append(`imageProducts`, file);
+      });
       if (!isStatus) {
-        response = await VoucherService.create(formattedData);
+        console.log(dataProduct);
+        response = await SanPhamService.create(dataProduct);
       } else {
-        response = await VoucherService.update(formattedData);
+        response = await SanPhamService.update(dataProduct);
       }
+      const responseImg = await SanPhamService.saveImg(formData);
+      console.log(responseImg)
       toast.success(response.data.message);
-      loadListVoucher();
+      loadListProduct();
       setIsOpenModalSP(false);
     } catch (error) {
-      console.log("ERROR", error);
+      console.log(error);
     }
   }
 
@@ -97,29 +165,54 @@ const TableSanPham = () => {
     try {
       const response = await SanPhamService.delete(productId);
       toast.success(response.data.message);
-      console.log("SUCCESSFULLY DELETE VOUCHER", response.data.result);
       loadListProduct();
     } catch (error) {
-      console.log("ERROR DELETE VOUCHER", error);
+      console.error(error);
     }
   }
+
+  const handleRemoveFile = (indexToRemove) => {
+    setDataProduct((prevData) => ({
+      ...prevData,
+      imageProducts: prevData.imageProducts.filter((_, index) => index !== indexToRemove)
+    }));
+  };
 
   const handSearch = (event) => {
     const value = event.target.value;
     setSearch(value);
   }
 
-  const handDataVoucher = (e) => {
+  const handleDanhMuc = (e) => {
+    const value = e.target.value;
+    loadListTheLoai(value);
+  }
+  const handDataProduct = (e) => {
     const { name, value } = e.target;
-    const isDateField = name === 'dateStart' || name === 'dateEnd';
-    setDataVoucher((prev) => ({
+    setDataProduct((prev) => ({
       ...prev,
-      [name]: isDateField ? value : value, // Store date in 'yyyy-MM-dd' format for compatibility
+      [name]: value
     }));
   };
 
-  const formatDateForDisplay = (dateString) => {
-    return dateString ? format(parse(dateString, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '';
+  const handleImageEdit = async (imageUrl) => {
+    try {
+      const response = await fetch(imageUrl);
+      
+      if (!response.ok) {
+        throw new Error("Không thể tải ảnh từ URL");
+      }
+  
+      const blob = await response.blob();
+      const file = new File([blob], 'image.jpg', { type: blob.type });
+      
+      setDataProduct(prevState => ({
+        ...prevState,
+        imageProducts: [...prevState.imageProducts, file],
+      }));
+    } catch (error) {
+      console.error("Lỗi khi tải ảnh từ URL", error);
+    }
   };
 
   return (
@@ -166,12 +259,10 @@ const TableSanPham = () => {
             Excel
           </button>
           <button
-            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
-          >
-            PDF
-          </button>
-          <button
-            onClick={() => { setIsOpenModalSP(true); setIsStatus(false) }}
+            onClick={() => {
+              setIsOpenModalSP(true);
+              // setIsStatus(false)
+            }}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Thêm
@@ -283,12 +374,12 @@ const TableSanPham = () => {
                     <button onClick={() => {
                       setIsOpen(true);
                       setProductId(item.id);
-                      //  setStatusVoucher(voucher.delete) 
                     }}>
                       <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
                     </button>
                     <button onClick={() => {
-                      // editVoucher(voucher.id); setIsStatus(true)
+                      editProduct(item.id);
+                      setIsStatus(true)
                     }}>
                       <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
                     </button>
@@ -300,73 +391,14 @@ const TableSanPham = () => {
         </tbody>
       </table>
 
-
-
-      <div className="py-6 flex border-t border-stroke dark:border-strokedark px-4 md:px-6 xl:px-7.5">
-        <div className="flex flex-1 justify-between sm:hidden">
-          <button
-            onClick={handlePrevious}
-            disabled={pageNumber === 0}
-            className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={pageNumber === totalPages - 1}
-            className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Next
-          </button>
-        </div>
-        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-gray-700 dark:text-white">
-              Showing
-              <span className="font-medium"> {pageNumber * 5 + 1} </span>
-              to
-              <span className="font-medium"> {Math.min((pageNumber + 1) * 5, totalElements)} </span>
-              of
-              <span className="font-medium"> {totalElements} </span>
-              results
-            </p>
-          </div>
-          <div>
-            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-              <button
-                onClick={handlePrevious}
-                disabled={pageNumber === 0}
-                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-              >
-                <span className="sr-only">Previous</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" />
-                </svg>
-              </button>
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setPageNumber(index)}
-                  className={`relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold ${index === pageNumber ? 'bg-indigo-600 text-white' : 'text-gray-900'
-                    } ring-1 ring-inset ring-gray-300  focus:outline-offset-0`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-              <button
-                onClick={handleNext}
-                disabled={pageNumber === totalPages - 1}
-                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-              >
-                <span className="sr-only">Next</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" />
-                </svg>
-              </button>
-            </nav>
-          </div>
-        </div>
-      </div>
+      <Pagination
+        pageNumber={pageNumber}
+        totalElements={totalElements}
+        totalPages={totalPages}
+        handleNext={handleNext}
+        handlePrevious={handlePrevious}
+        setPageNumber={setPageNumber}
+      />
 
       <Modal
         open={isOpen}
@@ -386,7 +418,7 @@ const TableSanPham = () => {
         iconBgColor={'bg-red-100'}
         buttonBgColor={'bg-red-600'}
       />
-      {/* 
+
       <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-999999">
         <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
@@ -395,7 +427,7 @@ const TableSanPham = () => {
             <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
               <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                 <h3 className="font-semibold text-xl text-black dark:text-white">
-                  Voucher
+                  Sản Phẩm
                 </h3>
               </div>
               <form onSubmit={handleSubmit}>
@@ -408,8 +440,8 @@ const TableSanPham = () => {
                       <input
                         type="text"
                         name="name"
-                        value={dataVoucher.name}
-                        onChange={handDataVoucher}
+                        value={dataProduct.name}
+                        onChange={handDataProduct}
                         placeholder="Tên sản phẩm..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
@@ -422,54 +454,188 @@ const TableSanPham = () => {
                       <input
                         type="number"
                         name="quantity"
-                        value={dataVoucher.quantity}
-                        onChange={handDataVoucher}
-                        placeholder="Số lượng..."
+                        value={dataProduct.quantity}
+                        onChange={handDataProduct}
+                        placeholder="Số Lượng..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
                   </div>
-
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Ngày Bắt Đầu
+                        Tác Giả
                       </label>
                       <input
-                        type="date"
-                        name="dateStart"
-                        value={dataVoucher.dateStart}
-                        onChange={handDataVoucher}
-                        placeholder="Ngày bắt đầu..."
+                        type="text"
+                        name="writerName"
+                        value={dataProduct.writerName}
+                        onChange={handDataProduct}
+                        placeholder="Tác giả..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
 
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Ngày Kết Thúc
+                        Nhà Xuất Bản
                       </label>
                       <input
-                        type="date"
-                        name="dateEnd"
-                        value={dataVoucher.dateEnd}
-                        onChange={handDataVoucher}
-                        placeholder="Ngày kết thúc..."
+                        type="text"
+                        name="publishingCompany"
+                        value={dataProduct.publishingCompany}
+                        onChange={handDataProduct}
+                        placeholder="Nhà xuất bản..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
                   </div>
+                  <div className="mb-6">
+                    <label htmlFor="productImage" className="mb-2.5 block text-black dark:text-white">
+                      Hình Ảnh Sản Phẩm
+                      {errorMessage && <span style={{ color: "red" }}> {errorMessage}</span>}
+                    </label>
 
+                    <div className="flex space-x-4">
+                      {/* Phần chọn ảnh */}
+                      <div className="w-1/3 border border-gray-300 rounded-md p-4 bg-gray-50 flex flex-col items-center">
+                        <label htmlFor="productImage" className="cursor-pointer flex flex-col items-center">
+                          <ArrowUpTrayIcon className="h-10 w-10 mt-3 text-blue-400" />
+                          <input
+                            id="productImage"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleAddFiles(e.target.files)}
+                          />
+                        </label>
+                      </div>
+
+                      {/* Phần hiển thị ảnh đã chọn */}
+                      <div className="w-2/3 border border-gray-300 rounded-md p-2 flex justify-center items-center bg-white">
+                        {dataProduct.imageProducts.length > 0 ? (
+                          <div className="grid grid-cols-4 gap-2">
+                            {dataProduct.imageProducts.map((file, index) => (
+                              <div key={index} className="relative w-full h-20">
+                                <img
+                                  key={index}
+                                  src={file instanceof Blob ? URL.createObjectURL(file) : file} // Kiểm tra loại dữ liệu
+                                  alt={`Product ${index}`}
+                                  className="w-full h-full object-cover rounded-md"
+                                />
+                                <button
+                                  onClick={() => handleRemoveFile(index)}
+                                  className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                                >
+                                  <XMarkIcon className="h-2 w-2" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-gray-500">Chưa có ảnh nào được chọn</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className='mb-4.5 flex flex-col gap-6 xl:flex-row'>
+                    <div className="w-full xl:w-1/2">
+                      <div className="mb-4.5">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Doanh Mục
+                        </label>
+                        <div className="relative z-20 bg-transparent dark:bg-form-input">
+                          <select
+                            onChange={handleDanhMuc}
+                            className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white`}
+                          >
+                            <option value="" disabled className="text-body dark:text-bodydark">
+                              {'Chọn doanh mục'}
+                            </option>
+                            {listDoanhMuc?.map((option, index) => (
+                              <option key={index} value={option.id} className="text-body dark:text-bodydark" selected={setIdCategory == option.id}>
+                                {option.name}
+                              </option>
+                            ))}
+                          </select>
+
+                          <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                            <svg
+                              className="fill-current"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <g opacity="0.8">
+                                <path
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
+                                  d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                  fill=""
+                                ></path>
+                              </g>
+                            </svg>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-full xl:w-1/2">
+                      <div className="mb-4.5">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Thể Loại
+                        </label>
+                        <div className="relative z-20 bg-transparent dark:bg-form-input">
+                          <select
+                            name='category'
+                            onChange={handDataProduct}
+                            className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white `}
+                          >
+                            <option value="" disabled className="text-body dark:text-bodydark">
+                              {'Chọn thể loại'}
+                            </option>
+                            {listTheLoai?.map((option, index) => (
+                              <option key={index} value={option.id} className="text-body dark:text-bodydark" selected={option.id == dataProduct.category}>
+                                {option.name}
+                              </option>
+                            ))}
+                          </select>
+
+                          <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                            <svg
+                              className="fill-current"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <g opacity="0.8">
+                                <path
+                                  fillRule="evenodd"
+                                  clipRule="evenodd"
+                                  d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                  fill=""
+                                ></path>
+                              </g>
+                            </svg>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Điều Kiện
+                        Giá
                       </label>
                       <input
                         type="number"
-                        name="totalPriceOrder"
-                        value={dataVoucher.totalPriceOrder}
-                        onChange={handDataVoucher}
+                        name="price"
+                        value={dataProduct.price}
+                        onChange={handDataProduct}
                         placeholder="Điều kiện..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
@@ -482,24 +648,23 @@ const TableSanPham = () => {
                       <input
                         type="number"
                         name="sale"
-                        value={dataVoucher.sale}
-                        onChange={handDataVoucher}
+                        value={dataProduct.sale}
+                        onChange={handDataProduct}
                         placeholder="Giám giá..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
                   </div>
-
                   <div className="mb-6">
                     <label className="mb-2.5 block text-black dark:text-white">
                       Mô tả
                     </label>
                     <textarea
                       rows={4}
-                      name='note'
-                      value={dataVoucher.note}
-                      onChange={handDataVoucher}
-                      placeholder="Nội dung..."
+                      name='introduce'
+                      value={dataProduct.introduce}
+                      onChange={handDataProduct}
+                      placeholder="Mô tả..."
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     ></textarea>
                   </div>
@@ -524,7 +689,7 @@ const TableSanPham = () => {
             </DialogPanel>
           </div>
         </div>
-      </Dialog> */}
+      </Dialog>
     </div>
   );
 };
