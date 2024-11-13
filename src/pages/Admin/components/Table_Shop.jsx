@@ -16,11 +16,10 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
-    const [isStatus, setStatus] = useState(true);
     const [statusentity, setStatusentity] = useState(false);
     const handleConfirm = () => {
         setIsOpen(false);
-        onIdChange(id);
+        onIdChange(id, null);
     };
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < entityData.totalPages) {
