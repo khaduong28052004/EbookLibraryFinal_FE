@@ -4,6 +4,8 @@ const API_CHECK_CARDID = "https://api.fpt.ai/vision/idr/vnm";
 const API_Java = "http://localhost:8080/api/v1/user/registerSeller";
 const API_KEY = "fuQcjc2PpqcvT7N1QNLo0mcOkoB1MMoX";
 
+
+
 export const fetchCheckImgCard = async (image) => {
     try {
         const response = await axios.post(API_CHECK_CARDID, image, {
@@ -55,6 +57,7 @@ export const uploadImages1 = async (id, formData) => {
         throw error;
     }
 };
+
 export const getSeller = async (id) => {
     try {
         const response = await axios.get(`${API_Java}/${id}`, {
