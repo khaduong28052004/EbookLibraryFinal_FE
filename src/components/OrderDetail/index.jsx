@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import Evaluate from '../Evaluate/evaluate';
 import BeatLoader from "react-spinners/BeatLoader";
+import userOrderDetailService from "../../service/user/orderDetail";
 import { toast, ToastContainer } from 'react-toastify';
 // npm install --save react-spinners
 
@@ -12,33 +13,33 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     const [orderDetailId, setOrderDetailId] = useState();
     const [productId, setProductId] = useState();
 
+    const getIdAccountFromSession = () => {
+        const user = sessionStorage.getItem("user");
+
+        if (user) {
+            const userObject = JSON.parse(user);
+            return userObject; // Trả về id_account
+        }
+
+        return null;
+    };
+
     const fetchOrderDetail = async () => {
         try {
             setLoading(true);
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+            const response = await userOrderDetailService.fetchOrderDetail({ orderId });
 
-            const response = await fetch(`http://localhost:8080/api/v1/billdetail/read?billId=${orderId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
+            if (response && response.data && response.data.data) {
+                const data = response.data.data;
 
-            if (!response.ok) {
-                throw new Error('Không thể lấy chi tiết đơn hàng. Vui lòng thử lại.');
+                setOrder(Array.isArray(data) ? data : []);
+            } else {
+                throw new Error('Không có dữ liệu');
             }
-
-            const data = await response.json();
-            setOrder(data.data);
-
 
         } catch (error) {
             console.log(error);
-            toast.error(error.message || 'Đã xảy ra lỗi khi tải chi tiết đơn hàng');
         } finally {
             setLoading(false);
         }
@@ -49,24 +50,16 @@ export default function OrderDetail({ orderId, clearOrderId }) {
         try {
             setLoading(true);
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+            const response = await userOrderDetailService.confirmOrderDetail({ billId });
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/confirm/${billId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Không thể xác nhận đơn hàng. Vui lòng kiểm tra lại.');
-                return;
+            if (response.data.status === "successfully") {
+                setTaskCompleted(true);
+                toast.success('Đã xác nhận đơn hàng');
+            } else {
+                toast.warn('Lỗi truyền tải dữ liệu');
+                throw new Error('Unexpected data format');
             }
-            setTaskCompleted(true);
-            toast.success('Đơn hàng đã được xác nhận thành công');
+
         } catch (error) {
             console.log(error);
             toast.warn(error.message || 'Đã xảy ra lỗi khi xác nhận đơn hàng');
@@ -78,27 +71,16 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     const cancelOrder = async (billId) => {
         try {
             setLoading(true);
+            const response = await userOrderDetailService.cancelOrderDetail({ billId });
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
-
-            const response = await fetch(`http://localhost:8080/api/v1/bill/update_status/cancel/${billId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-                return;
+           
+            if (response.data.status === "successfully") {
+                setTaskCompleted(true);
+                toast.success('Đơn hàng đã được hủy');
+            } else {
+                toast.warn('Lỗi truyền tải dữ liệu');
+                throw new Error('Unexpected data format');
             }
-
-            setTaskCompleted(true);
-            toast.success('Đơn hàng đã được hủy');
-
         } catch (error) {
             console.log(error);
         } finally {
@@ -113,7 +95,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
             const password = '123'; // Mật khẩu của bạn      
             const basicAuth = 'Basic ' + btoa(username + ':' + password);
 
-            const response = await fetch(`http://localhost:8080/api/v1/bill/create/reorder/${billId}`, {
+            const response = await fetch(`http://localhost:8080/api/v1/user/bill/create/reorder/${billId}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': basicAuth,
@@ -126,7 +108,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                 return;
             }
 
-            toast.success('Đã được thêm vào giỏ hàng');
+            toast.success('Đã thêm vào giỏ hàng');
 
         } catch (error) {
             console.log(error);
@@ -136,7 +118,6 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     }
 
     const setValue = (billDetailId, productId) => {
-        set
         setOrderDetailId(billDetailId);
         setProductId(productId);
     }
@@ -146,9 +127,6 @@ export default function OrderDetail({ orderId, clearOrderId }) {
         setProductId(undefined);
     };
 
-    const evaluateSuccessfully = () => {
-        toast.success("Gửi đánh giá thành công");
-    }
 
     useEffect(() => {
         fetchOrderDetail();
@@ -188,7 +166,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     </div>
 
 
-    if (orderDetailId) return <Evaluate orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} isSuccessfully={evaluateSuccessfully}></Evaluate>
+    if (orderDetailId) return <Evaluate orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} /**isSuccessfully={evaluateSuccessfully} */></Evaluate>
 
     return (
         <>

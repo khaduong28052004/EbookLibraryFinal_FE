@@ -36,6 +36,7 @@ const AuthService = {
     return;
   },
   logout: () => {
+    sessionStorage.removeItem("id_account");
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
     return;

@@ -1,12 +1,54 @@
+import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import TableThongKe from './components/TableThongKe';
+import TableThongKe from './components/Table_ThongKe_NguoiBan';
 import CardDataStats from '../../components/CardDataStats';
-const DoanhThuAdmin = () => {
+import Thongke from '../../service/admin/ThongKe';
+
+const NguoiBanAdmin = () => {
+
+  const [data, setData] = useState([]);
+  const [header, setHeader] = useState([]);
+
+  const [dateStart, setDateStart] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
+  const [searchItem, setSearchItem] = useState('');
+  const [option, setOption] = useState('');
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortBy, setSortBy] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const findAllDoanhThu = async () => {
+    try {
+      const response = await Thongke.nguoiban({ dateStart, dateEnd, searchItem, option, currentPage, size: 2, sortColumn, sortBy });
+      setData(response.data.result.thongke);
+      setHeader(response.data.result);
+    } catch (error) {
+      console.log("Error: " + error);
+    }
+  }
+
+  const handleChange = (dateStart, dateEnd, option, searchItem, currentPage, sortBy, sortColumn) => {
+    setOption(option);
+    setDateStart(dateStart);
+    setDateEnd(dateEnd);
+    setCurrentPage(currentPage);
+    setSortBy(sortBy);
+    setSortColumn(sortColumn);
+    setSearchItem(searchItem);
+  }
+
+  useEffect(() => {
+    findAllDoanhThu();
+  }, [dateStart, dateEnd, option, searchItem, currentPage, sortBy, sortColumn]);
+
   return (
     <>
-      <Breadcrumb pageName="Thống Kê Doanh Thu" status='Quản Trị' />
+      <Breadcrumb pageName="Thống Kê Người Bán" status='Quản Trị' />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+        <CardDataStats title="Shop" total={header.tongShop}
+        // rate="0.43%" 
+        // levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -92,10 +134,11 @@ const DoanhThuAdmin = () => {
         </CardDataStats>
       </div>
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <TableThongKe />
+        <TableThongKe onPageChange={handleChange} entityData={data}
+        />
       </div>
     </>
   );
 };
 
-export default DoanhThuAdmin;
+export default NguoiBanAdmin;

@@ -74,7 +74,7 @@ export default function Login() {
             <div className="lg:w-[572px] w-full h-[783px] bg-white flex flex-col justify-center sm:p-10 p-5 border border-[#E0E0E0]">
               <div className="w-full">
                 <div className="title-area flex flex-col justify-center items-center relative text-center mb-7">
-                  <h1 className="text-[34px] font-bold leading-[74px] text-qblack">Log In</h1>
+                  <h1 className="text-[34px] font-bold leading-[74px] text-qblack">Đăng nhập</h1>
                   <div className="shape -mt-6">
                     <svg width="172" height="29" viewBox="0 0 172 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M1 5.08742C17.6667 19.0972 30.5 31.1305 62.5 27.2693C110.617 21.4634 150 -10.09 171 5.08727" stroke="#FFBB38" />
@@ -135,12 +135,12 @@ export default function Login() {
                           </svg>
                         )}
                       </button>
-                      <span onClick={rememberMe} className="text-base text-black">Remember Me</span>
+                      <span onClick={rememberMe} className="text-base text-black">Nhớ mật khẩu!</span>
                     </div>
-                    <Link to="/forgot-password" className="text-base text-qyellow">Forgot Password</Link>
+                    <Link to="/forgot-password" className="text-base text-qyellow">Quên mật khẩu!</Link>
                   </div>
                   <button type="submit" className="black-btn mb-6 text-sm text-white w-full h-[50px] font-semibold flex justify-center bg-purple items-center">
-                    Log In
+                    Đăng nhập
                   </button>
                 </form>
                 <div className="social-login-buttons flex space-x-4 mt-6">
@@ -156,7 +156,7 @@ export default function Login() {
                 </div>
                 <div className="social-login-buttons flex space-x-4 mt-6">
 
-                  <Link to="/signup" className="text-base text-qyellow">signup</Link>
+                  <Link to="/signup" className="text-base text-qyellow">Đăng ký tài khoản!</Link>
                 </div>
               </div>
             </div>

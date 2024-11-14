@@ -12,7 +12,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
   const [gender, setGender] = useState('');
   const [sortColumn, setSortColumn] = useState('');
   const [sortBy, setSortBy] = useState(true);
-  const currentPage = entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber;
+  const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
 
   const [id, setId] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -107,6 +107,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
               value={searchItem}
               onChange={(e) => {
                 setSearchItem(e.target.value);
+                setCurrentPage(0);
               }}
               type="text"
               placeholder="Tìm kiếm..."
@@ -219,7 +220,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
           {entityData?.content?.map((entity, index) => (
             <tr key={index} className="border-t border-stroke dark:border-strokedark">
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                {index + 1}
+                {entityData.pageable.pageNumber * entityData.size + index + 1}
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                 <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
