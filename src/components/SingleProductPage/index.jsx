@@ -1,5 +1,7 @@
-import { useRef, useState } from "react";
-import data from "../../data/products.json";
+import axios from "axios";
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInMonths, differenceInSeconds, differenceInYears } from "date-fns";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import BreadcrumbCom from "../BreadcrumbCom";
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
@@ -82,6 +84,57 @@ export default function SingleProductPage() {
     }, 2000);
   };
 
+  // --------------------------------------------------------------------------------------------------------------------------------------
+  const [product, setProduct] = useState();
+  const [seller, setSeller] = useState();
+  const [relatedProduct, setRelatedProduct] = useState();
+  const [productSeller, setProductSeller] = useState();
+
+  const local = useLocation();
+  const query = new URLSearchParams(local.search);
+  const fetchProduct = async () => {
+
+    await axios.get("http://localhost:8080/api/v1/user/productdetail/product/" + query.get("idProduct")).then(response => {
+      setProduct(response.data.result.product);
+      setSeller(response.data.result.seller);
+    }).catch(error => {
+      console.error("fetch product detail error " + error);
+    });
+  };
+
+  const fetchRelated = async () => {
+    await axios.get('http://localhost:8080/api/v1/user/productdetail/related').then(response => {
+      setRelatedProduct(response.data.result);
+    }).catch(error => console.error("fetch related product error " + error));
+  };
+
+  const fetchProductSeller = async () => {
+    await axios.get('http://localhost:8080/api/v1/user/productdetail/seller').then(response => {
+      setProductSeller(response.data.result);
+    }).catch(error => console.error("fetch product seller error " + error));
+  }
+
+  useEffect(() => {
+    fetchProduct();
+    fetchRelated();
+    fetchProductSeller();
+  }, []);
+
+  const createAt = (date) => {
+    if (differenceInSeconds(new Date(), new Date(date)) < 60) {
+      return differenceInSeconds(new Date(), new Date(date)) + " giây trước";
+    } else if (differenceInMinutes(new Date(), new Date(date)) < 60) {
+      return differenceInMinutes(new Date(), new Date(date)) + " phút trước";
+    } else if (differenceInHours(new Date(), new Date(date)) < 24) {
+      return differenceInHours(new Date(), new Date(date)) + " tiếng trước";
+    } else if (differenceInDays(new Date(), new Date(date)) < 30) {
+      return differenceInDays(new Date(), new Date(date)) + " ngày trước";
+    } else if (differenceInMonths(new Date(), new Date(date)) < 12) {
+      return differenceInMonths(new Date(), new Date(date)) + " tháng trước";
+    } else {
+      return differenceInYears(new Date(), new Date(date)) + " năm trước";
+    }
+  }
   return (
     <>
       <Layout childrenClasses="pt-0 pb-0">
@@ -99,11 +152,10 @@ export default function SingleProductPage() {
             </div>
             <div className="w-full bg-white pb-[60px]">
               <div className="container-x mx-auto">
-                <ProductView reportHandler={() => setReport(!report)} />
+                <ProductView reportHandler={() => setReport(!report)} product={product} />
               </div>
             </div>
           </div>
-
           <div
             className="product-des-wrapper w-full relative pb-[60px]"
             ref={reviewElement}
@@ -156,7 +208,7 @@ export default function SingleProductPage() {
                       Giới thiệu
                     </h6>
                     <p className="text-[15px] text-qgray text-normal mb-10">
-                      Lorem Ipsum chỉ đơn giản là văn bản giả của ngành in ấn và sắp chữ. Lorem Ipsum đã trở thành văn bản giả chuẩn của ngành công nghiệp này kể từ những năm 1500, khi một thợ in vô danh lấy một galley chữ và xáo trộn nó để tạo thành một cuốn sách mẫu chữ. Nó đã tồn tại không chỉ năm thế kỷ mà còn vượt qua cả bước nhảy vọt vào sắp chữ điện tử, về cơ bản vẫn không thay đổi. Nó không được phổ biến vào những năm 1960 với việc phát hành các tờ Letraset chứa các đoạn văn Lorem Ipsum, và gần đây hơn là với phần mềm xuất bản trên máy tính để bàn như Aldus PageMaker bao gồm các phiên bản của Lorem Ipsum để tạo thành một cuốn sách mẫu chữ.
+                      {product?.introduce}
                     </p>
                     <div>
                       <h6 className="text-[18px] text-medium mb-4">
@@ -164,16 +216,16 @@ export default function SingleProductPage() {
                       </h6>
                       <ul className="list-disc ml-[15px]">
                         <li className="font-normal text-qgray leading-9">
-                          thân máy mỏng với vỏ kim loại
+                          Tác giả : {product?.writerName}
                         </li>
                         <li className="font-normal text-qgray leading-9">
-                          bộ xử lý Intel Core i5-1135G7 mới nhất (4 lõi / 8 luồng)
+                          Nhà xuất bản : {product?.publishingCompany}
                         </li>
                         <li className="font-normal text-qgray leading-9">
-                          RAM DDR4 8GB và ổ SSD PCIe 512GB nhanh
+                          Số lượng còn lại : {product?.quantity}
                         </li>
                         <li className="font-normal text-qgray leading-9">
-                          Card đồ họa NVIDIA GeForce MX350 2GB GDDR5 bàn phím có đèn nền, bàn di chuột hỗ trợ cử chỉ
+                          Ngày đăng : {createAt("2024-11-07T10:00:00.000+00:00")}
                         </li>
                       </ul>
                     </div>
@@ -182,7 +234,7 @@ export default function SingleProductPage() {
                 {tab === "review" && (
                   <div data-aos="fade-up" className="w-full tab-content-item">
                     <h6 className="text-[18px] font-medium text-qblack mb-2">
-                  Đánh giá
+                      Đánh giá
                     </h6>
                     {/* review-comments */}
                     <div className="w-full">
@@ -208,27 +260,30 @@ export default function SingleProductPage() {
                 )}
                 {tab === "info" && (
                   <div data-aos="fade-up" className="w-full tab-content-item">
-                    <SallerInfo products={data.products.slice(0, 8)} />
+                    <SallerInfo seller={seller} datas={productSeller?.datas} />
                   </div>
                 )}
               </div>
             </div>
           </div>
 
+
+
+
           <div className="related-product w-full bg-white">
             <div className="container-x mx-auto">
               <div className="w-full py-[60px]">
                 <h1 className="sm:text-3xl text-xl font-600 text-qblacktext leading-none mb-[30px]">
-               Sản phẩm liên quan
+                  Sản phẩm liên quan
                 </h1>
                 <div
                   data-aos="fade-up"
                   className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 xl:gap-[30px] gap-5"
                 >
                   <DataIteration
-                    datas={data.products}
-                    startLength={5}
-                    endLength={9}
+                    datas={relatedProduct?.datas}
+                    startLength={0}
+                    endLength={relatedProduct?.datas?.length}
                   >
                     {({ datas }) => (
                       <div key={datas.id} className="item">
@@ -241,6 +296,7 @@ export default function SingleProductPage() {
             </div>
           </div>
         </div>
+
         {report && (
           <div className="w-full h-full flex fixed left-0 top-0 justify-center z-50 items-center">
             <div

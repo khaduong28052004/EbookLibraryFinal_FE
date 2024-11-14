@@ -35,10 +35,6 @@ export default function About() {
           centerMode: false,
         },
       },
-
-      // You can unslick at a given breakpoint now by adding:
-      // settings: "unslick"
-      // instead of a settings object
     ],
   };
   const slider = useRef(null);

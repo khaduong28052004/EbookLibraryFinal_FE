@@ -1,38 +1,39 @@
 import { useState } from "react";
 import Star from "../Helpers/icons/Star";
-import Selectbox from "../Helpers/Selectbox";
 
-export default function ProductView({ className, reportHandler }) {
-  const productsImg = [
-    {
-      id: 1,
-      src: "product-details-1.png",
-      color: "#FFBC63",
-    },
-    {
-      id: 2,
-      src: "product-details-2.png",
-      color: "#649EFF",
-    },
-    {
-      id: 3,
-      src: "product-details-3.png",
-      color: "#FFFFFF",
-    },
-    {
-      id: 4,
-      src: "product-details-4.png",
-      color: "#FF7173",
-    },
-    {
-      id: 6,
-      src: "product-details-5.png",
-      color: "",
-    },
-  ];
+export default function ProductView({ className, reportHandler, product }) {
+  // const productsImg = [
+  //   {
+  //     id: 1,
+  //     src: "product-details-1.png",
+  //     color: "#FFBC63",
+  //   },
+  //   {
+  //     id: 2,
+  //     src: "product-details-2.png",
+  //     color: "#649EFF",
+  //   },
+  //   {
+  //     id: 3,
+  //     src: "product-details-3.png",
+  //     color: "#FFFFFF",
+  //   },
+  //   {
+  //     id: 4,
+  //     src: "product-details-4.png",
+  //     color: "#FF7173",
+  //   },
+  //   {
+  //     id: 6,
+  //     src: "product-details-5.png",
+  //     color: "",
+  //   },
+  // ];
 
-  const [src, setSrc] = useState(productsImg[0].src);
-  const changeImgHandler = (current) => {
+  const productsImg = product?.imageProducts;
+
+  const [src, setSrc] = useState(product?.imageProducts[0]?.name);
+  const changeImgHandhgler = (current) => {
     setSrc(current);
   };
   const [quantity, setQuantity] = useState(1);
@@ -52,27 +53,27 @@ export default function ProductView({ className, reportHandler }) {
     >
       <div data-aos="fade-right" className="lg:w-1/2 xl:mr-[70px] lg:mr-[50px]">
         <div className="w-full">
-          <div className="w-full h-[600px] border border-qgray-border flex justify-center items-center overflow-hidden relative mb-3">
+          <div className="w-full h-[450px] border border-qgray-border flex justify-center items-center overflow-hidden relative mb-3">
             <img
-              src={`/assets/images/${src}`}
+              src={product?.imageProducts[0]?.name}
               alt=""
               className="object-contain"
             />
             <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
-              <span>-5%</span>
+              <span>-{product?.sale}%</span>
             </div>
           </div>
           <div className="flex gap-2 flex-wrap">
-            {productsImg &&
-              productsImg.length > 0 &&
-              productsImg.map((img) => (
+            {product?.imageProducts &&
+              product?.imageProducts.length > 0 &&
+              product?.imageProducts.map((img) => (
                 <div
-                  onClick={() => changeImgHandler(img.src)}
+                  onClick={() => changeImgHandler(img.name)}
                   key={img.id}
                   className="w-[110px] h-[110px] p-[15px] border border-qgray-border cursor-pointer"
                 >
                   <img
-                    src={`/assets/images/${img.src}`}
+                    src={img?.name}
                     alt=""
                     className={`w-full h-full object-contain ${src !== img.src ? "opacity-50" : ""
                       } `}
@@ -88,13 +89,13 @@ export default function ProductView({ className, reportHandler }) {
             data-aos="fade-up"
             className="text-qgray text-xs font-normal uppercase tracking-wider mb-2 inline-block"
           >
-            Mobile Phones
+            {product?.writerName}
           </span>
           <p
             data-aos="fade-up"
             className="text-xl font-medium text-qblack mb-4"
           >
-            Samsung Galaxy Z Fold3 5G 3 colors in 512GB
+            {product?.name}
           </p>
 
           <div
@@ -102,22 +103,19 @@ export default function ProductView({ className, reportHandler }) {
             className="flex space-x-[10px] items-center mb-6"
           >
             <div className="flex">
-              <Star />
-              <Star />
-              <Star />
-              <Star />
-              <Star />
+              {Array.from(Array(product?.star), () => (<>  <Star /></>))}
+
             </div>
             <span className="text-[13px] font-normal text-qblack">
-              6 Đánh giá
+              {product?.quantityEvalue} Đánh giá
             </span>
           </div>
 
           <div data-aos="fade-up" className="flex space-x-2 items-center mb-7">
             <span className="text-sm font-500 text-qgray line-through mt-2">
-              30.500.000<sup>đ</sup>
+              {Intl.NumberFormat().format(product?.price)}<sup>đ</sup>
             </span>
-            <span className="text-2xl font-500 text-qred">29.000.000<sup>đ</sup></span>
+            <span className="text-2xl font-500 text-qred">{Intl.NumberFormat().format(product?.price - ((product?.price * product?.sale) / 100))}<sup>đ</sup></span>
           </div>
 
           <p
@@ -126,13 +124,13 @@ export default function ProductView({ className, reportHandler }) {
           >
             Một sự thật đã được chứng minh từ lâu là người đọc sẽ bị phân tâm bởi nội dung dễ đọc của một trang khi nhìn vào bố cục của nó.
           </p>
-
+{/* 
           <div data-aos="fade-up" className="colors mb-[30px]">
             <span className="text-sm font-normal uppercase text-qgray mb-[14px] inline-block">
               COLOR
             </span>
 
-            <div className="flex space-x-4 items-center">
+             <div className="flex space-x-4 items-center">
               {productsImg &&
                 productsImg.length > 0 &&
                 productsImg.map((img) => (
@@ -152,10 +150,10 @@ export default function ProductView({ className, reportHandler }) {
                     )}
                   </div>
                 ))}
-            </div>
-          </div>
+            </div> 
+          </div> */}
 
-          <div data-aos="fade-up" className="product-size mb-[30px]">
+          {/* <div data-aos="fade-up" className="product-size mb-[30px]">
             <span className="text-sm font-normal uppercase text-qgray mb-[14px] inline-block">
               SIZE
             </span>
@@ -194,7 +192,7 @@ export default function ProductView({ className, reportHandler }) {
                 </Selectbox>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div
             data-aos="fade-up"
@@ -245,20 +243,20 @@ export default function ProductView({ className, reportHandler }) {
                 type="button"
                 className="black-btn text-sm font-semibold w-full h-full"
               >
-               Thêm vào giỏ hàng
+                Thêm vào giỏ hàng
               </button>
             </div>
           </div>
 
           <div data-aos="fade-up" className="mb-[20px]">
             <p className="text-[13px] text-qgray leading-7">
-              <span className="text-qblack">Thể loại :</span> Điện tử
+              <span className="text-qblack">Thể loại :</span> {product?.category?.name}
             </p>
             {/* <p className="text-[13px] text-qgray leading-7">
               <span className="text-qblack">Tags :</span> Beer, Foamer
             </p> */}
             <p className="text-[13px] text-qgray leading-7">
-              <span className="text-qblack">Mã sản phẩm:</span> KE-91039
+              <span className="text-qblack">Mã sản phẩm:</span> {product?.id}
             </p>
           </div>
 
@@ -284,8 +282,7 @@ export default function ProductView({ className, reportHandler }) {
             <button
               type="button"
               onClick={reportHandler}
-              className="text-qred font-semibold text-[13px]"
-            >
+              className="text-qred font-semibold text-[13px]">
               Báo cáo mục này
             </button>
           </div>
@@ -295,7 +292,7 @@ export default function ProductView({ className, reportHandler }) {
             className="social-share flex  items-center w-full"
           >
             <span className="text-qblack text-[13px] mr-[17px] inline-block">
-           Chia sẽ cái này
+              Chia sẽ cái này
             </span>
 
             <div className="flex space-x-5 items-center">

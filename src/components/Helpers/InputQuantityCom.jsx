@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-export default function InputQuantityCom() {
-  const [quantity, setQuantity] = useState(1);
+export default function InputQuantityCom({quantityCart}) {
+  const [quantity, setQuantity] = useState(quantityCart);
   const increment = () => {
     setQuantity((prev) => prev + 1);
   };

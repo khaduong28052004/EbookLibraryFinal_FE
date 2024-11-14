@@ -109,11 +109,6 @@ export default function BecomeSaller() {
                         inputClasses="h-[50px]"
                       />
                     </div>
-
-
-
-
-
                   </div>
 
                   {/* ============================================================== */}
@@ -123,7 +118,6 @@ export default function BecomeSaller() {
                     </h1>
                     <p className="text-[15px] text-qgraytwo">
                       Hãy điền vào mẫu dưới đây hoặc viết thư cho chúng tôi. Chúng tôi sẽ hỗ trợ bạn sớm nhất có thể.
-
                     </p>
                   </div>
                   <div className="input-area">
