@@ -193,7 +193,8 @@ export default function ProfileTab() {
               type="text"
               inputClasses="h-[50px]"
               value={formData.fullname}
-              name="fullname"
+              // name="fullname"
+              id="fullname"
               inputHandler={handleChange}
             />
             {formErrors.fullname && <p className="text-red-500">{formErrors.fullname}</p>}
@@ -205,7 +206,8 @@ export default function ProfileTab() {
               type="date"
               inputClasses="h-[50px]"
               value={formData.birthday}
-              name="birthday"
+              // name="birthday"
+              id="birthday"
               inputHandler={handleChange}
             />
             {formErrors.birthday && <p className="text-red-500">{formErrors.birthday}</p>}
@@ -219,7 +221,8 @@ export default function ProfileTab() {
               type="email"
               inputClasses="h-[50px]"
               value={formData.email}
-              name="email"
+              // name="email"
+              id="email"
               inputHandler={handleChange}
             />
             {formErrors.email && <p className="text-red-500">{formErrors.email}</p>}
@@ -231,7 +234,8 @@ export default function ProfileTab() {
               type="text"
               inputClasses="h-[50px]"
               value={formData.phone}
-              name="phone"
+              // name="phone"
+              id="phone"
               inputHandler={handleChange}
             />
             {formErrors.phone && <p className="text-red-500">{formErrors.phone}</p>}
@@ -246,21 +250,22 @@ export default function ProfileTab() {
                 type="text"
                 inputClasses="h-[50px]"
                 value={formData.fullNameAddress}
-                name="fullNameAddress"
+                // name="fullNameAddress"
+                id="fullNameAddress"
                 inputHandler={handleChange}
                 readOnly
               />
             </div>
             <Link to="/profile#address" className="mt-7 ml-5 flex justify-end">
-              <button className="min-w-[85px] rounded-md md:block hidden transition-transform transform hover:scale-105 bg-indigo-800 border-none bg-gradient-to-tr from-indigo-200 text-white p-2.5">
+              <button className="min-w-[85px] rounded-md md:block hidden transition-transform transform hover:scale-105 bg-indigo-900 hover:bg-indigo-700  text-white p-2.5">
                 Thay đổi
               </button>
-              <PencilSquareIcon className="w-12 h-12 md:hidden block rounded-md bg-indigo-800 border-none bg-gradient-to-tr from-indigo-200 text-white p-2" />
+              <PencilSquareIcon className="w-12 h-12 md:hidden block rounded-md bg-indigo-900 hover:bg-indigo-700  text-white p-2" />
             </Link>
           </div>
         </div>
         <div className="flex justify-center mt-8">
-          <button type="submit" className="min-w-[200px] rounded-md transition-transform transform hover:scale-105 bg-indigo-800 border-none bg-gradient-to-tr from-indigo-200 text-white p-3">
+          <button type="submit" className="min-w-[200px] rounded-md transition-transform transform hover:scale-105  bg-indigo-900 hover:bg-indigo-700 text-white p-3">
             Cập nhật thông tin
           </button>
         </div>
