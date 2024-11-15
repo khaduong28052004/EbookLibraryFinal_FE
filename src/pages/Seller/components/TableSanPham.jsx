@@ -245,7 +245,7 @@ const TableSanPham = () => {
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <ToastContainer />
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-        <form action="https://formbold.com/s/unique_form_id" method="POST">
+        <form>
           <div className="relative pt-3">
             <button className="absolute left-0 top-6 -translate-y-1/2">
               <svg

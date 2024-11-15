@@ -32,6 +32,9 @@ const TableVoucher = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize, setPageSize] = useState(5);
+  const [sortBy, setSortBy] = useState(true);
+  const [sortColumn, setSortColumn] = useState("id")
+  
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -47,11 +50,11 @@ const TableVoucher = () => {
 
   useEffect(() => {
     loadListVoucher();
-  }, [search, pageNumber]);
+  }, [search, pageNumber, sortBy, sortColumn]);
 
   const loadListVoucher = async () => {
     try {
-      const response = await VoucherService.getData(search, pageNumber);
+      const response = await VoucherService.getData(search, pageNumber, sortBy, sortColumn);
       setListVoucher(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
@@ -181,11 +184,6 @@ const TableVoucher = () => {
             Excel
           </button>
           <button
-            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
-          >
-            PDF
-          </button>
-          <button
             onClick={() => {
               setDataVoucher({
                 id: null,
@@ -199,7 +197,7 @@ const TableVoucher = () => {
                 typeVoucher: 1,
                 account: sessionStorage.getItem("id_account")
               });
-              setIsOpenModalSP(true); 
+              setIsOpenModalSP(true);
               setIsStatus(false);
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
@@ -213,42 +211,62 @@ const TableVoucher = () => {
         <thead>
           <tr className="border-t border-stroke dark:border-strokedark">
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("name");
+              }}>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Tên</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4  dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("totalPriceOrder");
+              }}>
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Điều Kiện</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4  dark:text-white ${sortBy == false && sortColumn == "totalPriceOrder" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "totalPriceOrder" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("sale");
+              }}>
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Giảm Giá</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4  dark:text-white ${sortBy == false && sortColumn == "sale" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "sale" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("quantity");
+              }}>
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượng</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4  dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("isDelete");
+              }}>
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trạng Thái</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4  dark:text-white ${sortBy == false && sortColumn == "isDelete" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "isDelete" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -276,12 +294,12 @@ const TableVoucher = () => {
 
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {voucher.totalPriceOrder}
+                    {voucher.totalPriceOrder.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {voucher.sale}
+                    {voucher.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">

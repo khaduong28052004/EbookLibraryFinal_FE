@@ -24,9 +24,11 @@ const TableTwo = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize, setPageSize] = useState(5);
+  const [sortBy, setSortBy] = useState(true);
+  const [sortColumn, setSortColumn] = useState("id");
   useEffect(() => {
     getList();
-  }, [search, pageNumber]);
+  }, [search, pageNumber, sortBy, sortColumn]);
   useEffect(() => {
     if (isStatus) {
       getList();
@@ -35,9 +37,10 @@ const TableTwo = () => {
   }, [search, isStatus]);
 
   const getList = async () => {
-    const response = await DanhGiaService.getData(search, pageNumber);
-    console.log(response);
+    const response = await DanhGiaService.getData(search, pageNumber, sortBy, sortColumn);
     setListDanhGia(response.data.result.content);
+    setTotalPages(response.data.result.totalPages);
+    setTotalElements(response.data.result.totalElements);
   }
   const handleConfirm = () => {
     setIsOpen(false);
@@ -74,7 +77,7 @@ const TableTwo = () => {
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <ToastContainer />
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-        <form action="https://formbold.com/s/unique_form_id" method="POST">
+        <form >
           <div className="relative pt-3">
             <button className="absolute left-0 top-6 -translate-y-1/2">
               <svg
@@ -122,42 +125,59 @@ const TableTwo = () => {
           <tr className="border-t border-stroke dark:border-strokedark">
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("account.fullname");
+              }}>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Khách Hàng</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("product.name")
+              }}
+            >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Sản Phẩm</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Hình Ảnh Đánh Giá</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
             </th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("content");
+              }}
+            >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Nội Dung Đánh Giá</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("star")
+              }}
+            >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số Sao</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -172,7 +192,7 @@ const TableTwo = () => {
             <tr key={index} className="border-t border-stroke dark:border-strokedark">
 
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-              {index + 1 + pageNumber * pageSize}
+                {index + 1 + pageNumber * pageSize}
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                 <p className="text-sm text-black dark:text-white truncate w-24">{danhGia.account.fullname}</p>

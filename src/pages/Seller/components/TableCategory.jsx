@@ -28,6 +28,9 @@ const TableCategory = () => {
   const [status, setStatus] = useState(true);
   const [listDoanhMuc, setListDoanhMuc] = useState([]);
   const [idParent, setidParent] = useState(null);
+  const [sortBy, setSortBy] = useState(true);
+  const [sortColumn, setSortColumn] = useState("id");
+
   const handleConfirm = () => {
     setIsOpen(false);
   };
@@ -45,11 +48,11 @@ const TableCategory = () => {
   };
   useEffect(() => {
     loadTable();
-  }, [search, pageNumber])
+  }, [search, pageNumber, sortBy, sortColumn])
 
   const loadTable = async () => {
     try {
-      const response = await CategoryService.getAllSeller(search, pageNumber);
+      const response = await CategoryService.getAllSeller(search, pageNumber, sortBy, sortColumn);
       setListCategory(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
@@ -93,15 +96,15 @@ const TableCategory = () => {
       console.log(error);
     }
   }
-const reset = async () => {
-  setDataCategory({
-    id:null,
-    name: '',
-    idParent: null
-  })
-  loadListDoanhMuc();
+  const reset = async () => {
+    setDataCategory({
+      id: null,
+      name: '',
+      idParent: null
+    })
+    loadListDoanhMuc();
 
-}
+  }
   const editCategory = async (category_id) => {
     try {
       const response = await CategoryService.edit(category_id);
@@ -177,7 +180,7 @@ const reset = async () => {
             Excel
           </button>
           <button
-            onClick={() => {reset(); setIsOpenModalSP(true); setStatus(true)}}
+            onClick={() => { reset(); setIsOpenModalSP(true); setStatus(true) }}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Thêm
@@ -193,19 +196,29 @@ const reset = async () => {
           <tr className="border-t border-stroke dark:border-strokedark">
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("name");
+              }}
+            >
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Thể Loại</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("parentName");
+              }}
+            >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Danh Mục</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "parentName" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "parentName" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -235,7 +248,7 @@ const reset = async () => {
                   <button onClick={() => { setIsOpen(true); setIdCategory(item.id) }}>
                     {!item.hasProducts ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<></>)}
                   </button>
-                  <button onClick={() => {editCategory(item.id); setStatus(false)}}>
+                  <button onClick={() => { editCategory(item.id); setStatus(false) }}>
                     <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
                   </button>
                 </div>
