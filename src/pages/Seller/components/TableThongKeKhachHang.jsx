@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import ProductOne from '../..//../images/product/product-01.png';
-import ProductTwo from '../../../images/product/product-02.png';
-import ProductThree from '../../../images/product/product-03.png';
-import ProductFour from '../../../images/product/product-04.png';
+
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
 
-const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, handleSearch }) => {
+const TableThongKeDonHang = ({ list, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusProduct, setStatusProduct] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
   const handleConfirm = () => {
     setIsOpen(false);
   };
-  const [expandedRowId, setExpandedRowId] = useState(null);
-  const toggleRow = (id) => {
-    if (expandedRowId === id) {
-      setExpandedRowId(null);
-    } else {
-      setExpandedRowId(id);
-    }
-  }
 
 
   return (
@@ -56,32 +45,20 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
 
             {/* Input Start Date */}
             <input
-              type="date"
-              placeholder="Start Date"
-              name="startDate"
-              onChange={(e) => setDateStart(e.target.value)}
-              className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+              type="text"
+              placeholder="Tìm kiếm..."
+              name="search"
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
             />
 
-            {/* Arrow Icon from Heroicons */}
-            <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
-
-            {/* Input End Date */}
-            <input
-              type="date"
-              placeholder="End Date"
-              name="endDate"
-              onChange={(e) => setDateEnd(e.target.value)}
-              className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-            />
           </div>
         </form>
         <div className="flex items-center justify-between space-x-4">
           <button
-            className="inline-flex items-center justify-center rounded-md bg-blue-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4  md:mb-0"
-            onClick={handleSearch}
+            className="inline-flex items-center justify-center rounded-md  py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4  md:mb-0"
           >
-            Lọc
+            
           </button>
           <button
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4 md:mb-0"
@@ -94,7 +71,6 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
       <table className="w-full border-collapse border border-stroke dark:border-strokedark">
         <thead>
           <tr className="border-t border-stroke dark:border-strokedark">
-            <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -107,7 +83,7 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white ">Ngày Mua</span>
+                <span className="text-sm text-black dark:text-white ">Số Sản Phẩm Đã Mua</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -115,7 +91,15 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Số Lượng</span>
+                <span className="text-sm text-black dark:text-white ">Lượt Mua</span>
+                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+              </div>
+            </th>
+
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+              <div className="flex items-center gap-1 hidden xl:flex">
+                <span className="text-sm text-black dark:text-white">Số Lượt Đã Đánh Giá</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -123,14 +107,7 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden lg:flex">
-                <span className="text-sm text-black dark:text-white">Tổng Tiền</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-              </div>
-            </th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <div className="flex items-center gap-1 hidden lg:flex">
-                <span className="text-sm text-black dark:text-white">Trạng Thái</span>
+                <span className="text-sm text-black dark:text-white">Số Tiền Đã Chi</span>
                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
@@ -146,112 +123,37 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
         <tbody>
           {list?.content?.map((item, index) => (
             <React.Fragment key={index}>
-              <tr className="border-t border-stroke dark:border-strokedark" onClick={() => toggleRow(item.id)}>
-                <td className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white" >
-                  {expandedRowId !== item.id ? (
-                    <ChevronRightIcon className="text-sm h-5 w-5 text-gray-400 dark:text-white ml-auto" />
-                  ) : (
-                    <ChevronDownIcon className="text-sm h-5 w-5 text-black dark:text-white ml-auto" />
-                  )}
-                </td>
+              <tr className="border-t border-stroke dark:border-strokedark">
+  {console.log("LISTTTT",list)}
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   {index + 1 + pageNumber * pageSize}
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                  <p className="text-sm text-black dark:text-white truncate w-24">{item?.account?.fullname}</p>
+                  <p className="text-sm text-black dark:text-white truncate w-24">{item.name}</p>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {new Date(item.createAt).toLocaleDateString("en-GB")}
+                    {item.soSanPham}
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {item.totalQuantity}
+                    {item.luotMua}
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {item.totalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                    {item.luotDanhGia}
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                   <div className="flex items-center gap-1 hidden lg:flex">
                     <span className="inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium">
-                      {item.orderStatus.name}
+                      {item.soTien.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                     </span>
                   </div>
                 </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                  <div className="flex space-x-3.5">
-                    <button>
-                      {item.orderStatus.id < 4 && (
-                        <ArrowPathIcon
-                          className="w-5 h-5 text-black hover:text-green-600 dark:text-white"
-                          onClick={() => {
-                            setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
-                            setOrderStatusId(true);
-                            setIsOpen(true);
-                          }}
-                        />
-                      )}
-                    </button>
-                    <button>
-                      {item.orderStatus.id <= 2 && (
-                        <TrashIcon
-                          className="w-5 h-5 text-black hover:text-red-600 dark:text-white"
-                          onClick={() => {
-                            setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
-                            setOrderStatusId(false);
-                            setIsOpen(true);
-                          }}
-                        />
-                      )}
-                    </button>
-                  </div>
-                </td>
               </tr>
-
-              {expandedRowId === item.id && (
-                <tr className="border-t border-stroke dark:border-strokedark bg-gray-50 dark:bg-gray-800">
-                  <td colSpan={8} className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-                      <p><strong>Mã Đơn Hàng:</strong> {item.id || "Không có thông tin"}</p>
-
-                      <p>
-                        <strong>Số Điện Thoại:</strong>
-                        {item.address && item.address.phone ? item.address.phone : " Không có số điện thoại"}
-                      </p>
-
-                      <p>
-                        <strong>Phương Thức Thanh Toán:</strong>
-                        {item.paymentMethod && item.paymentMethod.name ? item.paymentMethod.name : " Không xác định"}
-                      </p>
-
-                      <p>
-                        <strong>Ngày Hoàn Thành:</strong>
-                        {item.finishAt
-                          ? new Date(item.finishAt).toLocaleDateString("en-GB")
-                          : "Chưa Hoàn Thành"}
-                      </p>
-
-                      <p>
-                        <strong>Sản Phẩm:</strong>
-                        {item.billDetails && item.billDetails.length > 0
-                          ? item.billDetails.map((detail) => detail.product && detail.product.name ? detail.product.name : " Sản phẩm không xác định").join(', ')
-                          : " Không có sản phẩm"}
-                      </p>
-
-                      <p>
-                        <strong>Địa Chỉ:</strong>
-                        {item.address && item.address.fullNameAddress ? item.address.fullNameAddress : " Không có địa chỉ"}
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-
-
-              )}
             </React.Fragment>
           ))}
         </tbody>

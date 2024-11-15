@@ -1,92 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import ProductOne from '../..//../images/product/product-01.png';
+import ProductTwo from '../../../images/product/product-02.png';
+import ProductThree from '../../../images/product/product-03.png';
+import ProductFour from '../../../images/product/product-04.png';
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
-import BillService from "../../../service/Seller/billSevice";
-import { toast, ToastContainer } from 'react-toastify';
+import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
-const TableTwo = () => {
+
+const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, handleSearch }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [content, setContent] = useState("");
+  const [statusProduct, setStatusProduct] = useState(false);
+  const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+  const handleConfirm = () => {
+    setIsOpen(false);
+  };
   const [expandedRowId, setExpandedRowId] = useState(null);
-  const [orderStatusId, setOrderStatusId] = useState(true);
-  const [dataBill, setDataBill] = useState({
-    id: null,
-    orderStatus: null
-  })
-  const [search, setSearch] = useState("")
-  const [listBill, setListBill] = useState([]);
-  const [pageNumber, setPageNumber] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalElements, setTotalElements] = useState(0);
-  const [pageSize, setPageSize] = useState(5);
-  const [sortBy, setSortBy] = useState(true);
-  const [sortColumn, setSortColumn] = useState("id");
-
-  const handlePrevious = () => {
-    if (pageNumber > 0) {
-      setPageNumber(pageNumber - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (pageNumber < totalPages - 1) {
-      setPageNumber(pageNumber + 1);
-    }
-  };
-  useEffect(() => {
-    loadListBill();
-  }, [search, pageNumber, sortBy, sortColumn]);
-
-  const loadListBill = async () => {
-    try {
-      const response = await BillService.getAll(search, pageNumber, sortBy, sortColumn);
-      setListBill(response.data.result);
-      setTotalPages(response.data.result.totalPages);
-      setTotalElements(response.data.result.totalElements);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleUpdateOrderStatus = async () => {
-    try {
-      const response = await BillService.updateOrderStatus(dataBill);
-      toast.success(response.data.message);
-      console.log(response);
-      loadListBill();
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleHuy = async () => {
-    try {
-      const response = await BillService.huy(dataBill, content);
-      toast.success(response.data.message);
-      loadListBill();
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
-  }
   const toggleRow = (id) => {
     if (expandedRowId === id) {
       setExpandedRowId(null);
     } else {
       setExpandedRowId(id);
     }
-  };
+  }
+
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <ToastContainer />
-      <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-        <form action="https://formbold.com/s/unique_form_id" method="POST">
-          <div className="relative pt-3">
+      <div className="py-6 flex flex-col md:flex-row justify-between px-4 md:px-6 xl:px-7.5 space-y-4 md:space-y-0">
+        <form>
+          <div className="relative pt-3 flex items-center space-x-4">
             <button className="absolute left-0 top-6 -translate-y-1/2">
               <svg
                 className="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary"
@@ -110,17 +53,38 @@ const TableTwo = () => {
                 />
               </svg>
             </button>
+
+            {/* Input Start Date */}
             <input
-              type="text"
-              onChange={handleSearch}
-              placeholder="Tìm kiếm..."
-              className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
+              type="date"
+              placeholder="Start Date"
+              name="startDate"
+              onChange={(e) => setDateStart(e.target.value)}
+              className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+            />
+
+            {/* Arrow Icon from Heroicons */}
+            <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
+
+            {/* Input End Date */}
+            <input
+              type="date"
+              placeholder="End Date"
+              name="endDate"
+              onChange={(e) => setDateEnd(e.target.value)}
+              className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
             />
           </div>
         </form>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-between space-x-4">
           <button
-            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+            className="inline-flex items-center justify-center rounded-md bg-blue-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4  md:mb-0"
+            onClick={handleSearch}
+          >
+            Lọc
+          </button>
+          <button
+            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4 md:mb-0"
           >
             Excel
           </button>
@@ -133,40 +97,27 @@ const TableTwo = () => {
             <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
-              onClick={() => {
-                setSortBy(!sortBy);
-                setSortColumn("account.fullname")
-              }}
-            >
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Khách Hàng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium" onClick={() => {
-              setSortBy(!sortBy);
-              setSortColumn("createAt");
-            }}>
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Ngày Mua</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "createAt" ? "text-black" : "text-gray-500"} text-black`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "createAt" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
-              onClick={() => {
-                setSortBy(!sortBy);
-                setSortColumn("quantity");
-              }}
-            >
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-500"} text-black`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
             </th>
 
@@ -193,7 +144,7 @@ const TableTwo = () => {
         </thead>
 
         <tbody>
-          {listBill?.content?.map((item, index) => (
+          {list?.content?.map((item, index) => (
             <React.Fragment key={index}>
               <tr className="border-t border-stroke dark:border-strokedark" onClick={() => toggleRow(item.id)}>
                 <td className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white" >
@@ -207,7 +158,7 @@ const TableTwo = () => {
                   {index + 1 + pageNumber * pageSize}
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                  <p className="text-sm text-black dark:text-white truncate w-24">{item.account.fullname}</p>
+                  <p className="text-sm text-black dark:text-white truncate w-24">{item?.account?.fullname}</p>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
@@ -298,8 +249,6 @@ const TableTwo = () => {
                     </div>
                   </td>
                 </tr>
-
-
               )}
             </React.Fragment>
           ))}
@@ -314,39 +263,9 @@ const TableTwo = () => {
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
       />
-      <Modal
-        open={isOpen}
-        setOpen={setIsOpen}
-        title={
-          !orderStatusId
-            ? 'Hủy Đơn Hàng'
-            : 'Cập Nhật Trạng Thái Đơn Hàng'
-        }
-        message={
-          !orderStatusId
-            ? 'Bạn chắc chắn muốn hủy đơn hàng này không? Vui lòng nêu lý do hủy!!'
-            : 'Bạn chắn chắn muốn cập nhật trạng thái đơn hàng này không?'
-        }
-        onConfirm={orderStatusId ? (handleUpdateOrderStatus) : (handleHuy)}
-        confirmText={
-          'Xác Nhận'
-        }
-        cancelText="Thoát"
-        icon={
-          !orderStatusId ? (
-            <TrashIcon className="h-6 w-6 text-red-600" />
-          ) : (
-            <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
-          )
-        }
-        iconBgColor={!orderStatusId ? 'bg-red-100' : 'bg-green-100'}
-        buttonBgColor={!orderStatusId ? 'bg-red-600' : 'bg-green-600'}
-        status={orderStatusId}
-        content={content}
-        setContent={setContent}
-      />
+
     </div>
   );
 };
 
-export default TableTwo;
+export default TableThongKeDonHang;

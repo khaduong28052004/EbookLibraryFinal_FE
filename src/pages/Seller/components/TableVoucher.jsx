@@ -187,7 +187,7 @@ const TableVoucher = () => {
           </button>
           <button
             onClick={() => {
-              setIsOpenModalSP(true); setIsStatus(false); setDataVoucher(setDataVoucher({
+              setDataVoucher({
                 id: null,
                 name: "",
                 note: "",
@@ -198,7 +198,9 @@ const TableVoucher = () => {
                 dateEnd: '',
                 typeVoucher: 1,
                 account: sessionStorage.getItem("id_account")
-              }))
+              });
+              setIsOpenModalSP(true); 
+              setIsStatus(false);
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >

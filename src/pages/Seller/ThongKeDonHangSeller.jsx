@@ -1,5 +1,5 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import TableThongKe from './components/TableThongKe';
+import TableThongKe from './components/TableThongKeBill';
 import CardDataStats from '../../components/CardDataStats'
 import { useEffect, useState } from 'react';
 import ThongKeService from '../../service/Seller/thongKeService';
@@ -24,8 +24,8 @@ const SanPhamSeller = () => {
       console.log(response.data.result);
       toast.error(response.data.message);
       setData(response.data.result);
-      setTotalPages(response.data.result.totalPages);
-      setTotalElements(response.data.result.totalElements);
+      setTotalPages(response.data.result.bill.totalPages);
+      setTotalElements(response.data.result.bill.totalElements);
     } catch (error) {
       console.log(error);
     }
@@ -50,8 +50,7 @@ const SanPhamSeller = () => {
     <>
       <Breadcrumb pageName="Thống Kê Đơn Hàng" status='Người Bán' />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">
-        <CardDataStats title="Tổng Doanh Số" total={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.tongDoanhSo)}
-          rate="4.35%" levelUp>
+        <CardDataStats title="Tổng Doanh Số" total={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.tongDoanhSo)}>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -74,8 +73,7 @@ const SanPhamSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Tổng Doanh Thu" total={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.tongDoanhThu)}
-          rate="2.59%" levelUp>
+        <CardDataStats title="Tổng Doanh Thu" total={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.tongDoanhThu)}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -94,7 +92,7 @@ const SanPhamSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Chiết Khấu" total={`${data.chietKhau}%`} rate="0.95%" levelDown>
+        <CardDataStats title="Chiết Khấu" total={`${data.chietKhau}%`} >
           <svg
             className="fill-primary dark:fill-white"
             width="22"

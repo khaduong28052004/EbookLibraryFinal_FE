@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon, ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import SanPhamService from "../../../service/Seller/sanPhamService"
@@ -7,6 +7,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { toast, ToastContainer } from 'react-toastify';
 import CategoryService from "../../../service/Seller/categoryService";
 import Pagination from './pagination';
+import { storage, getDownloadURL, ref } from '../../../config/firebase';
 const TableSanPham = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
@@ -18,6 +19,8 @@ const TableSanPham = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize, setPageSize] = useState(5);
+  const [sortBy, setSortBy] = useState(true);
+  const [sortColumn, setSortColumn] = useState("id");
   const [dataProduct, setDataProduct] = useState({
     id: null,
     price: null,
@@ -38,6 +41,7 @@ const TableSanPham = () => {
   const [listTheLoai, setListTheLoai] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [idCategory, setIdCategory] = useState(0);
+  const [expandedRowId, setExpandedRowId] = useState(null);
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -52,21 +56,28 @@ const TableSanPham = () => {
 
   useEffect(() => {
     loadListProduct();
-  }, [search, pageNumber]);
+  }, [search, pageNumber, sortBy, sortColumn]);
 
   const loadListDoanhMuc = async () => {
     try {
       const response = await CategoryService.getList();
       setListDoanhMuc(response.data.result);
-      setListTheLoai([]);
+      loadListTheLoai(response.data.result[0].id)
     } catch (error) {
       console.log(error);
     }
   }
+
   const loadListTheLoai = async (value) => {
     try {
       const response = await CategoryService.getListByIdParent(value);
       setListTheLoai(response.data.result);
+      if (response.data.result && response.data.result.length > 0) {
+        setDataProduct((prev) => ({
+          ...prev,
+          category: response.data.result[0].id
+        }));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -74,15 +85,16 @@ const TableSanPham = () => {
 
   const loadListProduct = async () => {
     try {
-      const response = await SanPhamService.getAll(search, pageNumber);
+      const response = await SanPhamService.getAll(search, pageNumber, sortBy, sortColumn);
       setListProduct(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
       loadListDoanhMuc();
     } catch (error) {
-      console.log('ERROR GET LIST PRODUCT', error);
+      console.log(error);
     }
   }
+
   const handleAddFiles = (files) => {
     const selectedFiles = Array.from(files);
     const totalFiles = dataProduct.imageProducts.length + selectedFiles.length;
@@ -129,11 +141,15 @@ const TableSanPham = () => {
 
       setIdCategory(product.category.idParent);
       loadListTheLoai(product.category.idParent);
+      if (product.imageProducts && product.imageProducts.length > 0) {
+        for (const image of product.imageProducts) {
+          await addImageFromFirebase(image.name);
+        }
+      }
       setIsOpenModalSP(true);
       console.log(dataProduct);
     } catch (error) {
       console.error(error);
-
     }
   }
 
@@ -148,11 +164,12 @@ const TableSanPham = () => {
       if (!isStatus) {
         console.log(dataProduct);
         response = await SanPhamService.create(dataProduct);
+        const responseImg = await SanPhamService.createSaveImg(formData);
       } else {
+        console.log(dataProduct);
         response = await SanPhamService.update(dataProduct);
+        const responseImg = await SanPhamService.updateSaveImg(formData);
       }
-      const responseImg = await SanPhamService.saveImg(formData);
-      console.log(responseImg)
       toast.success(response.data.message);
       loadListProduct();
       setIsOpenModalSP(false);
@@ -187,6 +204,7 @@ const TableSanPham = () => {
     const value = e.target.value;
     loadListTheLoai(value);
   }
+
   const handDataProduct = (e) => {
     const { name, value } = e.target;
     setDataProduct((prev) => ({
@@ -195,23 +213,31 @@ const TableSanPham = () => {
     }));
   };
 
-  const handleImageEdit = async (imageUrl) => {
+  const addImageFromFirebase = async (imagePath) => {
+    const imageRef = ref(storage, imagePath); // Đường dẫn tới ảnh trong Firebase Storage
     try {
-      const response = await fetch(imageUrl);
-      
-      if (!response.ok) {
-        throw new Error("Không thể tải ảnh từ URL");
-      }
-  
+      const url = await getDownloadURL(imageRef);
+      const response = await fetch(url);
+
+      // Kiểm tra dữ liệu trả về
       const blob = await response.blob();
-      const file = new File([blob], 'image.jpg', { type: blob.type });
-      
-      setDataProduct(prevState => ({
-        ...prevState,
-        imageProducts: [...prevState.imageProducts, file],
+      console.log(blob);  // Xem kiểu dữ liệu của blob
+
+      setDataProduct((prevData) => ({
+        ...prevData,
+        imageProducts: [...prevData.imageProducts, { url, blob }]
       }));
     } catch (error) {
-      console.error("Lỗi khi tải ảnh từ URL", error);
+      console.error("Error fetching image from Firebase:", error);
+    }
+  };
+
+
+  const toggleRow = (id) => {
+    if (expandedRowId === id) {
+      setExpandedRowId(null);
+    } else {
+      setExpandedRowId(id);
     }
   };
 
@@ -260,8 +286,23 @@ const TableSanPham = () => {
           </button>
           <button
             onClick={() => {
+              setDataProduct({
+                id: null,
+                price: null,
+                sale: null,
+                weight: null,
+                name: "",
+                introduce: "",
+                writerName: "",
+                publishingCompany: "",
+                isDelete: false,
+                quantity: null,
+                isActive: false,
+                account: sessionStorage.getItem("id_account"),
+                category: null,
+                imageProducts: []
+              })
               setIsOpenModalSP(true);
-              // setIsStatus(false)
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
@@ -273,50 +314,52 @@ const TableSanPham = () => {
       <table className="w-full border-collapse border border-stroke dark:border-strokedark">
         <thead>
           <tr className="border-t border-stroke dark:border-strokedark">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("name");
+              }}>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Tên</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Tác Giả</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-              </div>
-            </th>
-
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Thể Loại</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-              </div>
-            </th>
-
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("price");
+              }}
+            >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Giá</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <div className="flex items-center gap-1 hidden lg:flex">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("quantity");
+              }}>
+              <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượng</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("isActive");
+              }}>
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trạng Thái</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -328,64 +371,96 @@ const TableSanPham = () => {
         <tbody className="min-h-[400px]">
           {listProduct?.content?.length === 0 ? (
             <tr className="border-t border-stroke dark:border-strokedark">
-              <td colSpan="7" className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-center text-sm text-black dark:text-white ">
+              <td colSpan="7" className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-center text-sm text-black dark:text-white">
                 Không có dữ liệu
               </td>
             </tr>
           ) : (
             listProduct?.content?.map((item, index) => (
-              <tr key={index} className="border-t border-stroke dark:border-strokedark">
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                  {index + 1 + pageNumber * pageSize}
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                  <p className="text-sm text-black dark:text-white truncate w-24">{item.name}</p>
-                </td>
+              <React.Fragment key={index}>
+                <tr key={index} className="border-t border-stroke dark:border-strokedark" onClick={() => toggleRow(item.id)}>
+                  <td className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white" >
+                    {expandedRowId !== item.id ? (
+                      <ChevronRightIcon className="text-sm h-5 w-5 text-gray-400 dark:text-white ml-auto" />
+                    ) : (
+                      <ChevronDownIcon className="text-sm h-5 w-5 text-black dark:text-white ml-auto" />
+                    )}
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                    {index + 1 + pageNumber * pageSize}
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                    <p className="text-sm text-black dark:text-white truncate w-24">{item.name}</p>
+                  </td>
 
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                  <div className="flex items-center gap-1 hidden xl:flex">
-                    {item.writerName}
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                  <div className="flex items-center gap-1 hidden xl:flex">
-                    {item.category.name}
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                  <div className="flex items-center gap-1 hidden xl:flex">
-                    {item.quantity}
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                  <div className="flex items-center gap-1 hidden xl:flex">
-                    {item.price}
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                  <div className="flex items-center gap-1 hidden lg:flex">
-                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${item.isActive ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                      {item.isActive ? 'Đã Duyệt' : 'Chưa Duyệt'}
-                    </span>
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                  <div className="flex space-x-3.5">
-                    <button onClick={() => {
-                      setIsOpen(true);
-                      setProductId(item.id);
-                    }}>
-                      <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
-                    </button>
-                    <button onClick={() => {
-                      editProduct(item.id);
-                      setIsStatus(true)
-                    }}>
-                      <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                    <div className="flex items-center gap-1 hidden lg:flex">
+                      {(item.price - item.sale).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                    </div>
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                    <div className="flex items-center gap-1 hidden xl:flex">
+                      {item.quantity}
+                    </div>
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
+                    <div className="flex items-center gap-1 hidden lg:flex">
+                      <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${item.isActive ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
+                        {item.isActive ? 'Đã Duyệt' : 'Chưa Duyệt'}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                    <div className="flex space-x-3.5">
+                      <button onClick={() => {
+                        setIsOpen(true);
+                        setProductId(item.id);
+                      }}>
+                        <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
+                      </button>
+                      <button onClick={() => {
+                        editProduct(item.id);
+                        setIsStatus(true)
+                      }}>
+                        <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {expandedRowId === item.id && (
+                  <tr className="border-t border-stroke dark:border-strokedark bg-gray-50 dark:bg-gray-800">
+                    <td colSpan={8} className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                      <div className="grid grid-cols-3 gap-x-8 gap-y-2">
+                        <p><strong>Mã Sản Phẩm: </strong> {item.id || "Không có thông tin"}</p>
+                        <p>
+                          <strong>Tác Giả: </strong>
+                          {item.writerName}
+                        </p>
+
+                        <p>
+                          <strong>Nhà Cung Cấp: </strong>
+                          {item.publishingCompany}
+                        </p>
+
+                        <p>
+                          <strong>Thể Loại: </strong>
+                          {item.category.name}
+                        </p>
+
+                        <p>
+                          <strong>Giá Gốc: </strong>
+                          {item.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                        </p>
+
+                        <p>
+                          <strong>Giảm Giá: </strong>
+                          {item.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             ))
           )}
         </tbody>
@@ -443,6 +518,7 @@ const TableSanPham = () => {
                         value={dataProduct.name}
                         onChange={handDataProduct}
                         placeholder="Tên sản phẩm..."
+                        required
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
@@ -457,6 +533,7 @@ const TableSanPham = () => {
                         value={dataProduct.quantity}
                         onChange={handDataProduct}
                         placeholder="Số Lượng..."
+                        required
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
@@ -472,6 +549,7 @@ const TableSanPham = () => {
                         value={dataProduct.writerName}
                         onChange={handDataProduct}
                         placeholder="Tác giả..."
+                        required
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
@@ -486,6 +564,7 @@ const TableSanPham = () => {
                         value={dataProduct.publishingCompany}
                         onChange={handDataProduct}
                         placeholder="Nhà xuất bản..."
+                        required
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
@@ -507,6 +586,7 @@ const TableSanPham = () => {
                             multiple
                             accept="image/*"
                             className="hidden"
+                            required
                             onChange={(e) => handleAddFiles(e.target.files)}
                           />
                         </label>
@@ -517,11 +597,11 @@ const TableSanPham = () => {
                         {dataProduct.imageProducts.length > 0 ? (
                           <div className="grid grid-cols-4 gap-2">
                             {dataProduct.imageProducts.map((file, index) => (
+                              
                               <div key={index} className="relative w-full h-20">
                                 <img
                                   key={index}
-                                  src={file instanceof Blob ? URL.createObjectURL(file) : file} // Kiểm tra loại dữ liệu
-                                  alt={`Product ${index}`}
+                                  src={file.blob ? URL.createObjectURL(file.blob) : URL.createObjectURL(file)} alt={`Product ${index}`}
                                   className="w-full h-full object-cover rounded-md"
                                 />
                                 <button
