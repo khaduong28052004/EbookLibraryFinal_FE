@@ -21,7 +21,7 @@ const ModalFlashSale = ({
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: name,
+            [name]: value,
         }));
     };
 

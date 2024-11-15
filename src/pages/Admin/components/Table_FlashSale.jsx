@@ -3,6 +3,7 @@ import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import ModalFlashSale from './ModalFlaseSale';
+import ModalFlashSaleCT from './Modal_FlashSaleCT';
 import flashSale from '../../../service/admin/FlashSale';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 // import { usePDF } from 'react-to-pdf';
@@ -14,6 +15,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     const [sortBy, setSortBy] = useState(true);
     const currentPage = entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber;
     const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+    const [isOpenModalCT, setIsOpenModalCT] = useState(false);
+    const [entityFlashSale, setEntityFlashSale] = useState([]);
 
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
@@ -202,12 +205,16 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                 <div className="flex space-x-3.5">
-                                    <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(!entity.delete); }}>
+                                    <button onClick={() => { 
+                                        setId(entity.id); 
+                                        setIsOpen(true); 
+                                        setStatusentity(!entity.delete); }}>
                                         {!entity.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                     </button>
                                     <button onClick={() => {
-                                        setIsOpenModalSP(true);
-                                        setId(entity.id);
+                                        setEntityFlashSale(entity);
+                                        setIsOpenModalCT(true);
+                                        // setId(entity.id);
                                     }}>
                                         <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
                                     </button>
@@ -269,7 +276,6 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
             </div>
 
             <Modal
-                id={id}
                 open={isOpen}
                 setOpen={setIsOpen}
                 title={statusentity
@@ -294,6 +300,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 title="Thêm Sản Phẩm Mới"
                 confirmText="Lưu"
                 cancelText="Hủy"
+            />
+            <ModalFlashSaleCT
+                entityFlashSale={entityFlashSale}
+                open={isOpenModalCT}
+                setOpen={setIsOpenModalCT}
+                title="Cập nhật Flash sale"
             />
         </div>
     );

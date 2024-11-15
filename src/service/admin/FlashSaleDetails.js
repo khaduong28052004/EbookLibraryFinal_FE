@@ -1,7 +1,7 @@
 import { axiosAuth } from '../../config/configAxios';
 
-// const token = "null";
-const token = sessionStorage.getItem("token");
+const token = "null";
+// const token = sessionStorage.getItem("token");
 
 const flashSaleDetails = {
     findListByFlashSale: ({ id, page, size, sortBy, sortColumn }) => {
@@ -10,6 +10,13 @@ const flashSaleDetails = {
         return axiosAuth(token, "get", url);
     },
     findListNotFalshSale: ({ id, page, size, sortBy, sortColumn }) => {
+        if (sortBy == null || sortBy == undefined) {
+            sortBy = '';
+        } if (sortColumn == null || sortColumn == undefined) {
+            sortColumn = '';
+        } if (page == null || page == undefined) {
+            page = '';
+        }
         const url = `/api/v1/admin/flashsaledetails/notflashsale?idFlashSale=${id}&page=${page}&size=${size}&sortBy=${sortBy}&sortColumn=${sortColumn}`;
         console.log(token);
         return axiosAuth(token, "get", url);
