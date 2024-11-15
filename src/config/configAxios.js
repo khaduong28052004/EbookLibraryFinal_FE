@@ -2,9 +2,11 @@ import axios from 'axios';
 import queryString from 'query-string';
 //http://localhost:8080
 
-axios.defaults.baseURL = 'http://localhost:8080';
+// axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = import.meta.env.VITE_API_BASEURL;
+
 const axiosConfig = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_BASEURL,
   headers: {
     "Content-Type": "application/json",
   },

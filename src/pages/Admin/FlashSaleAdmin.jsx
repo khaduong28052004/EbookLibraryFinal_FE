@@ -13,7 +13,7 @@ const FalshSaleAdmin = () => {
 
   const deleteFlashSale = async (id) => {
     try {
-      const response = await flashSale.deleteFlashSale({ id });
+      const response = await flashSale.delete({ id });
       console.log("Mã Code: " + response.data.code);
       findAllFlashSale();
     } catch (error) {
