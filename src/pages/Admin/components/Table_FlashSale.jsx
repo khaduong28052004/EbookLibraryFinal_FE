@@ -6,14 +6,14 @@ import ModalFlashSale from './ModalFlaseSale';
 import ModalFlashSaleCT from './Modal_FlashSaleCT';
 import flashSale from '../../../service/admin/FlashSale';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
-// import { usePDF } from 'react-to-pdf';
 
-const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
+const TableTwo = ({ onPageChange, onIdChange, entityData, status,
+    setStatus }) => {
     const [dateStart, setDateStart] = useState('');
     const [dateEnd, setDateEnd] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
-    const currentPage = entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber;
+    const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
     const [isOpenModalSP, setIsOpenModalSP] = useState(false);
     const [isOpenModalCT, setIsOpenModalCT] = useState(false);
     const [entityFlashSale, setEntityFlashSale] = useState([]);
@@ -21,6 +21,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
+
     const handleConfirm = () => {
         setIsOpen(false);
         onIdChange(id);
@@ -89,6 +90,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             value={dateStart}
                             onChange={(e) => {
                                 setDateStart(e.target.value);
+                                setCurrentPage(0);
                             }}
                             type="date"
                             placeholder="Tìm kiếm..."
@@ -97,6 +99,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             value={dateEnd}
                             onChange={(e) => {
                                 setDateEnd(e.target.value);
+                                setCurrentPage(0);
                             }}
                             type="date"
                             placeholder="Tìm kiếm..."
@@ -205,10 +208,11 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                 <div className="flex space-x-3.5">
-                                    <button onClick={() => { 
-                                        setId(entity.id); 
-                                        setIsOpen(true); 
-                                        setStatusentity(!entity.delete); }}>
+                                    <button onClick={() => {
+                                        setId(entity.id);
+                                        setIsOpen(true);
+                                        setStatusentity(!entity.delete);
+                                    }}>
                                         {!entity.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                     </button>
                                     <button onClick={() => {
@@ -295,6 +299,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
                 buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
             <ModalFlashSale
+                status={status}
+                setStatus={setStatus}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
                 title="Thêm Sản Phẩm Mới"
@@ -302,6 +308,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 cancelText="Hủy"
             />
             <ModalFlashSaleCT
+                statusFillAll={status}
+                setStatusFillAll={setStatus}
                 entityFlashSale={entityFlashSale}
                 open={isOpenModalCT}
                 setOpen={setIsOpenModalCT}

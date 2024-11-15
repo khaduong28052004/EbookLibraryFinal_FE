@@ -8,14 +8,17 @@ import ModalFlashSale from "./Model_FlashSaleCTInsert";
 import Modal from "./ModalThongBao";
 
 const Modal_FlashSaleCT = ({
+    statusFillAll,
+    setStatusFillAll,
     entityFlashSale,
     open,
     setOpen,
     title
 }) => {
     const initialFormData = {
-        dateStart: entityFlashSale.dateStart,
-        dateEnd: entityFlashSale.dateEnd,
+        id: '',
+        dateStart: '',
+        dateEnd: '',
         account: '',
     };
     const [formData, setFormData] = useState(initialFormData);
@@ -34,6 +37,8 @@ const Modal_FlashSaleCT = ({
         setFormData((prev) => ({
             ...prev,
             [name]: value,
+            id: entityFlashSale.id,
+            account: sessionStorage.getItem("id_account"),
         }));
     };
 
@@ -105,9 +110,10 @@ const Modal_FlashSaleCT = ({
         }
     }
 
-    const postFlashSale = async () => {
+    const putFlashSale = async () => {
         try {
-            const response = await flashSale.post({ data: formData });
+            const response = await flashSale.put({ data: formData });
+            setStatusFillAll(!statusFillAll);
             console.log("Code: " + response.data.result.code);
             console.log("Data: " + response.data.result.content);
         } catch (error) {
@@ -121,7 +127,7 @@ const Modal_FlashSaleCT = ({
     };
 
     const handleSubmit = (e) => {
-        postFlashSale(formData);
+        putFlashSale();
         setFormData(initialFormData);
         e.preventDefault(); // Chặn hành vi reload trang khi submit form
         setOpen(false); // Đóng modal sau khi submit
@@ -132,6 +138,27 @@ const Modal_FlashSaleCT = ({
         console.log("currentPage: " + currentPage);
     }, [entityFlashSale, currentPage, formData.dateStart, formData.dateEnd, status]);
 
+    const formatToDateTimeLocal = (dateString) => {
+        if (!dateString) return "";
+
+        // Chia chuỗi theo định dạng "dd/MM/yyyy HH:mm:ss"
+        const [datePart, timePart] = dateString.split(" ");
+        const [day, month, year] = datePart.split("/");
+        const [hours, minutes] = timePart.split(":");
+
+        // Ghép thành định dạng "yyyy-MM-ddTHH:mm"
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
+    useEffect(() => {
+        console.log("entityFlashSale.dateStart: " + entityFlashSale.dateStart);
+        console.log("entityFlashSale.dateEnd: " + entityFlashSale.dateEnd);
+        setFormData({
+            dateStart: formatToDateTimeLocal(entityFlashSale.dateStart),
+            dateEnd: formatToDateTimeLocal(entityFlashSale.dateEnd),
+            account: entityFlashSale.id || "",
+        });
+    }, [entityFlashSale]);
 
     const formatNumber = (number, decimals = 2) => {
         if (number === null || number === undefined || isNaN(number)) {
@@ -298,7 +325,7 @@ const Modal_FlashSaleCT = ({
                                 ))}
                             </tbody>
                         </table>
-                        <div className="py-6 flex border-t border-stroke  dark:border-strokedark  px-4 md:px-6 xl:px-7.5">
+                        <div className="py-3 flex border-t border-stroke  dark:border-strokedark  px-4 md:px-6 xl:px-7.5">
                             <div className="flex flex-1 justify-between sm:hidden">
                                 <a href="#" className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
                                 <a href="#" className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
@@ -367,9 +394,9 @@ const Modal_FlashSaleCT = ({
                                 <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
                             )}
                             iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                            buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} 
+                            buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'}
                             status={status}
-                            setStatus={setStatus}/>
+                            setStatus={setStatus} />
                         <Modal
                             open={isOpenDelete}
                             setOpen={setIsOpenDelete}
