@@ -35,10 +35,10 @@ const axiosAuth = (TOKEN, method, url, data, status) => {
     };
   }
 
-  if (status) {
-    headers["Content-Type"] = "multipart/form-data"; 
+  if (url.includes('/saveImg')) {
+    headers["Content-Type"] = "multipart/form-data"; // Thay đổi Content-Type cho multipart
   } else {
-    headers["Content-Type"] = "application/json"; 
+    headers["Content-Type"] = "application/json"; // Giữ nguyên cho các yêu cầu JSON
   }
 
   return axiosConfig({
