@@ -22,6 +22,8 @@ export default function SingleProductPage() {
   const [reviewLoading, setLoading] = useState(false);
   const reviewElement = useRef(null);
   const [report, setReport] = useState(false);
+
+
   const [commnets, setComments] = useState([
     {
       id: Math.random(),
@@ -93,7 +95,6 @@ export default function SingleProductPage() {
   const local = useLocation();
   const query = new URLSearchParams(local.search);
   const fetchProduct = async () => {
-
     await axios.get("http://localhost:8080/api/v1/user/productdetail/product/" + query.get("idProduct")).then(response => {
       setProduct(response.data.result.product);
       setSeller(response.data.result.seller);

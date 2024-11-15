@@ -5,10 +5,13 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
+import Selectbox from "../Helpers/Selectbox";
+import Arrow from "../Helpers/icons/Arrow";
 import Layout from "../Partials/Layout";
 import ProductsFilter from "./ProductsFilter";
 
 export default function AllProductPage() {
+
   const [filters, setFilter] = useState({
     mobileLaptop: false,
     gaming: false,
@@ -46,6 +49,8 @@ export default function AllProductPage() {
   };
   const [volume, setVolume] = useState([200, 500]);
 
+  const location = useLocation();
+
   const [storage, setStorage] = useState(null);
   const filterStorage = (value) => {
     setStorage(value);
@@ -75,12 +80,33 @@ export default function AllProductPage() {
       setCategories(response.data.result.categories);
       // console.log("text " + response.data.result.datas);
     }).catch(error => console.error("fetch data search error " + error));
-  }, []);
+  }, [location]);
 
   const handleSelected = (value) => {
-    var validSelected = [];
-    console.log("value category " + value);
+    // Tạo mảng validSelected chứa các key có giá trị true
+    const validSelected = Object.keys(value)
+      .filter(key => value[key] === true)  // Lọc các khóa có giá trị true
+      .map(key => Number(key));  // Chuyển các key thành số (vì key là chuỗi)
+    console.log("selected " + value?.length);
+    if (validSelected.length > 0) {
+      // Gửi request chỉ khi có ít nhất một category được chọn
+      axios.get(`http://localhost:8080/api/v1/user/filtercategory?id_categories=${validSelected.join(',')}`)
+        .then(response => {
+          setDatas(response.data.result.datas);  // Cập nhật dữ liệu
+        })
+        .catch(error => console.error("fetch filter by category error " + error));
+    } else {
+      console.log("No categories selected");
+    }
   }
+  useEffect(() => {
+    const filterPrice = () => {
+      axios.get(`http://localhost:8080/api/v1/user/filterprice?priceMin=${volume[0]}&priceMax=${volume[1]}`).then(response => {
+        setDatas(response.data.result.datas);
+      }).catch(error => console.log("fetch filtẻ price error " + error));
+    }
+    filterPrice();
+  }, [volume])
 
   return (
     <>
@@ -104,75 +130,33 @@ export default function AllProductPage() {
                   handleSelected={handleSelected}
                 />
                 {/* ads */}
-     
+
               </div>
 
               <div className="flex-1">
                 <div className="products-sorting w-full bg-white md:h-[70px] flex md:flex-row flex-col md:space-y-0 space-y-5 md:justify-between md:items-center p-[30px] mb-[5px]">
                   <div>
                     <p className="font-400 text-[13px]">
-                      <span className="text-qgray"> Showing</span> 1–16 of 66
-                      results
+                      {/* <span className="text-qgray"> Showing</span> 1–16 of 66
+                      results */}
                     </p>
                   </div>
                   <div className="flex space-x-3 items-center">
                     <span className="font-400 text-[13px]">Sắp xếp:</span>
 
-                    <div className="relative">
-                      <ul className="flex space-x-3 items-center cursor-pointer" onClick={toggleDropdown}>
-                        <li className="font-400 text-[13px] text-qgray">
-                          Mặc định
-                        </li>
-                        <li className="flex items-center">
-                          <svg
-                            width="10"
-                            height="6"
-                            viewBox="0 0 10 6"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M1 1L5 5L9 1" stroke="#9A9A9A" />
-                          </svg>
-                        </li>
-                      </ul>
 
-                      {/* Dropdown options */}
-                      {isOpen && (
-                        <ul className="absolute left-0 mt-2 w-[100px] bg-white border border-qgray rounded-md shadow-lg z-10">
-                          <li className="px-4 py-2 text-sm text-qgray hover:bg-qgray-light cursor-pointer">
-                            Mặc định
-                          </li>
-                          <li className="px-4 py-2 text-sm text-qgray hover:bg-qgray-light cursor-pointer">
-                            Mới nhất
-                          </li>
-                          <li className="px-4 py-2 text-sm text-qgray hover:bg-qgray-light cursor-pointer">
-                            Bán chạy
-                          </li>
-                        </ul>
-                      )}
+                    <div className="topbar-dropdowns sm:block hidden">
+                      <div className="flex space-x-">
+
+                        <div className="language-select flex space-x-1 items-center">
+                          <Selectbox className="w-28" datas={["Mặc định", "Mới nhất", "Bán chạy"]} />
+                          <Arrow className="fill-current qblack" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <button
-                    onClick={() => setToggle(!filterToggle)}
-                    type="button"
-                    className="w-10 lg:hidden h-10 rounded flex justify-center items-center border border-qyellow text-qyellow"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                      />
-                    </svg>
-                  </button>
+
+                  </div>
                 </div>
                 <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1  xl:gap-[30px] gap-5 mb-[5px]">
                   {/* <DataIteration datas={products} startLength={0} endLength={6}>
@@ -204,3 +188,19 @@ export default function AllProductPage() {
     </>
   );
 }
+
+
+{/* Dropdown options */ }
+{/* {isOpen && (
+                        <ul className="absolute left-0 mt-2 w-[100px] bg-white border border-qgray rounded-md shadow-lg z-10">
+                          <li className="px-4 py-2 text-sm text-qgray hover:bg-qgray-light cursor-pointer">
+                            Mặc định
+                          </li>
+                          <li className="px-4 py-2 text-sm text-qgray hover:bg-qgray-light cursor-pointer">
+                            Mới nhất
+                          </li>
+                          <li className="px-4 py-2 text-sm text-qgray hover:bg-qgray-light cursor-pointer">
+                            Bán chạy
+                          </li>
+                        </ul>
+                      )} */}

@@ -28,7 +28,7 @@ const sellers = {
 };
 
 
-export default function ProductsTable({ datas, handleSaveProduct }) {
+export default function ProductsTable({ datas, handleSaveProduct, removeCart }) {
 
   const [idProduct, setIdProduct] = useState();
 
@@ -93,6 +93,8 @@ export default function ProductsTable({ datas, handleSaveProduct }) {
 
 
 
+
+
   useEffect(() => {
     if (datas) {
       // Bước 1: Tạo một đối tượng để lưu trạng thái các sản phẩm trong giỏ hàng
@@ -107,9 +109,9 @@ export default function ProductsTable({ datas, handleSaveProduct }) {
       });
       if (!idProduct?.length > 0 && !idProduct) {
         setIdProduct(updatedProductState);
-      }  // Cập nhật lại state của idProduct
+      }
 
-      // Bước 2: Lọc các seller và chọn voucher có giá trị giảm giá lớn nhất hợp lệ
+
       const filteredSellers = datas.map(seller => {
         let saleMax = 0;
         let voucherNew = {};  // Khởi tạo voucherNew là đối tượng rỗng
@@ -137,7 +139,6 @@ export default function ProductsTable({ datas, handleSaveProduct }) {
 
   const saveIdProduct = () => {
     const validProductIds = [];
-
     // Lọc các product id hợp lệ từ idProduct
     for (let key in idProduct) {
       if (idProduct.hasOwnProperty(key) && idProduct[key] === true) {
@@ -219,26 +220,6 @@ export default function ProductsTable({ datas, handleSaveProduct }) {
     }
   }
 
-  // const setVoucherDefault = () => {
-
-  //   const voucherSelected = saveProductOfSeller.forEach(sellerSave => {
-  //     var saleMax = 0;
-  //     var voucherNew = {};
-  //     sellerSave.vouchers.forEach(voucher => {
-  //       if (voucher.sale > saleMax && voucher.totalPriceOrder < totalOrderSeller) {
-  //         saleMax = voucher.sale;
-  //         voucherNew = voucher;
-  //       }
-  //     }
-  //     )
-  //     return {
-  //       ...sellerSave,
-  //       vouchers: voucherNew
-  //     }
-  //   });
-  //   setSelectedVoucher(voucherSelected);
-  // }
-
   const checkedAll = () => {
     const inputCheckBoxProducts = document.querySelectorAll('.checkBoxProduct');
     const checkboxAll = document.getElementById("checkbox_all");
@@ -250,7 +231,6 @@ export default function ProductsTable({ datas, handleSaveProduct }) {
       }
     }
     checkboxAll.checked = true;
-
   };
 
   const checkShop = (id_Shop) => {
@@ -298,6 +278,10 @@ export default function ProductsTable({ datas, handleSaveProduct }) {
     checkedAll();
     saveIdProduct();
   }
+  // const handle 
+
+  const handleQuantity = () => { }
+
 
   return (
     <div className={`w-full`}>
@@ -353,7 +337,7 @@ export default function ProductsTable({ datas, handleSaveProduct }) {
                       <div className="flex space-x-6 items-center">
                         <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
                           <img
-                            src={cart?.product?.imageProducts[0].name}
+                            src={cart?.product?.imageProducts[0]?.name}
                             alt="product"
                             className="w-full h-full object-contain"
                           />
@@ -384,7 +368,7 @@ export default function ProductsTable({ datas, handleSaveProduct }) {
                   </td>
                   <td className=" py-4  w-[150px]">
                     <div className="flex justify-center items-center">
-                      <InputQuantityCom quantityCart={cart?.quantity} />
+                      <InputQuantityCom quantityCart={cart?.quantity} handleQuantity={() => console.log("")} />
                     </div>
                   </td>
                   <td className="text-right py-4  w-[200px]">
@@ -394,7 +378,7 @@ export default function ProductsTable({ datas, handleSaveProduct }) {
                   </td>
                   <td className="text-right py-4  w-[114px]">
                     <div className="flex space-x-1 items-center justify-center">
-                      <span>
+                      <span onClick={() => removeCart(cart?.id)}>
                         <svg className="hover:cursor-pointer"
                           width="10"
                           height="10"

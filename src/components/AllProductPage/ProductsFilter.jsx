@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { Range } from "react-range";
 
@@ -16,16 +17,25 @@ export default function ProductsFilter({
 }) {
   const [selected, setSelected] = useState();
   useEffect(() => {
-    const selectedFilter = categories?.reduce((acc, category) => {
-      acc[category.id] = false;
-      return acc;
-    }, {});
+    // const selectedFilter = categories?.reduce((acc, category) => {
+    //   acc[category.id] = false;
+    //   return acc;
+    // }, {});
+    var selectedFilter = {};
+    categories?.forEach(category => {
+      selectedFilter[category?.id] = false;
+    })
     setSelected(selectedFilter);
-  }, [categories]);
+  }, []);
   const changeSelected = (event) => {
     selected[event.target.value] = event.target.checked;
     handleSelected(selected);
+    for (let item in selected) {
+      console.log("length " + Object.keys(selected).length);
+    }
   }
+
+
   return (
     <>
       <div
@@ -44,7 +54,7 @@ export default function ProductsFilter({
                 <li className="item flex justify-between items-center mb-5">
                   <div className="flex space-x-[14px] items-center">
                     <div>
-                      <input onChange={(event) => changeSelected(event)} value={categories.id} type="checkbox" className="form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 focus:ring-offset-0 border-gray-300 flex items-center" />
+                      <input onChange={(event) => changeSelected(event)} value={category.id} type="checkbox" className="form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 focus:ring-offset-0 border-gray-300 flex items-center" />
                     </div>
                     <div>
                       <label
@@ -63,13 +73,13 @@ export default function ProductsFilter({
         </div>
         <div className="filter-subject-item pb-10 border-b border-qgray-border mt-10">
           <div className="subject-title mb-[30px]">
-            <h1 className="text-black text-base font-500">Price Range</h1>
+            <h1 className="text-black text-base font-500">Giá</h1>
           </div>
           <div className="price-range mb-5">
             <Range
               draggableTrack
               step={1}
-              max={1000}
+              max={1000000}
               min={0}
               values={volume}
               onChange={volumeHandler}
@@ -87,7 +97,7 @@ export default function ProductsFilter({
             />
           </div>
           <p className="text-xs text-qblack font-400">
-            Price: ${volume[0]} - ${volume[1]}
+            Giá: {(volume[0]) }<sup>đ</sup> - {(volume[1])}<sup>đ</sup>
           </p>
         </div>
 

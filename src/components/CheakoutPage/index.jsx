@@ -2,24 +2,80 @@ import { useEffect, useState } from "react";
 import InputCom from "../Helpers/InputCom";
 import PageTitle from "../Helpers/PageTitle";
 import Layout from "../Partials/Layout";
-
+import CryptoJS from 'crypto-js';
+import { useRequest } from "../Request/RequestProvicer";
 export default function CheakoutPage() {
   const [data, setData] = useState([]);
   const [user, setUser] = useState();
   const [serviceFee, setServiceFee] = useState(0);
   const [totalSale, setTotalSale] = useState(0);
   const [total, setTotal] = useState(0);
+  const { getItem } = useRequest();
   useEffect(() => {
     const session = sessionStorage.getItem("pay");
     if (session) {
       // const values = JSON.stringify(session);
-      setData(JSON.parse(session));
-      setUser(JSON.parse(session));
-
-
-      // console.log("JSON.parse(session)" +  JSON.parse(values));
+      // setData(JSON.parse(session));
+      // setUser(JSON.parse(session));
+      setData(getItem("data"));
+      setUser(getItem("data"));
     }
   }, []);
+  // ========================================VNPAY==========================================================================
+  const vnp_TmnCode = "Z3USXN5J";
+  const vnp_HashSecret = "0KEFC6UYKU33SAJH2KOJFU63DHSSHVJR";
+  const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+  var vnp_ReturnUrl = "http://localhost:3000/pay";
+
+  const createPaymentUrl = async () => {
+    const params = {
+      vnp_Version: "2.1.0",
+      vnp_Command: "pay",
+      vnp_TmnCode,
+      vnp_Locale: "vn",
+      vnp_CurrCode: "VND",
+      vnp_TxnRef: generateTransactionRef(),
+      vnp_OrderInfo: "Payment for order 123456789",
+      vnp_OrderType: "other",
+      vnp_Amount: 100000 * 100,
+      vnp_ReturnUrl,
+      vnp_IpAddr: "127.0.0.1",
+      vnp_CreateDate: new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 14)
+    };
+
+    const sortedParams = sortObject(params);
+
+    const querystring = new URLSearchParams(sortedParams).toString();
+    const secureHash = CryptoJS.HmacSHA512(querystring, vnp_HashSecret).toString(CryptoJS.enc.Hex).toUpperCase();
+
+    const paymentUrl = `${vnp_Url}?${querystring}&vnp_SecureHashType=HmacSHA512&vnp_SecureHash=${secureHash}`;
+
+    window.location.href = paymentUrl;
+  };
+
+  const generateTransactionRef = () => {
+    const date = new Date();
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hour = date.getHours().toString().padStart(2, '0');
+    const minute = date.getMinutes().toString().padStart(2, '0');
+    const second = date.getSeconds().toString().padStart(2, '0');
+    const randomStr = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `${year}${month}${day}${hour}${minute}${second}${randomStr}`;
+  };
+
+  const sortObject = (obj) => {
+    const sorted = {};
+    Object.keys(obj).sort().forEach(key => {
+      sorted[key] = obj[key];
+    });
+    return sorted;
+  };
+  // =========================================END===========================================================================
+  const pay = () => {
+
+  }
   return (
     <Layout childrenClasses="pt-0 pb-0">
       <div className="checkout-page-wrapper w-full bg-white pb-[60px]">
@@ -27,8 +83,8 @@ export default function CheakoutPage() {
           <PageTitle
             title="Thanh Toán"
             breadcrumb={[
-              { name: "home", path: "/" },
-              { name: "checkout", path: "/checkout" },
+              { name: "Trang chủ", path: "/" },
+              { name: "Thanh toán", path: "/checkout" },
             ]}
           />
         </div>
@@ -266,7 +322,7 @@ export default function CheakoutPage() {
                   <div className="mt-[30px]">
                     <div className=" flex justify-between mb-5">
                       <p className="text-2xl font-medium text-qblack">Thành tiền</p>
-                      <p className="text-2xl font-medium text-qred">{Intl.NumberFormat().format(data?.total+data?.service_fee)}<sup>đ</sup></p>
+                      <p className="text-2xl font-medium text-qred">{Intl.NumberFormat().format(data?.total + data?.service_fee)}<sup>đ</sup></p>
                     </div>
                   </div>
                   <div className="shipping mt-[30px]">
@@ -330,7 +386,7 @@ export default function CheakoutPage() {
                       </li>
                     </ul>
                   </div>
-                  <a href="#">
+                  <a onClick={() => pay()}>
                     <div className="w-full h-[50px] black-btn flex justify-center items-center">
                       <span className="text-sm font-semibold">
                         Thanh toán

@@ -1,23 +1,27 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import BreadcrumbCom from "../BreadcrumbCom";
 import EmptyCardError from "../EmptyCardError";
 import InputCom from "../Helpers/InputCom";
 import PageTitle from "../Helpers/PageTitle";
 import Layout from "../Partials/Layout";
+import { useRequest } from "../Request/RequestProvicer";
 import Service_Fee from "../service/Service_Fee";
 import ProductsTable from "./ProductsTable";
 
 export default function CardPage({ cart = true }) {
   const navigate = useNavigate(); // Đưa useNavigate ra ngoài useEffect
   const [data, setData] = useState();
-  const [dataSubmit, setDataSubmit] = useState();
+  const [dataSubmit, setDataSubmit] = useState([]);
   const [user, setUser] = useState();
   const [serviceFee, setServiceFee] = useState(0);
   const [totalSale, setTotalSale] = useState(0);
   const [total, setTotal] = useState(0);
+  const { startRequest, endRequest, setItem } = useRequest();
+  const localtion = useLocation();
+  const [feeSeller, setFeeSeller] = useState({});
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -31,21 +35,22 @@ export default function CardPage({ cart = true }) {
       navigate("/login", { replace: true });
       window.location.reload();
     }
-  }, []);
+  }, [localtion]);
 
-  const getServiceFee = async (weight, quantity, addressFrom, addressTo) => {
+  const getServiceFee = async (idSeller, weight, quantity, addressFrom, addressTo) => {
     try {
       const { service_fee } = await Service_Fee(weight, quantity, addressFrom, addressTo);
-      setServiceFee(service => service + service_fee);
-
-
+      setServiceFee(serviceFee + service_fee);
+      setFeeSeller(seller => ({
+        ...seller,
+        [idSeller]: service_fee
+      }))
     } catch (error) {
       console.error("Error in fetching service fee:", error);
     }
   };
 
   const handleSaveProduct = (value) => {
-
     var fromAddress = {};
     var toAddress = {};
     var sale = 0;
@@ -56,7 +61,6 @@ export default function CardPage({ cart = true }) {
         // console.log("toaddress    " + toAddress);
       }
     }
-
     setDataSubmit(value);
     setServiceFee(0);
     value?.forEach(seller => {
@@ -65,11 +69,10 @@ export default function CardPage({ cart = true }) {
           fromAddress = address;
         }
       }
-
       seller?.cart.map(cartItem => {
         total += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
         sale += ((cartItem.product.price * cartItem.product.sale) / 100) * cartItem.quantity;
-        getServiceFee(200, cartItem.quantity, fromAddress, fromAddress);
+        getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, fromAddress)
       });
       if (seller.vouchers.id > 0) {
         if (((seller?.vouchers?.sale * total) / 100) > seller?.vouchers?.totalPriceOrder) {
@@ -82,7 +85,18 @@ export default function CardPage({ cart = true }) {
     setTotalSale(sale);
     setTotal(total);
   }
+  useEffect(() => {
+    if (dataSubmit?.length > 0) {
+      setDataSubmit((prevData) =>
+        prevData.map((item) => ({
+          ...item,
+          service_fee: feeSeller[item?.id] || 0 // Thêm service_fee vào từng đối tượng
+        }))
+      );
+    }
+  }, [feeSeller])
   const handSubmitPay = () => {
+
     if (dataSubmit) {
       const data = {
         datas: dataSubmit,
@@ -91,16 +105,31 @@ export default function CardPage({ cart = true }) {
         sale: totalSale,
         service_fee: serviceFee
       }
+      setItem("data", data);
       sessionStorage.setItem("pay", JSON.stringify(data));
       navigate("/checkout");
     } else {
       toast.warn("Chưa chọn sản phẩm")
     }
   }
+
+  const removeCart = (id_cart) => {
+    startRequest();
+    axios.get(`http://localhost:8080/api/v1/user/cart/remove/` + id_cart).then(response => {
+      if (response.data.code == 1000) {
+        toast.success("Xóa thành công");
+        const id_account = sessionStorage.getItem("id_account");
+        axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
+          setData(response.data.result);
+          setUser(response.data.result.user);
+          endRequest();
+        }).catch(error => console.error("fetch cart error " + error));
+      }
+    }).catch(error => console.error("delete cart error " + error));
+
+  }
   return (
-    
     <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>
-      {console.log("render " + serviceFee)}
       {cart === false ? (
         <div className="cart-page-wrapper w-full">
           <div className="container-x mx-auto">
@@ -126,7 +155,7 @@ export default function CardPage({ cart = true }) {
           </div>
           <div className="w-full mt-[23px]">
             <div className="container-x mx-auto">
-              <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} />
+              <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} removeCart={removeCart} />
               <div className="w-full sm:flex justify-between">
                 <div className="discount-code sm:w-[270px] w-full mb-5 sm:mb-0 h-[50px] flex">
                   <div className="flex-1 h-full">

@@ -1,3 +1,5 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import BreadcrumbCom from "../BreadcrumbCom";
 import EmptyWishlistError from "../EmptyWishlistError";
 import PageTitle from "../Helpers/PageTitle";
@@ -5,6 +7,15 @@ import Layout from "../Partials/Layout";
 import ProductsTable from "./ProductsTable";
 
 export default function Wishlist({ wishlist = true }) {
+  const [data, setData] = useState();
+  useEffect(() => {
+    const id_user = sessionStorage.getItem("id_account");
+    if (id_user) {
+      axios("http://localhost:8080/api/v1/user/favorite/getall/" + id_user).then(response => {
+        setData(response.data.result.datas);
+      }).catch(error => console.error("fetch getall favorite error " + error));
+    }
+  }, []);
   return (
     <Layout childrenClasses={wishlist ? "pt-0 pb-0" : ""}>
       {wishlist === false ? (
@@ -12,8 +23,8 @@ export default function Wishlist({ wishlist = true }) {
           <div className="container-x mx-auto">
             <BreadcrumbCom
               paths={[
-                { name: "home", path: "/" },
-                { name: "wishlist", path: "/wishlist" },
+                { name: "Trang chủ", path: "/" },
+                { name: "Yêu thích", path: "/wishlist" },
               ]}
             />
             <EmptyWishlistError />
@@ -23,27 +34,27 @@ export default function Wishlist({ wishlist = true }) {
         <div className="wishlist-page-wrapper w-full bg-white pb-[60px]">
           <div className="w-full">
             <PageTitle
-              title="Wishlist"
+              title="Yêu thích"
               breadcrumb={[
-                { name: "home", path: "/" },
-                { name: "wishlist", path: "/wishlist" },
+                { name: "Trang chủ", path: "/" },
+                { name: "Yêu thích", path: "/wishlist" },
               ]}
             />
           </div>
           <div className="w-full mt-[23px]">
             <div className="container-x mx-auto">
-              <ProductsTable className="mb-[30px]" />
+              <ProductsTable className="mb-[30px]" datas={data} />
               <div className="w-full mt-[30px] flex sm:justify-end justify-start">
                 <div className="sm:flex sm:space-x-[30px] items-center">
                   <button type="button">
                     <div className="w-full text-sm font-semibold text-qred mb-5 sm:mb-0">
-                      Clean Wishlist
+                      Xóa tất cả
                     </div>
                   </button>
                   <div className="w-[180px] h-[50px]">
                     <button type="button" className="yellow-btn">
                       <div className="w-full text-sm font-semibold">
-                        Add to Cart All
+                        Thêm tất cả
                       </div>
                     </button>
                   </div>

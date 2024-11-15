@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { FaMicrophone } from 'react-icons/fa';
 import { Link, useNavigate } from "react-router-dom";
@@ -8,11 +9,16 @@ import ThinBag from "../../../Helpers/icons/ThinBag";
 import ThinLove from "../../../Helpers/icons/ThinLove";
 import ThinPeople from "../../../Helpers/icons/ThinPeople";
 import SearchBox from "../../../Helpers/SearchBox";
+import { useRequest } from '../../../Request/RequestProvicer';
 
 export default function Middlebar({ className, type }) {
   const navigate = useNavigate();
+  const [totalCart, setTotalCart] = useState(0);
   const token = sessionStorage.getItem("token");
   const [listening, setListening] = useState(false);
+  const { startRequest, endRequest } = useRequest();
+  const { isRequesting } = useRequest();
+
   const changeCart = () => {
     if (token) {
       navigate("/cart");
@@ -61,6 +67,28 @@ export default function Middlebar({ className, type }) {
       recognition.stop();
     };
   }, [listening]);
+  const [data, setData] = useState();
+  useEffect(() => {
+
+    if (!isRequesting) {
+      const token = sessionStorage.getItem("token");
+
+      if (token) {
+        const id_account = sessionStorage.getItem("id_account");
+        axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
+          setData(response.data.result.datas);
+          var total = 0;
+          response.data.result.datas?.forEach(seller => {
+            total += seller?.cart?.length;
+          });
+          setTotalCart(total);
+        }).catch(error => console.error("fetch cart error " + error));
+      }
+
+
+    }
+  }, [isRequesting]);
+
   return (
     <div className={`w-full h-[86px] bg-white ${className}`}>
       <ToastContainer />
@@ -102,7 +130,7 @@ export default function Middlebar({ className, type }) {
               <SearchBox type={type} className="search-com" />
               <div onClick={() => { setListening(true) }} className="flex items-center justify-center   border rounded-full p-3 ml-2 cursor-pointer"><FaMicrophone size={20} color="gray" /></div>
               {/* mic */}
-              {listening ? (<div className="fixed top-0 w-full h-[100px] z-[4000] bg-white flex items-center justify-center">
+              {listening ? (<div className="fixed top-0 left-0 w-full h-[90px] z-[4000] bg-white flex items-center justify-center">
                 <label className="mr-[20px] text-[20px] pr-sm-1" id="labelSearch">Đang nghe...</label>
                 <div className="container-search bg-[rgba(255,0,0,0.133)] rounded-full p-[10px]">
                   <button
@@ -153,14 +181,14 @@ export default function Middlebar({ className, type }) {
                     className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-qyellow"
                       }`}
                   >
-                    15
+                    {totalCart}
                   </span>
                 </div>
-                {/* <div className="fixed left-0 top-0 w-full h-full z-40"></div> */}
-                {/* hidden group-hover:block" */}
+
                 <Cart
                   type={type}
                   className="absolute -right-[45px] top-11 z-50 hidden group-hover:block"
+                  data={data}
                 />
               </div>
               <div>
