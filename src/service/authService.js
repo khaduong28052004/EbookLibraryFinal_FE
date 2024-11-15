@@ -18,8 +18,11 @@ const AuthService = {
   },
   setItem: (response) => {
     // Tạo đối tượng user từ các thuộc tính của response
+    console.log("USEERRRRRRRRR", response);
     const user = {
       username: response.username || null,
+      fullname: response.fullname,
+      avatar: response.avatar,
       id_account: response.id_account,
       avatar: response.avatar,
       roles: response.roles,
@@ -33,6 +36,7 @@ const AuthService = {
     return;
   },
   logout: () => {
+    sessionStorage.removeItem("id_account");
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
     return;
@@ -59,7 +63,24 @@ const AuthService = {
   },
 
 
-  
+    //CÂP NHẬT TK
+    updateAccount: (id, data) => {
+      const url = `/api/v1/user/updateAccount/${id}`;
+      return axiosAuth("", "put", url, data); // Truyền trực tiếp đối tượng data
+    },
+    //ĐĂNG KÝ SELLER
+    registerSeller: (data) => {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");  // Lấy token từ localStorage
+      const url = `/api/v1/user/registerSeller/${userId}`;
+      
+      return axiosConfig.put(url, data, {
+          headers: {
+              Authorization: `Bearer ${token}`,  // Thêm token vào header
+          },
+    
+      });
+    },
 };
 
 export default AuthService;

@@ -2,9 +2,11 @@ import axios from 'axios';
 import queryString from 'query-string';
 //http://localhost:8080
 
-axios.defaults.baseURL = 'http://localhost:8080';
+// axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = import.meta.env.VITE_API_BASEURL;
+
 const axiosConfig = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_BASEURL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -12,7 +14,7 @@ const axiosConfig = axios.create({
 });
 
 
-const axiosAuth = (TOKEN, method, url, data) => {
+const axiosAuth = (TOKEN, method, url, data, status) => {
   const token = sessionStorage.getItem("accessToken");
   let headers = {
     "Access-Control-Allow-Origin": "*",
@@ -33,7 +35,6 @@ const axiosAuth = (TOKEN, method, url, data) => {
     };
   }
 
-  //  "Content-Type": "multipart/form-data",
   if (url.includes('/saveImg')) {
     headers["Content-Type"] = "multipart/form-data"; // Thay đổi Content-Type cho multipart
   } else {

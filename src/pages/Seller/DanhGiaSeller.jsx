@@ -1,7 +1,7 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import Table from './components/Table';
+import Table from './components/TableDanhGia';
 
-const SanPhamSeller = () => {
+const DanhGiaSeller = () => {
   return (
     <>
       <Breadcrumb pageName="Quản Lý Đánh Giá" status='Người Bán'/>
@@ -13,4 +13,4 @@ const SanPhamSeller = () => {
   );
 };
 
-export default SanPhamSeller;
+export default DanhGiaSeller  ;
