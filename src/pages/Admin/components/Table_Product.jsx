@@ -7,39 +7,77 @@ import Modal from "./ModalThongBao";
 import ModalDuyet from "./Modal_Duyet";
 import Pagination from './Pagination';
 
-const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
+const TableTwo = () => {
+    const [data, setData] = useState([]);
     const [searchItem, setSearchItem] = useState('');
     const [option, setOption] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
-    const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
-    const [expandedRowId, setExpandedRowId] = useState(null);
+    const [currentPage, setCurrentPage] = useState(0);
 
+    const [expandedRowId, setExpandedRowId] = useState(null);
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
-    const [optionModal, setOptionModal] = useState(null);
+    const [active, setActive] = useState(null);
+    const [optionActive, setoptionActive] = useState(null);
+    const findAllProduct = async () => {
+        try {
+            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 2, sortColumn, sortBy });
+            setData(response.data.result);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }
+
+    const putActive = async (id, status) => {
+        try {
+            const response = await product.putActive({ id, status });
+            console.log("xóa: " + response.data.result.message);
+            findAllProduct();
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }
+    const putStatus = async (id) => {
+        try {
+            const response = await product.putStatus({ id });
+            console.log("xóa: " + response.data.result.message);
+            findAllProduct();
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }
+
     const handleConfirm = () => {
+        if (active) {
+            putActive(id, optionActive);
+            setoptionActive(null);
+        } else {
+            putStatus(id);
+        }
+        findAllProduct();
         setIsOpen(false);
-        onIdChange(id, optionModal, true);
+
     };
     const handlePageChange = (newPage) => {
-        if (newPage >= 0 && newPage < entityData.totalPages) {
-            onPageChange(option, searchItem, newPage, sortBy, sortColumn);
+        if (newPage >= 0 && newPage < data.totalPages) {
+            setCurrentPage(newPage);
+            console.log("currentPage: " + newPage);
         }
     };
 
     const handlePrevious = () => {
-        handlePageChange(entityData?.pageable?.pageNumber - 1);
+        handlePageChange(currentPage - 1);
     };
 
     const handleNext = () => {
-        handlePageChange(entityData?.pageable?.pageNumber + 1);
+        handlePageChange(currentPage + 1);
     };
 
     useEffect(() => {
-        onPageChange(option, searchItem, currentPage, sortBy, sortColumn);
-    }, [option, searchItem, currentPage, sortBy, sortColumn]);
+        findAllProduct(option, searchItem, currentPage, sortBy, sortColumn);
+    }, [searchItem, currentPage, sortBy, sortColumn]);
 
     const toggleRow = (id) => {
         if (expandedRowId === id) {
@@ -52,8 +90,8 @@ const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
     const handleExport = async () => {
         const sheetNames = ['Danh Sách Thống Kê Sản Phẩm'];
         try {
-            console.log("totalElements: " + entityData.totalElements);
-            const response = await product.findAllProduct({ searchItem, option, currentPage, size: entityData.totalElements, sortColumn, sortBy });
+            console.log("totalElements: " + data.totalElements);
+            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: data.totalElements, sortColumn, sortBy });
             return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -65,17 +103,10 @@ const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
         e.preventDefault();
     };
 
-
-    const formatNumber = (number, decimals = 2) => {
-        if (number === null || number === undefined || isNaN(number)) {
-            return '0.00';
-        }
-        return number.toFixed(decimals);
-    };
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-                <form action="https://formbold.com/s/unique_form_id" method="POST">
+                <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
                         <button className="absolute left-0 top-6 -translate-y-1/2">
                             <svg
@@ -113,7 +144,10 @@ const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
                         {/* Dropdown Option */}
                         <select
                             value={option}
-                            onChange={(e) => setOption(e.target.value)}
+                            onChange={(e) => {
+                                setOption(e.target.value);
+                                setCurrentPage(0);
+                            }}
                             className="w-70 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
                         >
                             <option value="choduyet" disabled>Lọc theo</option>
@@ -205,7 +239,7 @@ const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
                 </thead>
 
                 <tbody>
-                    {entityData?.content?.map((entity, index) => (
+                    {data?.content?.map((entity, index) => (
                         <>
                             <tr key={index} className={`border-t border-stroke dark:border-strokedark ${expandedRowId === entity.id ? `bg-slate-100` : `bg-white`}`} onClick={() => toggleRow(entity.id)}>
                                 <td
@@ -218,7 +252,7 @@ const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
                                     }
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                    {entityData.pageable.pageNumber * entityData.size + index + 1}
+                                    {data.pageable.pageNumber * data.size + index + 1}
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                     <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0]} alt="entity" />
@@ -226,7 +260,7 @@ const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {`${formatNumber(entity.price)} VNĐ`}
+                                        {entity.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                     </div>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -260,7 +294,7 @@ const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
                                             setId(entity.id);
                                             setIsOpen(true);
                                             setStatusentity(!entity.delete);
-                                            setOptionModal(entity.active ? true : false);
+                                            setActive(entity.active ? false : true)
                                         }}>
                                             {entity.delete == false ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                         </button>
@@ -292,14 +326,14 @@ const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
             </table>
             <Pagination
                 pageNumber={currentPage}
-                totalPages={entityData?.totalPages}
-                totalElements={entityData?.totalElements}
+                totalPages={data?.totalPages}
+                totalElements={data?.totalElements}
                 handlePrevious={handlePrevious}
                 handleNext={handleNext}
                 setPageNumber={setCurrentPage}
-                size={entityData.size}></Pagination>
+                size={data.size}></Pagination>
 
-            {optionModal ? (
+            {!active ? (
                 <Modal
                     open={isOpen}
                     setOpen={setIsOpen}
@@ -325,10 +359,11 @@ const TableTwo = ({ onPageChange, entityData, onIdChange }) => {
                     message={statusentity
                         ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
                         : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
-                    onConfirm={handleConfirm}
+                    onConfirm={() => {
+                        putActive(id, true);
+                    }}
                     onCancel={() => {
-                        setIsOpen(false);
-                        onIdChange(id, optionModal, false);
+                        putActive(id, false);
                     }}
                     confirmText={'Duyệt'}
                     cancelText={"Hủy"}

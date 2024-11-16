@@ -1,22 +1,12 @@
 import { axiosAuth } from '../../config/configAxios';
 
 // const token = sessionStorage.getItem("token");
+const url = (path = "", param = "") => `/api/v1/admin/product${path}${param}`
+
 const token = "null";
 const product = {
-    findAllProduct: ({ searchItem, option, currentPage, size, sortColumn, sortBy }) => {
-        const url = `/api/v1/admin/product?search=${searchItem}&option=${option}&page=${currentPage}&size=${size}&sortBy=${sortBy}&sortColumn=${sortColumn}`;
-        console.log(token);
-        return axiosAuth(token, "get", url);
-    },
-    putStatus: ({ id }) => {
-        const url = `/api/v1/admin/product?id=${id}`;
-        console.log(token);
-        return axiosAuth(token, "put", url);
-    },
-    putActive: ({ id, status }) => {
-        const url = `/api/v1/admin/product/browse?id=${id}&status=${status}`;
-        console.log(token);
-        return axiosAuth(token, "put", url);
-    }
+    findAllProduct: ({ searchItem, option, page, size, sortColumn, sortBy }) => axiosAuth(token, "get", url("", `?search=${searchItem}&option=${option}&page=${page = undefined ? 0 : page}&size=${size}&sortBy=${sortBy}&sortColumn=${sortColumn}`)),
+    putStatus: ({ id }) => axiosAuth(token, "put", url("", `?id=${id}`)),
+    putActive: ({ id, status }) => axiosAuth(token, "put", url("/browse", `?id=${id}&status=${status}`)),
 }
 export default product;
