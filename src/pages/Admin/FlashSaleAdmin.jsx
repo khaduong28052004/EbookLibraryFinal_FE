@@ -10,11 +10,13 @@ const FalshSaleAdmin = () => {
   const [sortColumn, setSortColumn] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
+  const [status, setStatus] = useState(true);
 
   const deleteFlashSale = async (id) => {
     try {
       const response = await flashSale.delete({ id });
       console.log("Mã Code: " + response.data.code);
+      setCurrentPage(0);
       findAllFlashSale();
     } catch (error) {
       console.log("Error: " + error);
@@ -44,14 +46,17 @@ const FalshSaleAdmin = () => {
 
   useEffect(() => {
     findAllFlashSale();
-  }, [currentPage, dateStart, dateEnd, sortColumn, sortBy]);
+  }, [currentPage, dateStart, dateEnd, sortColumn, sortBy, status]);
   return (
     <>
       <Breadcrumb pageName="Quản Lý Flash Sale" status='Quản Trị' />
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <Table onPageChange={handleChange} entityData={data}
-          onIdChange={deleteFlashSale} />
+          onIdChange={deleteFlashSale}
+          status={status}
+          setStatus={setStatus}
+        />
       </div>
     </>
   );
