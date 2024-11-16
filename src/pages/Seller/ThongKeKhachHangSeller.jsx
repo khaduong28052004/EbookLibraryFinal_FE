@@ -1,13 +1,51 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import TableThongKe from './components/TableThongKe';
+import TableThongKe from './components/TableThongKeKhachHang';
 import CardDataStats from '../../components/CardDataStats';
+import { useEffect, useState } from 'react';
+import ThongKeService from '../../service/Seller/thongKeService';
+import { toast } from 'react-toastify';
+const ThongKeKhachHang = () => {
+  const [pageNumber, setPageNumber] = useState(0);
+  const [pageSize, setPageSize] = useState(5)
+  const [sortBy, setSortBy] = useState(true);
+  const [sortColumn, setSortColumn] = useState("");
+  const [search, setSearch] = useState("");
+  const [data, setData] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  useEffect(() => {
+    loadTable();
+  }, [pageNumber, search])
 
-const SanPhamSeller = () => {
+  const loadTable = async () => {
+    try {
+      const response = await ThongKeService.khachHang(search, pageNumber, sortBy, sortColumn);
+      console.log(response.data.result);
+      toast.error(response.data.message);
+      setData(response.data.result);
+      setTotalPages(response.data.result.khachHang.totalPages);
+      setTotalElements(response.data.result.khachHang.totalElements);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handlePrevious = () => {
+    if (pageNumber > 0) {
+      setPageNumber(pageNumber - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (pageNumber < totalPages - 1) {
+      setPageNumber(pageNumber + 1);
+    }
+  };
   return (
     <>
-      <Breadcrumb pageName="Thống Kê Đơn Hàng" status='Quản Trị' />
+      <Breadcrumb pageName="Thống Kê Khách Hàng" status='Người Bán' />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+        <CardDataStats title="Tổng Số Sản Phẩm Đã Mua" total={data.tongSoSP}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -26,7 +64,7 @@ const SanPhamSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
+        <CardDataStats title="Tổng Số Lượt Mua" total={data.tongSoLuotMua}>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -49,7 +87,7 @@ const SanPhamSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
+        <CardDataStats title="Tổng Số Lượt Đánh Giá" total={data.tongSoLuotDanhGia}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -68,7 +106,7 @@ const SanPhamSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats title="Tổng Số Tiền Đã Chi" total={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.tongSoTien)}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -93,10 +131,18 @@ const SanPhamSeller = () => {
         </CardDataStats>
       </div>
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <TableThongKe />
+        <TableThongKe list={data.khachHang}
+          pageSize={pageSize}
+          pageNumber={pageNumber}
+          totalElements={totalElements}
+          totalPages={totalPages}
+          handleNext={handleNext}
+          handlePrevious={handlePrevious}
+          setPageNumber={setPageNumber}
+          setSearch={setSearch}/>
       </div>
     </>
   );
 };
 
-export default SanPhamSeller;
+export default ThongKeKhachHang;
