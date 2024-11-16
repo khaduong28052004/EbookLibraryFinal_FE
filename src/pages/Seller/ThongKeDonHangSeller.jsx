@@ -16,7 +16,7 @@ const SanPhamSeller = () => {
   const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
     loadTable();
-  }, [pageNumber])
+  }, [pageNumber, sortBy, sortColumn])
 
   const loadTable = async () => {
     try {
@@ -117,17 +117,21 @@ const SanPhamSeller = () => {
         </CardDataStats>
       </div>
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <TableThongKe list={data.bill} 
-        setDateEnd={setDateEnd} 
-        setDateStart={setDateStart} 
-        pageSize={pageSize} 
-        pageNumber={pageNumber} 
-        totalElements={totalElements} 
-        totalPages={totalPages} 
-        handleNext={handleNext} 
-        handlePrevious={handlePrevious} 
-        setPageNumber={setPageNumber} 
-        handleSearch={handleSearch} />
+        <TableThongKe list={data.bill}
+          setDateEnd={setDateEnd}
+          setDateStart={setDateStart}
+          pageSize={pageSize}
+          pageNumber={pageNumber}
+          totalElements={totalElements}
+          totalPages={totalPages}
+          handleNext={handleNext}
+          handlePrevious={handlePrevious}
+          setPageNumber={setPageNumber}
+          handleSearch={handleSearch}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          sortColumn={sortColumn}
+          setSortColumn={setSortColumn} />
       </div>
     </>
   );

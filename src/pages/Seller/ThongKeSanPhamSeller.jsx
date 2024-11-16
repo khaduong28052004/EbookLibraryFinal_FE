@@ -16,7 +16,7 @@ const ThongKeSanPham = () => {
   const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
     loadTable();
-  }, [pageNumber, search]);
+  }, [pageNumber, search, sortBy, sortColumn]);
 
   const loadTable = async () => {
     try {
@@ -30,6 +30,7 @@ const ThongKeSanPham = () => {
       console.log(error);
     }
   }
+
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -41,6 +42,7 @@ const ThongKeSanPham = () => {
       setPageNumber(pageNumber + 1);
     }
   };
+  
   return (
     <>
       <Breadcrumb pageName="Thống Kê Sản Phẩm" status='Người Bán' />
@@ -140,7 +142,11 @@ const ThongKeSanPham = () => {
           handleNext={handleNext}
           handlePrevious={handlePrevious}
           setPageNumber={setPageNumber}
-          setSearch={setSearch} />
+          setSearch={setSearch} 
+          sortBy={sortBy}
+          sortColumn={sortColumn}
+          setSortBy={setSortBy}
+          setSortColumn={setSortColumn}/>
       </div>
     </>
   );
