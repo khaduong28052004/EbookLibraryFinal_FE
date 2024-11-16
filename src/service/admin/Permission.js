@@ -2,22 +2,11 @@ import { axiosAuth } from '../../config/configAxios';
 
 // const token = sessionStorage.getItem("token");
 const token = "null";
+const url = (path = "", param = "") => `/api/v1/admin/permission${path}${param}`
 
 const permission = {
-    findAllByRole: ({ currentPage, size, role, searchItem, sortColumn, sortBy }) => {
-        const url = `/api/v1/admin/permission?role=${role}&search=${searchItem}&page=${currentPage}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}`;
-        console.log(token);
-        return axiosAuth(token, "get", url);
-    },
-    findlAllNotRole: ({ currentPage, size, role, sortColumn, sortBy }) => {
-        const url = `/api/v1/admin/permission?role=${role}&page=${currentPage}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}`;
-        console.log(token);
-        return axiosAuth(token, "get", url);
-    },
-    findById: ({ id }) => {
-        const url = `/api/v1/admin/permission?id=${id}`;
-        console.log(token);
-        return axiosAuth(token, "get", url);
-    }
+    findAllByRole: ({ page, size, role, searchItem, sortColumn, sortBy }) => axiosAuth(token, "get", url("", `?role=${role}&search=${searchItem}&page=${page}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}`)),
+    findlAllNotRole: ({ page, size, role, sortColumn, sortBy }) => axiosAuth(token, "get", url("/notrole", `?role=${role}&page=${page}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}`)),
+    findById: ({ id }) => axiosAuth(token, "get", url("", `?id=${id}`)),
 }
 export default permission;
