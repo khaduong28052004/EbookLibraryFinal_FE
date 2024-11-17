@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Product } from '../../../types/product';
-import ProductOne from '../..//../images/product/product-01.png';
+import ProductOne from '../../../images/product/product-01.png';
 import ProductTwo from '../../../images/product/product-02.png';
 import ProductThree from '../../../images/product/product-03.png';
 import ProductFour from '../../../images/product/product-04.png';
@@ -255,7 +255,7 @@ const TableTwo = () => {
         </div>
       </div>
 
-      <Modal
+      {/* <Modal
         open={isOpen}
         setOpen={setIsOpen}
         title={
@@ -282,7 +282,7 @@ const TableTwo = () => {
         }
         iconBgColor={statusProduct ? 'bg-red-100' : 'bg-yellow-100'}
         buttonBgColor={statusProduct ? 'bg-red-600' : 'bg-yellow-600'}
-      />
+      /> */}
 
       <ModalSanPham
         open={isOpenModalSP}
