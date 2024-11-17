@@ -10,11 +10,11 @@ const AuthService = {
 
   dangky: ({ username, password }) => {
     const url = "/api/v1/register"; // Update if the endpoint is for registration
-    return axiosAuth("", "post", url, { username, password });
+    return axiosAuth("null", "post", url, { username, password });
   },
-  GoogleLogin: (email)=>{
+  GoogleLogin: (token)=>{
     const url = "/api/v1/user/loginGoogle";
-    return  axiosAuth("","post",url, email);
+    return  axiosAuth("null","post",url, token);
   },
   setItem: (response) => {
     // Tạo đối tượng user từ các thuộc tính của response
