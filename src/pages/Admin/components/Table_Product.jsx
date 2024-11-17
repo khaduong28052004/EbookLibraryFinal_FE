@@ -77,7 +77,7 @@ const TableTwo = () => {
 
     useEffect(() => {
         findAllProduct(option, searchItem, currentPage, sortBy, sortColumn);
-    }, [searchItem, currentPage, sortBy, sortColumn]);
+    }, [searchItem, currentPage, sortBy, sortColumn,option]);
 
     const toggleRow = (id) => {
         if (expandedRowId === id) {
