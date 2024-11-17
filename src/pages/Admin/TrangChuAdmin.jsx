@@ -1,17 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import CardDataStats from '../../components/CardDataStats';
-import ChartOne from '../../components/Charts/ChartOne';
-import ChartThree from '../../components/Charts/ChartThree';
-import ChartTwo from '../../components/Charts/ChartTwo';
-import ChatCard from '../../components/Chat/ChatCard';
-import MapOne from '../../components/Maps/MapOne';
-import TableOne from '../../components/Tables/TableOne';
+// import ChartOne from '../../components/Charts/ChartOne';
+import ChartThree from './components/ChartThree';
+// import ChartTwo from '../../components/Charts/ChartTwo';
+// import ChatCard from '../../components/Chat/ChatCard';
+// import MapOne from '../../components/Maps/MapOne';
+// import TableOne from '../../components/Tables/TableOne';
+import home from '../../service/admin/Home';
 
-const ECommerce: React.FC = () => {
+const Home = () => {
+  const [data, setData] = useState([]);
+  const findAllHome = async () => {
+    try {
+      const response = await home.findAllHome();
+      setData(response.data.result);
+    } catch (error) {
+      console.log("Error: " + error);
+    }
+  }
+  useEffect(() => {
+    findAllHome();
+  }, []);
+
+  const chartData = {
+    labels: ['Desktop', 'Tablet', 'Mobile', 'Unknown'],
+    series: [65, 34, 12, 56], // Phần trăm hoặc giá trị
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+        <CardDataStats
+          title="Shop"
+          total={data.sumShop}
+        // rate="0.43%" levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -30,7 +53,11 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
+        <CardDataStats
+          title="Khách hàng"
+          total={data.sumAccount}
+        // rate="0.43%" levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -53,7 +80,11 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
+        <CardDataStats
+          title="Doanh thu"
+          total={data.doanhThu}
+        // rate="0.43%" levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -72,7 +103,11 @@ const ECommerce: React.FC = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats
+          title="Lợi nhuận"
+          total={data.loiNhuan}
+        // rate="0.43%" levelUp
+        >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -97,10 +132,13 @@ const ECommerce: React.FC = () => {
         </CardDataStats>
       </div>
 
-      <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <ChartOne />
+      <div className="mt-4 grid grid-cols-12 gap-6 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+        {/* <ChartOne /> */}
         {/* <ChartTwo /> */}
-        <ChartThree />
+        <ChartThree list={data.listAccount} title="Tài Khoản" />
+        <ChartThree list={data.listDoanhThu} title="Doanh thu sàn" />
+        {/* <ChartThree list={data.listDoanhThu} title="Doanh thu sàn" /> */}
+
         {/* <MapOne /> */}
 
       </div>
@@ -108,4 +146,4 @@ const ECommerce: React.FC = () => {
   );
 };
 
-export default ECommerce;
+export default Home;
