@@ -45,6 +45,7 @@
     "react-slick": "^0.29.0",
     "react-spinners": "^0.14.1",
     "react-toastify": "^9.1.3",
+    "react-turnstile": "^1.1.4",
     "slick-carousel": "^1.8.1",
     "sort-by": "^0.0.2",
     "tailadmin-react-free": "file:",

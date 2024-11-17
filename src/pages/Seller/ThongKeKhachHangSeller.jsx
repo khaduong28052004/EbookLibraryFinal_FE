@@ -15,7 +15,7 @@ const ThongKeKhachHang = () => {
   const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
     loadTable();
-  }, [pageNumber, search])
+  }, [pageNumber, search, sortBy, sortColumn])
 
   const loadTable = async () => {
     try {
@@ -139,7 +139,11 @@ const ThongKeKhachHang = () => {
           handleNext={handleNext}
           handlePrevious={handlePrevious}
           setPageNumber={setPageNumber}
-          setSearch={setSearch}/>
+          setSearch={setSearch}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          sortColumn={sortColumn}
+          setSortColumn={setSortColumn}/>
       </div>
     </>
   );

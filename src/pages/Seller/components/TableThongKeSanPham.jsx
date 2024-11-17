@@ -5,7 +5,7 @@ import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
 
-const TableThongKeDonHang = ({ list, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber }) => {
+const TableThongKeDonHang = ({ list, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, setSortBy, setSortColumn, sortBy, sortColumn }) => {
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="py-6 flex flex-col md:flex-row justify-between px-4 md:px-6 xl:px-7.5 space-y-4 md:space-y-0">
@@ -65,52 +65,82 @@ const TableThongKeDonHang = ({ list, setSearch, pageSize, pageNumber, totalEleme
           <tr className="border-t border-stroke dark:border-strokedark">
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("nameSP");
+              }}
+            >
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Tên Sản Phẩm</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "nameSP" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "nameSP" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("theLoai");
+              }}
+            >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Thể Loại</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "theLoai" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "theLoai" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("luotBan");
+              }}
+            >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Lượt Bán</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotBan" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotBan" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("luotDanhGia");
+              }}
+            >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Lượt Đánh Giá</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+             onClick={() => {
+              setSortBy(!sortBy);
+              setSortColumn("trungBinhDanhGia");
+            }}
+            >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trung Bình Lượt Đánh Giá</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "trungBinhDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "trungBinhDanhGia" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("luotYeuThich");
+              }}
+              >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Lượt Yêu Thích</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotYeuThich" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotYeuThich" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
           </tr>

@@ -8,13 +8,12 @@ import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
 
-const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, handleSearch }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [statusProduct, setStatusProduct] = useState(false);
-  const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, handleSearch, sortBy, sortColumn, setSortBy, setSortColumn }) => {
+
   const handleConfirm = () => {
     setIsOpen(false);
   };
+
   const [expandedRowId, setExpandedRowId] = useState(null);
   const toggleRow = (id) => {
     if (expandedRowId === id) {
@@ -23,7 +22,6 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
       setExpandedRowId(id);
     }
   }
-
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -97,46 +95,65 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
             <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("account.fullname");
+              }}
+            >
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Khách Hàng</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("createAt");
+              }}>
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Ngày Mua</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "createAt" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "createAt" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("quantity");
+              }}>
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượng</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("totalPrice");
+              }}>
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Tổng Tiền</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "totalPrice" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "totalPrice" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("orderStatus.id");
+              }}>
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trạng Thái</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "orderStatus.id" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "orderStatus.id" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
-
-
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <span className="text-sm text-black dark:text-white truncate w-24"></span>
             </th>
@@ -180,34 +197,6 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
                     <span className="inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium">
                       {item.orderStatus.name}
                     </span>
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                  <div className="flex space-x-3.5">
-                    <button>
-                      {item.orderStatus.id < 4 && (
-                        <ArrowPathIcon
-                          className="w-5 h-5 text-black hover:text-green-600 dark:text-white"
-                          onClick={() => {
-                            setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
-                            setOrderStatusId(true);
-                            setIsOpen(true);
-                          }}
-                        />
-                      )}
-                    </button>
-                    <button>
-                      {item.orderStatus.id <= 2 && (
-                        <TrashIcon
-                          className="w-5 h-5 text-black hover:text-red-600 dark:text-white"
-                          onClick={() => {
-                            setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
-                            setOrderStatusId(false);
-                            setIsOpen(true);
-                          }}
-                        />
-                      )}
-                    </button>
                   </div>
                 </td>
               </tr>

@@ -23,7 +23,8 @@ const TableCategory = () => {
   const [dataCategory, setDataCategory] = useState({
     id: null,
     name: '',
-    idParent: null
+    idParent: null,
+    account: sessionStorage.getItem("id_account")
   });
   const [status, setStatus] = useState(true);
   const [listDoanhMuc, setListDoanhMuc] = useState([]);
@@ -100,7 +101,8 @@ const TableCategory = () => {
     setDataCategory({
       id: null,
       name: '',
-      idParent: null
+      idParent: null,
+      account: sessionStorage.getItem("id_account")
     })
     loadListDoanhMuc();
 
@@ -180,7 +182,9 @@ const TableCategory = () => {
             Excel
           </button>
           <button
-            onClick={() => { reset(); setIsOpenModalSP(true); setStatus(true) }}
+            onClick={() => { reset(); setIsOpenModalSP(true); setStatus(true) 
+
+            }}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Thêm
