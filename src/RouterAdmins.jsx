@@ -18,6 +18,7 @@ import ThongKeKhachHangAdmin from "./pages/Admin/ThongKeKhachHangAdmin"
 import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
 import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
+import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
 export default function RouterAdmins() {
   return (
     <DefaultLayout>
@@ -172,6 +173,15 @@ export default function RouterAdmins() {
             <>
               <PageTitle title="Thống Kê Khách Hàng" />
               <ThongKeKhachHangAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/quanLy/voucherDetail"
+          element={
+            <>
+              <PageTitle title="Chi Tiết Voucher" />
+              <VoucherDetailAdmin />
             </>
           }
         />

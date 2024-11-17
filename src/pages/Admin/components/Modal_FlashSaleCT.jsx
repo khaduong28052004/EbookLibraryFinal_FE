@@ -1,0 +1,478 @@
+import React, { useState, useEffect } from 'react';
+import { ArrowLongDownIcon, ArrowPathIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
+import flashSale from '../../../service/admin/FlashSale';
+import flashSaleDetails from '../../../service/admin/FlashSaleDetails';
+import ModalFlashSale from "./Model_FlashSaleCTInsert";
+import Modal from "./ModalThongBao";
+import Pagination from './Pagination';
+
+const Modal_FlashSaleCT = ({
+    statusFillAll,
+    setStatusFillAll,
+    entityFlashSale,
+    open,
+    setOpen,
+    title
+}) => {
+    const initialFormData = {
+        id: '',
+        dateStart: '',
+        dateEnd: '',
+        account: '',
+    };
+    const [formData, setFormData] = useState(initialFormData);
+    const [dataProductNotFS, setdataProductNotFS] = useState([]);
+    const [dataProduct, setdataProduct] = useState([]);
+    const [Product, setProduct] = useState([]);
+    const [sortColumn, setSortColumn] = useState('');
+    const [sortBy, setSortBy] = useState(true);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPageProduct, setCurrentPageProduct] = useState(0);
+
+    const [isOpen, setIsOpen] = useState(false);
+    const [isOpenDelete, setIsOpenDelete] = useState(false);
+    const [statusentity, setStatusentity] = useState(false);
+    const [status, setStatus] = useState(true);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+            id: entityFlashSale.id,
+            account: sessionStorage.getItem("id_account"),
+        }));
+    };
+
+    const handlePageChangeProduct = (newPage) => {
+        if (newPage >= 0 && newPage < dataProduct.totalPages) {
+            setCurrentPageProduct(newPage);
+            console.log("setCurrentPageProduct: " + newPage);
+        }
+    };
+
+    const handlePreviousProduct = () => {
+        handlePageChangeProduct(currentPageProduct - 1);
+    };
+
+    const handleNextProduct = () => {
+        handlePageChangeProduct(currentPageProduct + 1);
+    };
+    const handlePageChange = (newPage) => {
+        if (newPage >= 0 && newPage < dataProductNotFS.totalPages) {
+            setCurrentPage(newPage);
+            console.log("newPage: " + newPage);
+        }
+    };
+
+    const handlePrevious = () => {
+        handlePageChange(currentPage - 1);
+    };
+
+    const handleNext = () => {
+        handlePageChange(currentPage + 1);
+    };
+
+
+    const findListNotFalshSale = async () => {
+        try {
+            const response = await flashSaleDetails.findListNotFalshSale({ id: entityFlashSale.id, page: currentPage, size: 2, sortColumn, sortBy });
+            console.log("entityFlashSale.id: " + entityFlashSale.id);
+            setdataProductNotFS(response.data.result);
+            setCurrentPage(response.data.result.pageable.pageNumber);
+            console.log(dataProductNotFS);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    };
+
+    const findListByFlashSale = async () => {
+        try {
+            const response = await flashSaleDetails.findListByFlashSale({ id: entityFlashSale.id, page: currentPageProduct, size: 2, sortColumn, sortBy });
+            setdataProduct(response.data.result);
+            setCurrentPageProduct(response.data.result.pageable.pageNumber);
+            console.log("setCurrentPageProduct" + currentPageProduct);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    };
+
+    const deleteFlashSaleDetails = async (id) => {
+        try {
+            const response = await flashSaleDetails.delete({ id });
+            setStatus(!status);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }
+
+    const putFlashSale = async () => {
+        try {
+            const response = await flashSale.put({ data: formData });
+            setStatusFillAll(!statusFillAll);
+            console.log("Code: " + response.data.result.code);
+            console.log("Data: " + response.data.result.content);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }
+
+    const handleConfirm = () => {
+        setIsOpen(false);
+        deleteFlashSaleDetails(Product.id);
+    };
+
+    const handleSubmit = (e) => {
+        putFlashSale();
+        setFormData(initialFormData);
+        e.preventDefault();
+        setOpen(false); 
+    };
+
+    useEffect(() => {
+        findListNotFalshSale();
+        findListByFlashSale();
+    }, [entityFlashSale, currentPageProduct, currentPage, formData.dateStart, formData.dateEnd, status]);
+
+    const formatToDateTimeLocal = (dateString) => {
+        if (!dateString) return "";
+
+        // Chia chuỗi theo định dạng "dd/MM/yyyy HH:mm:ss"
+        const [datePart, timePart] = dateString.split(" ");
+        const [day, month, year] = datePart.split("/");
+        const [hours, minutes] = timePart.split(":");
+
+        // Ghép thành định dạng "yyyy-MM-ddTHH:mm"
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
+    useEffect(() => {
+        setFormData({
+            dateStart: formatToDateTimeLocal(entityFlashSale.dateStart),
+            dateEnd: formatToDateTimeLocal(entityFlashSale.dateEnd),
+            account: entityFlashSale.id || "",
+        });
+    }, [entityFlashSale]);
+
+    const formatNumber = (number, decimals = 2) => {
+        if (number === null || number === undefined || isNaN(number)) {
+            return '0.00';
+        }
+        return number.toFixed(decimals);
+    };
+    return (
+        <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
+            <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+
+            <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-6xl h-150 sm:h-3/4">
+                        <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
+                            <h3 className="font-semibold text-xl text-black dark:text-white">
+                                {title}
+                            </h3>
+                        </div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="p-6.5">
+                                <div className="mb-4.5 grid gap-6 grid-cols-12">
+                                    <div className="col-span-5">
+                                        <label className="mb-2.5 block text-black dark:text-white">
+                                            Ngày bắt đầu
+                                        </label>
+                                        <input
+                                            name="dateStart"
+                                            value={formData.dateStart}
+                                            onChange={handleChange}
+                                            type="datetime-local"
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+
+                                    <div className="col-span-5">
+                                        <label className="mb-2.5 block text-black dark:text-white">
+                                            Ngày kết thúc
+                                        </label>
+                                        <input
+                                            name="dateEnd"
+                                            value={formData.dateEnd}
+                                            onChange={handleChange}
+                                            type="datetime-local"
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="inline-flex mt-10 col-span-2 h-10 w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
+                                    >
+                                        Cập nhật
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                        <table className="w-full border-collapse border border-stroke dark:border-strokedark">
+                            <thead>
+                                <tr className="border-t border-stroke dark:border-strokedark">
+                                    <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
+                                    <th
+                                        onClick={() => {
+                                            setSortColumn("name");
+                                            setSortBy(!sortBy);
+                                        }}
+                                        className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-sm text-black dark:text-white">Sản phẩm </span>
+                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                        </div>
+                                    </th>
+
+                                    <th
+                                        onClick={() => {
+                                            setSortColumn("price");
+                                            setSortBy(!sortBy);
+                                        }}
+                                        className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <div className="flex items-center gap-1 hidden xl:flex">
+                                            <span className="text-sm text-black dark:text-white ">Giá ban đầu</span>
+                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                        </div>
+                                    </th>
+
+                                    <th
+                                        onClick={() => {
+                                            setSortColumn("sale");
+                                            setSortBy(!sortBy);
+                                        }}
+                                        className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <div className="flex items-center gap-1 hidden xl:flex">
+                                            <span className="text-sm text-black dark:text-white">Sale</span>
+                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                        </div>
+                                    </th>
+
+                                    <th
+                                        onClick={() => {
+                                            setSortColumn("quantity");
+                                            setSortBy(!sortBy);
+                                        }}
+                                        className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <div className="flex items-center gap-1 hidden xl:flex">
+                                            <span className="text-sm text-black dark:text-white">Số lượng kho</span>
+                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                        </div>
+                                    </th>
+                                    <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <span className="text-sm text-black dark:text-white truncate w-24">Actions</span>
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {dataProductNotFS?.content?.map((entity, index) => (
+                                    <tr key={index} className="border-t border-stroke dark:border-strokedark">
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                            {index + 1}
+                                        </td>
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                                            <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
+                                        </td>
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                            <div className="flex items-center gap-1 hidden xl:flex">
+                                                {entity.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                            </div>
+                                        </td>
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                            <div className="flex items-center gap-1 hidden xl:flex">
+                                                {entity.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                            </div>
+                                        </td>
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                            <div className="flex items-center gap-1 hidden xl:flex">
+                                                {entity.quantity}
+                                            </div>
+                                        </td>
+
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                                            <div className="flex space-x-3.5">
+                                                <button onClick={() => {
+                                                    setProduct(entity);
+                                                    setIsOpen(true);
+                                                    setStatusentity(!entity.delete);
+                                                }}>
+                                                    <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <Pagination
+                            pageNumber={currentPage || 0}
+                            totalPages={dataProductNotFS?.totalPages || 0}
+                            totalElements={dataProductNotFS?.totalElements || 0}
+                            handlePrevious={handlePrevious}
+                            handleNext={handleNext}
+                            setPageNumber={setCurrentPage}
+                            size={dataProductNotFS.size}></Pagination>
+
+                        <table className="w-full border-collapse border border-stroke dark:border-strokedark">
+                            <thead>
+                                <tr className="border-t border-stroke dark:border-strokedark">
+                                    <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
+                                    <th
+                                        onClick={() => {
+                                            setSortColumn("name");
+                                            setSortBy(!sortBy);
+                                        }}
+                                        className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-sm text-black dark:text-white">Sản phẩm </span>
+                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                        </div>
+                                    </th>
+
+                                    <th
+                                        onClick={() => {
+                                            setSortColumn("price");
+                                            setSortBy(!sortBy);
+                                        }}
+                                        className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <div className="flex items-center gap-1 hidden xl:flex">
+                                            <span className="text-sm text-black dark:text-white ">Giá ban đầu</span>
+                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                        </div>
+                                    </th>
+
+                                    <th
+                                        onClick={() => {
+                                            setSortColumn("sale");
+                                            setSortBy(!sortBy);
+                                        }}
+                                        className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <div className="flex items-center gap-1 hidden xl:flex">
+                                            <span className="text-sm text-black dark:text-white">Sale</span>
+                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                        </div>
+                                    </th>
+
+                                    <th
+                                        onClick={() => {
+                                            setSortColumn("quantity");
+                                            setSortBy(!sortBy);
+                                        }}
+                                        className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <div className="flex items-center gap-1 hidden xl:flex">
+                                            <span className="text-sm text-black dark:text-white">Số lượng kho</span>
+                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                        </div>
+                                    </th>
+                                    <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                                        <span className="text-sm text-black dark:text-white truncate w-24">Actions</span>
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {dataProduct?.content?.map((entity, index) => (
+                                    <tr key={index} className="border-t border-stroke dark:border-strokedark">
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                            {index + 1}
+                                        </td>
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                                            <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
+                                        </td>
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                            <div className="flex items-center gap-1 hidden xl:flex">
+                                                {entity.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                            </div>
+                                        </td>
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                            <div className="flex items-center gap-1 hidden xl:flex">
+                                                {entity.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                            </div>
+                                        </td>
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                            <div className="flex items-center gap-1 hidden xl:flex">
+                                                {entity.quantity}
+                                            </div>
+                                        </td>
+
+                                        <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                                            <div className="flex space-x-3.5">
+                                                <button onClick={() => {
+                                                    setProduct(entity);
+                                                    setIsOpenDelete(true);
+                                                }}>
+                                                    {!entity.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                                </button>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <Pagination
+                            pageNumber={currentPageProduct || 0}
+                            totalPages={dataProduct?.totalPages || 0}
+                            totalElements={dataProduct?.totalElements || 0}
+                            handlePrevious={handlePreviousProduct}
+                            handleNext={handleNextProduct}
+                            setPageNumber={setCurrentPageProduct}
+                            size={dataProduct.size}></Pagination>
+
+                        <ModalFlashSale
+                            product={Product}
+                            flashSaleId={entityFlashSale.id}
+                            open={isOpen}
+                            setOpen={setIsOpen}
+                            title={statusentity
+                                ? 'Ngừng Hoạt Động'
+                                : 'Khôi Phục'}
+                            message={statusentity
+                                ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
+                                : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+                            // onConfirm={handleConfirm}
+                            confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
+                            cancelText="Thoát"
+                            icon={statusentity ? (
+                                <TrashIcon className="h-6 w-6 text-red-600" />
+                            ) : (
+                                <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+                            )}
+                            iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
+                            buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'}
+                            status={status}
+                            setStatus={setStatus} />
+                        <Modal
+                            open={isOpenDelete}
+                            setOpen={setIsOpenDelete}
+                            title={'Ngừng Hoạt Động'}
+                            message={'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'}
+                            onConfirm={handleConfirm}
+                            confirmText={'Xác Nhận'}
+                            cancelText="Thoát"
+                            icon={
+                                <TrashIcon className="h-6 w-6 text-red-600" />
+                            }
+                            iconBgColor={'bg-red-100'}
+                            buttonBgColor={'bg-red-600'} />
+                    </DialogPanel>
+                </div>
+            </div>
+        </Dialog >
+    );
+};
+
+export default Modal_FlashSaleCT;

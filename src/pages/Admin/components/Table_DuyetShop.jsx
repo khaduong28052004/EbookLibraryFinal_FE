@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
+import Modal from "./Modal_Duyet";
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
+// import { usePDF } from 'react-to-pdf';
 
 const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     const [searchItem, setSearchItem] = useState('');
@@ -19,7 +20,11 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     const [statusentity, setStatusentity] = useState(false);
     const handleConfirm = () => {
         setIsOpen(false);
-        onIdChange(id, null);
+        onIdChange(id, true);
+    };
+    const handleCancel = () => {
+        setIsOpen(false);
+        onIdChange(id, false);
     };
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < entityData.totalPages) {
@@ -121,12 +126,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
-                                setSortColumn("shopName");
+                                setSortColumn("username");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Tên shop</span>
+                                <span className="text-sm text-black dark:text-white">Tài khoản </span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -134,12 +139,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("sumProduct");
+                                setSortColumn("gender");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white">Sản phẩm</span>
+                                <span className="text-sm text-black dark:text-white">Số CCCD</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -147,12 +152,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("sumFollower");
+                                setSortColumn("email");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Theo dõi</span>
+                                <span className="text-sm text-black dark:text-white">Email</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -160,57 +165,17 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("avgStar");
+                                setSortColumn("phone");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Đánh giá</span>
+                                <span className="text-sm text-black dark:text-white">Số điện thoại</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("sumReport");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Báo cáo</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th>
-                        {/* <th
-                            onClick={() => {
-                                setSortColumn("doanhThu");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Doanh thu</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("doanhSo");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Doanh số</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th> */}
-                        <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Trạng thái</span>
-                            </div>
-                        </th>
+
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
                         </th>
@@ -235,46 +200,26 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                     <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.shopName}</p>
+                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
                                 </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.sumProduct}
+                                        {entity.numberId}
                                     </div>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.sumFollower}
+                                        {entity.email}
                                     </div>
                                 </td>
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.avgStar}
+                                        {entity.phone}
                                     </div>
                                 </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.sumReport}
-                                    </div>
-                                </td>
-                                {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.doanhThu}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.doanhSo}
-                                </div>
-                            </td> */}
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                                    <div className="flex items-center gap-1 hidden lg:flex">
-                                        <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                            {entity.status ? 'Hoạt Động' : 'Đã Ngừng'}
-                                        </span>
-                                    </div>
-                                </td>
+
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
                                         <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
@@ -282,19 +227,17 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                         </button>
                                     </div>
                                 </td>
+
                             </tr>
                             {expandedRowId === entity.id && (
                                 <tr>
-                                    <td colSpan="9">
+                                    <td colSpan="8">
                                         <div className="p-5 border border-gray-100 hover:bg-slate-100">
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
-                                                <p>Trạng thái : {entity.status ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
-                                                <p>Ngày tạo: {entity.createAt}</p>
+                                                <p>Ngày gửi yêu cầu: {entity.createAtSeller}</p>
                                                 <p>Họ tên chủ shop: {entity.fullname}</p>
                                                 <p>Giới tính: {entity.gender ? 'Nam' : 'Nữ'}</p>
-                                                <p>Email: {entity.email}</p>
-                                                <p>Số điện thoại: {entity.phone}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -317,15 +260,14 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
             <Modal
                 open={isOpen}
                 setOpen={setIsOpen}
-                title={statusentity
-                    ? 'Ngừng Hoạt Động'
-                    : 'Khôi Phục'}
+                title={statusentity ? 'Hủy' : 'Duyệt'}
                 message={statusentity
-                    ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                    : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+                    ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
+                    : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
                 onConfirm={handleConfirm}
-                confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
-                cancelText="Thoát"
+                onCancel={handleCancel}
+                confirmText={'Duyệt'}
+                cancelText={"Hủy"}
                 icon={statusentity ? (
                     <TrashIcon className="h-6 w-6 text-red-600" />
                 ) : (
@@ -333,7 +275,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 )}
                 iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
                 buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
-        </div>
+        </div >
     );
 };
 

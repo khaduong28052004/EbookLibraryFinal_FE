@@ -1,5 +1,5 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import Table from '../Seller/components/Table';
+import Table from './components/Table_Voucher';
 
 const VoucherAdmin = () => {
   return (

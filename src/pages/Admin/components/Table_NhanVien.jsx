@@ -1,77 +1,105 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
-import ModalSanPham from './ModalNhanVien';
+import ModalNhanVien from './ModalNhanVien';
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
-// import { usePDF } from 'react-to-pdf';
+import Pagination from './Pagination';
 
-const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
+const TableTwo = () => {
+  const [data, setData] = useState([]);
   const [searchItem, setSearchItem] = useState('');
-  const [gender, setGender] = useState('');
   const [sortColumn, setSortColumn] = useState('');
   const [sortBy, setSortBy] = useState(true);
-  const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const [id, setId] = useState('');
+  const [status, setStatus] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [statusentity, setStatusentity] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
   const handleConfirm = () => {
+    deleteNhanVien(id);
     setIsOpen(false);
-    onIdChange(id);
   };
   const handlePageChange = (newPage) => {
-    if (newPage >= 0 && newPage < entityData.totalPages) {
-      onPageChange(searchItem, gender, newPage, sortBy, sortColumn);
+    if (newPage >= 0 && newPage < data.totalPages) {
+      setCurrentPage(newPage);
       console.log("currentPage: " + newPage);
     }
   };
 
   const handlePrevious = () => {
-    handlePageChange(entityData?.pageable?.pageNumber - 1);
+    handlePageChange(currentPage - 1);
   };
 
   const handleNext = () => {
-    handlePageChange(entityData?.pageable?.pageNumber + 1);
+    handlePageChange(currentPage + 1);
   };
-  const getPagesToShow = () => {
-    const totalPages = entityData?.totalPages || 0;
-    const current = entityData?.pageable?.pageNumber ?? 0;
-    const pages = [];
-    const maxPagesToShow = 5;
+  // const getPagesToShow = () => {
+  //   const totalPages = data?.totalPages || 0;
+  //   const current = data?.pageable?.pageNumber ?? 0;
+  //   const pages = [];
+  //   const maxPagesToShow = 5;
 
-    let start = Math.max(0, current - Math.floor(maxPagesToShow / 2));
-    let end = Math.min(totalPages - 1, start + maxPagesToShow - 1);
+  //   let start = Math.max(0, current - Math.floor(maxPagesToShow / 2));
+  //   let end = Math.min(totalPages - 1, start + maxPagesToShow - 1);
 
-    if (end - start + 1 < maxPagesToShow) {
-      start = Math.max(0, end - maxPagesToShow + 1);
+  //   if (end - start + 1 < maxPagesToShow) {
+  //     start = Math.max(0, end - maxPagesToShow + 1);
+  //   }
+
+  //   for (let i = start; i <= end; i++) {
+  //     pages.push(i);
+  //   }
+
+  //   return pages;
+  // };
+
+
+  const deleteNhanVien = async (id) => {
+    try {
+      const response = await accountService.delete({ id });
+      console.log("xóa: " + response.data.result.message);
+      if (response.data.code === '1000') {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+      findAllAccount();
+    } catch (error) {
+      toast.error("Lỗi hệ thống");
+      console.log("Error: " + error);
     }
+  }
 
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
+  const findAllAccount = async () => {
+    try {
+      const response = await accountService.findAllAccount({ page: currentPage, size: 2, role: "ADMINV1", searchItem, sortColumn, sortBy });
+      console.log("content: " + response.data.result.content);
+      setData(response.data.result);
+    } catch (error) {
+      console.log("Error: " + error);
     }
-
-    return pages;
   };
 
   useEffect(() => {
-    onPageChange(searchItem, gender, currentPage, sortBy, sortColumn);
-  }, [searchItem, gender, currentPage, sortBy, sortColumn]);
+    findAllAccount();
+  }, [searchItem, currentPage, sortBy, sortColumn, status]);
   ;
   const handleExport = async () => {
     const sheetNames = ['Danh Sách nhân viên'];
     try {
-      console.log("totalElements: " + entityData.totalElements);
-      const response = await accountService.findAllAccount({ currentPage: 0, size: entityData.totalElements, role: "ADMINV1", searchItem, gender: '', sortColumn, sortBy });
+      console.log("data.totalElements: " + data.totalElements);
+      const response = await accountService.findAllAccount({ page: 0, size: data.totalElements, role: "ADMINV1", searchItem, sortColumn, sortBy });
       return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
     }
   }
-  // const { toPDF, targetRef } = usePDF({ filename: 'Thống kê doanh thu admin.pdf' });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -79,6 +107,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <ToastContainer/>
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
         <form action="https://formbold.com/s/unique_form_id" method="POST">
           <div className="relative pt-3">
@@ -123,13 +152,6 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
           >
             Excel
           </button>
-          {/* <button
-            onClick={() => toPDF()}
-            type="button"
-            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
-          >
-            PDF
-          </button> */}
           <button
             onClick={() => setIsOpenModalSP(true)}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
@@ -211,16 +233,16 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
             </th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <span className="text-sm text-black dark:text-white truncate w-24">Actions</span>
+              <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
             </th>
           </tr>
         </thead>
 
         <tbody>
-          {entityData?.content?.map((entity, index) => (
+          {data?.content?.map((entity, index) => (
             <tr key={index} className="border-t border-stroke dark:border-strokedark">
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                {entityData.pageable.pageNumber * entityData.size + index + 1}
+                {data.pageable.pageNumber * data.size + index + 1}
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                 <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
@@ -260,56 +282,14 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
           ))}
         </tbody>
       </table>
-      <div className="py-6 flex border-t border-stroke  dark:border-strokedark  px-4 md:px-6 xl:px-7.5">
-        <div className="flex flex-1 justify-between sm:hidden">
-          <a href="#" className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-          <a href="#" className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
-        </div>
-        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-gray-700 dark:text-white ">
-              Showing
-              <span className="font-medium"> {entityData?.pageable?.pageNumber * entityData.size + 1} </span>
-              to
-              <span className="font-medium"> {entityData.totalElements > (entityData.size * currentPage) ? ((entityData?.pageable?.pageNumber + 1) * entityData.size < entityData.totalElements ? (entityData?.pageable?.pageNumber + 1) * entityData.size : entityData.totalElements) : entityData.totalElements} </span>
-              of
-              <span className="font-medium"> {entityData.totalElements} </span>
-              results
-            </p>
-          </div>
-          <div>
-            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm " aria-label="Pagination">
-              <button
-                onClick={handlePrevious} disabled={currentPage === 0}
-                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                <span className="sr-only">Previous</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
-                </svg>
-              </button>
-              {/* Pagination buttons */}
-              {getPagesToShow().map((page) => (
-                <button key={page} onClick={() => handlePageChange(page)}
-                  className="relative dark:text-white hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                >
-                  {page + 1}
-                </button>
-              ))}
-
-
-              <button
-                onClick={handleNext}
-                disabled={currentPage === entityData.totalPages - 1}
-                className="relative dark:text-white inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                <span className="sr-only">Next</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </nav>
-          </div>
-        </div>
-      </div>
+      <Pagination
+        pageNumber={currentPage}
+        totalPages={data?.totalPages}
+        totalElements={data?.totalElements}
+        handlePrevious={handlePrevious}
+        handleNext={handleNext}
+        setPageNumber={setCurrentPage}
+        size={data.size}></Pagination>
 
       <Modal
         open={isOpen}
@@ -331,7 +311,9 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
         iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
         buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
 
-      <ModalSanPham
+      <ModalNhanVien
+        status={status}
+        setStatus={setStatus}
         open={isOpenModalSP}
         setOpen={setIsOpenModalSP}
         title="Thêm Sản Phẩm Mới"

@@ -1,8 +1,10 @@
-import React, { Dispatch, SetStateAction, ReactNode, FormEvent, useState } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import accountService from '../../../service/admin/Account';
 
 const ModalSanPham = ({
+    status,
+    setStatus,
     open,
     setOpen,
     title,
@@ -29,17 +31,14 @@ const ModalSanPham = ({
 
     const postNhanVien = async () => {
         try {
-            const response = await accountService.post({ data: formData });
-            console.log("Code: " + response.data.result.code);
-            console.log("Data: " + response.data.result.content);
-            findAllAccount();
+            await accountService.post({ data: formData });
+            setStatus(!status);
         } catch (error) {
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
-        console.log("formData.gender " + formData.gender);
         postNhanVien(formData);
         setFormData(initialFormData);
         e.preventDefault(); // Chặn hành vi reload trang khi submit form
