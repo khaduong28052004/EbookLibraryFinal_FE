@@ -1,38 +1,18 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 import Star from "../Helpers/icons/Star";
-import Selectbox from "../Helpers/Selectbox";
+import { useRequest } from "../Request/RequestProvicer";
 
-export default function ProductView({ className, reportHandler }) {
-  const productsImg = [
-    {
-      id: 1,
-      src: "product-details-1.png",
-      color: "#FFBC63",
-    },
-    {
-      id: 2,
-      src: "product-details-2.png",
-      color: "#649EFF",
-    },
-    {
-      id: 3,
-      src: "product-details-3.png",
-      color: "#FFFFFF",
-    },
-    {
-      id: 4,
-      src: "product-details-4.png",
-      color: "#FF7173",
-    },
-    {
-      id: 6,
-      src: "product-details-5.png",
-      color: "",
-    },
-  ];
+export default function ProductView({ className, reportHandler, product }) {
 
-  const [src, setSrc] = useState(productsImg[0].src);
-  const changeImgHandler = (current) => {
+  const productsImg = product?.imageProducts;
+  const [isFavorite, setIsFavorite] = useState(false);
+  const { startRequest, endRequest } = useRequest();
+  const [src, setSrc] = useState(product?.imageProducts[0]?.name);
+  const location = useLocation();
+  const changeImgHandhgler = (current) => {
     setSrc(current);
   };
   const [quantity, setQuantity] = useState(1);
@@ -45,6 +25,39 @@ export default function ProductView({ className, reportHandler }) {
     }
   };
 
+  const handleCreateCart = () => {
+    startRequest();
+    const id_user = sessionStorage.getItem("id_account");
+    if (id_user) {
+      axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${product.id}&quantity=${quantity}`).then(response => {
+        if (response.data.code = 1000) {
+          toast.success("Thêm thành công");
+          endRequest();
+        }
+      }).catch(error => console.error("create cart error " + error));
+    } else {
+      toast.warn("Vui lòng đăng nhập");
+    }
+  }
+
+  useEffect(() => {
+    const id_user = sessionStorage.getItem("id_account");
+    if (id_user) {
+      axios.get(`http://localhost:8080/api/v1/user/favorite/check?id_user=${id_user}&id_product=${product?.id}`).then(response => {
+        setIsFavorite(response.data.result);
+      }).catch(error => console.error("fetch favorite error " + error));
+    }
+  }, [location, product]);
+
+  const createFavorite = () => {
+    const id_user = sessionStorage.getItem("id_account");
+    if (id_user) {
+      axios.get(`http://localhost:8080/api/v1/user/favorite/add?id_user=${id_user}&id_product=${product?.id}`).then(response => {
+        setIsFavorite(response.data.result);
+      }).catch(error => console.error("create favorite error " + error));
+    }
+  }
+
   return (
     <div
       className={`product-view w-full lg:flex justify-between ${className || ""
@@ -52,27 +65,27 @@ export default function ProductView({ className, reportHandler }) {
     >
       <div data-aos="fade-right" className="lg:w-1/2 xl:mr-[70px] lg:mr-[50px]">
         <div className="w-full">
-          <div className="w-full h-[600px] border border-qgray-border flex justify-center items-center overflow-hidden relative mb-3">
+          <div className="w-full h-[450px] border border-qgray-border flex justify-center items-center overflow-hidden relative mb-3">
             <img
-              src={`/assets/images/${src}`}
+              src={product?.imageProducts[0]?.name}
               alt=""
               className="object-contain"
             />
             <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
-              <span>-5%</span>
+              <span>-{product?.sale}%</span>
             </div>
           </div>
           <div className="flex gap-2 flex-wrap">
-            {productsImg &&
-              productsImg.length > 0 &&
-              productsImg.map((img) => (
+            {product?.imageProducts &&
+              product?.imageProducts.length > 0 &&
+              product?.imageProducts.map((img) => (
                 <div
-                  onClick={() => changeImgHandler(img.src)}
+                  onClick={() => changeImgHandhgler(img.name)}
                   key={img.id}
                   className="w-[110px] h-[110px] p-[15px] border border-qgray-border cursor-pointer"
                 >
                   <img
-                    src={`/assets/images/${img.src}`}
+                    src={img?.name}
                     alt=""
                     className={`w-full h-full object-contain ${src !== img.src ? "opacity-50" : ""
                       } `}
@@ -88,13 +101,13 @@ export default function ProductView({ className, reportHandler }) {
             data-aos="fade-up"
             className="text-qgray text-xs font-normal uppercase tracking-wider mb-2 inline-block"
           >
-            Mobile Phones
+            {product?.writerName}
           </span>
           <p
             data-aos="fade-up"
             className="text-xl font-medium text-qblack mb-4"
           >
-            Samsung Galaxy Z Fold3 5G 3 colors in 512GB
+            {product?.name}
           </p>
 
           <div
@@ -102,22 +115,41 @@ export default function ProductView({ className, reportHandler }) {
             className="flex space-x-[10px] items-center mb-6"
           >
             <div className="flex">
-              <Star />
-              <Star />
-              <Star />
-              <Star />
-              <Star />
+              {Array.from(Array(product?.star), () => (<>  <Star /></>))}
+
             </div>
             <span className="text-[13px] font-normal text-qblack">
-              6 Đánh giá
+              {product?.quantityEvalue} Đánh giá
             </span>
           </div>
 
           <div data-aos="fade-up" className="flex space-x-2 items-center mb-7">
-            <span className="text-sm font-500 text-qgray line-through mt-2">
-              30.500.000<sup>đ</sup>
-            </span>
-            <span className="text-2xl font-500 text-qred">29.000.000<sup>đ</sup></span>
+            {
+              product?.response_FlashSaleDetail != null ? (<div className=" w-full">
+                <div className="p-2 pl-5 bg-gradient-to-r from-red-500 to-orange-400  flex justify-between items-center">
+                  <span className="font-semibold text-white">FLASHSALE</span>
+                  <span className="font-medium text-white">KẾT THÚC TRONG <span className="bg-black">10:10:10</span></span>
+                </div>
+
+                <div className="pl-5 h-15 flex items-center bg-gradient-to-r from-gray-50 to-orange-50 ">
+                  <span className="text-[30px] text-red-600 font-normal">100.000<sup>đ</sup></span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" className="text-red-600" fill="none">
+                    <path d="M10.9961 10H11.0111M10.9998 16H11.0148" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M7 13H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="1.5" cy="1.5" r="1.5" transform="matrix(1 0 0 -1 16 8)" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M2.77423 11.1439C1.77108 12.2643 1.7495 13.9546 2.67016 15.1437C4.49711 17.5033 6.49674 19.5029 8.85633 21.3298C10.0454 22.2505 11.7357 22.2289 12.8561 21.2258C15.8979 18.5022 18.6835 15.6559 21.3719 12.5279C21.6377 12.2187 21.8039 11.8397 21.8412 11.4336C22.0062 9.63798 22.3452 4.46467 20.9403 3.05974C19.5353 1.65481 14.362 1.99377 12.5664 2.15876C12.1603 2.19608 11.7813 2.36233 11.472 2.62811C8.34412 5.31646 5.49781 8.10211 2.77423 11.1439Z" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                  <span className="line-through text-black-2 font-normal ml-2">150.000</span><sup>đ</sup>
+                </div>
+              </div>) : (
+                <>
+                  <span className="text-4xl font-500 text-qred">{Intl.NumberFormat().format(product?.price - ((product?.price * product?.sale) / 100))}<sup>đ</sup></span>
+                  <span className="text-base font-500 text-qgray line-through mt-2">
+                    {Intl.NumberFormat().format(product?.price)}<sup>đ</sup>
+                  </span>
+                </>
+              )
+            }
           </div>
 
           <p
@@ -126,75 +158,6 @@ export default function ProductView({ className, reportHandler }) {
           >
             Một sự thật đã được chứng minh từ lâu là người đọc sẽ bị phân tâm bởi nội dung dễ đọc của một trang khi nhìn vào bố cục của nó.
           </p>
-
-          <div data-aos="fade-up" className="colors mb-[30px]">
-            <span className="text-sm font-normal uppercase text-qgray mb-[14px] inline-block">
-              COLOR
-            </span>
-
-            <div className="flex space-x-4 items-center">
-              {productsImg &&
-                productsImg.length > 0 &&
-                productsImg.map((img) => (
-                  <div key={img.id}>
-                    {img.color && img.color !== "" && (
-                      <button
-                        onClick={() => changeImgHandler(img.src)}
-                        type="button"
-                        style={{ "--tw-ring-color": `${img.color}` }}
-                        className="w-[20px] h-[20px]  rounded-full focus:ring-2  ring-offset-2 flex justify-center items-center"
-                      >
-                        <span
-                          style={{ background: `${img.color}` }}
-                          className="w-[20px] h-[20px] block rounded-full border"
-                        ></span>
-                      </button>
-                    )}
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          <div data-aos="fade-up" className="product-size mb-[30px]">
-            <span className="text-sm font-normal uppercase text-qgray mb-[14px] inline-block">
-              SIZE
-            </span>
-            <div className="w-full">
-              <div className=" border border-qgray-border h-[50px] flex justify-between items-center px-6 cursor-pointer">
-                <Selectbox
-                  className="w-full"
-                  datas={["Nhỏ", "Trung Bình", "Lớn", "Cực lớn"]}
-                >
-                  {({ item }) => (
-                    <>
-                      <div>
-                        <span className="text-[13px] text-qblack">{item}</span>
-                      </div>
-                      <div className="flex space-x-10 items-center">
-                        <span className="text-[13px] text-qblack">
-                          3”W x 3”D x 7”H
-                        </span>
-                        <span>
-                          <svg
-                            width="11"
-                            height="7"
-                            viewBox="0 0 11 7"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M5.4 6.8L0 1.4L1.4 0L5.4 4L9.4 0L10.8 1.4L5.4 6.8Z"
-                              fill="#222222"
-                            />
-                          </svg>
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </Selectbox>
-              </div>
-            </div>
-          </div>
 
           <div
             data-aos="fade-up"
@@ -223,8 +186,10 @@ export default function ProductView({ className, reportHandler }) {
               <button type="button">
                 <span>
                   <svg
-                    width="24"
-                    height="24"
+                    onClick={() => createFavorite()}
+                    className={isFavorite ? "fill-red-500" : ""}
+                    width="30"
+                    height="30"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -241,24 +206,24 @@ export default function ProductView({ className, reportHandler }) {
               </button>
             </div>
             <div className="flex-1 h-full">
-              <button
+              <button onClick={() => handleCreateCart()}
                 type="button"
                 className="black-btn text-sm font-semibold w-full h-full"
               >
-               Thêm vào giỏ hàng
+                Thêm vào giỏ hàng
               </button>
             </div>
           </div>
 
           <div data-aos="fade-up" className="mb-[20px]">
             <p className="text-[13px] text-qgray leading-7">
-              <span className="text-qblack">Thể loại :</span> Điện tử
+              <span className="text-qblack">Thể loại :</span> {product?.category?.name}
             </p>
             {/* <p className="text-[13px] text-qgray leading-7">
               <span className="text-qblack">Tags :</span> Beer, Foamer
             </p> */}
             <p className="text-[13px] text-qgray leading-7">
-              <span className="text-qblack">Mã sản phẩm:</span> KE-91039
+              <span className="text-qblack">Mã sản phẩm:</span> {product?.id}
             </p>
           </div>
 
@@ -284,8 +249,7 @@ export default function ProductView({ className, reportHandler }) {
             <button
               type="button"
               onClick={reportHandler}
-              className="text-qred font-semibold text-[13px]"
-            >
+              className="text-qred font-semibold text-[13px]">
               Báo cáo mục này
             </button>
           </div>
@@ -295,7 +259,7 @@ export default function ProductView({ className, reportHandler }) {
             className="social-share flex  items-center w-full"
           >
             <span className="text-qblack text-[13px] mr-[17px] inline-block">
-           Chia sẽ cái này
+              Chia sẽ cái này
             </span>
 
             <div className="flex space-x-5 items-center">

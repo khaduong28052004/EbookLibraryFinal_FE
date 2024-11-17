@@ -8,7 +8,7 @@ export default function Footer({ type }) {
       <div className="container-x block mx-auto pt-[56px]">
         <div className="w-full flex flex-col items-center mb-[50px]">
           {/* logo area */}
-          <div className="mb-[40px]">
+          {/* <div className="mb-[40px]">
             {type === 3 ? (
               <a href="/">
                 <img
@@ -28,7 +28,7 @@ export default function Footer({ type }) {
                 />
               </a>
             )}
-          </div>
+          </div> */}
           <div className="w-full h-[1px] bg-[#E9E9E9]"></div>
         </div>
         <div className="lg:flex justify-between mb-[50px]">

@@ -24,8 +24,13 @@
     "aos": "^2.3.4",
     "apexcharts": "^3.41.0",
     "axios": "^1.7.7",
+
+    "crypto-js": "^4.2.0",
+    "date-fns": "^4.1.0",
+
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
+
     "firebase": "^11.0.1",
     "flatpickr": "^4.6.13",
     "headlessui": "^0.0.0",
