@@ -14,13 +14,14 @@ const SanPhamSeller = () => {
   const [data, setData] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [size, setSize] = useState(5);
   useEffect(() => {
     loadTable();
   }, [pageNumber, sortBy, sortColumn])
 
   const loadTable = async () => {
     try {
-      const response = await ThongKeService.bill(dateStart, dateEnd, pageNumber, sortBy, sortColumn);
+      const response = await ThongKeService.bill(dateStart, dateEnd, pageNumber, sortBy, sortColumn, size);
       console.log(response.data.result);
       toast.error(response.data.message);
       setData(response.data.result);
@@ -118,6 +119,8 @@ const SanPhamSeller = () => {
       </div>
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <TableThongKe list={data.bill}
+          dateStart={dateStart}
+          dateEnd={dateEnd}
           setDateEnd={setDateEnd}
           setDateStart={setDateStart}
           pageSize={pageSize}

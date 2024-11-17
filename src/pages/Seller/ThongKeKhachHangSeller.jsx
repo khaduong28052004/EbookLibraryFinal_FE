@@ -13,13 +13,14 @@ const ThongKeKhachHang = () => {
   const [data, setData] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [size, setSize] = useState(5);
   useEffect(() => {
     loadTable();
   }, [pageNumber, search, sortBy, sortColumn])
 
   const loadTable = async () => {
     try {
-      const response = await ThongKeService.khachHang(search, pageNumber, sortBy, sortColumn);
+      const response = await ThongKeService.khachHang(search, pageNumber, sortBy, sortColumn, size);
       console.log(response.data.result);
       toast.error(response.data.message);
       setData(response.data.result);

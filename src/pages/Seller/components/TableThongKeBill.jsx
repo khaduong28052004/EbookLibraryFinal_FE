@@ -7,12 +7,24 @@ import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, 
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
-
-const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, handleSearch, sortBy, sortColumn, setSortBy, setSortColumn }) => {
+import ExportExcel from "./ExportExcel"
+ 
+const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEnd, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, handleSearch, sortBy, sortColumn, setSortBy, setSortColumn }) => {
 
   const handleConfirm = () => {
     setIsOpen(false);
   };
+
+  const handleExport = async () => {
+    const sheetNames = ['Danh Sách Thống Kê Đơn Hàng'];
+    try {
+      const response = await ThongKeService.bill(dateStart, dateEnd, pageNumber, sortBy, sortColumn, totalElements);
+      return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [response.data.result.content]);
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi xuất Excel:", error);
+      toast.error("Có lỗi xảy ra khi xuất dữ liệu");
+    }
+  }
 
   const [expandedRowId, setExpandedRowId] = useState(null);
   const toggleRow = (id) => {
@@ -82,6 +94,7 @@ const TableThongKeDonHang = ({ list, setDateStart, setDateEnd, pageSize, pageNum
             Lọc
           </button>
           <button
+          onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4 md:mb-0"
           >
             Excel

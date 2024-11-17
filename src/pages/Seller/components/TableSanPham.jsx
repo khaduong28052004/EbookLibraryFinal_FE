@@ -8,6 +8,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import CategoryService from "../../../service/Seller/categoryService";
 import Pagination from './pagination';
 import { storage, getDownloadURL, ref } from '../../../config/firebase';
+import ExportExcel from "./ExportExcel"
+
 const TableSanPham = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
@@ -42,6 +44,7 @@ const TableSanPham = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [idCategory, setIdCategory] = useState(0);
   const [expandedRowId, setExpandedRowId] = useState(null);
+  const [size, setSize] = useState(5);
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -85,13 +88,24 @@ const TableSanPham = () => {
 
   const loadListProduct = async () => {
     try {
-      const response = await SanPhamService.getAll(search, pageNumber, sortBy, sortColumn);
+      const response = await SanPhamService.getAll(search, pageNumber, sortBy, sortColumn, size);
       setListProduct(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
       loadListDoanhMuc();
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  const handleExport = async () => {
+    const sheetNames = ['Danh Sách Sản Phẩm'];
+    try {
+      const response = await SanPhamService.getAll(search, pageNumber, sortBy, sortColumn, totalElements);
+      return ExportExcel("Danh Sách Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi xuất Excel:", error);
+      toast.error("Có lỗi xảy ra khi xuất dữ liệu");
     }
   }
 
@@ -280,6 +294,9 @@ const TableSanPham = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
+          onClick={
+            handleExport
+          }
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
@@ -597,7 +614,7 @@ const TableSanPham = () => {
                         {dataProduct.imageProducts.length > 0 ? (
                           <div className="grid grid-cols-4 gap-2">
                             {dataProduct.imageProducts.map((file, index) => (
-                              
+
                               <div key={index} className="relative w-full h-20">
                                 <img
                                   key={index}

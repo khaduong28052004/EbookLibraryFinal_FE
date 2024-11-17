@@ -7,8 +7,7 @@ import ModalSanPham from './ModalSanPham';
 import CategoryService from '../../../service/Seller/categoryService';
 import Pagination from './pagination';
 import { toast, ToastContainer } from 'react-toastify';
-import { data } from 'autoprefixer';
-
+import ExportExcel from "./ExportExcel"
 
 const TableCategory = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +30,7 @@ const TableCategory = () => {
   const [idParent, setidParent] = useState(null);
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
-
+  const [size, setSize] = useState(5);
   const handleConfirm = () => {
     setIsOpen(false);
   };
@@ -53,7 +52,7 @@ const TableCategory = () => {
 
   const loadTable = async () => {
     try {
-      const response = await CategoryService.getAllSeller(search, pageNumber, sortBy, sortColumn);
+      const response = await CategoryService.getAllSeller(search, pageNumber, sortBy, sortColumn, size);
       setListCategory(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
@@ -62,6 +61,18 @@ const TableCategory = () => {
       console.log(error);
     }
   }
+
+  const handleExport = async () => {
+    const sheetNames = ['Danh Sách Thể Loại Sản Phẩm'];
+    try {
+        const response = await CategoryService.getAllSeller(search, pageNumber, sortBy, sortColumn, totalElements);
+        return ExportExcel("Danh Sách Thể Loại Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
+    } catch (error) {
+        console.error("Đã xảy ra lỗi khi xuất Excel:", error);
+        toast.error("Có lỗi xảy ra khi xuất dữ liệu");
+    }
+}
+
   const loadListDoanhMuc = async () => {
     try {
       const response = await CategoryService.getList();
@@ -177,6 +188,7 @@ const TableCategory = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
+          onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
