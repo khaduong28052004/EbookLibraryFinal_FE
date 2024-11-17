@@ -7,7 +7,7 @@ const accountService = {
     //adminv1 - user - seller đã duyệt
     findAllAccount: ({ page, size, role, searchItem, sortColumn, sortBy }) => axiosAuth(token, "get", url("", `?role=${role}&search=${searchItem}&page=${page === undefined ? 0 : page}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}&gender=`))
     ,    //seller
-    findAllSellerNotBrowse: ({ page, size, searchItem, sortColumn, sortBy }) => axiosAuth(token, "get", url("/seller/notbrowse", `?search=${searchItem}&page=${page}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}&gender=`)),
+    findAllSellerNotBrowse: ({ page, size, searchItem, sortColumn, sortBy }) => axiosAuth(token, "get", url("/seller/notbrowse", `?search=${searchItem}&page=${page === undefined ? 0 : page}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}&gender=`)),
     //adminv1
     post: ({ data }) => axiosAuth(token, "post", url("/adminv1"), data),
     //user - seller
