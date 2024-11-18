@@ -182,30 +182,6 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
-                        {/* <th
-                            onClick={() => {
-                                setSortColumn("doanhThu");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Doanh thu</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("doanhSo");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Doanh số</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th> */}
                         <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Trạng thái</span>
@@ -234,7 +210,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                     {entityData.pageable.pageNumber * entityData.size + index + 1}
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                    <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
+                                    {/* <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" /> */}
                                     <p className="text-sm text-black dark:text-white truncate w-24">{entity.shopName}</p>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
