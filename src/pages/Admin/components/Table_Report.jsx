@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
-import ModalNhanVien from './ModalNhanVien';
+// import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+// import Modal from "./ModalThongBao";
+// import ModalNhanVien from './ModalNhanVien';
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
@@ -15,11 +15,11 @@ const TableTwo = () => {
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
 
-    const [id, setId] = useState('');
-    const [status, setStatus] = useState(true);
-    const [isOpen, setIsOpen] = useState(false);
-    const [statusentity, setStatusentity] = useState(false);
-    const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+    // const [id, setId] = useState('');
+    // const [status, setStatus] = useState(true);
+    // const [isOpen, setIsOpen] = useState(false);
+    // const [statusentity, setStatusentity] = useState(false);
+    // const [isOpenModalSP, setIsOpenModalSP] = useState(false);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < data.totalPages) {
@@ -55,7 +55,7 @@ const TableTwo = () => {
         const sheetNames = ['Danh Sách nhân viên'];
         try {
             console.log("data.totalElements: " + data.totalElements);
-            const response = await accountService.findAllAccount({ page: 0, size: data.totalElements, role: "ADMINV1", searchItem, sortColumn, sortBy });
+            const response = await accountService.findAllAccountReport({ page: data.totalElements, size: 2, searchItem, sortColumn, sortBy });
             return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);

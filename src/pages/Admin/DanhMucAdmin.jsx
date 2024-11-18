@@ -1,5 +1,5 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import Table from './components/Table';
+import Table from './components/Table_DanhMuc';
 
 const DanhMucAdmin = () => {
   return (
