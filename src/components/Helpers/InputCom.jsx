@@ -8,6 +8,8 @@ export default function InputCom({  // name lá id , id là name
   value,
   inputClasses,
   labelClasses = "text-qgray text-[13px] font-normal",
+  id,
+  disabled,
 
 }) {
   return (
