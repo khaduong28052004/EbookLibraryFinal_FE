@@ -1,21 +1,7 @@
 import React, { Dispatch, SetStateAction, ReactNode } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 
-interface ModalProps {
-    open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>;
-    title: string;
-    message: string;
-    onConfirm?: () => void;
-    onCancel?: () => void;
-    confirmText?: string;
-    cancelText?: string;
-    icon?: ReactNode;
-    iconBgColor?: string;
-    buttonBgColor?: string;
-}
-
-const Modal: React.FC<ModalProps> = ({
+const Modal = ({
     open,
     setOpen,
     title,

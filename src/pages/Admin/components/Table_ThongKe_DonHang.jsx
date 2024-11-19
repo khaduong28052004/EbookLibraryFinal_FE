@@ -67,7 +67,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-                <form action="https://formbold.com/s/unique_form_id" method="POST">
+                <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
                         <button className="absolute left-0 top-6 -translate-y-1/2">
                             <svg
@@ -251,11 +251,11 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                     {/* <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0]} alt="entity" /> */}
-                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.totalPrice}</p>
+                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.totalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</p>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {`${formatNumber(entity.discountPrice)} VNĐ`}
+                                        {entity.discountPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                     </div>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">

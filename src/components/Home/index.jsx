@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import SectionStyleThree from "../Helpers/SectionStyleThree";
 import Layout from "../Partials/Layout";
 import Banner from "./Banner";
@@ -18,6 +19,7 @@ export default function Home() {
   const [totalPage, setTotalPage] = useState(5);
   const [currentPages, setCurrentPages] = useState(4);
 
+  const location = useLocation();
 
 
   const fetchDataFlashSale = async () => {

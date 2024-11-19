@@ -58,16 +58,10 @@ const TableTwo = ({ onPageChange, entityData }) => {
         }
     };
 
-    const formatNumber = (number, decimals = 2) => {
-        if (number === null || number === undefined || isNaN(number)) {
-            return '0.00';
-        }
-        return number.toFixed(decimals);
-    };
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-                <form action="https://formbold.com/s/unique_form_id" method="POST">
+                <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
                         <button className="absolute left-0 top-6 -translate-y-1/2">
                             <svg
@@ -151,7 +145,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
-                                setSortColumn("shopName");
+                                setSortColumn("shopname");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -260,24 +254,24 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {formatNumber(entity.dtshop)}
+                                        {entity.dtshop.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                     </div>
                                 </td>
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {formatNumber(entity.dtsan)}
+                                        {entity.dtsan.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                     </div>
                                 </td>
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {formatNumber(entity.phi)}
+                                        {entity.phi.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                     </div>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {formatNumber(entity.loiNhuan)}
+                                        {entity.loiNhuan.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                     </div>
                                 </td>
 

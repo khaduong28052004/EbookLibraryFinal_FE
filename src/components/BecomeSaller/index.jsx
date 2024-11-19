@@ -320,6 +320,7 @@ export default function BecomeSaller() {
                             </a>
                           </p>
                         </div>
+
                       </div>
                     </div>
                     <div className="flex-1 mb-10 xl:mb-0">

@@ -55,7 +55,7 @@ export default function Navbar({ className, type }) {
                       </svg>
                     </span>
                     <span className="text-sm font-600 text-qblacktext">
-                    Tất Cả Danh Mục
+                    Tất Cả Danh Mục 
                     </span>
                   </div>
                   <div>

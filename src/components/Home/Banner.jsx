@@ -4,30 +4,31 @@ export default function Banner({ className }) {
       <div className={`w-full ${className || ""}`}>
         <div className="container-x mx-auto">
           <div className="main-wrapper w-full">
-            <div className="banner-card xl:flex xl:space-x-[30px] xl:h-[600px]  mb-[30px]">
-              <div data-aos="fade-right" className="xl:w-[740px] w-full h-full">
-                <a href="/single-product">
-                  <picture>
+            <div className="banner-card xl:flex xl:space-x-[30px] xl:h-[360px]  mb-[30px]">
+              {/* <div data-aos="fade-right" className="xl:w-[740px] w-full h-full">
+                <a href="/single-product"> */}
+                  {/* <picture className="h-[600px]">
                     <source
                       media="(min-width:1025px)"
-                      srcSet={`/assets/images/banner-1.png`}
+                      srcSet={`https://vietlib-hcm.sgp1.digitaloceanspaces.com/Uploads/THU_VIEN/shcm/2/2552/UserImages/056-5820323d-1f82-44d7-adae-2d76e0035b0e.jpg`}
                     />
                     <img
-                      src={`/assets/images/banner-1.2.png`}
+                      src={`https://www.nxbtre.com.vn/Images/News/nxbtre_full_19482018_084815.jpg`}
                       alt=""
                       className="w-full max-w-full h-auto object-cover"
                     />
-                  </picture>
-                </a>
-              </div>
-              <div
+                  </picture> */}
+                  <img src="https://www.nxbgd.vn/Attachments/images/Sach%20moi/CMLBT_BANNER-WEB-BOOKIZ.png" alt="" />
+                {/* </a>
+              </div> */}
+              {/* <div
                 data-aos="fade-left"
                 className="flex-1 flex xl:flex-col flex-row  xl:space-y-[30px] h-full"
               >
                 <div className="w-full xl:h-1/2">
                   <a href="/single-product">
                     <img
-                      src={`/assets/images/banner-2.png`}
+                      src={`https://lh3.googleusercontent.com/proxy/H0E4akjqVwierIB4KX5lqRMn6Zbf2dkskwjByzzJ5EMOFhZwnXOIWvDMUkZfQ4neNnCp3h4Wt5-qFa-3L-OO2WrkNsi-JjaIQQgIp9C5hRjlyIW7z59zq3O2y-wi9G6ZsXNblD3BzuoWT_KhzqsRw85nHFanTgUD_frhGaqSzQ`}
                       alt=""
                       className="w-full h-full"
                     />
@@ -36,13 +37,13 @@ export default function Banner({ className }) {
                 <div className="w-full xl:h-1/2">
                   <a href="/single-product">
                     <img
-                      src={`/assets/images/banner-3.png`}
+                      src={`https://bizweb.dktcdn.net/100/197/269/products/na-ng-ta-m-a-nh-hu-o-ng-bi-a-1.jpg?v=1723376509993`}
                       alt=""
                       className="w-full h-full"
                     />
                   </a>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div
               data-aos="fade-up"

@@ -15,13 +15,13 @@ const TableTwo = () => {
   const [sortBy, setSortBy] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const [id, setId] = useState('');
+  const [entityNhanVien, setEntityNhanVien] = useState('');
   const [status, setStatus] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [statusentity, setStatusentity] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
   const handleConfirm = () => {
-    deleteNhanVien(id);
+    putStatusNhanVien(entityNhanVien.id);
     setIsOpen(false);
   };
   const handlePageChange = (newPage) => {
@@ -59,14 +59,14 @@ const TableTwo = () => {
   // };
 
 
-  const deleteNhanVien = async (id) => {
+  const putStatusNhanVien = async (id) => {
     try {
-      const response = await accountService.delete({ id });
-      console.log("xóa: " + response.data.result.message);
-      if (response.data.code === '1000') {
-        toast.success(response.data.message);
+      const response = await accountService.putStatus({ id });
+      console.log("xóa: " + response.data.message);
+      if (response.data.code === 1000) {
+        entityNhanVien.isDelete ? toast.success("Đã ngừng hoạt động") : toast.success("Tài khoản đã hoạt động lại");
       } else {
-        toast.error(response.data.message);
+        entityNhanVien.isDelete ? toast.error("Lỗi không thể ngừng hoạt động") : toast.error("Lỗi không thể hoạt động lại");
       }
       findAllAccount();
     } catch (error) {
@@ -107,9 +107,9 @@ const TableTwo = () => {
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <ToastContainer/>
+      <ToastContainer />
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-        <form action="https://formbold.com/s/unique_form_id" method="POST">
+        <form method="POST">
           <div className="relative pt-3">
             <button className="absolute left-0 top-6 -translate-y-1/2">
               <svg
@@ -273,7 +273,7 @@ const TableTwo = () => {
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                 <div className="flex space-x-3.5">
-                  <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
+                  <button onClick={() => { setEntityNhanVien(entity); setIsOpen(true); setStatusentity(entity.status); }}>
                     {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                   </button>
                 </div>

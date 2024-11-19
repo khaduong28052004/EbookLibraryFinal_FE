@@ -1,56 +1,67 @@
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
+// import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+// import Modal from "./ModalThongBao";
+// import ModalNhanVien from './ModalNhanVien';
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
 
-const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
+const TableTwo = () => {
+    const [data, setData] = useState([]);
     const [searchItem, setSearchItem] = useState('');
-    const [gender, setGender] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
-    const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
+    const [currentPage, setCurrentPage] = useState(0);
 
-    const [id, setId] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
-    const [statusentity, setStatusentity] = useState(false);
-    const handleConfirm = () => {
-        setIsOpen(false);
-        onIdChange(id);
-    };
+    // const [id, setId] = useState('');
+    // const [status, setStatus] = useState(true);
+    // const [isOpen, setIsOpen] = useState(false);
+    // const [statusentity, setStatusentity] = useState(false);
+    // const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+
     const handlePageChange = (newPage) => {
-        if (newPage >= 0 && newPage < entityData.totalPages) {
-            onPageChange(searchItem, gender, newPage, sortBy, sortColumn);
+        if (newPage >= 0 && newPage < data.totalPages) {
+            setCurrentPage(newPage);
             console.log("currentPage: " + newPage);
         }
     };
 
     const handlePrevious = () => {
-        handlePageChange(entityData?.pageable?.pageNumber - 1);
+        handlePageChange(currentPage - 1);
     };
 
     const handleNext = () => {
-        handlePageChange(entityData?.pageable?.pageNumber + 1);
+        handlePageChange(currentPage + 1);
+    };
+
+
+    const findAllAccountReport = async () => {
+        try {
+            const response = await accountService.findAllAccountReport({ page: currentPage, size: 2, searchItem, sortColumn, sortBy });
+            console.log("content: " + response.data.result.content);
+            setData(response.data.result);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
     };
 
     useEffect(() => {
-        onPageChange(searchItem, gender, currentPage, sortBy, sortColumn);
-    }, [searchItem, gender, currentPage, sortBy, sortColumn]);
+        findAllAccountReport();
+    }, [searchItem, currentPage, sortBy, sortColumn, status]);
     ;
     const handleExport = async () => {
         const sheetNames = ['Danh Sách nhân viên'];
         try {
-            console.log("totalElements: " + entityData.totalElements);
-            const response = await accountService.findAllAccount({ currentPage: 0, size: entityData.totalElements, role: "USER", searchItem, gender: '', sortColumn, sortBy });
+            console.log("data.totalElements: " + data.totalElements);
+            const response = await accountService.findAllAccountReport({ page: data.totalElements, size: 2, searchItem, sortColumn, sortBy });
             return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
         }
     }
-    // const { toPDF, targetRef } = usePDF({ filename: 'Thống kê doanh thu admin.pdf' });
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -58,6 +69,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer />
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3">
@@ -102,7 +114,6 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                     >
                         Excel
                     </button>
-
                 </form>
 
 
@@ -114,7 +125,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
-                                setSortColumn("username");
+                                setSortColumn("account.username");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -127,12 +138,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("fullname");
+                                setSortColumn("shop.shopName");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white ">Họ và tên</span>
+                                <span className="text-sm text-black dark:text-white ">Shop bị báo cáo</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -140,12 +151,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("gender");
+                                setSortColumn("title");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white">Giới tính</span>
+                                <span className="text-sm text-black dark:text-white">Tiêu đề</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -153,18 +164,18 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("email");
+                                setSortColumn("createAt");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Email</span>
+                                <span className="text-sm text-black dark:text-white">Ngày báo cáo</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
 
-                        <th
+                        {/* <th
                             onClick={() => {
                                 setSortColumn("phone");
                                 setSortBy(!sortBy);
@@ -175,12 +186,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
-                        </th>
-                        <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Trạng thái</span>
-                            </div>
-                        </th>
+                        </th> */}
+
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
                         </th>
@@ -188,42 +195,35 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 </thead>
 
                 <tbody>
-                    {entityData?.content?.map((entity, index) => (
+                    {data?.content?.map((entity, index) => (
                         <tr key={index} className="border-t border-stroke dark:border-strokedark">
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {entityData.pageable.pageNumber * entityData.size + index + 1}
+                                {data.pageable.pageNumber * data.size + index + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
+                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.account.username}</p>
                             </td>
 
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.fullname}
+
+                                    {entity.shop.shopName}
                                 </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.gender ? 'Nam' : 'Nữ'}
+                                    {entity.title}
                                 </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.email}
+                                    {entity.createAt}
                                 </div>
                             </td>
 
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                            {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
                                     {entity.phone}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                                <div className="flex items-center gap-1 hidden lg:flex">
-                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                        {entity.status ? 'Hoạt Động' : 'Đã Ngừng'}
-                                    </span>
                                 </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
@@ -232,39 +232,39 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                         {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                     </button>
                                 </div>
-                            </td>
+                            </td> */}
                         </tr>
                     ))}
                 </tbody>
             </table>
             <Pagination
                 pageNumber={currentPage}
-                totalPages={entityData?.totalPages}
-                totalElements={entityData?.totalElements}
+                totalPages={data?.totalPages}
+                totalElements={data?.totalElements}
                 handlePrevious={handlePrevious}
                 handleNext={handleNext}
                 setPageNumber={setCurrentPage}
-                size={entityData.size}></Pagination>
+                size={data.size}></Pagination>
 
-            <Modal
-                open={isOpen}
-                setOpen={setIsOpen}
-                title={statusentity
-                    ? 'Ngừng Hoạt Động'
-                    : 'Khôi Phục'}
-                message={statusentity
-                    ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                    : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
-                onConfirm={handleConfirm}
-                confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
-                cancelText="Thoát"
-                icon={statusentity ? (
-                    <TrashIcon className="h-6 w-6 text-red-600" />
-                ) : (
-                    <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
-                )}
-                iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+            {/* <Modal
+        open={isOpen}
+        setOpen={setIsOpen}
+        title={statusentity
+          ? 'Ngừng Hoạt Động'
+          : 'Khôi Phục'}
+        message={statusentity
+          ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
+          : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+        onConfirm={handleConfirm}
+        confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
+        cancelText="Thoát"
+        icon={statusentity ? (
+          <TrashIcon className="h-6 w-6 text-red-600" />
+        ) : (
+          <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+        )}
+        iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
+        buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} /> */}
         </div>
     );
 };
