@@ -47,9 +47,7 @@ const TableTwo = () => {
             const response = await category.delete({ id });
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
-            } else {
-                toast.error(response.data.message);
-            }
+            } 
             findAllCategory();
         } catch (error) {
             toast.error("Lỗi hệ thống");

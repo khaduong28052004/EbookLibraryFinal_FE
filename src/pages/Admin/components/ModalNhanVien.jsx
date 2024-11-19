@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import accountService from '../../../service/admin/Account';
+import { formToJSON } from 'axios';
 
 const ModalSanPham = ({
     status,
@@ -33,21 +34,35 @@ const ModalSanPham = ({
     const postNhanVien = async () => {
         try {
             const response = await accountService.post({ data: formData });
-            setStatus(!status);
             if (response.data.code === 1000) {
                 toast.success("Thêm nhân viên thành công");
             } else {
                 toast.error(response.data.message);
             }
+            setStatus(!status);
         } catch (error) {
+            toast.error("Lỗi hệ thống");
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!formData.username || !formData.password || !formData.fullname || !formData.gender || !formData.email || !formData.phone) {
+            toast.error("Vui lòng nhập đầy đủ thông tin.");
+            return;
+        }
+
+        if (formData.password.length < 8) {
+            toast.error("Password phải lớn hơn 8 kí tự.");
+            return;
+        }
+        if (formData.phone.length < 10 || formData.phone.length > 10) {
+            toast.error("Số điện thoại phải 10 số");
+            return;
+        }
         postNhanVien(formData);
         setFormData(initialFormData);
-        e.preventDefault(); // Chặn hành vi reload trang khi submit form
         setOpen(false); // Đóng modal sau khi submit
     };
     return (
