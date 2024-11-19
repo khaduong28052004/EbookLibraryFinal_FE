@@ -73,8 +73,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
         try {
             setLoading(true);
             const response = await userOrderDetailService.cancelOrderDetail({ billId });
-
-
+            
             if (response.data.status === "successfully") {
                 setTaskCompleted(true);
                 toast.success('Đơn hàng đã được hủy');
