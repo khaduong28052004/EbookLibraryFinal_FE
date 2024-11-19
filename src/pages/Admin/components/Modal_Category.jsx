@@ -18,7 +18,7 @@ const ModalCategory = ({
         idParent: 0,
         account: sessionStorage.getItem("id_account"),
     };
-   
+
 
     const [formData, setFormData] = useState(initialFormData);
 
@@ -51,13 +51,13 @@ const ModalCategory = ({
     const postCategory = async () => {
         try {
             const response = await categoryService.post({ data: formData });
-            setStatus(!status);
             const responseCode = response.data.code;
             if (responseCode !== 1000) {
                 toast.error(response.data.message);
             } else {
                 toast.success(response.data.message);
             }
+            setStatus(!status);
         } catch (error) {
             console.log("Error: " + error);
         }
@@ -78,14 +78,18 @@ const ModalCategory = ({
     }
 
     const handleSubmit = (e) => {
+        e.preventDefault(); // Chặn hành vi reload trang khi submit form
         if (entity != null) {
             putCategory();
         } else {
             postCategory();
         }
+        if (!formData.name) {
+            toast.error("Vui lòng nhập tên danh mục.");
+            return;
+        }
         setFormData(initialFormData);
-        e.preventDefault(); // Chặn hành vi reload trang khi submit form
-        setOpen(false); // Đóng modal sau khi submit
+        setOpen(false);
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">

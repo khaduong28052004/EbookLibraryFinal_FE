@@ -64,7 +64,6 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
         }
     }
-    // const { toPDF, targetRef } = usePDF({ filename: 'Thống kê doanh thu admin.pdf' });
 
     const handleSubmit = (e) => {
         e.preventDefault();

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLongDownIcon, TrashIcon, ArrowPathIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ArrowLongDownIcon, TrashIcon, ArrowPathIcon, ArrowLongUpIcon, PlusCircleIcon} from '@heroicons/react/24/solid'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
-// import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import permission from '../../../service/admin/Permission';
 import rolePermission from '../../../service/admin/PermissionDetails';
 import Modal from "./ModalThongBao";
-
+import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './Pagination';
 
 const Table_NotPermission = ({
@@ -58,10 +57,13 @@ const Table_NotPermission = ({
 
         try {
             const response = await rolePermission.create({ data: form });
-            console.log("content: " + response.data.result.message);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
+            } 
             findlAllNotRole();
             setStatus(!status);
         } catch (error) {
+            toast.error("Lỗi hệ thống");
             console.log("Error: " + error);
         }
     };
@@ -72,12 +74,12 @@ const Table_NotPermission = ({
     };
     useEffect(() => {
         findlAllNotRole();
-    }, [currentPage, optionRole, open]);
+    }, [currentPage, optionRole, open, sortBy, sortColumn]);
 
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-
+            <ToastContainer></ToastContainer>
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-6xl h-150 sm:h-3/4">
@@ -161,7 +163,7 @@ const Table_NotPermission = ({
                                                     setEntityPermission(entity);
                                                     setIsOpen(true);
                                                 }}>
-                                                    <TrashIcon className='w-5 h-5 text-black hover:text-success  dark:text-white' />
+                                                    <PlusCircleIcon className='w-5 h-5 text-black hover:text-success  dark:text-white' />
                                                 </button>
                                             </div>
                                         </td>
