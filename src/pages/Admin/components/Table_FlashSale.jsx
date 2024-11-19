@@ -3,21 +3,26 @@ import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import ModalFlashSale from './ModalFlaseSale';
+import ModalFlashSaleCT from './Modal_FlashSaleCT';
 import flashSale from '../../../service/admin/FlashSale';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
-// import { usePDF } from 'react-to-pdf';
+import Pagination from './Pagination';
 
-const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
+const TableTwo = ({ onPageChange, onIdChange, entityData, status,
+    setStatus }) => {
     const [dateStart, setDateStart] = useState('');
     const [dateEnd, setDateEnd] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
-    const currentPage = entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber;
+    const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
     const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+    const [isOpenModalCT, setIsOpenModalCT] = useState(false);
+    const [entityFlashSale, setEntityFlashSale] = useState([]);
 
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
+
     const handleConfirm = () => {
         setIsOpen(false);
         onIdChange(id);
@@ -25,39 +30,27 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < entityData.totalPages) {
             onPageChange(dateStart, dateEnd, newPage, sortBy, sortColumn);
+
             console.log("currentPage: " + newPage);
         }
     };
 
     const handlePrevious = () => {
-        handlePageChange(entityData?.pageable?.pageNumber - 1);
+        setCurrentPage(currentPage - 1);
+        handlePageChange(currentPage);
     };
 
     const handleNext = () => {
-        handlePageChange(entityData?.pageable?.pageNumber + 1);
-    };
-    const getPagesToShow = () => {
-        const totalPages = entityData?.totalPages || 0;
-        const current = entityData?.pageable?.pageNumber ?? 0;
-        const pages = [];
-        const maxPagesToShow = 5;
-
-        let start = Math.max(0, current - Math.floor(maxPagesToShow / 2));
-        let end = Math.min(totalPages - 1, start + maxPagesToShow - 1);
-
-        if (end - start + 1 < maxPagesToShow) {
-            start = Math.max(0, end - maxPagesToShow + 1);
-        }
-
-        for (let i = start; i <= end; i++) {
-            pages.push(i);
-        }
-
-        return pages;
+        setCurrentPage(currentPage + 1);
+        handlePageChange(currentPage);
     };
 
     useEffect(() => {
         onPageChange(dateStart, dateEnd, currentPage, sortBy, sortColumn);
+        console.log("pageNumber: " + currentPage);
+        console.log("totalPages: " + entityData?.totalPages);
+        console.log("totalElements: " + entityData?.totalElements);
+        console.log("setPageNumber: " + currentPage);
     }, [dateStart, dateEnd, currentPage, sortBy, sortColumn]);
     ;
     const handleExport = async () => {
@@ -80,12 +73,13 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-                <form action="https://formbold.com/s/unique_form_id" method="POST">
+                <form method="POST">
                     <div className="relative pt-3">
                         <input
                             value={dateStart}
                             onChange={(e) => {
                                 setDateStart(e.target.value);
+                                setCurrentPage(0);
                             }}
                             type="date"
                             placeholder="Tìm kiếm..."
@@ -94,6 +88,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             value={dateEnd}
                             onChange={(e) => {
                                 setDateEnd(e.target.value);
+                                setCurrentPage(0);
                             }}
                             type="date"
                             placeholder="Tìm kiếm..."
@@ -168,7 +163,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             </div>
                         </th>
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <span className="text-sm text-black dark:text-white truncate w-24">Actions</span>
+                            <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
                         </th>
                     </tr>
                 </thead>
@@ -202,12 +197,17 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                 <div className="flex space-x-3.5">
-                                    <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(!entity.delete); }}>
+                                    <button onClick={() => {
+                                        setId(entity.id);
+                                        setIsOpen(true);
+                                        setStatusentity(!entity.delete);
+                                    }}>
                                         {!entity.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                     </button>
                                     <button onClick={() => {
-                                        setIsOpenModalSP(true);
-                                        setId(entity.id);
+                                        setEntityFlashSale(entity);
+                                        setIsOpenModalCT(true);
+                                        // setId(entity.id);
                                     }}>
                                         <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
                                     </button>
@@ -217,59 +217,16 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                     ))}
                 </tbody>
             </table>
-            <div className="py-6 flex border-t border-stroke  dark:border-strokedark  px-4 md:px-6 xl:px-7.5">
-                <div className="flex flex-1 justify-between sm:hidden">
-                    <a href="#" className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-                    <a href="#" className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
-                </div>
-                <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div>
-                        <p className="text-sm text-gray-700 dark:text-white ">
-                            Showing
-                            <span className="font-medium"> {entityData?.pageable?.pageNumber * entityData.size + 1} </span>
-                            to
-                            <span className="font-medium"> {entityData.totalElements > (entityData.size * currentPage) ? ((entityData?.pageable?.pageNumber + 1) * entityData.size < entityData.totalElements ? (entityData?.pageable?.pageNumber + 1) * entityData.size : entityData.totalElements) : entityData.totalElements} </span>
-                            of
-                            <span className="font-medium"> {entityData.totalElements} </span>
-                            results
-                        </p>
-                    </div>
-                    <div>
-                        <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm " aria-label="Pagination">
-                            <button
-                                onClick={handlePrevious} disabled={currentPage === 0}
-                                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                                <span className="sr-only">Previous</span>
-                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                    <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            {/* Pagination buttons */}
-                            {getPagesToShow().map((page) => (
-                                <button key={page} onClick={() => handlePageChange(page)}
-                                    className="relative dark:text-white hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                                >
-                                    {page + 1}
-                                </button>
-                            ))}
-
-
-                            <button
-                                onClick={handleNext}
-                                disabled={currentPage === entityData.totalPages - 1}
-                                className="relative dark:text-white inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                                <span className="sr-only">Next</span>
-                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                    <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </nav>
-                    </div>
-                </div>
-            </div>
+            <Pagination
+                pageNumber={currentPage}
+                totalPages={entityData?.totalPages}
+                totalElements={entityData?.totalElements}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                setPageNumber={setCurrentPage}
+                size={entityData.size}></Pagination>
 
             <Modal
-                id={id}
                 open={isOpen}
                 setOpen={setIsOpen}
                 title={statusentity
@@ -289,11 +246,21 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
                 buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
             <ModalFlashSale
+                status={status}
+                setStatus={setStatus}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
                 title="Thêm Sản Phẩm Mới"
                 confirmText="Lưu"
                 cancelText="Hủy"
+            />
+            <ModalFlashSaleCT
+                statusFillAll={status}
+                setStatusFillAll={setStatus}
+                entityFlashSale={entityFlashSale}
+                open={isOpenModalCT}
+                setOpen={setIsOpenModalCT}
+                title="Cập nhật Flash sale"
             />
         </div>
     );

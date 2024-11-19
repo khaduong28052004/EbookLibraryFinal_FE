@@ -1,10 +1,10 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import Table from './components/Table';
+import Table from './components/Table_Permission';
 
-const SanPhamSeller = () => {
+const PhanQuyenAdmin = () => {
   return (
     <>
-      <Breadcrumb pageName="Quản Lý Đơn Hàng" status='Người Bán' />
+      <Breadcrumb pageName="Quản Lý Phân Quyền" status='Quản Trị' />
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <Table />
@@ -13,4 +13,4 @@ const SanPhamSeller = () => {
   );
 };
 
-export default SanPhamSeller;
+export default PhanQuyenAdmin;

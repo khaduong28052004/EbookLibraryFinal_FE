@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Thongke from '../../../service/admin/ThongKe';
+import Pagination from './Pagination';
 
 const TableTwo = ({ onPageChange, entityData }) => {
     const [dateStart, setDateStart] = useState('');
@@ -26,25 +27,6 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
     const handleNext = () => {
         handlePageChange(entityData?.pageable?.pageNumber + 1);
-    };
-    const getPagesToShow = () => {
-        const totalPages = entityData?.totalPages || 0;
-        const current = entityData?.pageable?.pageNumber ?? 0;
-        const pages = [];
-        const maxPagesToShow = 5;
-
-        let start = Math.max(0, current - Math.floor(maxPagesToShow / 2));
-        let end = Math.min(totalPages - 1, start + maxPagesToShow - 1);
-
-        if (end - start + 1 < maxPagesToShow) {
-            start = Math.max(0, end - maxPagesToShow + 1);
-        }
-
-        for (let i = start; i <= end; i++) {
-            pages.push(i);
-        }
-
-        return pages;
     };
 
     useEffect(() => {
@@ -85,7 +67,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-                <form action="https://formbold.com/s/unique_form_id" method="POST">
+                <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
                         <button className="absolute left-0 top-6 -translate-y-1/2">
                             <svg
@@ -284,7 +266,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {`${formatNumber(entity.price)} VNĐ`}
+                                        {entity.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                     </div>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -327,9 +309,10 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                                 <p>Shop: {entity.account.shopName}</p>
                                                 <p>Ngày tạo: {entity.createAt}</p>
                                                 <p>Trạng thái : {entity.delete == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
-                                                <p>Giới thiệu: {entity.introduce}</p>
                                                 <p>Tác giả: {entity.writerName}</p>
                                                 <p>Nhà xuất bản: {entity.publishingCompany}</p>
+                                                <p>Giới thiệu: {entity.introduce}</p>
+
                                             </div>
                                         </div>
                                     </td>
@@ -340,56 +323,15 @@ const TableTwo = ({ onPageChange, entityData }) => {
                     ))}
                 </tbody>
             </table>
-            <div className="py-6 flex border-t border-stroke  dark:border-strokedark  px-4 md:px-6 xl:px-7.5">
-                <div className="flex flex-1 justify-between sm:hidden">
-                    <a href="#" className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-                    <a href="#" className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
-                </div>
-                <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div>
-                        <p className="text-sm text-gray-700 dark:text-white ">
-                            Showing
-                            <span className="font-medium"> {entityData?.pageable?.pageNumber * entityData.size + 1} </span>
-                            to
-                            <span className="font-medium"> {entityData.totalElements > (entityData.size * currentPage) ? ((entityData?.pageable?.pageNumber + 1) * entityData.size < entityData.totalElements ? (entityData?.pageable?.pageNumber + 1) * entityData.size : entityData.totalElements) : entityData.totalElements} </span>
-                            of
-                            <span className="font-medium"> {entityData.totalElements} </span>
-                            results
-                        </p>
-                    </div>
-                    <div>
-                        <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm " aria-label="Pagination">
-                            <button
-                                onClick={handlePrevious} disabled={currentPage === 0}
-                                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                                <span className="sr-only">Previous</span>
-                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                    <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                            {/* Pagination buttons */}
-                            {getPagesToShow().map((page) => (
-                                <button key={page} onClick={() => handlePageChange(page)}
-                                    className="relative dark:text-white hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                                >
-                                    {page + 1}
-                                </button>
-                            ))}
+            <Pagination
+                pageNumber={currentPage}
+                totalPages={entityData?.totalPages}
+                totalElements={entityData?.totalElements}
+                handlePrevious={handlePrevious}
+                handleNext={handleNext}
+                setPageNumber={setCurrentPage}
+                size={entityData.size}></Pagination>
 
-
-                            <button
-                                onClick={handleNext}
-                                disabled={currentPage === entityData.totalPages - 1}
-                                className="relative dark:text-white inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                                <span className="sr-only">Next</span>
-                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                                    <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </nav>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };

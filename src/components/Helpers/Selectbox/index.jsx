@@ -29,7 +29,7 @@ export default function Selectbox({ datas = [], className, action, children }) {
             ></div>
           )}
           <div className={`my-select-box-section ${toggle ? "open" : ""}`}>
-            <ul className="list">
+            <ul className="list w-auto">
               {datas.map((value) => (
                 <li
                   className={item === value ? "selected" : ""}
@@ -41,6 +41,7 @@ export default function Selectbox({ datas = [], className, action, children }) {
               ))}
             </ul>
           </div>
+
         </div>
       )}
     </>

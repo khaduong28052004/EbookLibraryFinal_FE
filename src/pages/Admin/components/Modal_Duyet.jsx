@@ -1,21 +1,7 @@
 import React, { Dispatch, SetStateAction, ReactNode } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 
-interface ModalProps {
-    open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>;
-    title: string;
-    message: string;
-    onConfirm?: () => void;
-    onCancel?: () => void;
-    confirmText?: string;
-    cancelText?: string;
-    icon?: ReactNode;
-    iconBgColor?: string;
-    buttonBgColor?: string;
-}
-
-const Modal: React.FC<ModalProps> = ({
+const Modal = ({
     open,
     setOpen,
     title,
@@ -28,6 +14,36 @@ const Modal: React.FC<ModalProps> = ({
     iconBgColor = 'bg-red-100',
     buttonBgColor = "bg-red-600"
 }) => {
+    const putActive = async (id, status) => {
+        try {
+            const response = await product.putActive({ id, status });
+            console.log("xóa: " + response.data.result.message);
+            findAllProduct();
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }
+    const putStatus = async (id) => {
+        try {
+            const response = await product.putStatus({ id });
+            console.log("xóa: " + response.data.result.message);
+            findAllProduct();
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }
+
+    const handleConfirm = () => {
+        if (active) {
+            putActive(id, active);
+        } else {
+            putStatus(id);
+        }
+        findAllProduct();
+        setIsOpen(false);
+
+    };
+
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />

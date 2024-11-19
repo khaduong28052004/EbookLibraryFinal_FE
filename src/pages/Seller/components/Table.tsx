@@ -255,7 +255,7 @@ const TableTwo = () => {
         </div>
       </div>
 
-      <Modal
+      {/* <Modal
         open={isOpen}
         setOpen={setIsOpen}
         title={
@@ -282,7 +282,7 @@ const TableTwo = () => {
         }
         iconBgColor={statusProduct ? 'bg-red-100' : 'bg-yellow-100'}
         buttonBgColor={statusProduct ? 'bg-red-600' : 'bg-yellow-600'}
-      />
+      /> */}
 
       <ModalSanPham
         open={isOpenModalSP}

@@ -4,12 +4,13 @@ import SellerLayout from './layout/SellerLayout';
 import TrangChuSeller from "./pages/Seller/TrangChuSeller";
 import SanPhamSeller from "./pages/Seller/SanPhamSeller";
 import DonHangSeller from "./pages/Seller/DonHangSeller"
-import ThongTinShopSeller from "./pages/Seller/ThongTinShopSeller"
+import CategorySeller from "./pages/Seller/CategorySeller"
 import VoucherSeller from "./pages/Seller/VocuherSeller"
 import ThongKeDonHangSeller from "./pages/Seller/ThongKeDonHangSeller"
 import ThongKeSanPham from "./pages/Seller/ThongKeSanPhamSeller"
 import ThongKeKhachHang from "./pages/Seller/ThongKeKhachHangSeller"
 import DanhGiaSeller from "./pages/Seller/DanhGiaSeller"
+import VoucherDetailSeller from "./pages/Seller/VoucherDetailSeller"
 export default function RouterSellers() {
   return (
     <SellerLayout>
@@ -51,11 +52,11 @@ export default function RouterSellers() {
           }
         />
         <Route
-          path="/shop"
+          path="/quanLy/category"
           element={
             <>
-              <PageTitle title="Thông Tin Shop" />
-              <ThongTinShopSeller />
+              <PageTitle title="Thể Loại" />
+              <CategorySeller />
             </>
           }
         />
@@ -72,7 +73,7 @@ export default function RouterSellers() {
           path="/thongKe/donHang"
           element={
             <>
-              <PageTitle title="Thông Tin Shop" />
+              <PageTitle title="Thống Kê Đơn Hàng" />
               <ThongKeDonHangSeller />
             </>
           }
@@ -81,7 +82,7 @@ export default function RouterSellers() {
           path="/thongKe/khachHang"
           element={
             <>
-              <PageTitle title="Thông Tin Shop" />
+              <PageTitle title="Thống Kê Khách Hàng" />
               <ThongKeKhachHang />
             </>
           }
@@ -90,8 +91,17 @@ export default function RouterSellers() {
           path="/thongKe/sanPham"
           element={
             <>
-              <PageTitle title="Thông Tin Shop" />
+              <PageTitle title="Thống Kê Sản Phẩm" />
               <ThongKeSanPham />
+            </>
+          }
+        />
+        <Route
+          path="/quanLy/voucherDetail"
+          element={
+            <>
+              <PageTitle title="Chi Tiết Voucher" />
+              <VoucherDetailSeller />
             </>
           }
         />

@@ -35,7 +35,7 @@ const TrangChuSeller = () => {
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Đơn Chờ Duyệt" total={datas.donChoDuyet} rate="0.43%" levelUp>
+        <CardDataStats title="Đơn Chờ Duyệt" total={datas.donChoDuyet}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -54,7 +54,7 @@ const TrangChuSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Doanh Số" total={datas.doanhSo} rate="4.35%" levelUp>
+        <CardDataStats title="Doanh Số" total={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(datas.doanhSo)}>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -77,7 +77,7 @@ const TrangChuSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Doanh Thu" total={datas.doanhThu} rate="2.59%" levelUp>
+        <CardDataStats title="Doanh Thu" total={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(datas.doanhThu)}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -96,7 +96,7 @@ const TrangChuSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Lượt Yêu Thích" total={datas.luotYeuThich} rate="0.95%" levelDown>
+        <CardDataStats title="Lượt Yêu Thích" total={datas.luotYeuThich}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -123,7 +123,6 @@ const TrangChuSeller = () => {
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <ChartOne data={datas} years={listYears} getData={getData}/>
-        <ChartThree />
       </div>
     </>
   );

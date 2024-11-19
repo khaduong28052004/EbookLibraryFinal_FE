@@ -14,7 +14,7 @@ export default function Layout({ children, childrenClasses }) {
         <div className={`w-full  ${childrenClasses || "pt-[30px] pb-[60px]"}`}>
           {children && children}
         </div>
-        <DiscountBanner />
+        {/* <DiscountBanner /> */}
         <Footer />
       </div>
     </>

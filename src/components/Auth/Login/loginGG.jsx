@@ -2,31 +2,48 @@ import React, { useState } from 'react';
 // import { GoogleLogin } from '@react-oauth/google';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AuthService from '../../../service/authService';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginGG = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+    const [token, setToken] = useState("");
+    const navigate = useNavigate();
     const handleSuccess = async (credentialResponse) => {
         console.log(credentialResponse);
         const decodedToken = jwtDecode(credentialResponse.credential);
-        // console.log(decodedToken);
+        console.log(credentialResponse.credential);
+        setToken(credentialResponse.credential);
+        console.log(decodedToken);
         try {
             const data = {
-                email: decodedToken.email,
+                token: credentialResponse.credential,
             }
             const response = await AuthService.GoogleLogin(data);
             AuthService.setItem(response.data);
-             if(response == 200){
-                console.log("oke");
-             
-                console.log(response);
-             }
+          
+             if (response.status === 200) {
+                const data = await response.json();
+                localStorage.setItem("accessToken", data.accessToken);
+                // setError(null); // Xóa thông báo lỗi
+                return navigate ('/');
+            } else if (response.status === 401) {
+                const message = await response.text();
+                setError(message);
+            } else if (response.status === 302) {
+                const redirectUrl = response.headers.get("Location");
+                // setError("Redirecting to sign-up page...");
+                return navigate ('/'+redirectUrl);
+            } else {
+                setError("Unexpected response. Please try again.");
+            }
         } catch (error) {
-            console.log(error)
+            console.error("Error during login:", error);
+            setError("An error occurred. Please try again.");
         }
-        setIsLoggedIn(true); // Set login state after success
+      
     };
 
     const handleError = () => {
@@ -38,7 +55,7 @@ const LoginGG = () => {
     }
 
     return (
-        <>
+        <>  
             <GoogleLogin onSuccess={handleSuccess}  onError={handleError} />
             {/* <button
                 type="button"

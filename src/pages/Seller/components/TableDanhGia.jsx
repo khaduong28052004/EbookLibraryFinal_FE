@@ -5,6 +5,7 @@ import Modal from "./ModalThongBao";
 import ModalSanPham from './ModalDanhGia';
 import DanhGiaService from '../../../service/Seller/danhGiaService';
 import { toast, ToastContainer } from 'react-toastify';
+import Pagination from './pagination';
 
 const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,10 +20,15 @@ const TableTwo = () => {
     product: null
   });
   const [isStatus, setIsStatus] = useState(false);
-
+  const [pageNumber, setPageNumber] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const [sortBy, setSortBy] = useState(true);
+  const [sortColumn, setSortColumn] = useState("id");
   useEffect(() => {
     getList();
-  }, [search]);
+  }, [search, pageNumber, sortBy, sortColumn]);
   useEffect(() => {
     if (isStatus) {
       getList();
@@ -31,9 +37,10 @@ const TableTwo = () => {
   }, [search, isStatus]);
 
   const getList = async () => {
-    const response = await DanhGiaService.getData(search);
-    console.log(response);
+    const response = await DanhGiaService.getData(search, pageNumber, sortBy, sortColumn);
     setListDanhGia(response.data.result.content);
+    setTotalPages(response.data.result.totalPages);
+    setTotalElements(response.data.result.totalElements);
   }
   const handleConfirm = () => {
     setIsOpen(false);
@@ -42,6 +49,18 @@ const TableTwo = () => {
     const value = event.target.value;
     setSearch(value);
   }
+
+  const handlePrevious = () => {
+    if (pageNumber > 0) {
+      setPageNumber(pageNumber - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (pageNumber < totalPages - 1) {
+      setPageNumber(pageNumber + 1);
+    }
+  };
 
   const openModal = (danhGia) => {
     setDataPhanHoi({
@@ -58,7 +77,7 @@ const TableTwo = () => {
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <ToastContainer />
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-        <form action="https://formbold.com/s/unique_form_id" method="POST">
+        <form >
           <div className="relative pt-3">
             <button className="absolute left-0 top-6 -translate-y-1/2">
               <svg
@@ -97,11 +116,7 @@ const TableTwo = () => {
           >
             Excel
           </button>
-          <button
-            className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
-          >
-            PDF
-          </button>
+
         </div>
       </div>
 
@@ -110,42 +125,59 @@ const TableTwo = () => {
           <tr className="border-t border-stroke dark:border-strokedark">
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("account.fullname");
+              }}>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Khách Hàng</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("product.name")
+              }}
+            >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Sản Phẩm</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Hình Ảnh Đánh Giá</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
               </div>
             </th>
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("content");
+              }}
+            >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Nội Dung Đánh Giá</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("star")
+              }}
+            >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số Sao</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -160,7 +192,7 @@ const TableTwo = () => {
             <tr key={index} className="border-t border-stroke dark:border-strokedark">
 
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                {index + 1}
+                {index + 1 + pageNumber * pageSize}
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                 <p className="text-sm text-black dark:text-white truncate w-24">{danhGia.account.fullname}</p>
@@ -172,9 +204,9 @@ const TableTwo = () => {
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 <div className="flex items-center gap-1 hidden xl:flex">
-                  {danhGia.imageEvalues.map((image) => {
-                    <img className="h-12.5 w-15 rounded-md" src={image.name} alt="Evalue" />
-                  })}
+                  {danhGia.imageEvalues.map((image) => (
+                    <img className="h-12.5 w-12.5 rounded-md" src={image.name} alt="Evalue" />
+                  ))}
                 </div>
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -199,50 +231,14 @@ const TableTwo = () => {
         </tbody>
       </table>
 
-      <div className="py-6 flex border-t border-stroke  dark:border-strokedark  px-4 md:px-6 xl:px-7.5">
-        {/* <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"> */}
-        <div className="flex flex-1 justify-between sm:hidden">
-          <a href="#" className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-          <a href="#" className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
-        </div>
-        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm text-gray-700 dark:text-white ">
-              Showing
-              <span className="font-medium"> 1 </span>
-              to
-              <span className="font-medium"> 10 </span>
-              of
-              <span className="font-medium"> 97 </span>
-              results
-            </p>
-          </div>
-          <div>
-            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm " aria-label="Pagination">
-              <a href="#" className="relative  inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                <span className="sr-only">Previous</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
-                </svg>
-              </a>
-
-              <a href="#" aria-current="page" className="relative dark:text-white z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">1</a>
-              <a href="#" className="relative dark:text-white inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">2</a>
-              <a href="#" className="relative dark:text-white hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex">3</a>
-              <span className="relative dark:text-white inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">...</span>
-              <a href="#" className="relative dark:text-white hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex">8</a>
-              <a href="#" className="relative dark:text-white inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">9</a>
-              <a href="#" className="relative dark:text-white inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">10</a>
-              <a href="#" className="relative dark:text-white inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                <span className="sr-only">Next</span>
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                </svg>
-              </a>
-            </nav>
-          </div>
-        </div>
-      </div>
+      <Pagination
+        pageNumber={pageNumber}
+        totalElements={totalElements}
+        totalPages={totalPages}
+        handleNext={handleNext}
+        handlePrevious={handlePrevious}
+        setPageNumber={setPageNumber}
+      />
 
       <Modal
         open={isOpen}

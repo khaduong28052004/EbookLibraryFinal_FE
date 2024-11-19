@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function InputQuantityCom() {
-  const [quantity, setQuantity] = useState(1);
+export default function InputQuantityCom({ quantityCart, handleQuantity,idFavorite }) {
+  const [quantity, setQuantity] = useState(quantityCart);
   const increment = () => {
     setQuantity((prev) => prev + 1);
   };
@@ -10,6 +10,9 @@ export default function InputQuantityCom() {
       setQuantity((prev) => prev - 1);
     }
   };
+  useEffect(() => {
+    handleQuantity(idFavorite,quantity);
+  }, [quantity])
   return (
     <div className="w-[120px] h-[40px] px-[26px] flex items-center border border-qgray-border">
       <div className="flex justify-between items-center w-full">
