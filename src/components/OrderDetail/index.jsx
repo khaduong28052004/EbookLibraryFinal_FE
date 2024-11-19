@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { Link } from "react-router-dom";
 import Evaluate from '../Evaluate/evaluate';
 import BeatLoader from "react-spinners/BeatLoader";
 import userOrderDetailService from "../../service/user/orderDetail";
@@ -73,7 +74,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
             setLoading(true);
             const response = await userOrderDetailService.cancelOrderDetail({ billId });
 
-           
+
             if (response.data.status === "successfully") {
                 setTaskCompleted(true);
                 toast.success('Đơn hàng đã được hủy');
@@ -91,24 +92,14 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     const reOrder = async (billId) => {
         try {
 
-            const username = 'thu'; // Tài khoản của bạn
-            const password = '123'; // Mật khẩu của bạn      
-            const basicAuth = 'Basic ' + btoa(username + ':' + password);
+            const response = await userOrderDetailService.reOrderDetail({ billId });
 
-            const response = await fetch(`http://localhost:8080/api/v1/user/bill/create/reorder/${billId}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': basicAuth,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-                return;
+            if (response.data.status === "successfully") {
+                toast.success('Đã thêm vào giỏ hàng');
+            } else {
+                toast.warn('Lỗi truyền tải dữ liệu');
+                throw new Error('Unexpected data format');
             }
-
-            toast.success('Đã thêm vào giỏ hàng');
 
         } catch (error) {
             console.log(error);
@@ -239,7 +230,8 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                                     {bill.products.map((product) =>
                                         <div className="mb-5" key={product.productId}>
                                             <div className="productInfo-container  grid gap-3 px-5 ">
-                                                <div>
+                                                <Link   to={`/productdetail?idProduct=${product.productId}`} className="hover:bg-gray-50">
+                                                    <div className="hover:text-blue-500"> {product.name}</div>
                                                     <div className="productImage-wrapper flex p-2 rounded border  justify-between" >
                                                         <div className="productInfo-1 w-[15%] ">
                                                             <a href="">
@@ -261,7 +253,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                                                                 </div>
                                                             </div>
                                                             <div className="productInfo-3 flex flex-col justify-between mr-0">
-                                                                {product.isEvaluate == false && bill.billOrderStatus === "Hoàn thành" ?
+                                                                {bill.billOrderStatus === "Hoàn thành" && product.isEvaluate == false ?
                                                                     (
                                                                         <div className="productInfo-butoton w-[100%] flex items-end mt-auto">
                                                                             <div className="productInfo-rating">
@@ -275,7 +267,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </Link  >
                                             </div>
                                         </div>
                                     )}
