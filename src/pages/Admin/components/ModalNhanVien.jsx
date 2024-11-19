@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import accountService from '../../../service/admin/Account';
 
@@ -31,8 +32,13 @@ const ModalSanPham = ({
 
     const postNhanVien = async () => {
         try {
-            await accountService.post({ data: formData });
+            const response = await accountService.post({ data: formData });
             setStatus(!status);
+            if (response.data.code === 1000) {
+                toast.success("Thêm nhân viên thành công");
+            } else {
+                toast.error(response.data.message);
+            }
         } catch (error) {
             console.log("Error: " + error);
         }
@@ -47,7 +53,7 @@ const ModalSanPham = ({
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-
+            <ToastContainer></ToastContainer>
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">

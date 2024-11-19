@@ -265,8 +265,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                         <div className="p-5 border border-gray-100 hover:bg-slate-100">
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
+                                                <p>Mã shop: {entity.id}</p>
                                                 <p>Trạng thái : {entity.status ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
-                                                <p>Ngày tạo: {entity.createAt}</p>
                                                 <p>Họ tên chủ shop: {entity.fullname}</p>
                                                 <p>Giới tính: {entity.gender ? 'Nam' : 'Nữ'}</p>
                                                 <p>Email: {entity.email}</p>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
@@ -16,7 +17,7 @@ const TableTwo = () => {
     const [currentPage, setCurrentPage] = useState(0);
 
     const [expandedRowId, setExpandedRowId] = useState(null);
-    const [id, setId] = useState('');
+    const [entityProduct, setEntityProduct] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
     const [active, setActive] = useState(null);
@@ -42,7 +43,11 @@ const TableTwo = () => {
     const putStatus = async (id) => {
         try {
             const response = await product.putStatus({ id });
-            console.log("xóa: " + response.data.result.message);
+            if (response.data.code === 1000) {
+                entityProduct.delete=false ? toast.success("Đã ngừng hoạt động") : toast.success("Sản phẩm đã hoạt động lại");
+            } else {
+                entityProduct.delete=false ? toast.error("Lỗi không thể ngừng hoạt động") : toast.error("Lỗi không thể hoạt động lại");
+            }
             findAllProduct();
         } catch (error) {
             console.log("Error: " + error);
@@ -51,10 +56,10 @@ const TableTwo = () => {
 
     const handleConfirm = () => {
         if (active) {
-            putActive(id, optionActive);
+            putActive(entityProduct.id, optionActive);
             setoptionActive(null);
         } else {
-            putStatus(id);
+            putStatus(entityProduct.id);
         }
         findAllProduct();
         setIsOpen(false);
@@ -77,7 +82,7 @@ const TableTwo = () => {
 
     useEffect(() => {
         findAllProduct(option, searchItem, currentPage, sortBy, sortColumn);
-    }, [searchItem, currentPage, sortBy, sortColumn,option]);
+    }, [searchItem, currentPage, sortBy, sortColumn, option]);
 
     const toggleRow = (id) => {
         if (expandedRowId === id) {
@@ -105,6 +110,7 @@ const TableTwo = () => {
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer></ToastContainer>
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
@@ -291,7 +297,7 @@ const TableTwo = () => {
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
                                         <button onClick={() => {
-                                            setId(entity.id);
+                                            setEntityProduct(entity);
                                             setIsOpen(true);
                                             setStatusentity(!entity.delete);
                                             setActive(entity.active ? false : true)
@@ -307,10 +313,10 @@ const TableTwo = () => {
                                         <div className="p-5 border border-gray-100 hover:bg-slate-100">
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
+                                                <p>Mã sản phẩm: {entity.id}</p>
                                                 <p>Nhà xuất bản: {entity.publishingCompany}</p>
-                                                <p>Giới thiệu: {entity.introduce}</p>
                                                 <p>Shop: {entity.account.shopName}</p>
-                                                <p>Trạng thái : {entity.account.status == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
+                                                {/* <p>Trạng thái : {entity.account.status == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p> */}
                                                 <p>Họ tên chủ shop: {entity.account.fullname}</p>
                                                 <p>Email: {entity.account.email}</p>
                                                 <p>Số điện thoại: {entity.account.phone}</p>
