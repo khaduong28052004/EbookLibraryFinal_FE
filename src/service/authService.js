@@ -47,7 +47,11 @@ const AuthService = {
   },
   register: (data) => {
     const url = "/api/v1/user/register";
-    return axiosAuth("", "post", url, data);
+    return axiosAuth("null", "post", url, data);
+  },
+  registerV2: (data) => {
+    const url = "/api/v2/user/register";
+    return axiosAuth("null", "post", url, data);
   },
   UpdatePass: (id, repass, oldpass) => {
     const url = `/api/v1/user/updatePass?id=${encodeURIComponent(id)}&repass=${encodeURIComponent(repass)}&oldpass=${encodeURIComponent(oldpass)}`;

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,27 +16,51 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [checked, setChecked] = useState(false);
+  const [errorFrom, seterrorFrom] = useState({
+    usernameF: 0,
+    passwordF: 0,
+  });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [captchaToken, setCaptchaToken] = useState("");
 
   const navigate = useNavigate();
   const turnstileRef = useRef(null);
-
   const rememberMe = () => setChecked(!checked);
+
+
 
   const handleLogin = async (event) => {
     event.preventDefault();
+    if (username.trim() === "") {
+      seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
+      toast.error("Vui lòng kiểm tra tên đăng nhập!");
+      return;
+    }else{
+      seterrorFrom((prev) => ({ ...prev, usernameF: 0 }));
+    }
+    
+    if (password.trim() === "") {
+      seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+      toast.error("Vui lòng kiểm tra tên đăng nhập!");
+      return;
+    } else{
+      seterrorFrom((prev) => ({ ...prev, passwordF: 0 }));
+    }
+    
+
     if (!captchaToken) {
       toast.error("Please complete the captcha");
       return;
     }
+
     try {
       const response = await AuthService.login({
         username,
         password,
         captchaToken,
       });
+      seterrorFrom((prev) => ({ ...prev, passwordF: 2,usernameF:2 }));
       if (response.status) {
         setTimeout(() => {
           if (response.data.roles === "USER") {
@@ -59,7 +83,7 @@ export default function Login() {
 
   return (
     <Layout childrenClasses="pt-0 pb-0">
-      <ToastContainer
+      {/* <ToastContainer
         position="bottom-center"
         autoClose={5000}
         hideProgressBar={false}
@@ -70,7 +94,7 @@ export default function Login() {
         draggable
         pauseOnHover
         style={{ zIndex: 9999 }}
-      />
+      /> */}
       <div className="login-page-wrapper w-full py-10">
         <div className="container-x mx-auto">
           <div className="lg:flex items-center relative">
@@ -92,10 +116,17 @@ export default function Login() {
                       label="Username*"
                       name="username"
                       type="text"
-                      inputClasses="h-[50px]"
+                      inputClasses={
+                        errorFrom.usernameF === 1
+                          ? "border-red-500 bg-red-400" // Error state
+                          : errorFrom.usernameF === 2
+                            ? "border-green-500 bg-red-400" // Success state
+                            : "" // Default state
+                      }
                       value={username}
                       inputHandler={(e) => setUsername(e.target.value)}
                     />
+
                   </div>
                   <div className="input-item mb-5 relative">
                     <InputCom
@@ -103,7 +134,13 @@ export default function Login() {
                       label="Password*"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      inputClasses="h-[50px]"
+                      inputClasses={
+                        errorFrom.passwordF === 1
+                          ? "border-red-500 bg-red-400" // Error state
+                          : errorFrom.passwordF === 2
+                            ? "border-green-500 bg-red-400" // Success state
+                            : "" // Default state
+                      }
                       value={password}
                       inputHandler={(e) => setPassword(e.target.value)}
                     >
