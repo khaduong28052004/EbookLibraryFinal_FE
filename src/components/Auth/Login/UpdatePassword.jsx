@@ -3,7 +3,7 @@ import Layout from '../../Partials/Layout';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthService from '../../../service/authService';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 export default function UpdatePassword() {
     const [email, setEmail] = useState("");

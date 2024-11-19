@@ -3,7 +3,7 @@ import Layout from '../../Partials/Layout';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthService from '../../../service/authService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
