@@ -17,7 +17,7 @@ const accountService = {
     //seller
     putActive: ({ id, status }) => axiosAuth(token, "put", url("/seller/browse", `?id=${id}&status=${status}`)),
     // adminv1
-    delete: ({ id }) => axiosAuth(token, "put", url("", `?id=${id}`)),
+    // delete: ({ id }) => axiosAuth(token, "put", url("", `?id=${id}`)),
     findAllAccountReport: ({ page, size, searchItem, sortColumn, sortBy }) => {
         const url =`/api/v1/admin/report/account?search=${searchItem}&page=${page === undefined ? 0 : page}&size=${size}&sortColumn=${sortColumn}&sortBy=${sortBy}&gender=`;
         return axiosAuth(token, "get", url);
