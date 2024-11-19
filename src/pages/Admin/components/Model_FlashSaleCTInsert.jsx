@@ -1,5 +1,6 @@
-import React, { Dispatch, SetStateAction, ReactNode, FormEvent, useState } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
+import { toast, ToastContainer } from 'react-toastify';
 import flashSaleDetails from '../../../service/admin/FlashSaleDetails';
 
 const ModalFlashSale = ({
@@ -34,24 +35,27 @@ const ModalFlashSale = ({
 
     const postFlashSale = async () => {
         try {
-            console.log("formData: " + formData);
             const response = await flashSaleDetails.post({ data: formData });
+            if (response.data.code === 1000) {
+                toast.success("Thêm sản phẩm thành công");
+            }
             setStatus(!status);
         } catch (error) {
+            toast.error("Lỗi hệ thống");
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
+        e.preventDefault(); 
         postFlashSale(formData);
         setFormData(initialFormData);
-        e.preventDefault(); // Chặn hành vi reload trang khi submit form
         setOpen(false); // Đóng modal sau khi submit
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-
+            <ToastContainer></ToastContainer>
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">

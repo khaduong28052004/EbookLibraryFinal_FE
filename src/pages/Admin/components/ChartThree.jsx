@@ -8,9 +8,13 @@ const ChartThree = ({ list = [], title }) => {
     labels: list.map((item) => item.labels), // Lấy giá trị `labels`
   };
 
+  // Tính tổng series để sử dụng trong tính phần trăm
+  const totalSeries = data.series.reduce((acc, value) => acc + value, 0);
+
+  // Cấu hình chart
   const chartConfig = {
     colors: ['#3C50E0', '#6577F3', '#8FD0EF', '#0FADCF'],
-    labels: data.labels, // Gán nhãn từ dữ liệu chuyển đổi
+    labels: data.labels,
     legend: {
       show: false,
       position: 'bottom',
@@ -59,28 +63,33 @@ const ChartThree = ({ list = [], title }) => {
       <div className="mb-2">
         <div id="chartThree" className="mx-auto flex justify-center">
           <ReactApexChart
-            series={data.series} // Gán dữ liệu động từ props
+            series={data.series}
             type="donut"
-            options={chartConfig} // Truyền cấu hình
+            options={chartConfig}
           />
         </div>
       </div>
 
       <div className="-mx-8 flex flex-wrap items-center justify-center gap-y-3">
-        {data.labels.map((label, index) => (
-          <div key={index} className="sm:w-1/3 w-full px-8">
-            <div className="flex w-full items-center">
-              <span
-                className="mr-2 block h-3 w-full max-w-3 rounded-full"
-                style={{ backgroundColor: chartConfig.colors[index % chartConfig.colors.length] }}
-              ></span>
-              <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
-                <span>{label}</span>
-                <span>{data.series[index]}%</span>
-              </p>
+        {data.labels.map((label, index) => {
+          // Tính phần trăm cho từng series
+          const percentage = ((data.series[index] / totalSeries) * 100).toFixed(2);
+
+          return (
+            <div key={index} className="sm:w-1/3 w-full px-8">
+              <div className="flex w-full items-center">
+                <span
+                  className="mr-2 block h-3 w-full max-w-3 rounded-full"
+                  style={{ backgroundColor: chartConfig.colors[index % chartConfig.colors.length] }}
+                ></span>
+                <p className="flex w-full justify-between text-sm font-medium text-black dark:text-white">
+                  <span>{label}:</span>
+                  <span>{`${title === "Doanh thu sàn" ? data.series[index].toLocaleString("vi-VN", { style: "currency", currency: "VND" }) : data.series[index]} (${percentage}%)`}</span>
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
