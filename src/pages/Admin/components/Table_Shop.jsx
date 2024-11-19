@@ -5,11 +5,11 @@ import Modal from "./ModalThongBao";
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
+import { toast, ToastContainer } from 'react-toastify';
 
-const TableTwo = ({status}) => {
+const TableTwo = ({ status }) => {
     const [data, setData] = useState([]);
     const [searchItem, setSearchItem] = useState('');
-    const [gender, setGender] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
@@ -52,15 +52,19 @@ const TableTwo = ({status}) => {
         try {
             const response = await accountService.putStatus({ id });
             console.log("Mã Code status: " + response.data.code);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
+            }
             findAllAccount();
         } catch (error) {
+            toast.error("Lỗi hệ thống");
             console.log("Error: " + error);
         }
     }
 
     useEffect(() => {
-        findAllAccount(searchItem, gender, currentPage, sortBy, sortColumn);
-    }, [searchItem, gender, currentPage, sortBy, sortColumn, status]);
+        findAllAccount();
+    }, [searchItem, currentPage, sortBy, sortColumn, status]);
     ;
 
     const handleExport = async () => {
@@ -88,6 +92,7 @@ const TableTwo = ({status}) => {
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer></ToastContainer>
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3">
