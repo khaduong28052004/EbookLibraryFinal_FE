@@ -6,12 +6,13 @@ import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
 
-const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
+const TableTwo = ({status}) => {
+    const [data, setData] = useState([]);
     const [searchItem, setSearchItem] = useState('');
     const [gender, setGender] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
-    const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
+    const [currentPage, setCurrentPage] = useState(0);
     const [expandedRowId, setExpandedRowId] = useState(null);
 
     const [id, setId] = useState('');
@@ -19,32 +20,54 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     const [statusentity, setStatusentity] = useState(false);
     const handleConfirm = () => {
         setIsOpen(false);
-        onIdChange(id, null);
+        putStatus();
     };
     const handlePageChange = (newPage) => {
-        if (newPage >= 0 && newPage < entityData.totalPages) {
-            onPageChange(searchItem, gender, newPage, sortBy, sortColumn);
+        if (newPage >= 0 && newPage < data.totalPages) {
+            setCurrentPage(newPage);
             console.log("currentPage: " + newPage);
         }
     };
 
     const handlePrevious = () => {
-        handlePageChange(entityData?.pageable?.pageNumber - 1);
+        handlePageChange(currentPage - 1);
     };
 
     const handleNext = () => {
-        handlePageChange(entityData?.pageable?.pageNumber + 1);
+        handlePageChange(currentPage + 1);
     };
 
+    const findAllAccount = async () => {
+        try {
+            const response = await accountService.findAllAccount({ currentPage, size: 2, role: "SELLER", searchItem, sortColumn, sortBy });
+            setData(response.data.result);
+            console.log(data);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    };
+
+
+    const putStatus = async () => {
+        try {
+            const response = await accountService.putStatus({ id });
+            console.log("Mã Code status: " + response.data.code);
+            findAllAccount();
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }
+
     useEffect(() => {
-        onPageChange(searchItem, gender, currentPage, sortBy, sortColumn);
-    }, [searchItem, gender, currentPage, sortBy, sortColumn]);
+        findAllAccount(searchItem, gender, currentPage, sortBy, sortColumn);
+    }, [searchItem, gender, currentPage, sortBy, sortColumn, status]);
     ;
+
     const handleExport = async () => {
         const sheetNames = ['Danh Sách nhân viên'];
         try {
-            console.log("totalElements: " + entityData.totalElements);
-            const response = await accountService.findAllAccount({ currentPage: 0, size: entityData.totalElements, role: "USER", searchItem, gender: '', sortColumn, sortBy });
+            console.log("totalElements: " + data.totalElements);
+            const response = await accountService.findAllAccount({ currentPage: 0, size: data.totalElements, role: "USER", searchItem, gender: '', sortColumn, sortBy });
             return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -66,7 +89,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-                <form action="https://formbold.com/s/unique_form_id" method="POST">
+                <form method="POST">
                     <div className="relative pt-3">
                         <button className="absolute left-0 top-6 -translate-y-1/2">
                             <svg
@@ -110,8 +133,6 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                         Excel
                     </button>
                 </form>
-
-
 
             </div>
             <table className="w-full border-collapse border border-stroke dark:border-strokedark">
@@ -194,7 +215,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 </thead>
 
                 <tbody>
-                    {entityData?.content?.map((entity, index) => (
+                    {data?.content?.map((entity, index) => (
                         <>
                             <tr key={index} className={`border-t border-stroke dark:border-strokedark ${expandedRowId === entity.id ? `bg-slate-100` : `bg-white`}`} onClick={() => toggleRow(entity.id)}>
                                 <td
@@ -207,7 +228,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                     }
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                    {entityData.pageable.pageNumber * entityData.size + index + 1}
+                                    {data.pageable.pageNumber * data.size + index + 1}
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                     {/* <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" /> */}
@@ -253,7 +274,11 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
-                                        <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
+                                        <button onClick={() => {
+                                            setId(entity.id);
+                                            setIsOpen(true);
+                                            setStatusentity(entity.status);
+                                        }}>
                                             {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                         </button>
                                     </div>
@@ -282,12 +307,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
             </table>
             <Pagination
                 pageNumber={currentPage}
-                totalPages={entityData?.totalPages}
-                totalElements={entityData?.totalElements}
+                totalPages={data?.totalPages}
+                totalElements={data?.totalElements}
                 handlePrevious={handlePrevious}
                 handleNext={handleNext}
                 setPageNumber={setCurrentPage}
-                size={entityData.size}></Pagination>
+                size={data.size}></Pagination>
 
 
             <Modal

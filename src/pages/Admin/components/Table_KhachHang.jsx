@@ -59,7 +59,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-                <form action="https://formbold.com/s/unique_form_id" method="POST">
+                <form method="POST">
                     <div className="relative pt-3">
                         <button className="absolute left-0 top-6 -translate-y-1/2">
                             <svg
@@ -182,7 +182,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             </div>
                         </th>
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <span className="text-sm text-black dark:text-white truncate w-24">Actions</span>
+                            <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
                         </th>
                     </tr>
                 </thead>
