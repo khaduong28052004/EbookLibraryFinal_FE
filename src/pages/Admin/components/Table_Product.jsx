@@ -210,12 +210,12 @@ const TableTwo = () => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("sumBill");
+                                setSortColumn("publishingCompany");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Thể loại</span>
+                                <span className="text-sm text-black dark:text-white">Nhà xuất bản</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -223,7 +223,7 @@ const TableTwo = () => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("sumEvalue");
+                                setSortColumn("writerName");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -271,7 +271,7 @@ const TableTwo = () => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.category.name}
+                                        {entity.publishingCompany}
                                     </div>
                                 </td>
 
@@ -314,7 +314,7 @@ const TableTwo = () => {
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
                                                 <p>Mã sản phẩm: {entity.id}</p>
-                                                <p>Nhà xuất bản: {entity.publishingCompany}</p>
+                                                <p>Thể loại: {entity.category.name}</p>
                                                 <p>Shop: {entity.account.shopName}</p>
                                                 {/* <p>Trạng thái : {entity.account.status == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p> */}
                                                 <p>Họ tên chủ shop: {entity.account.fullname}</p>
