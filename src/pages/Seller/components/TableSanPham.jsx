@@ -135,7 +135,6 @@ const TableSanPham = () => {
     try {
       const response = await SanPhamService.edit(product_id);
       const product = response.data.result;
-      console.log("Product", product);
       setDataProduct({
         id: product.id,
         price: product.price,
@@ -163,7 +162,7 @@ const TableSanPham = () => {
       setIsOpenModalSP(true);
       console.log(dataProduct);
     } catch (error) {
-      console.error(error);
+      toast.error(error.response.data.message);
     }
   }
 
@@ -188,7 +187,7 @@ const TableSanPham = () => {
       loadListProduct();
       setIsOpenModalSP(false);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.message);
     }
   }
 
@@ -235,12 +234,12 @@ const TableSanPham = () => {
 
       // Kiểm tra dữ liệu trả về
       const blob = await response.blob();
-      console.log(blob);  // Xem kiểu dữ liệu của blob
 
       setDataProduct((prevData) => ({
         ...prevData,
         imageProducts: [...prevData.imageProducts, { url, blob }]
       }));
+      // handleAddFiles(blob);
     } catch (error) {
       console.error("Error fetching image from Firebase:", error);
     }
@@ -257,7 +256,7 @@ const TableSanPham = () => {
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <ToastContainer className={`z-999999`}/>
+      <ToastContainer className={`z-999999`} />
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
         <form>
           <div className="relative pt-3">
@@ -609,7 +608,6 @@ const TableSanPham = () => {
                             multiple
                             accept="image/*"
                             className="hidden"
-                            required
                             onChange={(e) => handleAddFiles(e.target.files)}
                           />
                         </label>

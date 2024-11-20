@@ -105,7 +105,7 @@ const TableCategory = () => {
       setIsOpenModalSP(false);
       loadTable();
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.message);
     }
   }
   const reset = async () => {
@@ -122,16 +122,16 @@ const TableCategory = () => {
     try {
       const response = await CategoryService.edit(category_id);
       const category = response.data.result;
-      console.log("Category", category);
       setDataCategory({
         id: category.id,
         name: category.name,
-        idParent: category.idParent
+        idParent: category.idParent,
+        account: sessionStorage.getItem("id_account")
       })
       setidParent(category.idParent);
       setIsOpenModalSP(true);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.message);
     }
   }
 
@@ -151,7 +151,7 @@ const TableCategory = () => {
   }
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <ToastContainer />
+      <ToastContainer className={`z-999999`}/>
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
         <form action="https://formbold.com/s/unique_form_id" method="POST">
           <div className="relative pt-3">
@@ -296,7 +296,7 @@ const TableCategory = () => {
         buttonBgColor={'bg-red-600'}
       />
 
-      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-999999">
+      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-99999">
         <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
