@@ -35,12 +35,12 @@ export default function CardPage({ cart = true }) {
       navigate("/login", { replace: true });
       window.location.reload();
     }
-  }, [localtion]);
+  }, []);
 
   const getServiceFee = async (idSeller, weight, quantity, addressFrom, addressTo) => {
     try {
       const { service_fee } = await Service_Fee(weight, quantity, addressFrom, addressTo);
-      setServiceFee(serviceFee + service_fee);
+      setServiceFee(fee => fee + service_fee);
       setFeeSeller(seller => ({
         ...seller,
         [idSeller]: service_fee
@@ -61,7 +61,7 @@ export default function CardPage({ cart = true }) {
         // console.log("toaddress    " + toAddress);
       }
     }
-    setDataSubmit(value);
+
     setServiceFee(0);
     value?.forEach(seller => {
       for (let address of seller?.addresses) {
@@ -69,34 +69,54 @@ export default function CardPage({ cart = true }) {
           fromAddress = address;
         }
       }
+      var totalSeller = 0;
       seller?.cart.map(cartItem => {
-        total += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
-        sale += ((cartItem.product.price * cartItem.product.sale) / 100) * cartItem.quantity;
+
+        if (cartItem?.product?.flashSaleDetail) {
+          if (cartItem?.quantity <= cartItem?.product?.flashSaleDetail?.quantity) {
+            total += (
+              cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))
+            ) * cartItem.quantity
+            totalSeller += (
+              cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))
+            ) * cartItem.quantity
+          } else {
+            var quantityFlashSale = cart?.product?.flashSaleDetail?.quantity;
+            var priceSale = totalPrice = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100));
+            total += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
+            totalSeller += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
+          }
+        } else {
+          total += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
+          totalSeller += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
+        }
+
         getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, fromAddress)
       });
-      if (seller.vouchers.id > 0) {
-        if (((seller?.vouchers?.sale * total) / 100) > seller?.vouchers?.totalPriceOrder) {
-          total -= seller.vouchers.totalPriceOrder;
+      if (seller?.voucher?.id > 0) {
+        if (((seller?.voucher?.sale * totalSeller) / 100) > seller?.voucher?.totalPriceOrder) {
+          sale += seller.voucher.totalPriceOrder;
         } else {
-          total -= ((total * seller.vouchers.sale) / 100);
+          sale += ((totalSeller * seller.voucher.sale) / 100);
         }
       }
     });
+
     setTotalSale(sale);
     setTotal(total);
+    setDataSubmit(value);
   }
   useEffect(() => {
     if (dataSubmit?.length > 0) {
       setDataSubmit((prevData) =>
         prevData.map((item) => ({
           ...item,
-          service_fee: feeSeller[item?.id] || 0 // Thêm service_fee vào từng đối tượng
+          service_fee: feeSeller[item?.id] || 0
         }))
       );
     }
-  }, [feeSeller])
+  }, [feeSeller]);
   const handSubmitPay = () => {
-
     if (dataSubmit) {
       const data = {
         datas: dataSubmit,
@@ -206,11 +226,11 @@ export default function CardPage({ cart = true }) {
                             </span>
                           </div>
                           <span className="text-[13px] text-normal text-qgraytwo">
-                            -{seller.vouchers.sale}%, tối đa -{seller?.vouchers.totalPriceOrder}<sup>đ</sup>
+                            -{seller.voucher.sale}%, tối đa -{seller?.voucher.totalPriceOrder}<sup>đ</sup>
                           </span>
                         </div>) : (<div>Không có voucher</div>)}
                       </li>))}
-                      <li>
+                      {/* <li>
                         <div className="flex justify-between items-center">
                           <div className="flex space-x-2.5 items-center">
                             <div className="input-radio">
@@ -223,55 +243,15 @@ export default function CardPage({ cart = true }) {
                             {serviceFee}<sup>đ</sup>
                           </span>
                         </div>
-                      </li>
+                      </li> */}
                     </ul>
                   </div>
-                  {/* <div className="shipping-calculation w-full mb-3">
-                    <div className="title mb-[17px]">
-                      <h1 className="text-[15px] font-medium">
-                        Calculate Shipping
-                      </h1>
-                    </div>
-                    <div className="w-full h-[50px] border border-[#EDEDED] px-5 flex justify-between items-center mb-2">
-                      <span className="text-[13px] text-qgraytwo">
-                        Select Country
-                      </span>
-                      <span>
-                        <svg
-                          width="11"
-                          height="7"
-                          viewBox="0 0 11 7"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.4 6.8L0 1.4L1.4 0L5.4 4L9.4 0L10.8 1.4L5.4 6.8Z"
-                            fill="#222222"
-                          />
-                        </svg>
-                      </span>
-                    </div>
-                    <div className="w-full h-[50px]">
-                      <InputCom
-                        inputClasses="w-full h-full"
-                        type="text"
-                        placeholder="Postcode / ZIP"
-                      />
-                    </div>
-                  </div> */}
-                  {/* <button type="button" className="w-full mb-10">
-                    <div className="w-full h-[50px] bg-[#F6F6F6] flex justify-center items-center">
-                      <span className="text-sm font-semibold">Update Cart</span>
-                    </div>
-                  </button> */}
-
-                  {/* {console.log("voucher index " + dataSubmit[0]?.vouchers?.length)} */}
                   <div className="total mb-6">
                     <div className=" flex justify-between">
                       <p className="text-[18px] font-medium text-qblack">
                         Thành tiền
                       </p>
-                      <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total + serviceFee)}<sup>đ</sup></p>
+                      <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total - totalSale)}<sup>đ</sup></p>
                     </div>
                   </div>
                   <a onClick={handSubmitPay}>
