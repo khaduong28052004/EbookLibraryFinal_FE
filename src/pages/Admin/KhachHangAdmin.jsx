@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import Table from './components/Table_KhachHang';
 import accountService from '../../service/admin/Account';
+import { toast, ToastContainer } from 'react-toastify';
 
 const KhachHangAdmin = () => {
   const [data, setData] = useState([]);
@@ -15,8 +16,12 @@ const KhachHangAdmin = () => {
     try {
       const response = await accountService.putStatus({ id });
       console.log("Mã Code: " + response.data.code);
+      if (response.data.code === 1000) {
+        toast.success(response.data.message);
+      }
       findAllAccount();
     } catch (error) {
+      toast.error("Lỗi hệ thống");
       console.log("Error: " + error);
     }
   }
@@ -33,9 +38,6 @@ const KhachHangAdmin = () => {
   };
 
   const handleChange = (searchItem, gender, page, sortBy, sortColumn) => {
-    console.log("page: " + page);
-    console.log("searchItem: " + searchItem);
-
     setCurrentPage(page);
     setSearchItem(searchItem);
     setSortBy(sortBy);
@@ -49,7 +51,7 @@ const KhachHangAdmin = () => {
   return (
     <>
       <Breadcrumb pageName="Quản Lý Khách Hàng" status='Quản Trị' />
-
+      <ToastContainer></ToastContainer>
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <Table onPageChange={handleChange} entityData={data}
           onIdChange={putStatusKhachHang} />

@@ -1,9 +1,10 @@
-import React, { Dispatch, SetStateAction, ReactNode, FormEvent, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
-import flashSale from '../../../service/admin/FlashSale';
+import categoryService from '../../../service/admin/Category';
 import { toast, ToastContainer } from 'react-toastify';
 
-const ModalFlashSale = ({
+const ModalCategory = ({
+    entity,
     status,
     setStatus,
     open,
@@ -13,12 +14,15 @@ const ModalFlashSale = ({
     cancelText = 'Cancel',
 }) => {
     const initialFormData = {
-        dateStart: '',
-        dateEnd: '',
+        name: '',
+        idParent: 0,
         account: sessionStorage.getItem("id_account"),
     };
+
+
     const [formData, setFormData] = useState(initialFormData);
 
+    const user = JSON.parse(sessionStorage.getItem("user"))?.fullname;
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -27,35 +31,65 @@ const ModalFlashSale = ({
         }));
     };
 
-    const postFlashSale = async () => {
+    useEffect(() => {
+        if (entity != null) {
+            setFormData({
+                id: entity.id || '',
+                name: entity.name || '',
+                idParent: entity.idParent || 0,
+                account: sessionStorage.getItem("id_account"),
+            });
+        } else {
+            setFormData({
+                name: '',
+                idParent: 0,
+                account: sessionStorage.getItem("id_account"),
+            });
+        }
+    }, [entity]);
+
+    const postCategory = async () => {
         try {
-            const response = await flashSale.post({ data: formData });
-            if (response.data.code === 1000) {
+            const response = await categoryService.post({ data: formData });
+            const responseCode = response.data.code;
+            if (responseCode !== 1000) {
+                toast.error(response.data.message);
+            } else {
                 toast.success(response.data.message);
             }
             setStatus(!status);
-
         } catch (error) {
-            toast.error("Lỗi hệ thống");
+            console.log("Error: " + error);
+        }
+    }
+    const putCategory = async () => {
+        try {
+            const response = await categoryService.put({ data: formData });
+            setStatus(!status);
+            const responseCode = response.data.code;
+            if (responseCode !== 1000) {
+                toast.error(response.data.message);
+            } else {
+                toast.success(response.data.message);
+            }
+        } catch (error) {
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!formData.dateStart || !formData.dateEnd) {
-            toast.error("Vui lòng nhập đầy đủ ngày bắt đầu và ngày kết thúc.");
+        e.preventDefault(); // Chặn hành vi reload trang khi submit form
+        if (entity != null) {
+            putCategory();
+        } else {
+            postCategory();
+        }
+        if (!formData.name) {
+            toast.error("Vui lòng nhập tên danh mục.");
             return;
         }
-
-        if (new Date(formData.dateStart) >= new Date(formData.dateEnd)) {
-            toast.error("Ngày bắt đầu phải trước ngày kết thúc.");
-            return;
-        }
-
-        postFlashSale(formData);
         setFormData(initialFormData);
-        setOpen(false); // Đóng modal sau khi submit
+        setOpen(false);
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
@@ -74,36 +108,46 @@ const ModalFlashSale = ({
                                 <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
-                                            Ngày bắt đầu
+                                            {entity != null ? 'Người cập nhật' : 'Người tạo'}
                                         </label>
                                         <input
-                                            name="dateStart"
-                                            value={formData.dateStart}
-                                            onChange={handleChange}
-                                            type="datetime-local"
+                                            name="user"
+                                            value={user}
+                                            readOnly
+                                            type="text"
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
 
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
-                                            Ngày kết thúc
+                                            Tên danh mục
                                         </label>
                                         <input
-                                            name="dateEnd"
-                                            value={formData.dateEnd}
+                                            name="name"
+                                            value={formData.name}
                                             onChange={handleChange}
-                                            type="datetime-local"
+                                            type="text"
+                                            placeholder="Tên danh mục ..."
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
-
                                 </div>
+                            </div>
+
+                            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                 <button
                                     type="submit"
-                                    className="inline-flex w-full ml-auto mr-3 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
+                                    className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
                                 >
                                     {confirmText}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setOpen(false)}
+                                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                >
+                                    {cancelText}
                                 </button>
                             </div>
                         </form>
@@ -114,4 +158,4 @@ const ModalFlashSale = ({
     );
 };
 
-export default ModalFlashSale;
+export default ModalCategory;

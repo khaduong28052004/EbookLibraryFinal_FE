@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import accountService from '../../../service/admin/Account';
+import { formToJSON } from 'axios';
 
 const ModalSanPham = ({
     status,
@@ -31,23 +33,42 @@ const ModalSanPham = ({
 
     const postNhanVien = async () => {
         try {
-            await accountService.post({ data: formData });
+            const response = await accountService.post({ data: formData });
+            if (response.data.code === 1000) {
+                toast.success("Thêm nhân viên thành công");
+            } else {
+                toast.error(response.data.message);
+            }
             setStatus(!status);
         } catch (error) {
+            toast.error("Lỗi hệ thống");
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!formData.username || !formData.password || !formData.fullname || !formData.gender || !formData.email || !formData.phone) {
+            toast.error("Vui lòng nhập đầy đủ thông tin.");
+            return;
+        }
+
+        if (formData.password.length < 8) {
+            toast.error("Password phải lớn hơn 8 kí tự.");
+            return;
+        }
+        if (formData.phone.length < 10 || formData.phone.length > 10) {
+            toast.error("Số điện thoại phải 10 số");
+            return;
+        }
         postNhanVien(formData);
         setFormData(initialFormData);
-        e.preventDefault(); // Chặn hành vi reload trang khi submit form
         setOpen(false); // Đóng modal sau khi submit
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-
+            <ToastContainer></ToastContainer>
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">

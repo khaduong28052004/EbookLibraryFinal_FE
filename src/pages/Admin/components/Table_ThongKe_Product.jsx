@@ -67,7 +67,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-                <form action="https://formbold.com/s/unique_form_id" method="POST">
+                <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
                         <button className="absolute left-0 top-6 -translate-y-1/2">
                             <svg
@@ -266,7 +266,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {`${formatNumber(entity.price)} VNĐ`}
+                                        {entity.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                     </div>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -309,9 +309,10 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                                 <p>Shop: {entity.account.shopName}</p>
                                                 <p>Ngày tạo: {entity.createAt}</p>
                                                 <p>Trạng thái : {entity.delete == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
-                                                <p>Giới thiệu: {entity.introduce}</p>
                                                 <p>Tác giả: {entity.writerName}</p>
                                                 <p>Nhà xuất bản: {entity.publishingCompany}</p>
+                                                <p>Giới thiệu: {entity.introduce}</p>
+
                                             </div>
                                         </div>
                                     </td>

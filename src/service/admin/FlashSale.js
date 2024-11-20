@@ -5,7 +5,7 @@ const token = "null";
 const url = (path = "", param = "") => `/api/v1/admin/flashsale${path}${param}`
 
 const flashSale = {
-    findAllFlashSale: ({ dateStart, dateEnd, currentPage, size, sortColumn, sortBy }) => axiosAuth(token, "get", url("", `?dateStart=${dateStart}&dateEnd=${dateEnd}&page=${currentPage}&size=${size}&sortBy=${sortBy}&sortColumn=${sortColumn}`)),
+    findAllFlashSale: ({ dateStart, dateEnd, currentPage, size, sortColumn, sortBy }) => axiosAuth(token, "get", url("", `?dateStart=${dateStart}&dateEnd=${dateEnd}&page=${currentPage === undefined ? 0 : currentPage}&size=${size}&sortBy=${sortBy}&sortColumn=${sortColumn}`)),
     findListByIdParent: ({ id }) => {
         const url = `/api/v1/admin/category/getListByIdParent?idParent=${id}`;
         console.log(token);

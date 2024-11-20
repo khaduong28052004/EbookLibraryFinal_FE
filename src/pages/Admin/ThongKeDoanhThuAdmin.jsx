@@ -37,19 +37,13 @@ const DoanhThuAdmin = () => {
     findAllDoanhThu();
   }, [currentPage, dateStart, searchItem, dateEnd, sortColumn, sortBy]);
 
-  const formatNumber = (number, decimals = 2) => {
-    if (number === null || number === undefined || isNaN(number)) {
-      return '0.00';
-    }
-    return number.toFixed(decimals);
-  };
   return (
     <>
       <Breadcrumb pageName="Thống Kê Doanh Thu" status='Quản Trị' />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
         <CardDataStats
           title="Tổng shop"
-          total={`${header.tongShop}`}
+          total={header.tongShop}
         // rate={`${header.rateShop}`} 
         // levelUp
         >
@@ -72,7 +66,10 @@ const DoanhThuAdmin = () => {
           </svg>
         </CardDataStats>
         <CardDataStats title="Doanh thu sàn"
-          total={`${formatNumber(header.tongDoanhThu)} VNĐ`}
+          total={
+            typeof header.tongDoanhThu === 'number' ?
+              header.tongDoanhThu.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+              : 'Dữ liệu không hợp lệ'}
         // rate={formatNumber(header.rateDoanhThu)} levelUp
         >
           <svg
@@ -98,7 +95,9 @@ const DoanhThuAdmin = () => {
           </svg>
         </CardDataStats>
         <CardDataStats title="Phí"
-          total={`${formatNumber(header.tongPhi)} VNĐ`}
+          total={typeof header.tongPhi === "number"
+            ? header.tongPhi.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+            : "Dữ liệu không hợp lệ"}
         // rate={formatNumber(header.ratePhi)} levelUp
         >
           <svg
@@ -120,7 +119,10 @@ const DoanhThuAdmin = () => {
           </svg>
         </CardDataStats>
         <CardDataStats title="Lợi nhuận"
-          total={`${formatNumber(header.tongLoiNhuan)} VNĐ`}
+          total={
+            typeof header.tongLoiNhuan === 'number'
+              ? header.tongLoiNhuan.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+              : 'Dữ liệu không hợp lệ'}
         // rate={formatNumber(header.rateLoiNhuan)} levelDown
         >
           <svg
