@@ -1,26 +1,92 @@
+import axios from 'axios';
+import CryptoJS from 'crypto-js';
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from 'react-router-dom';
 import InputCom from "../Helpers/InputCom";
 import PageTitle from "../Helpers/PageTitle";
 import Layout from "../Partials/Layout";
-import CryptoJS from 'crypto-js';
 import { useRequest } from "../Request/RequestProvicer";
 export default function CheakoutPage() {
   const [data, setData] = useState([]);
   const [user, setUser] = useState();
-  const [serviceFee, setServiceFee] = useState(0);
-  const [totalSale, setTotalSale] = useState(0);
-  const [total, setTotal] = useState(0);
+  const localtion = useLocation();
   const { getItem } = useRequest();
+  const navigate = useNavigate();
+  const [service_fee, setService_fee] = useState(0);
+  const [voucherAdmins, setVoucherAdmins] = useState();
+
+
   useEffect(() => {
-    const session = sessionStorage.getItem("pay");
+    axios.get("http://localhost:8080/api/v1/user/pay/voucheradmin").then(response => {
+      setVoucherAdmins(response.data.result.datas);
+    }).catch(error => console.log("fetch voucher admin error " + error));
+  }, [localtion])
+  useEffect(() => {
+    setService_fee(0);
+    const session = sessionStorage.getItem("token");
     if (session) {
-      // const values = JSON.stringify(session);
-      // setData(JSON.parse(session));
-      // setUser(JSON.parse(session));
-      setData(getItem("data"));
+      var data = getItem("data");
+      const updateDate = {
+        ...data,
+        datas: data?.datas?.map(seller => {
+          var totalPrice = 0;
+          var voucherAdmin = null;
+          var saleAdmin = 0;
+          var totalSale = 0;
+          seller?.cart.forEach(cartItem => {
+            if (cartItem?.product?.flashSaleDetail?.id > 0) {
+              var priceSaleSeller = ((cartItem?.product?.price * cartItem?.product?.sale) / 100);
+              var priceProduct = cartItem?.product?.price;
+              var priceFinishSale = (priceProduct - priceSaleSeller);
+              if (cartItem?.quantity <= cartItem?.product?.flashSaleDetail?.quantity) {
+                totalPrice = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100)) * cartItem.quantity;
+              } else {
+                totalPrice += ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))) * cartItem?.product?.flashSaleDetail.quantity)
+                  +
+                  ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))) * (cartItem?.quantity - cartItem?.product?.flashSaleDetail.quantity))
+              }
+            }
+            else {
+              totalPrice += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
+            }
+          });
+
+          if (totalPrice * ((seller?.voucher?.sale) / 100) >= seller?.voucher?.totalPriceOrder) {
+            totalPrice -= (seller?.voucher.totalPriceOrder);
+          } else {
+            totalPrice -= (totalPrice * (((seller?.voucher?.sale) / 100)));
+          }
+          setService_fee(service => service + seller?.service_fee);
+          voucherAdmins?.forEach(voucher => {
+            if (totalPrice > voucher?.minOrder) {
+              if ((seller?.service_fee * voucher?.sale) > voucher?.totalPriceOrder) {
+                // setService_fee(fee => fee - (voucher?.totalPriceOrder));
+                saleAdmin = (voucher?.totalPriceOrder);
+                totalSale += (voucher?.totalPriceOrder);
+              } else {
+                // setService_fee(fee => fee - (seller?.service_fee * voucher?.sale));
+                saleAdmin = seller?.service_fee * voucher?.sale;
+                totalSale += seller?.service_fee * voucher?.sale;
+              }
+              voucherAdmin = voucher;
+            }
+          });
+          setService_fee(service => service - saleAdmin);
+          return {
+            ...seller,
+            voucherAdmin: voucherAdmin,
+            total: totalPrice + seller?.service_fee - saleAdmin,
+            sale: saleAdmin
+          };
+        })
+      }
+      setData(updateDate);
       setUser(getItem("data"));
+    } else {
+      navigate('/login');
+      window.location.reload();
     }
-  }, []);
+  }, [voucherAdmins]);
   // ========================================VNPAY==========================================================================
   const vnp_TmnCode = "Z3USXN5J";
   const vnp_HashSecret = "0KEFC6UYKU33SAJH2KOJFU63DHSSHVJR";
@@ -74,7 +140,33 @@ export default function CheakoutPage() {
   };
   // =========================================END===========================================================================
   const pay = () => {
-
+    sessionStorage.setItem("item", JSON.stringify(data));
+    // const dataNew = JSON.stringify(data);
+    const idUser = sessionStorage.getItem("id_account");
+    const token = sessionStorage.getItem("token");
+    // axios.post('http://localhost:8080/api/v1/user/pay/' + idUser, data, {
+    //   auth: {
+    //     username: "khauser",
+    //     password: "123"
+    //   },
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   }
+    // })
+    //   .then(response => {
+    //     console.log('Payment success:', response.data);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error:', error.response ? error.response.data : error.message);
+    //   });
+    axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=1", data, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      }
+    }).then(response => {
+      console.log('Payment success:', response.data);
+    }).catch();
+    navigate("/");
   }
   return (
     <Layout childrenClasses="pt-0 pb-0">
@@ -88,6 +180,7 @@ export default function CheakoutPage() {
             ]}
           />
         </div>
+        {/* {console.log("service fee " + service_fee)} */}
         <div className="checkout-main-content w-full">
           <div className="container-x mx-auto">
             {/* <div className="w-full sm:mb-10 mb-5">
@@ -203,22 +296,6 @@ export default function CheakoutPage() {
                         Đặt làm mặc định?
                       </label>
                     </div>
-                    {/* <div>
-                      <h1 className="text-2xl text-qblack font-medium mb-3">
-                        Billing Details
-                      </h1>
-                      <div className="flex space-x-2 items-center mb-10">
-                        <div>
-                          <input type="checkbox" name="" id="address" />
-                        </div>
-                        <label
-                          htmlFor="address"
-                          className="text-qblack text-[15px] select-none"
-                        >
-                          Ship to a different address
-                        </label>
-                      </div>
-                    </div> */}
                   </form>
                 </div>
               </div>
@@ -243,7 +320,7 @@ export default function CheakoutPage() {
                     <ul className="flex flex-col space-y-5">
                       {console.log("datas " + data?.datas)}
                       {
-                        data.datas?.map(seller => (
+                        data?.datas?.map(seller => (
                           seller.cart && Array.isArray(seller.cart) && seller.cart.length > 0 ? (
                             seller.cart.map((cartItem, index) => (
                               <li key={index}>
@@ -261,7 +338,7 @@ export default function CheakoutPage() {
                                   </div>
                                   <div>
                                     <span className="text-[15px] text-qblack font-medium">
-                                      {Intl.NumberFormat().format(cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) || 'N/A'}<sup>đ</sup>
+                                      {Intl.NumberFormat().format((cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity) || 'N/A'}<sup>đ</sup>
                                     </span>
                                   </div>
                                 </div>
@@ -283,25 +360,14 @@ export default function CheakoutPage() {
                         Tổng tiền
                       </p>
                       <p className="text-[15px] font-medium text-qblack uppercase">
-                        {Intl.NumberFormat().format(data?.total)}<sup>đ</sup>
+                        {Intl.NumberFormat().format(data?.total - data?.sale)}<sup className='lowercase'>đ</sup>
                       </p>
                     </div>
                   </div>
 
                   <div className="w-full mt-[30px]">
                     <div className="sub-total mb-6">
-                      {/* <div className=" flex justify-between mb-1">
-                        <div>
-                          <span className="text-xs text-qgraytwo mb-3 block">
-                            Giảm giá
-                          </span>
-
-                        </div>
-                        <p className="text-[15px] font-medium text-qblack">
-                          16.000<sup>đ</sup>
-                        </p>
-                      </div> */}
-                      <div className=" flex justify-between mb-1">
+                      {service_fee > 0 ? (<div className=" flex justify-between mb-1">
                         <div>
                           <span className="text-xs text-qgraytwo mb-3 block">
                             Phí vận chuyển
@@ -309,12 +375,12 @@ export default function CheakoutPage() {
 
                         </div>
                         <p className="text-[15px] font-medium text-qblack">
-                          {Intl.NumberFormat().format(data?.service_fee)}<sup>đ</sup>
+                          {Intl.NumberFormat().format(service_fee)}<sup>đ</sup>
                         </p>
-                      </div>
-                      <p className="text-base font-medium text-qblack">
+                      </div>) : (<p className="text-base font-medium text-qblack">
                         Miễn phí vận chuyển
-                      </p>
+                      </p>)}
+
                       <div className="w-full h-[1px] bg-[#EDEDED]"></div>
                     </div>
                   </div>
@@ -322,7 +388,7 @@ export default function CheakoutPage() {
                   <div className="mt-[30px]">
                     <div className=" flex justify-between mb-5">
                       <p className="text-2xl font-medium text-qblack">Thành tiền</p>
-                      <p className="text-2xl font-medium text-qred">{Intl.NumberFormat().format(data?.total + data?.service_fee)}<sup>đ</sup></p>
+                      <p className="text-2xl font-medium text-qred">{Intl.NumberFormat().format(data?.total + service_fee - data?.sale)}<sup>đ</sup></p>
                     </div>
                   </div>
                   <div className="shipping mt-[30px]">

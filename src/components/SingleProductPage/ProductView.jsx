@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import CountDown from "../Helpers/CountDown";
 import Star from "../Helpers/icons/Star";
 import { useRequest } from "../Request/RequestProvicer";
 
@@ -12,6 +13,41 @@ export default function ProductView({ className, reportHandler, product }) {
   const { startRequest, endRequest } = useRequest();
   const [src, setSrc] = useState(product?.imageProducts[0]?.name);
   const location = useLocation();
+  const { showHour, showMinute, showSecound } = CountDown(product?.flashSaleDetail?.flashSale?.dateEnd);
+
+  // =================================== FLashSale
+
+  // const [timeDifference, setTimeDifference] = useState({
+  //   hours: 0,
+  //   minutes: 0,
+  //   seconds: 0,
+  // });
+
+  // const end = new Date("2024-11-19 23:59:00.000000");
+
+  // const startInterval = () => {
+  //   const timer = setInterval(() => {
+  //     const now = new Date(); // Cập nhật 'now' mỗi lần setInterval gọi
+  //     console.log("vao r");
+  //     const second = differenceInSeconds(now, end);
+  //     if (second <= 0) {
+  //       clearInterval(timer);
+  //       return; // Dừng đồng hồ khi đã hết thời gian
+  //     }
+  //     setTimeDifference({
+  //       hours: differenceInHours(end, now) % 24,
+  //       minutes: differenceInMinutes(end, now) % 60,
+  //       seconds: differenceInSeconds(end, now) % 60,
+  //     });
+  //   }, 1000);
+  // };
+
+  // useEffect(() => {
+  //   startInterval();
+
+  // }, []);
+
+  // =================================== END
   const changeImgHandhgler = (current) => {
     setSrc(current);
   };
@@ -24,6 +60,13 @@ export default function ProductView({ className, reportHandler, product }) {
       setQuantity((prev) => prev - 1);
     }
   };
+
+
+  // useEffect(() => {
+  //   if (showHour<1) {
+  //     window.location.reload();
+  //   }
+  // }, []);
 
   const handleCreateCart = () => {
     startRequest();
@@ -125,21 +168,21 @@ export default function ProductView({ className, reportHandler, product }) {
 
           <div data-aos="fade-up" className="flex space-x-2 items-center mb-7">
             {
-              product?.response_FlashSaleDetail != null ? (<div className=" w-full">
+              product?.flashSaleDetail != null ? (<div className=" w-full">
                 <div className="p-2 pl-5 bg-gradient-to-r from-red-500 to-orange-400  flex justify-between items-center">
                   <span className="font-semibold text-white">FLASHSALE</span>
-                  <span className="font-medium text-white">KẾT THÚC TRONG <span className="bg-black">10:10:10</span></span>
+                  <span className="font-medium text-white">KẾT THÚC SAU <span className="bg-black">{showHour}:{showMinute}:{showSecound}</span></span>
                 </div>
 
                 <div className="pl-5 h-15 flex items-center bg-gradient-to-r from-gray-50 to-orange-50 ">
-                  <span className="text-[30px] text-red-600 font-normal">100.000<sup>đ</sup></span>
+                  <span className="text-[30px] text-red-600 font-normal">{Intl.NumberFormat().format((product.price * (1 - (product.sale / 100))) * (1 - (product.flashSaleDetail.sale / 100)))}<sup>đ</sup></span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" className="text-red-600" fill="none">
                     <path d="M10.9961 10H11.0111M10.9998 16H11.0148" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M7 13H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                     <circle cx="1.5" cy="1.5" r="1.5" transform="matrix(1 0 0 -1 16 8)" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M2.77423 11.1439C1.77108 12.2643 1.7495 13.9546 2.67016 15.1437C4.49711 17.5033 6.49674 19.5029 8.85633 21.3298C10.0454 22.2505 11.7357 22.2289 12.8561 21.2258C15.8979 18.5022 18.6835 15.6559 21.3719 12.5279C21.6377 12.2187 21.8039 11.8397 21.8412 11.4336C22.0062 9.63798 22.3452 4.46467 20.9403 3.05974C19.5353 1.65481 14.362 1.99377 12.5664 2.15876C12.1603 2.19608 11.7813 2.36233 11.472 2.62811C8.34412 5.31646 5.49781 8.10211 2.77423 11.1439Z" stroke="currentColor" stroke-width="1.5" />
                   </svg>
-                  <span className="line-through text-black-2 font-normal ml-2">150.000</span><sup>đ</sup>
+                  <span className="line-through text-black-2 font-normal ml-2">{Intl.NumberFormat().format(product.price - ((product.price * product.sale) / 100))}</span><sup>đ</sup>
                 </div>
               </div>) : (
                 <>

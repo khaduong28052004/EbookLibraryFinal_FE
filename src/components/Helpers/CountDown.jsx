@@ -36,6 +36,10 @@ function CountDown(lastDate) {
         now.getTime();
       if (distance < 0) {
         clearInterval(timer);
+        setMinute(0);
+        setHour(0);
+        setDateSecound(0);
+        window.location.reload();
         return;
       }
       setDate(Math.floor(distance / _date));
