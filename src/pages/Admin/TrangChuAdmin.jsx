@@ -77,7 +77,9 @@ const Home = () => {
         </CardDataStats>
         <CardDataStats
           title="Doanh thu"
-          total={data.doanhThu.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+          total={typeof data.doanhThu === 'number' ?
+            data.doanhThu.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) :
+            'Dữ liệu không hợp lệ'}
         // rate="0.43%" levelUp
         >
           <svg
@@ -100,7 +102,9 @@ const Home = () => {
         </CardDataStats>
         <CardDataStats
           title="Lợi nhuận"
-          total={data.loiNhuan.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+          total={typeof data.loiNhuan === 'number' ?
+            data.loiNhuan.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) :
+            'Dữ liệu không hợp lệ'}
         // rate="0.43%" levelUp
         >
           <svg
