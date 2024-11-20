@@ -34,36 +34,19 @@ const ModalSanPham = ({
     const postNhanVien = async () => {
         try {
             const response = await accountService.post({ data: formData });
-            if (response.data.code === 1000) {
-                toast.success("Thêm nhân viên thành công");
-            } else {
-                toast.error(response.data.message);
-            }
+            toast.success("Thêm nhân viên thành công");
+            setFormData(initialFormData);
+            setOpen(false);
             setStatus(!status);
         } catch (error) {
-            toast.error("Lỗi hệ thống");
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.username || !formData.password || !formData.fullname || !formData.gender || !formData.email || !formData.phone) {
-            toast.error("Vui lòng nhập đầy đủ thông tin.");
-            return;
-        }
-
-        if (formData.password.length < 8) {
-            toast.error("Password phải lớn hơn 8 kí tự.");
-            return;
-        }
-        if (formData.phone.length < 10 || formData.phone.length > 10) {
-            toast.error("Số điện thoại phải 10 số");
-            return;
-        }
         postNhanVien(formData);
-        setFormData(initialFormData);
-        setOpen(false); // Đóng modal sau khi submit
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">

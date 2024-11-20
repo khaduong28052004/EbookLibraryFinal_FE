@@ -26,31 +26,29 @@ const ModalFlashSale = ({
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: value, // Gán đúng giá trị nhập vào
+            [name]: value,
             product: product.id,
             flashSale: flashSaleId,
 
         }));
     };
 
-    const postFlashSale = async () => {
+    const postFlashSaleDetails = async () => {
         try {
             const response = await flashSaleDetails.post({ data: formData });
-            if (response.data.code === 1000) {
-                toast.success("Thêm sản phẩm thành công");
-            }
+            toast.success("Thêm sản phẩm thành công");
             setStatus(!status);
+            setFormData(initialFormData);
+            setOpen(false); 
         } catch (error) {
-            toast.error("Lỗi hệ thống");
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault(); 
-        postFlashSale(formData);
-        setFormData(initialFormData);
-        setOpen(false); // Đóng modal sau khi submit
+        e.preventDefault();
+        postFlashSaleDetails(formData);
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">

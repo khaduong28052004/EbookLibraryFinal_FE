@@ -51,14 +51,12 @@ const ModalCategory = ({
     const postCategory = async () => {
         try {
             const response = await categoryService.post({ data: formData });
-            const responseCode = response.data.code;
-            if (responseCode !== 1000) {
-                toast.error(response.data.message);
-            } else {
-                toast.success(response.data.message);
-            }
             setStatus(!status);
+            toast.success(response.data.message);
+            setFormData(initialFormData);
+            setOpen(false);
         } catch (error) {
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
@@ -66,30 +64,22 @@ const ModalCategory = ({
         try {
             const response = await categoryService.put({ data: formData });
             setStatus(!status);
-            const responseCode = response.data.code;
-            if (responseCode !== 1000) {
-                toast.error(response.data.message);
-            } else {
-                toast.success(response.data.message);
-            }
+            toast.success(response.data.message);
+            setFormData(initialFormData);
+            setOpen(false);
         } catch (error) {
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Chặn hành vi reload trang khi submit form
+        e.preventDefault(); 
         if (entity != null) {
             putCategory();
         } else {
             postCategory();
         }
-        if (!formData.name) {
-            toast.error("Vui lòng nhập tên danh mục.");
-            return;
-        }
-        setFormData(initialFormData);
-        setOpen(false);
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">

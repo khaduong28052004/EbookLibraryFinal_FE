@@ -91,11 +91,11 @@ const TableTwo = () => {
     };
 
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách Thống Kê Sản Phẩm'];
+        const sheetNames = ['Danh Sách Sản Phẩm'];
         try {
             console.log("totalElements: " + data.totalElements);
             const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: data.totalElements, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.result.content]);
+            return ExportExcel("Danh Sách Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
