@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { toast } from 'react-toastify';
 import InputQuantityCom from "../Helpers/InputQuantityCom";
 import VoucherDialog from '../voucher/VoucherDialog';
-
 const sellers = {
   id: 1, // Seller ID
   // name: "Seller A",
@@ -32,7 +31,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
 
   const [idProduct, setIdProduct] = useState();
 
-  const [productState, setProductState] = useState({});
+  const [productState, setProductState] = useState(false);
 
   const [openVoucher, setOpenVoucher] = useState(false);
 
@@ -42,62 +41,62 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
 
   const [saveProductOfSeller, setSaveProductOfSeller] = useState();
 
+
+
   const [selectedVoucher, setSelectedVoucher] = useState([
-    {
-      "id": 2,
-      "avatar": "https://img.freepik.com/premium-photo/sales-manager-digital-avatar-generative-ai_934475-9274.jpg",
-      "fullname": "Douglas Adams",
-      "gender": true,
-      "background": "https://genk.mediacdn.vn/thumb_w/640/2015/wq2jwtv-imgur-1435763799326.jpg",
-      "shopName": "Douglas Adams Store",
-      "status": true,
-      "createAt": "2024-11-07T06:10:08.000+00:00",// Seller ID
-      vouchers:
-      {
-        "id": 1,
-        "name": "Voucher cho Tài khoản 2 - 1",
-        "note": "Giảm giá cho đơn hàng 1",
-        "totalPriceOrder": 100.0,
-        "sale": 10.0,
-        "quantity": 1,
-        "dateStart": "2024-11-12",
-        "dateEnd": "2024-12-31",
-        "typeVoucher": null,
-      }
+    // {
+    //   "id": 2,
+    //   "avatar": "https://img.freepik.com/premium-photo/sales-manager-digital-avatar-generative-ai_934475-9274.jpg",
+    //   "fullname": "Douglas Adams",
+    //   "gender": true,
+    //   "background": "https://genk.mediacdn.vn/thumb_w/640/2015/wq2jwtv-imgur-1435763799326.jpg",
+    //   "shopName": "Douglas Adams Store",
+    //   "status": true,
+    //   "createAt": "2024-11-07T06:10:08.000+00:00",// Seller ID
+    //   vouchers:
+    //   {
+    //     "id": 1,
+    //     "name": "Voucher cho Tài khoản 2 - 1",
+    //     "note": "Giảm giá cho đơn hàng 1",
+    //     "totalPriceOrder": 100.0,
+    //     "sale": 10.0,
+    //     "quantity": 1,
+    //     "dateStart": "2024-11-12",
+    //     "dateEnd": "2024-12-31",
+    //     "typeVoucher": null,
+    //   }
 
-    },
-    {
-      "id": 3,
-      "avatar": "https://img.freepik.com/premium-photo/sales-manager-digital-avatar-generative-ai_934475-9274.jpg",
-      "fullname": "Douglas Adams",
-      "gender": true,
-      "background": "https://genk.mediacdn.vn/thumb_w/640/2015/wq2jwtv-imgur-1435763799326.jpg",
-      "shopName": "Douglas Adams Store",
-      "status": true,
-      "createAt": "2024-11-07T06:10:08.000+00:00",// Seller ID
-      vouchers:
-      {
-        "id": 7,
-        "name": "Voucher cho Tài khoản 2 - 1",
-        "note": "Giảm giá cho đơn hàng 1",
-        "totalPriceOrder": 100.0,
-        "sale": 10.0,
-        "quantity": 1,
-        "dateStart": "2024-11-12",
-        "dateEnd": "2024-12-31",
-        "typeVoucher": null,
-      }
+    // },
+    // {
+    //   "id": 3,
+    //   "avatar": "https://img.freepik.com/premium-photo/sales-manager-digital-avatar-generative-ai_934475-9274.jpg",
+    //   "fullname": "Douglas Adams",
+    //   "gender": true,
+    //   "background": "https://genk.mediacdn.vn/thumb_w/640/2015/wq2jwtv-imgur-1435763799326.jpg",
+    //   "shopName": "Douglas Adams Store",
+    //   "status": true,
+    //   "createAt": "2024-11-07T06:10:08.000+00:00",// Seller ID
+    //   vouchers:
+    //   {
+    //     "id": 7,
+    //     "name": "Voucher cho Tài khoản 2 - 1",
+    //     "note": "Giảm giá cho đơn hàng 1",
+    //     "totalPriceOrder": 100.0,
+    //     "sale": 10.0,
+    //     "quantity": 1,
+    //     "dateStart": "2024-11-12",
+    //     "dateEnd": "2024-12-31",
+    //     "typeVoucher": null,
+    //   }
 
-    }
+    // }
   ]);
-
 
 
 
 
   useEffect(() => {
     if (datas) {
-      // Bước 1: Tạo một đối tượng để lưu trạng thái các sản phẩm trong giỏ hàng
       const updatedProductState = {};
       datas.forEach(seller => {
         seller?.cart.forEach(cart => {
@@ -112,31 +111,50 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
       }
 
 
-      const filteredSellers = datas.map(seller => {
-        let saleMax = 0;
-        let voucherNew = {};  // Khởi tạo voucherNew là đối tượng rỗng
-
-        // Lặp qua tất cả các vouchers để chọn voucher có giá trị sale lớn nhất
-        seller.vouchers.forEach(voucher => {
-          if (voucher.sale > saleMax && voucher.totalPriceOrder < totalOrderSeller) {
-            saleMax = voucher.sale;  // Cập nhật saleMax nếu tìm được voucher tốt hơn
-            voucherNew = voucher;  // Cập nhật voucherNew
-          }
-        });
-
-        // Trả về seller mới với voucher đã chọn
-        return {
-          ...seller,
-          vouchers: voucherNew  // Cập nhật voucher cho seller này
-        };
-      });
-
-      // Bước 3: Cập nhật lại state selectedVoucher với mảng filteredSellers
-      setSelectedVoucher(filteredSellers);
+      // const filteredSellers = datas.map(seller => {
+      //   let saleMax = 0;
+      //   let voucherNew = {};  
+      //   seller.vouchers.forEach(voucher => {
+      //     if (voucher.sale > saleMax && voucher.totalPriceOrder < totalOrderSeller) {
+      //       saleMax = voucher.sale;  
+      //       voucherNew = voucher;  
+      //     }
+      //   });
+      //   return {
+      //     ...seller,
+      //     vouchers: voucherNew  
+      //   };
+      // });
+      // setSelectedVoucher(filteredSellers);
     }
   }, [datas, totalOrderSeller]);  // Đảm bảo useEffect này sẽ chạy khi datas hoặc totalOrderSeller thay đổi
 
-
+  const filteredSellers = () => {
+    const validProductIds = [];
+    // Lọc các product id hợp lệ từ idProduct
+    for (let key in idProduct) {
+      if (idProduct.hasOwnProperty(key) && idProduct[key] === true) {
+        validProductIds.push(Number(key));
+      }
+    }
+    // Lọc các sellers có sản phẩm hợp lệ trong giỏ hàng
+    return datas
+      .map(seller => {
+        // Lọc giỏ hàng của seller, chỉ giữ lại sản phẩm có id hợp lệ
+        const filteredCart = seller.cart.filter(item => validProductIds.includes(item.product.id));
+        const voucher = selectedVoucher.find(item => item.id == seller.id);
+        // Trả về một seller mới với giỏ hàng đã lọc
+        if (filteredCart.length > 0) {
+          return {
+            ...seller,
+            cart: filteredCart,
+          };
+        } else {
+          return null;
+        }
+      })
+      .filter(seller => seller !== null);
+  }
   const saveIdProduct = () => {
     const validProductIds = [];
     // Lọc các product id hợp lệ từ idProduct
@@ -145,49 +163,65 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
         validProductIds.push(Number(key));
       }
     }
-
-
-
     // Lọc các sellers có sản phẩm hợp lệ trong giỏ hàng
     const filteredSellers = datas
       .map(seller => {
         // Lọc giỏ hàng của seller, chỉ giữ lại sản phẩm có id hợp lệ
         const filteredCart = seller.cart.filter(item => validProductIds.includes(item.product.id));
         const voucher = selectedVoucher.find(item => item.id == seller.id);
-
-        // console.log(voucher.vouchers);
         // Trả về một seller mới với giỏ hàng đã lọc
         if (filteredCart.length > 0) {
           return {
             ...seller,
             cart: filteredCart,
-            vouchers: voucher.vouchers
+            voucher: voucher?.vouchers
           };
         } else {
           return null;
         }
       })
-      .filter(seller => seller !== null); // Lọc bỏ các seller có giỏ hàng rỗng
-
-    // Lưu thông tin sản phẩm đã lọc
+      .filter(seller => seller !== null);
     handleSaveProduct(filteredSellers);
     setSaveProductOfSeller(filteredSellers);
-
-
     var total = 0;
     filteredSellers.forEach(sellerItem => {
       sellerItem?.cart.forEach(cart => {
         total += cart.quantity * (cart.product.price - ((cart.product.price * cart.product.sale) / 100));
       });
-
     });
     setTotalOrderSeller(total);
   };
+
   useEffect(() => {
-    if (saveProductOfSeller) {
+    if (datas) {
       saveIdProduct();
     }
-  }, [selectedVoucher, idProduct])
+  }, [selectedVoucher, idProduct, datas]);
+  const autoActiveVoucher = () => {
+    var total = 0;
+    filteredSellers()?.forEach(sellerItem => {
+      sellerItem?.cart.forEach(cart => {
+        total += cart.quantity * (cart.product.price - ((cart.product.price * cart.product.sale) / 100));
+      });
+    });
+    // if (!selectedVoucher) {
+    const filteredSeller2 = datas.map(seller => {
+      let saleMax = 0;
+      let voucherNew = {};
+      seller.vouchers.forEach(voucher => {
+        if (voucher.sale > saleMax && voucher.totalPriceOrder < total) {
+          saleMax = voucher.sale;
+          voucherNew = voucher;
+        }
+      });
+      return {
+        ...seller,
+        vouchers: voucherNew
+      };
+    });
+    setSelectedVoucher(filteredSeller2);
+    // }
+  }
   const handleSelectVoucher = (voucher) => {
     const filterSellerVoucher = selectedVoucher.map(seller => {
       if (seller.id == voucher.id) {
@@ -199,7 +233,6 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
       return seller;
     })
     setSelectedVoucher(filterSellerVoucher);
-
   };
 
   const handleVoucher = (seller) => {
@@ -223,7 +256,6 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
   const checkedAll = () => {
     const inputCheckBoxProducts = document.querySelectorAll('.checkBoxProduct');
     const checkboxAll = document.getElementById("checkbox_all");
-    // Kiểm tra tất cả checkbox con
     for (let checkbox of inputCheckBoxProducts) {
       if (!checkbox.checked) {
         checkboxAll.checked = false;
@@ -254,7 +286,10 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
     inputCheckBoxProduct.forEach((checkbox) => {
       idProduct[checkbox.value] = event.target.checked;
     });
-    saveIdProduct();
+    autoActiveVoucher();
+    // setProductState(true);
+    // saveIdProduct();
+
   }
 
   const handleShop = (event, id_Shop) => {
@@ -264,7 +299,8 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
       idProduct[checkbox.value] = event.target.checked;
     });
     checkedAll();
-    saveIdProduct();
+    // saveIdProduct();
+    autoActiveVoucher();
   };
 
   const oneInputCheckBox = (event, id_Shop) => {
@@ -276,7 +312,8 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
 
     checkShop(id_Shop);
     checkedAll();
-    saveIdProduct();
+    // saveIdProduct();
+    autoActiveVoucher();
   }
   // const handle 
 
@@ -330,7 +367,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
               {seller?.cart.map(cart => (
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="pl-5  py-4  w-[380px]">
-                    <div className="flex">
+                    <div className="flex mb-2">
                       <div className="flex items-center pr-2">
                         <input type="checkbox" data-id-shop={seller.id} onClick={(event) => oneInputCheckBox(event, seller.id)} value={cart?.product?.id} className={`checkBoxProduct form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 focus:ring-offset-0 border-gray-300 flex items-center`} />
                       </div>
@@ -351,8 +388,20 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
                         </div>
 
                       </div>
-                    </div>
 
+                    </div>
+                    {cart?.product?.flashSaleDetail ? (
+                      <div className='text-red-500 uppercase text-[12px] font-semibold'>
+                        <span className="ml-7">FlashSale kết thúc sau </span>
+                        <span>{new Intl.DateTimeFormat("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: false, // Dùng định dạng 24 giờ
+                        }).format(new Date(cart.product.flashSaleDetail.flashSale.dateEnd))
+                        } hôm nay</span>
+                      </div>
+                    ) : (<></>)}
                   </td>
 
                   <td className="text-center py-4 px-2  w-[250px]">
@@ -362,8 +411,19 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
                   </td>
                   <td className="text-center py-4 px-2  w-[150px]">
                     <div className="flex space-x-1 items-center justify-center">
-                      <span className="text-[15px] font-light line-through">{Intl.NumberFormat().format(cart?.product?.price)}<sup>đ</sup></span>
-                      <span className="text-[15px] font-bold">{Intl.NumberFormat().format(cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100))}<sup>đ</sup></span>
+
+                      {cart?.product?.flashSaleDetail ?
+                        (<>
+                          <span className="text-[15px] font-light line-through">{Intl.NumberFormat().format(cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100))}<sup>đ</sup></span>
+                          <span className="text-[15px] font-bold text-red-500">{Intl.NumberFormat().format(
+                            cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100) - ((cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100)) * (cart?.product?.flashSaleDetail?.sale / 100))
+
+                          )}<sup>đ</sup></span>
+                        </>) :
+                        (<>
+                          <span className="text-[15px] font-light line-through">{Intl.NumberFormat().format(cart?.product?.price)}<sup>đ</sup></span>
+                          <span className="text-[15px] font-bold">{Intl.NumberFormat().format(cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100))}<sup>đ</sup></span>
+                        </>)}
                     </div>
                   </td>
                   <td className=" py-4  w-[150px]">
@@ -371,9 +431,28 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
                       <InputQuantityCom quantityCart={cart?.quantity} handleQuantity={() => console.log("")} />
                     </div>
                   </td>
+
                   <td className="text-right py-4  w-[200px]">
                     <div className="flex space-x-1 items-center justify-center">
-                      <span className="text-[15px] font-bold">{Intl.NumberFormat().format((cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100)) * cart.quantity)}<sup>đ</sup></span>
+                      {cart?.product?.flashSaleDetail ?
+                        (
+                          cart?.quantity <= cart?.product?.flashSaleDetail.quantity ?
+                            (
+                              <span className="text-[15px] font-bold">{Intl.NumberFormat().format((
+                                cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100) - ((cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100)) * (cart?.product?.flashSaleDetail?.sale / 100))
+
+                              ) * cart.quantity)}<sup>đ</sup></span>
+                            ) :
+                            (
+                              <span className="text-[15px] font-bold">{Intl.NumberFormat().format(
+                                ((cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100) - ((cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100)) * (cart?.product?.flashSaleDetail?.sale / 100))) * cart?.product?.flashSaleDetail.quantity)
+                                +
+                                ((cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100) - ((cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100)) * (cart?.product?.flashSaleDetail?.sale / 100))) * (cart?.quantity - cart?.product?.flashSaleDetail.quantity))
+
+                              )}<sup>đ</sup></span>
+                            )
+                        ) :
+                        (<span className="text-[15px] font-bold">{Intl.NumberFormat().format((cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100)) * cart.quantity)}<sup>đ</sup></span>)}
                     </div>
                   </td>
                   <td className="text-right py-4  w-[114px]">
