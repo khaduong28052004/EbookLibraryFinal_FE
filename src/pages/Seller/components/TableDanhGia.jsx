@@ -6,7 +6,7 @@ import ModalSanPham from './ModalDanhGia';
 import DanhGiaService from '../../../service/Seller/danhGiaService';
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './pagination';
-import ExportExcel from "./ExportExcel"
+import {ExportExcel} from "./ExportExcel"
 
 const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);

@@ -7,7 +7,7 @@ import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, 
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
-import ExportExcel from "./ExportExcel"
+import {ExportExcel} from "./ExportExcel"
  
 const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEnd, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, handleSearch, sortBy, sortColumn, setSortBy, setSortColumn }) => {
 

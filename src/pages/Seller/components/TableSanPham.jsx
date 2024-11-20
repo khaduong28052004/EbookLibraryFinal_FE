@@ -8,7 +8,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import CategoryService from "../../../service/Seller/categoryService";
 import Pagination from './pagination';
 import { storage, getDownloadURL, ref } from '../../../config/firebase';
-import ExportExcel from "./ExportExcel"
+import { ExportExcel } from "./ExportExcel"
 
 const TableSanPham = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -294,9 +294,9 @@ const TableSanPham = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
-          onClick={
-            handleExport
-          }
+            onClick={
+              handleExport
+            }
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
@@ -407,7 +407,11 @@ const TableSanPham = () => {
                     {index + 1 + pageNumber * pageSize}
                   </td>
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                    {item.imageProducts.map((image) => (
+                      <img className="h-12.5 w-12.5 rounded-md" src={image.name} alt="ImageProduct" />
+                    ))}
                     <p className="text-sm text-black dark:text-white truncate w-24">{item.name}</p>
+
                   </td>
 
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -551,7 +555,7 @@ const TableSanPham = () => {
                         onChange={handDataProduct}
                         placeholder="Số Lượng..."
                         required
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        className="w-full rounded b order-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
                   </div>
@@ -724,7 +728,7 @@ const TableSanPham = () => {
                     </div>
                   </div>
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                    <div className="w-full xl:w-1/2">
+                    <div className="w-full xl:w-1/3">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giá
                       </label>
@@ -738,7 +742,7 @@ const TableSanPham = () => {
                       />
                     </div>
 
-                    <div className="w-full xl:w-1/2">
+                    <div className="w-full xl:w-1/3">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giảm Giá
                       </label>
@@ -748,6 +752,20 @@ const TableSanPham = () => {
                         value={dataProduct.sale}
                         onChange={handDataProduct}
                         placeholder="Giám giá..."
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      />
+                    </div>
+
+                    <div className="w-full xl:w-1/3">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                        Khối Lượng
+                      </label>
+                      <input
+                        type="number"
+                        name="weight"
+                        value={dataProduct.weight}
+                        onChange={handDataProduct}
+                        placeholder="Khối lượng..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>

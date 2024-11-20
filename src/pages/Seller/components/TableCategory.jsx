@@ -7,7 +7,7 @@ import ModalSanPham from './ModalSanPham';
 import CategoryService from '../../../service/Seller/categoryService';
 import Pagination from './pagination';
 import { toast, ToastContainer } from 'react-toastify';
-import ExportExcel from "./ExportExcel"
+import {ExportExcel} from "./ExportExcel"
 
 const TableCategory = () => {
   const [isOpen, setIsOpen] = useState(false);
