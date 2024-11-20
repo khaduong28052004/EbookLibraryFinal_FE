@@ -30,32 +30,23 @@ const ModalFlashSale = ({
     const postFlashSale = async () => {
         try {
             const response = await flashSale.post({ data: formData });
-            if (response.data.code === 1000) {
-                toast.success(response.data.message);
-            }
+            toast.success(response.data.message);
             setStatus(!status);
-
+            setFormData(initialFormData);
+            setOpen(false);
         } catch (error) {
-            toast.error("Lỗi hệ thống");
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.dateStart || !formData.dateEnd) {
-            toast.error("Vui lòng nhập đầy đủ ngày bắt đầu và ngày kết thúc.");
-            return;
-        }
-
         if (new Date(formData.dateStart) >= new Date(formData.dateEnd)) {
             toast.error("Ngày bắt đầu phải trước ngày kết thúc.");
             return;
         }
-
         postFlashSale(formData);
-        setFormData(initialFormData);
-        setOpen(false); // Đóng modal sau khi submit
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">

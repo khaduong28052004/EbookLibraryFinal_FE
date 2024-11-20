@@ -107,12 +107,11 @@ const Modal_FlashSaleCT = ({
     const deleteFlashSaleDetails = async (id) => {
         try {
             const response = await flashSaleDetails.delete({ id });
-            if (response.data.code === 1000) {
-                toast.success("Xóa sản phẩm thành công");
-            }
+            toast.success("Xóa sản phẩm thành công");
             setStatus(!status);
+            setIsOpen(false);
         } catch (error) {
-            toast.error("Lỗi hệ thống");
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
@@ -121,34 +120,26 @@ const Modal_FlashSaleCT = ({
         try {
             const response = await flashSale.put({ data: formData });
             setStatusFillAll(!statusFillAll);
-            if (response.data.code === 1000) {
-                toast.success(response.data.message);
-            }
+            toast.success(response.data.message);
+            setFormData(initialFormData);
+            setOpen(false);
         } catch (error) {
-            toast.error("Lỗi hệ thống");
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
     const handleConfirm = () => {
-        setIsOpen(false);
         deleteFlashSaleDetails(Product.id);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.dateStart || !formData.dateEnd) {
-            toast.error("Vui lòng nhập đầy đủ ngày bắt đầu và ngày kết thúc.");
-            return;
-        }
-
         if (new Date(formData.dateStart) >= new Date(formData.dateEnd)) {
             toast.error("Ngày bắt đầu phải trước ngày kết thúc.");
             return;
         }
         putFlashSale();
-        setFormData(initialFormData);
-        setOpen(false);
     };
 
     useEffect(() => {
@@ -452,21 +443,10 @@ const Modal_FlashSaleCT = ({
                             flashSaleId={entityFlashSale.id}
                             open={isOpen}
                             setOpen={setIsOpen}
-                            title={statusentity
-                                ? 'Ngừng Hoạt Động'
-                                : 'Khôi Phục'}
-                            message={statusentity
-                                ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                                : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
-                            confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
+                            title={'Thêm sản phẩm'}
+                            message={'Bạn chắc chắn muốn thêm sản phẩm này không?'}
+                            confirmText={'Xác Nhận'}
                             cancelText="Thoát"
-                            icon={statusentity ? (
-                                <TrashIcon className="h-6 w-6 text-red-600" />
-                            ) : (
-                                <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
-                            )}
-                            iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                            buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'}
                             status={status}
                             setStatus={setStatus} />
                         <Modal

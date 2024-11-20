@@ -71,11 +71,11 @@ const TableTwo = () => {
     }, [searchItem, option, currentPage, sortBy, sortColumn, status]);
 
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách FlashSale'];
+        const sheetNames = ['Danh Sách Quyền'];
         try {
             console.log("totalElements: " + data.totalElements);
             const response = await permission.findAllByRole({ page: currentPage, size: data.totalElements, role: option, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách FlashSale.xlsx", sheetNames, [response.data.result.content]);
+            return ExportExcel("Danh Sách Quyền.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
