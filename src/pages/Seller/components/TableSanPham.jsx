@@ -257,7 +257,7 @@ const TableSanPham = () => {
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <ToastContainer />
+      <ToastContainer className={`z-999999`}/>
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
         <form>
           <div className="relative pt-3">
@@ -433,13 +433,15 @@ const TableSanPham = () => {
                   </td>
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                     <div className="flex space-x-3.5">
-                      <button onClick={() => {
+                      <button onClick={(event) => {
+                        event.stopPropagation();
                         setIsOpen(true);
                         setProductId(item.id);
                       }}>
                         <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
                       </button>
-                      <button onClick={() => {
+                      <button onClick={(event) => {
+                        event.stopPropagation();
                         editProduct(item.id);
                         setIsStatus(true)
                       }}>
@@ -515,7 +517,7 @@ const TableSanPham = () => {
         buttonBgColor={'bg-red-600'}
       />
 
-      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-999999">
+      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-99999">
         <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
