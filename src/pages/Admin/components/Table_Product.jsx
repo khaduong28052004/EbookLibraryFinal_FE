@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import product from '../../../service/admin/Product';
 import Modal from "./ModalThongBao";
-import ModalDuyet from "./Modal_Duyet";
+import ModalDuyet from "./Modal_DuyetProduct";
 import Pagination from './Pagination';
 
 const TableTwo = () => {
@@ -16,11 +17,12 @@ const TableTwo = () => {
     const [currentPage, setCurrentPage] = useState(0);
 
     const [expandedRowId, setExpandedRowId] = useState(null);
-    const [id, setId] = useState('');
+    const [entityProduct, setEntityProduct] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
+    const [status, setStatus] = useState(null);
+
     const [active, setActive] = useState(null);
-    const [optionActive, setoptionActive] = useState(null);
     const findAllProduct = async () => {
         try {
             const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 2, sortColumn, sortBy });
@@ -30,36 +32,37 @@ const TableTwo = () => {
         }
     }
 
-    const putActive = async (id, status) => {
-        try {
-            const response = await product.putActive({ id, status });
-            console.log("xóa: " + response.data.result.message);
-            findAllProduct();
-        } catch (error) {
-            console.log("Error: " + error);
-        }
-    }
+    // const putActive = async (id, status) => {
+    //     try {
+    //         const response = await product.putActive({ id, status });
+    //         if (response.data.code === 1000) {
+    //             toast.success(response.data.message);
+    //         }
+    //         findAllProduct();
+    //     } catch (error) {
+    //         toast.error("Lỗi hệ thống");
+    //         console.log("Error: " + error);
+    //     }
+    // }
     const putStatus = async (id) => {
         try {
             const response = await product.putStatus({ id });
-            console.log("xóa: " + response.data.result.message);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
+            }
             findAllProduct();
         } catch (error) {
+            toast.error("Lỗi hệ thống");
             console.log("Error: " + error);
         }
     }
 
     const handleConfirm = () => {
-        if (active) {
-            putActive(id, optionActive);
-            setoptionActive(null);
-        } else {
-            putStatus(id);
-        }
+        putStatus(entityProduct.id);
         findAllProduct();
         setIsOpen(false);
-
     };
+
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < data.totalPages) {
             setCurrentPage(newPage);
@@ -77,7 +80,7 @@ const TableTwo = () => {
 
     useEffect(() => {
         findAllProduct(option, searchItem, currentPage, sortBy, sortColumn);
-    }, [searchItem, currentPage, sortBy, sortColumn,option]);
+    }, [searchItem, currentPage, sortBy, sortColumn, option, status]);
 
     const toggleRow = (id) => {
         if (expandedRowId === id) {
@@ -105,6 +108,7 @@ const TableTwo = () => {
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer></ToastContainer>
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
@@ -204,12 +208,12 @@ const TableTwo = () => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("sumBill");
+                                setSortColumn("publishingCompany");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Thể loại</span>
+                                <span className="text-sm text-black dark:text-white">Nhà xuất bản</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -217,7 +221,7 @@ const TableTwo = () => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("sumEvalue");
+                                setSortColumn("writerName");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -265,7 +269,7 @@ const TableTwo = () => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.category.name}
+                                        {entity.publishingCompany}
                                     </div>
                                 </td>
 
@@ -291,7 +295,7 @@ const TableTwo = () => {
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
                                         <button onClick={() => {
-                                            setId(entity.id);
+                                            setEntityProduct(entity);
                                             setIsOpen(true);
                                             setStatusentity(!entity.delete);
                                             setActive(entity.active ? false : true)
@@ -307,10 +311,9 @@ const TableTwo = () => {
                                         <div className="p-5 border border-gray-100 hover:bg-slate-100">
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
-                                                <p>Nhà xuất bản: {entity.publishingCompany}</p>
-                                                <p>Giới thiệu: {entity.introduce}</p>
+                                                <p>Mã sản phẩm: {entity.id}</p>
+                                                <p>Thể loại: {entity.category.name}</p>
                                                 <p>Shop: {entity.account.shopName}</p>
-                                                <p>Trạng thái : {entity.account.status == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
                                                 <p>Họ tên chủ shop: {entity.account.fullname}</p>
                                                 <p>Email: {entity.account.email}</p>
                                                 <p>Số điện thoại: {entity.account.phone}</p>
@@ -353,18 +356,15 @@ const TableTwo = () => {
                     buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
             ) : (
                 <ModalDuyet
+                    id={entityProduct.id}
+                    status={status}
+                    setStatus={setStatus}
                     open={isOpen}
                     setOpen={setIsOpen}
                     title={statusentity ? 'Hủy' : 'Duyệt'}
                     message={statusentity
                         ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
                         : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
-                    onConfirm={() => {
-                        putActive(id, true);
-                    }}
-                    onCancel={() => {
-                        putActive(id, false);
-                    }}
                     confirmText={'Duyệt'}
                     cancelText={"Hủy"}
                     icon={statusentity ? (

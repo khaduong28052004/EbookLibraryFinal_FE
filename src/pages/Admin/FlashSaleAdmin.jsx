@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import Table from './components/Table_FlashSale';
 import flashSale from '../../service/admin/FlashSale';
+import { toast, ToastContainer } from 'react-toastify';
 
 const FalshSaleAdmin = () => {
   const [data, setData] = useState([]);
@@ -16,9 +17,13 @@ const FalshSaleAdmin = () => {
     try {
       const response = await flashSale.delete({ id });
       console.log("Mã Code: " + response.data.code);
+      if (response.data.code === 1000) {
+        toast.success(response.data.message);
+      }
       setCurrentPage(0);
       findAllFlashSale();
     } catch (error) {
+      toast.error("Lỗi hệ thống");
       console.log("Error: " + error);
     }
   }
@@ -49,6 +54,7 @@ const FalshSaleAdmin = () => {
   }, [currentPage, dateStart, dateEnd, sortColumn, sortBy, status]);
   return (
     <>
+      <ToastContainer></ToastContainer>
       <Breadcrumb pageName="Quản Lý Flash Sale" status='Quản Trị' />
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">

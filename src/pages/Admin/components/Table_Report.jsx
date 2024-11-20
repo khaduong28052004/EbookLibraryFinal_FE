@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
-import ModalDuyetShop from "./Modal_DuyetShop";
+import { toast, ToastContainer } from 'react-toastify';
+import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+// import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+// import Modal from "./ModalThongBao";
+// import ModalNhanVien from './ModalNhanVien';
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
-import { toast, ToastContainer } from 'react-toastify';
 
-const TableTwo = ({ status, setStatus }) => {
+const TableTwo = () => {
     const [data, setData] = useState([]);
-
     const [searchItem, setSearchItem] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
-    const [expandedRowId, setExpandedRowId] = useState(null);
 
-    const [id, setId] = useState(null);
-    const [isOpen, setIsOpen] = useState(false);
-    const [statusentity, setStatusentity] = useState(false);
+    // const [id, setId] = useState('');
+    // const [status, setStatus] = useState(true);
+    // const [isOpen, setIsOpen] = useState(false);
+    // const [statusentity, setStatusentity] = useState(false);
+    // const [isOpenModalSP, setIsOpenModalSP] = useState(false);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < data.totalPages) {
@@ -35,26 +36,26 @@ const TableTwo = ({ status, setStatus }) => {
         handlePageChange(currentPage + 1);
     };
 
-    const findAllSellerNotBrowse = async () => {
+
+    const findAllAccountReport = async () => {
         try {
-            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: 2, searchItem, sortColumn, sortBy });
-            console.log("FindAllSellerNotBrowse: ");
+            const response = await accountService.findAllAccountReport({ page: currentPage, size: 2, searchItem, sortColumn, sortBy });
+            console.log("content: " + response.data.result.content);
             setData(response.data.result);
-            console.log(data);
         } catch (error) {
             console.log("Error: " + error);
         }
     };
 
     useEffect(() => {
-        findAllSellerNotBrowse();
-    }, [searchItem, currentPage, sortBy, sortColumn,status]);
-    
+        findAllAccountReport();
+    }, [searchItem, currentPage, sortBy, sortColumn, status]);
+    ;
     const handleExport = async () => {
         const sheetNames = ['Danh Sách nhân viên'];
         try {
-            console.log("totalElements: " + data.totalElements);
-            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: data.totalElements, searchItem, sortColumn, sortBy });
+            console.log("data.totalElements: " + data.totalElements);
+            const response = await accountService.findAllAccountReport({ page: data.totalElements, size: 2, searchItem, sortColumn, sortBy });
             return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -65,17 +66,10 @@ const TableTwo = ({ status, setStatus }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
     };
-    const toggleRow = (id) => {
-        if (expandedRowId === id) {
-            setExpandedRowId(null); // Nếu đã mở thì click lại sẽ đóng
-        } else {
-            setExpandedRowId(id); // Mở hàng chi tiết
-        }
-    };
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <ToastContainer></ToastContainer>
+            <ToastContainer />
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3">
@@ -128,11 +122,10 @@ const TableTwo = ({ status, setStatus }) => {
             <table className="w-full border-collapse border border-stroke dark:border-strokedark">
                 <thead>
                     <tr className="border-t border-stroke dark:border-strokedark">
-                        <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
-                                setSortColumn("username");
+                                setSortColumn("account.username");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -145,12 +138,12 @@ const TableTwo = ({ status, setStatus }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("numberId");
+                                setSortColumn("shop.shopName");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white">Số CCCD</span>
+                                <span className="text-sm text-black dark:text-white ">Shop bị báo cáo</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
@@ -158,18 +151,31 @@ const TableTwo = ({ status, setStatus }) => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("email");
+                                setSortColumn("title");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Email</span>
+                            <div className="flex items-center gap-1 hidden xl:flex">
+                                <span className="text-sm text-black dark:text-white">Tiêu đề</span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
 
                         <th
+                            onClick={() => {
+                                setSortColumn("createAt");
+                                setSortBy(!sortBy);
+                            }}
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden lg:flex">
+                                <span className="text-sm text-black dark:text-white">Ngày báo cáo</span>
+                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                            </div>
+                        </th>
+
+                        {/* <th
                             onClick={() => {
                                 setSortColumn("phone");
                                 setSortBy(!sortBy);
@@ -180,7 +186,7 @@ const TableTwo = ({ status, setStatus }) => {
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
-                        </th>
+                        </th> */}
 
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
@@ -190,66 +196,44 @@ const TableTwo = ({ status, setStatus }) => {
 
                 <tbody>
                     {data?.content?.map((entity, index) => (
-                        <>
-                            <tr key={index} className={`border-t border-stroke dark:border-strokedark ${expandedRowId === entity.id ? `bg-slate-100` : `bg-white`}`} onClick={() => toggleRow(entity.id)}>
-                                <td
-                                    className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                    {expandedRowId === entity.id ? (
-                                        <ChevronDownIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
-                                    ) : (
-                                        <ChevronRightIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
-                                    )
-                                    }
-                                </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                    {data.pageable.pageNumber * data.size + index + 1}
-                                </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                    {/* <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" /> */}
-                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
-                                </td>
+                        <tr key={index} className="border-t border-stroke dark:border-strokedark">
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                {data.pageable.pageNumber * data.size + index + 1}
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.account.username}</p>
+                            </td>
 
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.numberId}
-                                    </div>
-                                </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.email}
-                                    </div>
-                                </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                <div className="flex items-center gap-1 hidden xl:flex">
 
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.phone}
-                                    </div>
-                                </td>
+                                    {entity.shop.shopName}
+                                </div>
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.title}
+                                </div>
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.createAt}
+                                </div>
+                            </td>
 
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                                    <div className="flex space-x-3.5">
-                                        <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
-                                            {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
-                                        </button>
-                                    </div>
-                                </td>
-
-                            </tr>
-                            {expandedRowId === entity.id && (
-                                <tr>
-                                    <td colSpan="8">
-                                        <div className="p-5 border border-gray-100 hover:bg-slate-100">
-                                            <p><strong>Thông tin chi tiết:</strong></p>
-                                            <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
-                                                <p>Ngày gửi yêu cầu: {entity.createAtSeller}</p>
-                                                <p>Họ tên chủ shop: {entity.fullname}</p>
-                                                <p>Giới tính: {entity.gender ? 'Nam' : 'Nữ'}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )}
-                        </>
+                            {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.phone}
+                                </div>
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                                <div className="flex space-x-3.5">
+                                    <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
+                                        {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                    </button>
+                                </div>
+                            </td> */}
+                        </tr>
                     ))}
                 </tbody>
             </table>
@@ -262,27 +246,26 @@ const TableTwo = ({ status, setStatus }) => {
                 setPageNumber={setCurrentPage}
                 size={data.size}></Pagination>
 
-
-            <ModalDuyetShop
-                open={isOpen}
-                id={id}
-                status={status}
-                setStatus={setStatus}
-                setOpen={setIsOpen}
-                title={statusentity ? 'Hủy' : 'Duyệt'}
-                message={statusentity
-                    ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
-                    : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
-                confirmText={'Duyệt'}
-                cancelText={"Hủy"}
-                icon={statusentity ? (
-                    <TrashIcon className="h-6 w-6 text-red-600" />
-                ) : (
-                    <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
-                )}
-                iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
-        </div >
+            {/* <Modal
+        open={isOpen}
+        setOpen={setIsOpen}
+        title={statusentity
+          ? 'Ngừng Hoạt Động'
+          : 'Khôi Phục'}
+        message={statusentity
+          ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
+          : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+        onConfirm={handleConfirm}
+        confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
+        cancelText="Thoát"
+        icon={statusentity ? (
+          <TrashIcon className="h-6 w-6 text-red-600" />
+        ) : (
+          <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+        )}
+        iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
+        buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} /> */}
+        </div>
     );
 };
 
