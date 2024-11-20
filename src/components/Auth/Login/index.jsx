@@ -182,7 +182,7 @@ export default function Login() {
                   </div>
                   <div className="mb-5">
                     <Turnstile
-                      sitekey="0x4AAAAAAA0Ey_4QW6FN-EKO" // private
+                      sitekey={import.meta.env.VITE_SITEKEY_CLOUDFLARE} // private
                       onVerify={(token) => setCaptchaToken(token)}
                       onError={() => {
                         console.error("Turnstile error occurred");
@@ -197,7 +197,7 @@ export default function Login() {
                 </form>
                 <div className="social-login-buttons flex space-x-4 mt-6">
                   <button className="w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
-                    <GoogleOAuthProvider clientId="802515130057-2djim3amjrd5pinc6rmspgid56l1rkdl.apps.googleusercontent.com">
+                    <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENTID_GG}>
                       <LoginGG />
                     </GoogleOAuthProvider>
                   </button>

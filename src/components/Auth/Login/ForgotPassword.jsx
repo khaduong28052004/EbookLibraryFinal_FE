@@ -18,7 +18,9 @@ export default function ForgotPassword() {
             const response = await AuthService.Otp({ email });
             if (response.status) {
                 toast.success('Link to reset your password has been sent!');
-                navigate('/login');
+                setTimeout(() => {
+                    navigate('/login');
+                  }, 2000);
             } else {
                 toast.error('Failed to send reset link. Please try again.');
             }

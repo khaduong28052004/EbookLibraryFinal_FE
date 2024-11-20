@@ -5,6 +5,7 @@ import Layout from "../../Partials/Layout";
 import Thumbnail from "./Thumbnail";
 import AuthService from "../../../service/authService";
 import { toast, ToastContainer } from "react-toastify";
+import axios, { Axios } from "axios";
 export default function Signup() {
   const [checked, setValue] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -35,9 +36,22 @@ export default function Signup() {
     setValue(!checked);
   };
 
+  // const checkEmailTONTAI = async (email) => {
+  //   const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=ee1beb55bc8107ec2de384a942597e4e973330cb`);
+  //   console.log(response);
+  //   if (response?.data?.data?.status === "valid") {
+  //     console.log("oke");
+  //     return true;
+  //   } else {
+  //     toast.error("Email này không tồn tại!");
+  //     console.log("ko oke");
+  //     return false;
+  //   }
+  // }
+
   const handleLogin = async (event) => {
     event.preventDefault();
-    const { username, email, password, confirmPassword,phone,fullname } = formData;
+    const { username, email, password, confirmPassword, phone, fullname } = formData;
     if (!fullname || !username || !email || !phone || !password || !confirmPassword) {
       toast.error("Vui lòng điền đầy đủ thông tin!");
       return;
@@ -68,21 +82,45 @@ export default function Signup() {
       toast.warn("Điều khoản tài khoản!");
       return
     }
-
-    try {
-      const response = await AuthService.register(formData);
-      if (response.status === 200) {
-        toast.success("Đăng ký thành công");
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-      } else {
-        toast.error("đăng ký thất bại,", response.data);
+    // checkEmailTONTAI(formData.email)
+    const token = import.meta.env.VITE_TOKEN_HUNTER;
+    const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${formData.email}&api_key=${token}`);
+    console.log(response);
+    if (response?.data?.data?.status === "valid") {
+      try {
+        const response = await AuthService.register(formData);
+        if (response.status === 200) {
+          toast.success("Đăng ký thành công");
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
+        } else {
+          toast.error("đăng ký thất bại,", response.data);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error?.response?.data || "An error occurred during registration");
       }
-    } catch (error) {
-      console.log(error);
-      toast.error(error?.response?.data || "An error occurred during registration");
+      console.log("oke");
+    } else {
+      toast.error("(" + formData.email + ")" + " Email Không tồn tại!");
+      console.log("ko oke");
+
     }
+    // try {
+    //   const response = await AuthService.register(formData);
+    //   if (response.status === 200) {
+    //     toast.success("Đăng ký thành công");
+    //     setTimeout(() => {
+    //       navigate('/login');
+    //     }, 2000);
+    //   } else {
+    //     toast.error("đăng ký thất bại,", response.data);
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    //   toast.error(error?.response?.data || "An error occurred during registration");
+    // }
   };
 
   const validateInput = (name, value) => {
@@ -115,7 +153,7 @@ export default function Signup() {
       //     },
       //   }));
 
-        // break;
+      // break;
       case "email":
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         setError((prev) => ({
