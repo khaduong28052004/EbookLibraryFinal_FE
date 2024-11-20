@@ -14,13 +14,14 @@ const ThongKeSanPham = () => {
   const [data, setData] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [size, setSize] = useState(5);
   useEffect(() => {
     loadTable();
   }, [pageNumber, search, sortBy, sortColumn]);
 
   const loadTable = async () => {
     try {
-      const response = await ThongKeService.sanPham(search, pageNumber, sortBy, sortColumn);
+      const response = await ThongKeService.sanPham(search, pageNumber, sortBy, sortColumn, size);
       console.log(response.data.result);
       toast.error(response.data.message);
       setData(response.data.result);
@@ -42,7 +43,7 @@ const ThongKeSanPham = () => {
       setPageNumber(pageNumber + 1);
     }
   };
-  
+
   return (
     <>
       <Breadcrumb pageName="Thống Kê Sản Phẩm" status='Người Bán' />
@@ -142,11 +143,11 @@ const ThongKeSanPham = () => {
           handleNext={handleNext}
           handlePrevious={handlePrevious}
           setPageNumber={setPageNumber}
-          setSearch={setSearch} 
+          setSearch={setSearch}
           sortBy={sortBy}
           sortColumn={sortColumn}
           setSortBy={setSortBy}
-          setSortColumn={setSortColumn}/>
+          setSortColumn={setSortColumn} />
       </div>
     </>
   );
