@@ -5,7 +5,7 @@ import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import product from '../../../service/admin/Product';
 import Modal from "./ModalThongBao";
-import ModalDuyet from "./Modal_Duyet";
+import ModalDuyet from "./Modal_DuyetProduct";
 import Pagination from './Pagination';
 
 const TableTwo = () => {
@@ -20,8 +20,9 @@ const TableTwo = () => {
     const [entityProduct, setEntityProduct] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
+    const [status, setStatus] = useState(null);
+
     const [active, setActive] = useState(null);
-    const [optionActive, setoptionActive] = useState(null);
     const findAllProduct = async () => {
         try {
             const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 2, sortColumn, sortBy });
@@ -31,40 +32,37 @@ const TableTwo = () => {
         }
     }
 
-    const putActive = async (id, status) => {
-        try {
-            const response = await product.putActive({ id, status });
-            console.log("xóa: " + response.data.result.message);
-            findAllProduct();
-        } catch (error) {
-            console.log("Error: " + error);
-        }
-    }
+    // const putActive = async (id, status) => {
+    //     try {
+    //         const response = await product.putActive({ id, status });
+    //         if (response.data.code === 1000) {
+    //             toast.success(response.data.message);
+    //         }
+    //         findAllProduct();
+    //     } catch (error) {
+    //         toast.error("Lỗi hệ thống");
+    //         console.log("Error: " + error);
+    //     }
+    // }
     const putStatus = async (id) => {
         try {
             const response = await product.putStatus({ id });
             if (response.data.code === 1000) {
-                entityProduct.delete=false ? toast.success("Đã ngừng hoạt động") : toast.success("Sản phẩm đã hoạt động lại");
-            } else {
-                entityProduct.delete=false ? toast.error("Lỗi không thể ngừng hoạt động") : toast.error("Lỗi không thể hoạt động lại");
+                toast.success(response.data.message);
             }
             findAllProduct();
         } catch (error) {
+            toast.error("Lỗi hệ thống");
             console.log("Error: " + error);
         }
     }
 
     const handleConfirm = () => {
-        if (active) {
-            putActive(entityProduct.id, optionActive);
-            setoptionActive(null);
-        } else {
-            putStatus(entityProduct.id);
-        }
+        putStatus(entityProduct.id);
         findAllProduct();
         setIsOpen(false);
-
     };
+
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < data.totalPages) {
             setCurrentPage(newPage);
@@ -82,7 +80,7 @@ const TableTwo = () => {
 
     useEffect(() => {
         findAllProduct(option, searchItem, currentPage, sortBy, sortColumn);
-    }, [searchItem, currentPage, sortBy, sortColumn, option]);
+    }, [searchItem, currentPage, sortBy, sortColumn, option, status]);
 
     const toggleRow = (id) => {
         if (expandedRowId === id) {
@@ -93,11 +91,11 @@ const TableTwo = () => {
     };
 
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách Thống Kê Sản Phẩm'];
+        const sheetNames = ['Danh Sách Sản Phẩm'];
         try {
             console.log("totalElements: " + data.totalElements);
             const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: data.totalElements, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.result.content]);
+            return ExportExcel("Danh Sách Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -316,7 +314,6 @@ const TableTwo = () => {
                                                 <p>Mã sản phẩm: {entity.id}</p>
                                                 <p>Thể loại: {entity.category.name}</p>
                                                 <p>Shop: {entity.account.shopName}</p>
-                                                {/* <p>Trạng thái : {entity.account.status == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p> */}
                                                 <p>Họ tên chủ shop: {entity.account.fullname}</p>
                                                 <p>Email: {entity.account.email}</p>
                                                 <p>Số điện thoại: {entity.account.phone}</p>
@@ -359,18 +356,15 @@ const TableTwo = () => {
                     buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
             ) : (
                 <ModalDuyet
+                    id={entityProduct.id}
+                    status={status}
+                    setStatus={setStatus}
                     open={isOpen}
                     setOpen={setIsOpen}
                     title={statusentity ? 'Hủy' : 'Duyệt'}
                     message={statusentity
                         ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
                         : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
-                    onConfirm={() => {
-                        putActive(id, true);
-                    }}
-                    onCancel={() => {
-                        putActive(id, false);
-                    }}
                     confirmText={'Duyệt'}
                     cancelText={"Hủy"}
                     icon={statusentity ? (

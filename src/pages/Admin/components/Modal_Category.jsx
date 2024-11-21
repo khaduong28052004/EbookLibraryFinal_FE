@@ -18,7 +18,7 @@ const ModalCategory = ({
         idParent: 0,
         account: sessionStorage.getItem("id_account"),
     };
-   
+
 
     const [formData, setFormData] = useState(initialFormData);
 
@@ -52,13 +52,11 @@ const ModalCategory = ({
         try {
             const response = await categoryService.post({ data: formData });
             setStatus(!status);
-            const responseCode = response.data.code;
-            if (responseCode !== 1000) {
-                toast.error(response.data.message);
-            } else {
-                toast.success(response.data.message);
-            }
+            toast.success(response.data.message);
+            setFormData(initialFormData);
+            setOpen(false);
         } catch (error) {
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
@@ -66,26 +64,22 @@ const ModalCategory = ({
         try {
             const response = await categoryService.put({ data: formData });
             setStatus(!status);
-            const responseCode = response.data.code;
-            if (responseCode !== 1000) {
-                toast.error(response.data.message);
-            } else {
-                toast.success(response.data.message);
-            }
+            toast.success(response.data.message);
+            setFormData(initialFormData);
+            setOpen(false);
         } catch (error) {
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
+        e.preventDefault(); 
         if (entity != null) {
             putCategory();
         } else {
             postCategory();
         }
-        setFormData(initialFormData);
-        e.preventDefault(); // Chặn hành vi reload trang khi submit form
-        setOpen(false); // Đóng modal sau khi submit
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">

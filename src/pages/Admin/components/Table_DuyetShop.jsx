@@ -1,33 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
-import Modal from "./Modal_Duyet";
+import ModalDuyetShop from "./Modal_DuyetShop";
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
-// import { usePDF } from 'react-to-pdf';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableTwo = ({ status, setStatus }) => {
     const [data, setData] = useState([]);
 
     const [searchItem, setSearchItem] = useState('');
-    const [gender, setGender] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
     const [expandedRowId, setExpandedRowId] = useState(null);
 
-    const [id, setId] = useState('');
+    const [id, setId] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
-    const handleConfirm = () => {
-        setIsOpen(false);
-        putActive(id, true);
-    };
-    const handleCancel = () => {
-        setIsOpen(false);
-        putActive(id, false);
-    };
+
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < data.totalPages) {
             setCurrentPage(newPage);
@@ -54,28 +46,16 @@ const TableTwo = ({ status, setStatus }) => {
         }
     };
 
-
-    const putActive = async (id, statusActive) => {
-        try {
-            const response = await accountService.putActive({ id, status: statusActive });
-            console.log("Mã Code active: " + response.data.code);
-            setStatus(!status);
-            findAllSellerNotBrowse();
-        } catch (error) {
-            console.log("Error: " + error);
-        }
-    }
-
     useEffect(() => {
-        findAllSellerNotBrowse(searchItem, gender, currentPage, sortBy, sortColumn);
-    }, [searchItem, gender, currentPage, sortBy, sortColumn]);
-    ;
+        findAllSellerNotBrowse();
+    }, [searchItem, currentPage, sortBy, sortColumn,status]);
+    
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách nhân viên'];
+        const sheetNames = ['Danh Sách Đăng Ký Người Bán'];
         try {
             console.log("totalElements: " + data.totalElements);
             const response = await accountService.findAllSellerNotBrowse({ currentPage, size: data.totalElements, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+            return ExportExcel("Danh Sách Đăng Ký Người Bán.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -95,6 +75,7 @@ const TableTwo = ({ status, setStatus }) => {
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer></ToastContainer>
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3">
@@ -282,15 +263,16 @@ const TableTwo = ({ status, setStatus }) => {
                 size={data.size}></Pagination>
 
 
-            <Modal
+            <ModalDuyetShop
                 open={isOpen}
+                id={id}
+                status={status}
+                setStatus={setStatus}
                 setOpen={setIsOpen}
                 title={statusentity ? 'Hủy' : 'Duyệt'}
                 message={statusentity
                     ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
                     : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
                 confirmText={'Duyệt'}
                 cancelText={"Hủy"}
                 icon={statusentity ? (

@@ -7,6 +7,7 @@ import flashSaleDetails from '../../../service/admin/FlashSaleDetails';
 import ModalFlashSale from "./Model_FlashSaleCTInsert";
 import Modal from "./ModalThongBao";
 import Pagination from './Pagination';
+import { toast, ToastContainer } from 'react-toastify';
 
 const Modal_FlashSaleCT = ({
     statusFillAll,
@@ -23,13 +24,17 @@ const Modal_FlashSaleCT = ({
         account: '',
     };
     const [formData, setFormData] = useState(initialFormData);
-    const [dataProductNotFS, setdataProductNotFS] = useState([]);
-    const [dataProduct, setdataProduct] = useState([]);
     const [Product, setProduct] = useState([]);
-    const [sortColumn, setSortColumn] = useState('');
-    const [sortBy, setSortBy] = useState(true);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [dataProduct, setdataProduct] = useState([]);
+    const [sortColumnProduct, setSortColumnProduct] = useState('');
+    const [sortByProduct, setSortByProduct] = useState(true);
     const [currentPageProduct, setCurrentPageProduct] = useState(0);
+
+    const [ProductNotProduct, setProductNotProduct] = useState([]);
+    const [dataProductNotFS, setdataProductNotFS] = useState([]);
+    const [sortColumnNotProduct, setSortColumnNotProduct] = useState('');
+    const [sortByNotProduct, setSortByNotProduct] = useState(true);
+    const [currentPageNotProduct, setCurrentPageNotProduct] = useState(0);
 
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDelete, setIsOpenDelete] = useState(false);
@@ -62,26 +67,26 @@ const Modal_FlashSaleCT = ({
     };
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < dataProductNotFS.totalPages) {
-            setCurrentPage(newPage);
+            setCurrentPageNotProduct(newPage);
             console.log("newPage: " + newPage);
         }
     };
 
     const handlePrevious = () => {
-        handlePageChange(currentPage - 1);
+        handlePageChange(currentPageNotProduct - 1);
     };
 
     const handleNext = () => {
-        handlePageChange(currentPage + 1);
+        handlePageChange(currentPageNotProduct + 1);
     };
 
 
     const findListNotFalshSale = async () => {
         try {
-            const response = await flashSaleDetails.findListNotFalshSale({ id: entityFlashSale.id, page: currentPage, size: 2, sortColumn, sortBy });
+            const response = await flashSaleDetails.findListNotFalshSale({ id: entityFlashSale.id, page: currentPageNotProduct, size: 2, sortColumn: sortColumnNotProduct, sortBy: sortByNotProduct });
             console.log("entityFlashSale.id: " + entityFlashSale.id);
             setdataProductNotFS(response.data.result);
-            setCurrentPage(response.data.result.pageable.pageNumber);
+            setCurrentPageNotProduct(response.data.result.pageable.pageNumber);
             console.log(dataProductNotFS);
         } catch (error) {
             console.log("Error: " + error);
@@ -90,7 +95,7 @@ const Modal_FlashSaleCT = ({
 
     const findListByFlashSale = async () => {
         try {
-            const response = await flashSaleDetails.findListByFlashSale({ id: entityFlashSale.id, page: currentPageProduct, size: 2, sortColumn, sortBy });
+            const response = await flashSaleDetails.findListByFlashSale({ id: entityFlashSale.id, page: currentPageProduct, size: 2, sortColumn: sortColumnProduct, sortBy: sortByProduct });
             setdataProduct(response.data.result);
             setCurrentPageProduct(response.data.result.pageable.pageNumber);
             console.log("setCurrentPageProduct" + currentPageProduct);
@@ -102,8 +107,11 @@ const Modal_FlashSaleCT = ({
     const deleteFlashSaleDetails = async (id) => {
         try {
             const response = await flashSaleDetails.delete({ id });
+            toast.success("Xóa sản phẩm thành công");
             setStatus(!status);
+            setIsOpen(false);
         } catch (error) {
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
@@ -112,29 +120,32 @@ const Modal_FlashSaleCT = ({
         try {
             const response = await flashSale.put({ data: formData });
             setStatusFillAll(!statusFillAll);
-            console.log("Code: " + response.data.result.code);
-            console.log("Data: " + response.data.result.content);
+            toast.success(response.data.message);
+            setFormData(initialFormData);
+            setOpen(false);
         } catch (error) {
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
     const handleConfirm = () => {
-        setIsOpen(false);
         deleteFlashSaleDetails(Product.id);
     };
 
     const handleSubmit = (e) => {
-        putFlashSale();
-        setFormData(initialFormData);
         e.preventDefault();
-        setOpen(false); 
+        if (new Date(formData.dateStart) >= new Date(formData.dateEnd)) {
+            toast.error("Ngày bắt đầu phải trước ngày kết thúc.");
+            return;
+        }
+        putFlashSale();
     };
 
     useEffect(() => {
         findListNotFalshSale();
         findListByFlashSale();
-    }, [entityFlashSale, currentPageProduct, currentPage, formData.dateStart, formData.dateEnd, status]);
+    }, [entityFlashSale, currentPageProduct, currentPageNotProduct, formData.dateStart, sortByProduct, sortColumnProduct, sortByNotProduct, sortColumnNotProduct, formData.dateEnd, status]);
 
     const formatToDateTimeLocal = (dateString) => {
         if (!dateString) return "";
@@ -156,16 +167,11 @@ const Modal_FlashSaleCT = ({
         });
     }, [entityFlashSale]);
 
-    const formatNumber = (number, decimals = 2) => {
-        if (number === null || number === undefined || isNaN(number)) {
-            return '0.00';
-        }
-        return number.toFixed(decimals);
-    };
+
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-
+            <ToastContainer></ToastContainer>
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full max-w-6xl h-150 sm:h-3/4">
@@ -218,8 +224,8 @@ const Modal_FlashSaleCT = ({
                                     <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                                     <th
                                         onClick={() => {
-                                            setSortColumn("name");
-                                            setSortBy(!sortBy);
+                                            setSortColumnNotProduct("name");
+                                            setSortByNotProduct(!sortByNotProduct);
                                         }}
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1">
@@ -231,8 +237,8 @@ const Modal_FlashSaleCT = ({
 
                                     <th
                                         onClick={() => {
-                                            setSortColumn("price");
-                                            setSortBy(!sortBy);
+                                            setSortColumnNotProduct("price");
+                                            setSortByNotProduct(!sortByNotProduct);
                                         }}
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1 hidden xl:flex">
@@ -244,8 +250,8 @@ const Modal_FlashSaleCT = ({
 
                                     <th
                                         onClick={() => {
-                                            setSortColumn("sale");
-                                            setSortBy(!sortBy);
+                                            setSortColumnNotProduct("sale");
+                                            setSortByNotProduct(!sortByNotProduct);
                                         }}
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1 hidden xl:flex">
@@ -257,8 +263,8 @@ const Modal_FlashSaleCT = ({
 
                                     <th
                                         onClick={() => {
-                                            setSortColumn("quantity");
-                                            setSortBy(!sortBy);
+                                            setSortColumnNotProduct("quantity");
+                                            setSortByNotProduct(!sortByNotProduct);
                                         }}
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1 hidden xl:flex">
@@ -268,7 +274,7 @@ const Modal_FlashSaleCT = ({
                                         </div>
                                     </th>
                                     <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                                        <span className="text-sm text-black dark:text-white truncate w-24">Actions</span>
+                                        <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
                                     </th>
                                 </tr>
                             </thead>
@@ -289,7 +295,7 @@ const Modal_FlashSaleCT = ({
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                             <div className="flex items-center gap-1 hidden xl:flex">
-                                                {entity.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                                {entity.sale} %
                                             </div>
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -301,7 +307,7 @@ const Modal_FlashSaleCT = ({
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                             <div className="flex space-x-3.5">
                                                 <button onClick={() => {
-                                                    setProduct(entity);
+                                                    setProductNotProduct(entity);
                                                     setIsOpen(true);
                                                     setStatusentity(!entity.delete);
                                                 }}>
@@ -314,12 +320,12 @@ const Modal_FlashSaleCT = ({
                             </tbody>
                         </table>
                         <Pagination
-                            pageNumber={currentPage || 0}
+                            pageNumber={currentPageNotProduct || 0}
                             totalPages={dataProductNotFS?.totalPages || 0}
                             totalElements={dataProductNotFS?.totalElements || 0}
                             handlePrevious={handlePrevious}
                             handleNext={handleNext}
-                            setPageNumber={setCurrentPage}
+                            setPageNumber={setCurrentPageNotProduct}
                             size={dataProductNotFS.size}></Pagination>
 
                         <table className="w-full border-collapse border border-stroke dark:border-strokedark">
@@ -328,8 +334,8 @@ const Modal_FlashSaleCT = ({
                                     <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                                     <th
                                         onClick={() => {
-                                            setSortColumn("name");
-                                            setSortBy(!sortBy);
+                                            setSortColumnProduct("product.name");
+                                            setSortByProduct(!sortByProduct);
                                         }}
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1">
@@ -341,8 +347,8 @@ const Modal_FlashSaleCT = ({
 
                                     <th
                                         onClick={() => {
-                                            setSortColumn("price");
-                                            setSortBy(!sortBy);
+                                            setSortColumnProduct("product.price");
+                                            setSortByProduct(!sortByProduct);
                                         }}
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1 hidden xl:flex">
@@ -354,8 +360,8 @@ const Modal_FlashSaleCT = ({
 
                                     <th
                                         onClick={() => {
-                                            setSortColumn("sale");
-                                            setSortBy(!sortBy);
+                                            setSortColumnProduct("sale");
+                                            setSortByProduct(!sortByProduct);
                                         }}
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1 hidden xl:flex">
@@ -367,12 +373,12 @@ const Modal_FlashSaleCT = ({
 
                                     <th
                                         onClick={() => {
-                                            setSortColumn("quantity");
-                                            setSortBy(!sortBy);
+                                            setSortColumnProduct("quantity");
+                                            setSortByProduct(!sortByProduct);
                                         }}
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1 hidden xl:flex">
-                                            <span className="text-sm text-black dark:text-white">Số lượng kho</span>
+                                            <span className="text-sm text-black dark:text-white">Số lượng sale</span>
                                             <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                             <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                                         </div>
@@ -390,16 +396,16 @@ const Modal_FlashSaleCT = ({
                                             {index + 1}
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                            <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
+                                            <p className="text-sm text-black dark:text-white truncate w-24">{entity.product.name}</p>
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                             <div className="flex items-center gap-1 hidden xl:flex">
-                                                {entity.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                                {(entity.product.price - entity.product.sale).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                             </div>
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                             <div className="flex items-center gap-1 hidden xl:flex">
-                                                {entity.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                                {entity.sale} %
                                             </div>
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -433,32 +439,20 @@ const Modal_FlashSaleCT = ({
                             size={dataProduct.size}></Pagination>
 
                         <ModalFlashSale
-                            product={Product}
+                            product={ProductNotProduct}
                             flashSaleId={entityFlashSale.id}
                             open={isOpen}
                             setOpen={setIsOpen}
-                            title={statusentity
-                                ? 'Ngừng Hoạt Động'
-                                : 'Khôi Phục'}
-                            message={statusentity
-                                ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                                : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
-                            // onConfirm={handleConfirm}
-                            confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
+                            title={'Thêm sản phẩm'}
+                            message={'Bạn chắc chắn muốn thêm sản phẩm này không?'}
+                            confirmText={'Xác Nhận'}
                             cancelText="Thoát"
-                            icon={statusentity ? (
-                                <TrashIcon className="h-6 w-6 text-red-600" />
-                            ) : (
-                                <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
-                            )}
-                            iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                            buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'}
                             status={status}
                             setStatus={setStatus} />
                         <Modal
                             open={isOpenDelete}
                             setOpen={setIsOpenDelete}
-                            title={'Ngừng Hoạt Động'}
+                            title={'Xóa Sản Phẩm'}
                             message={'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'}
                             onConfirm={handleConfirm}
                             confirmText={'Xác Nhận'}

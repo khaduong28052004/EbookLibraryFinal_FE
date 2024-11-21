@@ -5,7 +5,7 @@ const account_id = sessionStorage.getItem('id_account');
 const createUrl = (path, params = '') => `/api/v1/seller/product/${path}${params}`;
 
 const SanPhamService = {
-  getAll: (search, page, sortBy, sortColumn) => axiosAuth('null', 'get', createUrl('getAll', `?account_id=${account_id}&search=${search}&page=${page}&sortBy=${sortBy}&sortColumn=${sortColumn}`)),
+  getAll: (search, page, sortBy, sortColumn,size) => axiosAuth('null', 'get', createUrl('getAll', `?account_id=${account_id}&search=${search}&page=${page}&sortBy=${sortBy}&sortColumn=${sortColumn}&size=${size}`)),
   create: (data) => axiosAuth('null', 'post', createUrl('create'), data),
   createSaveImg: (formData) => axiosAuth('null', 'post', createUrl('create/saveImg'), formData),
   updateSaveImg: (formData) => axiosAuth('null', 'post', createUrl('update/saveImg'), formData),

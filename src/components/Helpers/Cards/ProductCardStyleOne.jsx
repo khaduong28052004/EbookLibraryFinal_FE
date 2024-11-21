@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRequest } from "../../Request/RequestProvicer";
 import Compair from "../icons/Compair";
 import QuickViewIco from "../icons/QuickViewIco";
 import Star from "../icons/Star";
@@ -9,6 +10,7 @@ import ThinLove from "../icons/ThinLove";
 export default function ProductCardStyleOne({ datas, type }) {
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState();
+  const { startRequest, endRequest } = useRequest();
   const available =
     (datas.cam_product_sale /
       (datas.cam_product_available + datas.cam_product_sale)) *
@@ -24,9 +26,11 @@ export default function ProductCardStyleOne({ datas, type }) {
 
   const createFavorite = () => {
     const id_user = sessionStorage.getItem("id_account");
+    startRequest();
     if (id_user) {
       axios.get(`http://localhost:8080/api/v1/user/favorite/add?id_user=${id_user}&id_product=${datas?.id}`).then(response => {
         setIsFavorite(response.data.result);
+        endRequest();
       }).catch(error => console.error("create favorite error " + error));
     }
   }
@@ -115,12 +119,23 @@ export default function ProductCardStyleOne({ datas, type }) {
           </p>
         </a>
         <p className="price">
-          <span className="offer-price text-qred font-600 text-[18px] ml-2 mr-1">
-            {Intl.NumberFormat().format(datas.price - ((datas.price * datas.sale) / 100))}<sup>đ</sup>
-          </span>
-          <span className="main-price text-qgray line-through font-600 text-[15px]">
-            {Intl.NumberFormat().format(datas.price)}<sup>đ</sup>
-          </span>
+          {datas?.flashSaleDetail ?
+            (<>
+              <span className="offer-price text-qred font-600 text-[18px] ml-2 mr-1">
+                {Intl.NumberFormat().format(
+                  datas?.price - ((datas?.price * datas?.sale) / 100) - ((datas?.price - ((datas?.price * datas?.sale) / 100)) * (datas?.flashSaleDetail?.sale / 100))
+
+                )}<sup>đ</sup>
+              </span>
+              <span className="main-price text-qgray line-through font-600 text-[15px]">
+                {Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup>
+
+              </span>
+            </>) :
+            (<>
+              <span className="text-[15px] font-light line-through">{Intl.NumberFormat().format(datas?.price)}<sup>đ</sup></span>
+              <span className="text-[15px] font-bold">{Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup></span>
+            </>)}
 
         </p>
       </div>

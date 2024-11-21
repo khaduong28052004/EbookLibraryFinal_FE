@@ -22,11 +22,6 @@ const Home = () => {
     findAllHome();
   }, []);
 
-  const chartData = {
-    labels: ['Desktop', 'Tablet', 'Mobile', 'Unknown'],
-    series: [65, 34, 12, 56], // Phần trăm hoặc giá trị
-  };
-
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
@@ -82,7 +77,9 @@ const Home = () => {
         </CardDataStats>
         <CardDataStats
           title="Doanh thu"
-          total={data.doanhThu}
+          total={typeof data.doanhThu === 'number' ?
+            data.doanhThu.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) :
+            'Dữ liệu không hợp lệ'}
         // rate="0.43%" levelUp
         >
           <svg
@@ -105,7 +102,9 @@ const Home = () => {
         </CardDataStats>
         <CardDataStats
           title="Lợi nhuận"
-          total={data.loiNhuan}
+          total={typeof data.loiNhuan === 'number' ?
+            data.loiNhuan.toLocaleString("vi-VN", { style: "currency", currency: "VND" }) :
+            'Dữ liệu không hợp lệ'}
         // rate="0.43%" levelUp
         >
           <svg

@@ -1,53 +1,40 @@
 import React, { Dispatch, SetStateAction, ReactNode } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
+import { toast, ToastContainer } from 'react-toastify';
+import product from '../../../service/admin/Product';
 
 const Modal = ({
+    id,
+    status,
+    setStatus,
     open,
     setOpen,
     title,
     message,
-    onConfirm,
-    onCancel,
     confirmText = 'Confirm',
     cancelText = 'Cancel',
     icon,
     iconBgColor = 'bg-red-100',
     buttonBgColor = "bg-red-600"
 }) => {
-    const putActive = async (id, status) => {
+
+    const putActive = async (active) => {
         try {
-            const response = await product.putActive({ id, status });
-            console.log("xóa: " + response.data.result.message);
-            findAllProduct();
+            const response = await product.putActive(id, active);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
+            }
+            setStatus(!status);
         } catch (error) {
+            toast.error("Lỗi hệ thống");
             console.log("Error: " + error);
         }
     }
-    const putStatus = async (id) => {
-        try {
-            const response = await product.putStatus({ id });
-            console.log("xóa: " + response.data.result.message);
-            findAllProduct();
-        } catch (error) {
-            console.log("Error: " + error);
-        }
-    }
-
-    const handleConfirm = () => {
-        if (active) {
-            putActive(id, active);
-        } else {
-            putStatus(id);
-        }
-        findAllProduct();
-        setIsOpen(false);
-
-    };
 
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-
+            <ToastContainer></ToastContainer>
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
@@ -72,7 +59,7 @@ const Modal = ({
                             <button
                                 type="button"
                                 onClick={() => {
-                                    onConfirm && onConfirm();
+                                    putActive(true);
                                     setOpen(false);
                                 }}
                                 className={`inline-flex w-full justify-center rounded-md ${buttonBgColor} px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
@@ -82,7 +69,7 @@ const Modal = ({
                             <button
                                 type="button"
                                 onClick={() => {
-                                    onCancel && onCancel();
+                                    putActive(false);
                                     setOpen(false);
                                 }}
                                 className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"

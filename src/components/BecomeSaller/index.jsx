@@ -9,9 +9,12 @@ import {
   uploadImages,
   getSeller,
   checkCCCDInDatabase,
+  checkFaceAi
 } from "../../service/dangKySellerService";
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 
 export default function BecomeSaller() {
+  const [isOpen, setIsOpen] = useState(false);
   const [imgAfter, setImgAfter] = useState(null);
   const [imgBefore, setImgBefore] = useState(null);
   const imgAfterInput = useRef(null);
@@ -41,6 +44,14 @@ export default function BecomeSaller() {
   const handleNextStep = () => {
     setCurrentStep(currentStep + 1);
   };
+  const videoRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const [countdown, setCountdown] = useState(null);
+  const [error, setError] = useState(null);
+  const [videoURL, setVideoURL] = useState(null);
+  const chunks = useRef([]); // Lưu các chunk video
+  const [isRecording, setIsRecording] = useState(false);
+  const [imageTest, setImageTest] = useState(null);
   const checkImg = async () => {
     if (id1 !== null && id2 !== null) {
       if (id1 === id2) {
@@ -50,6 +61,7 @@ export default function BecomeSaller() {
           fullName: name,
         }));
         toast.success("Ảnh CCCD hợp lệ");
+        setIsOpen(true);
       } else {
         toast.error("Vui lòng chọn ảnh mặt trước và mặt sau trùng khớp!!");
       }
@@ -58,10 +70,127 @@ export default function BecomeSaller() {
   useEffect(() => {
     checkImg()
   }, [id1, id2]);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Mở camera
+      openCamera();
+    } else {
+      // Tắt camera khi hộp thoại đóng
+      closeCamera();
+    }
+
+    return () => closeCamera();
+  }, [isOpen]);
+
+  const handleXacThuc = () => {
+
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject;
+      mediaRecorderRef.current = new MediaRecorder(stream);
+
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        chunks.current.push(e.data); 
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        // Khi dừng ghi, set videoURL
+        const blob = new Blob(chunks.current, { type: 'video/webm' });
+        handleCheckFaceAi(blob);
+        chunks.current = [];
+      };
+
+      mediaRecorderRef.current.start();
+    }
+
+
+    // Đếm ngược thời gian
+    let timeLeft = 10;
+    setCountdown(timeLeft);
+    const interval = setInterval(() => {
+      timeLeft -= 1;
+      setCountdown(timeLeft);  // Cập nhật thời gian đếm ngược
+      if (timeLeft === 0) {
+        console.log("OKe");
+        // if (mediaRecorderRef.current && isRecording) {
+        mediaRecorderRef.current.stop();  // Dừng quay video khi hết thời gian
+        // }
+        clearInterval(interval);
+
+      }
+    }, 1000);
+
+    // Cleanup function
+    return () => {
+      clearInterval(interval);
+      if (videoRef.current && videoRef.current.srcObject) {
+        const tracks = videoRef.current.srcObject.getTracks();
+        tracks.forEach((track) => track.stop());
+      }
+    };
+  };
+
+
+
+  const handleCheckFaceAi = async (videoCheck) => {
+    try {
+      console.log("VIDEO", videoCheck);
+      console.log("cmnd", imgBefore);
+      const formData = new FormData();
+      formData.append('video', videoCheck, 'video.webm');
+      formData.append('cmnd', imgBefore);
+      const response = await checkFaceAi(formData);
+      console.log("checkAI", response);
+      if (response.data.liveness.is_live === 'false') {
+        // Kiểm tra nếu không phải là "live"
+        toast.error(`Xác thực không thành công! ${response.data.liveness.message}`);
+      } else if (response.data.face_match.similarity < 90) {
+        // Kiểm tra nếu độ tương đồng giữa khuôn mặt thấp
+        toast.error("Xác thực không thành công. Độ tương đồng khuôn mặt quá thấp.");
+      } else {
+        // Nếu cả 2 điều kiện đều đạt
+        toast.success("Xác thực thành công!");
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleImageTest = (e) => {
+    setImageTest(e.target.files[0]);
+  }
+
+  const openCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+    } catch (err) {
+      setError("Không thể truy cập camera. Vui lòng kiểm tra cài đặt quyền hoặc thiết bị.");
+    }
+  };
+
+  const closeCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject;
+      const tracks = stream.getTracks();
+      tracks.forEach((track) => track.stop());
+      videoRef.current.srcObject = null;
+    }
+  };
+
+
+
+
   useEffect(() => {
     fetchGetSeller(loggedInSellerId)
   }, [loggedInSellerId]);
+
   const handleImageChange = async (event, frame) => {
+
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -74,6 +203,7 @@ export default function BecomeSaller() {
       };
       reader.readAsDataURL(file);
     }
+
     const registerSellData = new FormData();
     registerSellData.append("image", file);
     try {
@@ -98,6 +228,8 @@ export default function BecomeSaller() {
   };
 
   const handleInputChange = (e) => {
+    console.log("videoURL", videoURL);
+
     const { name, value } = e.target;
     setRegisterSellData(prev => ({ ...prev, [name]: value }));
     setCccdExists(null);
@@ -116,12 +248,10 @@ export default function BecomeSaller() {
       } else {
         setErrorMessage("");
         console.log("CCCD hợp lệ, tiếp tục đăng ký seller.");
-        // Tiến hành đăng ký
         try {
           await fetchRegister(e); // Gọi hàm fetchRegister để tiến hành đăng ký
           toast.success("Đăng ký thành công.");
-          // Chuyển sang Form 2
-          // setCurrentStep(currentStep + 1);
+
 
         } catch (error) {
           console.error("Đăng ký thất bại:", error);
@@ -131,8 +261,7 @@ export default function BecomeSaller() {
     } else {
       setErrorMessage("Vui lòng nhập số CCCD.");
     }
-};
-
+  };
 
   const handleBlur = async () => {
     const cccdNumber = registerSellData.numberId;
@@ -155,7 +284,6 @@ export default function BecomeSaller() {
     console.log("FormData imgAfter:", formData.get("imgAfter"));
     const isCCCDValid = await checkCCCDInDatabase(registerSellData.numberId);
     console.log("CCCD Valid:", isCCCDValid);
-    // if (!isCCCDValid) return;
     try {
       const data = await fetchRegisterSell(loggedInSellerId, registerSellData);
       console.log("Register Data:", data);
@@ -176,7 +304,7 @@ export default function BecomeSaller() {
             toast.error("Đã xảy ra lỗi trong quá trình tải ảnh lên.");
           }
         }
-        
+
         setCurrentStep(currentStep + 1);
         await fetchGetSeller(loggedInSellerId);
       } else {
@@ -186,7 +314,7 @@ export default function BecomeSaller() {
     } catch (error) {
       console.error("Error registering:", error);
     }
-};
+  };
 
   const fetchGetSeller = async (sellerId) => {
     try {
@@ -438,6 +566,69 @@ export default function BecomeSaller() {
           </div>
         </div>
       </div>
+
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(true)}
+
+        className="relative z-50"
+      >
+        {/* Backdrop */}
+        <div
+          className={`fixed inset-0 bg-gray-800 bg-opacity-75 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+        ></div>
+
+        {/* Dialog Content */}
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center transition-transform duration-300 transform ${isOpen ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
+            }`}
+        >
+          <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg">
+            {/* Header */}
+            <div className="p-4 bg-blue-500 text-white text-lg font-semibold">
+              Xác Thực Khuôn Mặt
+            </div>
+
+            {/* Camera View */}
+            <div className="p-6 flex flex-col items-center justify-center space-y-4">
+              {error ? (
+                <p className="text-red-500 text-sm">{error}</p>
+              ) : (
+                <div className="relative w-48 h-48 rounded-full border-4 border-blue-500 overflow-hidden">
+                  <video
+                    ref={videoRef}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    autoPlay
+                    muted
+                  ></video>
+                  {/* Spinning Border Animation */}
+                  <div className="absolute inset-0 border-t-4 border-blue-500 rounded-full animate-spin"></div>
+                </div>
+              )}
+              <p className="text-sm text-gray-500">
+                Vui lòng đưa khuôn mặt vào khung camera để xác thực.
+              </p>
+              <input type="file" name="imageTest" onChange={handleImageTest} />
+
+              {countdown !== null && (
+                <p className="text-lg font-bold text-blue-500">{countdown}s</p>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 bg-gray-100 flex justify-end items-center">
+              <button
+                onClick={handleXacThuc}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Xác Thực
+              </button>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+
       <ToastContainer />
     </Layout>
   );

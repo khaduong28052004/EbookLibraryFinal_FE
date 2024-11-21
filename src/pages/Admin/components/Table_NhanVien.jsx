@@ -38,39 +38,17 @@ const TableTwo = () => {
   const handleNext = () => {
     handlePageChange(currentPage + 1);
   };
-  // const getPagesToShow = () => {
-  //   const totalPages = data?.totalPages || 0;
-  //   const current = data?.pageable?.pageNumber ?? 0;
-  //   const pages = [];
-  //   const maxPagesToShow = 5;
-
-  //   let start = Math.max(0, current - Math.floor(maxPagesToShow / 2));
-  //   let end = Math.min(totalPages - 1, start + maxPagesToShow - 1);
-
-  //   if (end - start + 1 < maxPagesToShow) {
-  //     start = Math.max(0, end - maxPagesToShow + 1);
-  //   }
-
-  //   for (let i = start; i <= end; i++) {
-  //     pages.push(i);
-  //   }
-
-  //   return pages;
-  // };
-
 
   const putStatusNhanVien = async (id) => {
     try {
       const response = await accountService.putStatus({ id });
       console.log("xóa: " + response.data.message);
       if (response.data.code === 1000) {
-        entityNhanVien.isDelete ? toast.success("Đã ngừng hoạt động") : toast.success("Tài khoản đã hoạt động lại");
-      } else {
-        entityNhanVien.isDelete ? toast.error("Lỗi không thể ngừng hoạt động") : toast.error("Lỗi không thể hoạt động lại");
+        toast.success(response.data.message);
       }
       findAllAccount();
     } catch (error) {
-      toast.error("Lỗi hệ thống");
+      toast.error("Cập nhật thất bại");
       console.log("Error: " + error);
     }
   }

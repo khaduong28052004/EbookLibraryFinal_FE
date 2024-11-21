@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 const LoginGG = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [token, setToken] = useState("");
+    const [erro, setError] = useState("");
     const navigate = useNavigate();
     const handleSuccess = async (credentialResponse) => {
         console.log(credentialResponse);
@@ -23,27 +24,27 @@ const LoginGG = () => {
             }
             const response = await AuthService.GoogleLogin(data);
             AuthService.setItem(response.data);
-          
-             if (response.status === 200) {
+
+            if (response.status === 200) {
                 const data = await response.json();
                 localStorage.setItem("accessToken", data.accessToken);
                 // setError(null); // Xóa thông báo lỗi
-                return navigate ('/');
+                return navigate('/');
             } else if (response.status === 401) {
                 const message = await response.text();
                 setError(message);
             } else if (response.status === 302) {
                 const redirectUrl = response.headers.get("Location");
-                // setError("Redirecting to sign-up page...");
-                return navigate ('/'+redirectUrl);
+                setError("Đang chuyển hướng đến trang đăng ký...");
+                return navigate('/' + redirectUrl);
             } else {
-                setError("Unexpected response. Please try again.");
+                setError("Phản hồi bất ngờ. Vui lòng thử lại.");
             }
         } catch (error) {
-            console.error("Error during login:", error);
-            setError("An error occurred. Please try again.");
+            console.error("Lỗi trong quá trình đăng nhập:", error?.response?.data);
+            setError("Đã xảy ra lỗi.Vui lòng thử lại.");
         }
-      
+
     };
 
     const handleError = () => {
@@ -55,8 +56,8 @@ const LoginGG = () => {
     }
 
     return (
-        <>  
-            <GoogleLogin onSuccess={handleSuccess}  onError={handleError} />
+        <>
+            <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
             {/* <button
                 type="button"
                 onClick={() => {}}

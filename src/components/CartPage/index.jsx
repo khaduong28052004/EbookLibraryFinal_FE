@@ -4,12 +4,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import BreadcrumbCom from "../BreadcrumbCom";
 import EmptyCardError from "../EmptyCardError";
-import InputCom from "../Helpers/InputCom";
 import PageTitle from "../Helpers/PageTitle";
 import Layout from "../Partials/Layout";
 import { useRequest } from "../Request/RequestProvicer";
 import Service_Fee from "../service/Service_Fee";
 import ProductsTable from "./ProductsTable";
+import AuthService from "../../service/authService";
 
 export default function CardPage({ cart = true }) {
   const navigate = useNavigate(); // Đưa useNavigate ra ngoài useEffect
@@ -22,8 +22,45 @@ export default function CardPage({ cart = true }) {
   const { startRequest, endRequest, setItem } = useRequest();
   const localtion = useLocation();
   const [feeSeller, setFeeSeller] = useState({});
+
+  const { isRequest } = useRequest();
+
+  // token
+  function isTokenExpired(token) {
+    const [, payloadBase64] = token.split('.');
+    const payload = JSON.parse(atob(payloadBase64));
+
+    const expirationTime = payload.exp * 1000; // Chuyển đổi giây thành milliseconds
+    const currentTimestamp = Date.now();
+
+    return expirationTime < currentTimestamp;
+  }
+  //giai han
+  const retoken = async (token) => {
+    if (isTokenExpired(token)) {
+      sessionStorage.removeItem("token");
+      toast.warn("Vui lòng đăng nhập");
+      setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 2000);
+
+      console.log("token het han")
+    } else {
+      console.log("Token còn hạn.");
+      try {
+        const response = await AuthService.tokenrenewal(token);
+        AuthService.setItem(response.data);
+      } catch (error) {
+        console.log("gia hạn lỗi");
+        console.error(error);
+      }
+
+    }
+  }
+
   useEffect(() => {
     const token = sessionStorage.getItem("token");
+    retoken(token);
     if (token) {
       const id_account = sessionStorage.getItem("id_account");
       axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
@@ -40,7 +77,7 @@ export default function CardPage({ cart = true }) {
   const getServiceFee = async (idSeller, weight, quantity, addressFrom, addressTo) => {
     try {
       const { service_fee } = await Service_Fee(weight, quantity, addressFrom, addressTo);
-      setServiceFee(serviceFee + service_fee);
+      setServiceFee(fee => fee + service_fee);
       setFeeSeller(seller => ({
         ...seller,
         [idSeller]: service_fee
@@ -61,7 +98,7 @@ export default function CardPage({ cart = true }) {
         // console.log("toaddress    " + toAddress);
       }
     }
-    setDataSubmit(value);
+
     setServiceFee(0);
     value?.forEach(seller => {
       for (let address of seller?.addresses) {
@@ -69,34 +106,54 @@ export default function CardPage({ cart = true }) {
           fromAddress = address;
         }
       }
+      var totalSeller = 0;
       seller?.cart.map(cartItem => {
-        total += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
-        sale += ((cartItem.product.price * cartItem.product.sale) / 100) * cartItem.quantity;
-        getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, fromAddress)
-      });
-      if (seller.vouchers.id > 0) {
-        if (((seller?.vouchers?.sale * total) / 100) > seller?.vouchers?.totalPriceOrder) {
-          total -= seller.vouchers.totalPriceOrder;
+
+        if (cartItem?.product?.flashSaleDetail) {
+          if (cartItem?.quantity <= cartItem?.product?.flashSaleDetail?.quantity) {
+            total += (
+              cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))
+            ) * cartItem.quantity
+            totalSeller += (
+              cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))
+            ) * cartItem.quantity
+          } else {
+            var quantityFlashSale = cart?.product?.flashSaleDetail?.quantity;
+            var priceSale = totalPrice = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100));
+            total += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
+            totalSeller += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
+          }
         } else {
-          total -= ((total * seller.vouchers.sale) / 100);
+          total += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
+          totalSeller += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
+        }
+
+        getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, toAddress)
+      });
+      if (seller?.voucher?.id > 0) {
+        if (((seller?.voucher?.sale * totalSeller) / 100) > seller?.voucher?.totalPriceOrder) {
+          sale += seller.voucher.totalPriceOrder;
+        } else {
+          sale += ((totalSeller * seller.voucher.sale) / 100);
         }
       }
     });
+
     setTotalSale(sale);
     setTotal(total);
+    setDataSubmit(value);
   }
   useEffect(() => {
     if (dataSubmit?.length > 0) {
       setDataSubmit((prevData) =>
         prevData.map((item) => ({
           ...item,
-          service_fee: feeSeller[item?.id] || 0 // Thêm service_fee vào từng đối tượng
+          service_fee: feeSeller[item?.id] || 0
         }))
       );
     }
-  }, [feeSeller])
+  }, [feeSeller]);
   const handSubmitPay = () => {
-
     if (dataSubmit) {
       const data = {
         datas: dataSubmit,
@@ -128,6 +185,18 @@ export default function CardPage({ cart = true }) {
     }).catch(error => console.error("delete cart error " + error));
 
   }
+  const handleQuantityCartIndex = (quantity, idCart) => {
+    startRequest();
+    axios.get("http://localhost:8080/api/v1/user/cart/update/" + idCart + "?quantity=" + quantity).then(response => {
+      if (response.data.result) {
+        const id_account = sessionStorage.getItem("id_account");
+        axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
+          setData(response.data.result);
+          setUser(response.data.result.user);
+        }).catch(error => console.error("fetch cart error " + error));
+      }
+    }).catch(error => console.error("update cart error " + error + "id =" + idCart + "quantity " + quantity));
+  }
   return (
     <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>
       {cart === false ? (
@@ -135,8 +204,8 @@ export default function CardPage({ cart = true }) {
           <div className="container-x mx-auto">
             <BreadcrumbCom
               paths={[
-                { name: "home", path: "/" },
-                { name: "cart", path: "/cart" },
+                { name: "Trang chủ", path: "/" },
+                { name: "giỏ hàng", path: "/cart" },
               ]}
             />
             <EmptyCardError />
@@ -146,17 +215,17 @@ export default function CardPage({ cart = true }) {
         <div className="cart-page-wrapper w-full bg-white pb-[60px]">
           <div className="w-full">
             <PageTitle
-              title="Your Cart"
+              title="Giỏ hàng của bạn"
               breadcrumb={[
-                { name: "home", path: "/" },
-                { name: "cart", path: "/cart" },
+                { name: "Trang chủ", path: "/" },
+                { name: "giỏ hàng", path: "/cart" },
               ]}
             />
           </div>
           <div className="w-full mt-[23px]">
             <div className="container-x mx-auto">
-              <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} removeCart={removeCart} />
-              <div className="w-full sm:flex justify-between">
+              <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} removeCart={removeCart} handleQuantityCartIndex={handleQuantityCartIndex} />
+              {/* <div className="w-full sm:flex justify-between">
                 <div className="discount-code sm:w-[270px] w-full mb-5 sm:mb-0 h-[50px] flex">
                   <div className="flex-1 h-full">
                     <InputCom type="text" placeholder="Discount Code" />
@@ -179,7 +248,7 @@ export default function CardPage({ cart = true }) {
                     </div>
                   </a>
                 </div>
-              </div>
+              </div> */}
               <div className="w-full mt-[30px] flex sm:justify-end">
                 <div className="sm:w-[370px] w-full border border-[#EDEDED] px-[30px] py-[26px]">
                   <div className="sub-total mb-6">
@@ -197,20 +266,22 @@ export default function CardPage({ cart = true }) {
                     </span>
                     <ul className="flex flex-col space-y-1">
                       {dataSubmit?.map(seller => (<li>
-                        {seller?.voucher ? (<div className="flex justify-between items-center">
-                          <div className="flex space-x-2.5 items-center">
-                            <div className="input-radio">
+                        {seller?.voucher?.id > 0 ? (
+                          <div className="flex justify-between items-center">
+                            <div className="flex space-x-2.5 items-center">
+                              <div className="input-radio">
+                              </div>
+                              <span className="text-[13px] text-normal text-qgraytwo">
+                                {seller.shopName}
+                              </span>
                             </div>
                             <span className="text-[13px] text-normal text-qgraytwo">
-                              {seller.shopName}
+                              -{seller.voucher.sale}%, tối đa -{seller?.voucher.totalPriceOrder}<sup>đ</sup>
                             </span>
                           </div>
-                          <span className="text-[13px] text-normal text-qgraytwo">
-                            -{seller.vouchers.sale}%, tối đa -{seller?.vouchers.totalPriceOrder}<sup>đ</sup>
-                          </span>
-                        </div>) : (<div>Không có voucher</div>)}
+                        ) : (<div></div>)}
                       </li>))}
-                      <li>
+                      {/* <li>
                         <div className="flex justify-between items-center">
                           <div className="flex space-x-2.5 items-center">
                             <div className="input-radio">
@@ -223,55 +294,15 @@ export default function CardPage({ cart = true }) {
                             {serviceFee}<sup>đ</sup>
                           </span>
                         </div>
-                      </li>
+                      </li> */}
                     </ul>
                   </div>
-                  {/* <div className="shipping-calculation w-full mb-3">
-                    <div className="title mb-[17px]">
-                      <h1 className="text-[15px] font-medium">
-                        Calculate Shipping
-                      </h1>
-                    </div>
-                    <div className="w-full h-[50px] border border-[#EDEDED] px-5 flex justify-between items-center mb-2">
-                      <span className="text-[13px] text-qgraytwo">
-                        Select Country
-                      </span>
-                      <span>
-                        <svg
-                          width="11"
-                          height="7"
-                          viewBox="0 0 11 7"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.4 6.8L0 1.4L1.4 0L5.4 4L9.4 0L10.8 1.4L5.4 6.8Z"
-                            fill="#222222"
-                          />
-                        </svg>
-                      </span>
-                    </div>
-                    <div className="w-full h-[50px]">
-                      <InputCom
-                        inputClasses="w-full h-full"
-                        type="text"
-                        placeholder="Postcode / ZIP"
-                      />
-                    </div>
-                  </div> */}
-                  {/* <button type="button" className="w-full mb-10">
-                    <div className="w-full h-[50px] bg-[#F6F6F6] flex justify-center items-center">
-                      <span className="text-sm font-semibold">Update Cart</span>
-                    </div>
-                  </button> */}
-
-                  {/* {console.log("voucher index " + dataSubmit[0]?.vouchers?.length)} */}
                   <div className="total mb-6">
                     <div className=" flex justify-between">
                       <p className="text-[18px] font-medium text-qblack">
                         Thành tiền
                       </p>
-                      <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total + serviceFee)}<sup>đ</sup></p>
+                      <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total - totalSale)}<sup>đ</sup></p>
                     </div>
                   </div>
                   <a onClick={handSubmitPay}>
