@@ -30,6 +30,7 @@ const SingleProductPage = lazy(() => import('./components/SingleProductPage/inde
 
 import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
 import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
+import AuthService from "./service/authService.js";
 
 
 export default function Routers() {
@@ -43,9 +44,19 @@ export default function Routers() {
 
     return expirationTime < currentTimestamp;
   }
+  
+ 
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
+    
+    // setTimeout(() => {
+    //   const response = AuthService.tokenrenewal(token)// tạo lại token
+    //   if (response) {
+    //        AuthService.setItem(response);
+    //   }
+    // }, 20000);
+
     if (token) {
       if (isTokenExpired(token)) {
         sessionStorage.removeItem("token");
@@ -97,8 +108,8 @@ export default function Routers() {
           <Route exact path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route exact path="/terms-condition" element={<TermsCondition />} />
           <Route exact path="*" element={<FourZeroFour />} />
-      <Route exact path="/forgot-password" element={<ForgotPassword />} />
-      <Route exact path="/change-password/*" element={<UpdatePassword />} />
+          <Route exact path="/forgot-password" element={<ForgotPassword />} />
+          <Route exact path="/change-password/*" element={<UpdatePassword />} />
         </Routes>
       </RequestProvider>
     </>

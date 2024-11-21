@@ -10,6 +10,7 @@ import Layout from "../Partials/Layout";
 import { useRequest } from "../Request/RequestProvicer";
 import Service_Fee from "../service/Service_Fee";
 import ProductsTable from "./ProductsTable";
+import AuthService from "../../service/authService";
 
 export default function CardPage({ cart = true }) {
   const navigate = useNavigate(); // Đưa useNavigate ra ngoài useEffect
@@ -22,8 +23,41 @@ export default function CardPage({ cart = true }) {
   const { startRequest, endRequest, setItem } = useRequest();
   const localtion = useLocation();
   const [feeSeller, setFeeSeller] = useState({});
+  // token
+  function isTokenExpired(token) {
+    const [, payloadBase64] = token.split('.');
+    const payload = JSON.parse(atob(payloadBase64));
+
+    const expirationTime = payload.exp * 1000; // Chuyển đổi giây thành milliseconds
+    const currentTimestamp = Date.now();
+
+    return expirationTime < currentTimestamp;
+  }
+  //giai han
+  const retoken = async (token) => {
+    if (isTokenExpired(token)) {
+      sessionStorage.removeItem("token");
+      toast.warn("Vui lòng đăng nhập");
+      setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 2000);
+
+      console.log("token het han")
+    } else {
+      console.log("Token còn hạn.");
+      try {
+        const response = await AuthService.tokenrenewal(token);
+        AuthService.setItem(response.data);
+      } catch (error) {
+        console.log("gia hạn lỗi");
+        console.error(error);
+      }
+
+    }
+  }
   useEffect(() => {
     const token = sessionStorage.getItem("token");
+    retoken(token);
     if (token) {
       const id_account = sessionStorage.getItem("id_account");
       axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {

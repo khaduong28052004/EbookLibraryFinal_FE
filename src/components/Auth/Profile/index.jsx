@@ -29,7 +29,37 @@ export default function Profile() {
   const location = useLocation();
   const getHashContent = location.hash.split("#");
   const [active, setActive] = useState("dashboard");
+ 
+  function isTokenExpired(token) {
+    const [, payloadBase64] = token.split('.');
+    const payload = JSON.parse(atob(payloadBase64));
+
+    const expirationTime = payload.exp * 1000; // Chuyển đổi giây thành milliseconds
+    const currentTimestamp = Date.now();
+
+    return expirationTime < currentTimestamp;
+  }
+  //giai han
+  const retoken = async (token) => {
+    if (isTokenExpired(token)) {
+      sessionStorage.removeItem("token");
+      console.log("token het han")
+    } else {
+      console.log("Token còn hạn.");
+      try {
+        const response = await AuthService.tokenrenewal(token);
+        AuthService.setItem(response.data);
+      } catch (error) {
+        console.log("gia hạn lỗi");
+        console.error(error);
+      }
+
+    }
+  }
+
   useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    retoken(token);
     setActive(
       getHashContent && getHashContent.length > 1
         ? getHashContent[1]
