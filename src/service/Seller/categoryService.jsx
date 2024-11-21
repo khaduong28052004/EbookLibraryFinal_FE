@@ -8,7 +8,7 @@ const createUrl = (path, params = '') => `/api/v1/seller/category/${path}${param
 const CategoryService = {
     getList: () => axiosAuth('null', 'get', createUrl('getAllList')),
     getListByIdParent: (idParent,) => axiosAuth('null', 'get', createUrl('getListByIdParent', `?idParent=${idParent}&account_id=${account_id}`)),
-    getAllSeller: (search, pageNumber, sortBy, sortColumn) => axiosAuth('null', 'get', createUrl('getAllSeller', `?search=${search}&page=${pageNumber}&sortBy=${sortBy}&sortColumn=${sortColumn}&account_id=${account_id}`)),
+    getAllSeller: (search, pageNumber, sortBy, sortColumn, size) => axiosAuth('null', 'get', createUrl('getAllSeller', `?search=${search}&page=${pageNumber}&sortBy=${sortBy}&sortColumn=${sortColumn}&account_id=${account_id}&size=${size}`)),
     create: (data) => axiosAuth('null', 'post', createUrl('create'), data),
     update: (data) => axiosAuth('null', 'post', createUrl('update'), data),
     delete: (idCategory) => axiosAuth('null', 'delete', createUrl('delete', `?id=${idCategory}`)),

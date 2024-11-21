@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import InputCom from "../../Helpers/InputCom";
-import {useNavigate, Link} from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Layout from "../../Partials/Layout";
 import Thumbnail from "./Thumbnail";
 import AuthService from "../../../service/authService";
 import { toast, ToastContainer } from "react-toastify";
+import axios, { Axios } from "axios";
 export default function Signup() {
   const [checked, setValue] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '',
+    fullname: '',
     phone: '',
     username: '',
     email: '',
@@ -20,6 +21,7 @@ export default function Signup() {
   const [error, setError] = useState({});
   const navigate = useNavigate(); // Hook for navigation
   const handleInputChange = (event) => {
+
     const { name, value } = event.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -34,10 +36,23 @@ export default function Signup() {
     setValue(!checked);
   };
 
+  // const checkEmailTONTAI = async (email) => {
+  //   const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=ee1beb55bc8107ec2de384a942597e4e973330cb`);
+  //   console.log(response);
+  //   if (response?.data?.data?.status === "valid") {
+  //     console.log("oke");
+  //     return true;
+  //   } else {
+  //     toast.error("Email này không tồn tại!");
+  //     console.log("ko oke");
+  //     return false;
+  //   }
+  // }
+
   const handleLogin = async (event) => {
     event.preventDefault();
-    const { username, email, password, confirmPassword } = formData;
-    if (!fullName || !username || !email || !phone || !password || !confirmPassword) {
+    const { username, email, password, confirmPassword, phone, fullname } = formData;
+    if (!fullname || !username || !email || !phone || !password || !confirmPassword) {
       toast.error("Vui lòng điền đầy đủ thông tin!");
       return;
     }
@@ -46,29 +61,79 @@ export default function Signup() {
       return;
     }
 
-    if(!checked){
-      toast.warn("Điều khoản tài khoản!");
+    if (error?.username?.error) {
+      toast.warn(error?.username?.message);
+      return
+    }
+    if (error?.fullname?.error) {
+      toast.warn(error?.fullname?.message);
+      return
+    }
+    if (error?.email.error) {
+      toast.warn(error?.email?.message);
+      return
+    }
+    if (error?.phone?.error) {
+      toast.warn(error?.phone?.message);
       return
     }
 
-    try {
-      const response = await AuthService.register({ username, email, password });
-      if (response.status === 200) {
-        toast.success("Đăng ký thành công");
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-      } else {
-        toast.error("đăng ký thất bại,",response.data);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response.data ||"An error occurred during registration");
+    if (!checked) {
+      toast.warn("Điều khoản tài khoản!");
+      return
     }
+    // checkEmailTONTAI(formData.email)
+    const token = import.meta.env.VITE_TOKEN_HUNTER;
+    const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${formData.email}&api_key=${token}`);
+    console.log(response);
+    if (response?.data?.data?.status === "valid") {
+      try {
+        const response = await AuthService.register(formData);
+        if (response.status === 200) {
+          toast.success("Đăng ký thành công");
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
+        } else {
+          toast.error("đăng ký thất bại,", response.data);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error?.response?.data || "An error occurred during registration");
+      }
+      console.log("oke");
+    } else {
+      toast.error("(" + formData.email + ")" + " Email Không tồn tại!");
+      console.log("ko oke");
+
+    }
+    // try {
+    //   const response = await AuthService.register(formData);
+    //   if (response.status === 200) {
+    //     toast.success("Đăng ký thành công");
+    //     setTimeout(() => {
+    //       navigate('/login');
+    //     }, 2000);
+    //   } else {
+    //     toast.error("đăng ký thất bại,", response.data);
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    //   toast.error(error?.response?.data || "An error occurred during registration");
+    // }
   };
 
   const validateInput = (name, value) => {
     switch (name) {
+      // case "fullname":
+      //   setError((prev) => ({
+      //     ...prev,
+      //     fullname: {
+      //       error: value.length < 3,
+      //       message: value.length < 3 ? "Vui lòng kiểm tra họ và tên!" : "",
+      //     },
+      //   }));
+      //   break;
       case "username":
         setError((prev) => ({
           ...prev,
@@ -78,15 +143,17 @@ export default function Signup() {
           },
         }));
         break;
-        case "phoe":
-          setError((prev) => ({
-            ...prev,
-            username: {
-              error: value.length < 3,
-              message: value.length < 3 ? "Tên tài khoản quá ngắn!" : "",
-            },
-          }));
-          break;
+      // case "phone":
+      //   const phoneF = /^\d{10}$/;  // Regex to match exactly 10 digits
+      //   setError((prev) => ({
+      //     ...prev,
+      //     phone: {
+      //       error: !phoneF.test(value),
+      //       message: !phoneF.test(value) ? "Số điện thoại phải là 10 chữ số!" : "",
+      //     },
+      //   }));
+
+      // break;
       case "email":
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         setError((prev) => ({
@@ -152,7 +219,7 @@ export default function Signup() {
 
   return (
     <Layout childrenClasses="pt-0 pb-0">
-      <ToastContainer
+      {/* <ToastContainer
         position="bottom-center"
         autoClose={5000}
         hideProgressBar={false}
@@ -163,7 +230,7 @@ export default function Signup() {
         draggable
         pauseOnHover
         style={{ zIndex: 9999 }} // Ensure the toast container has the highest z-index
-      />
+      /> */}
       <div className="login-page-wrapper w-full py-10">
         <div className="container-x mx-auto">
           <div className="lg:flex items-center relative">
@@ -196,9 +263,9 @@ export default function Signup() {
                       <InputCom
                         placeholder="Họ và tên"
                         label="Họ và tên :"
-                        name="fullName"
+                        name="fullname"
                         type="text"
-                        id="fullName"
+                        id="fullname"
                         inputClasses="h-[50px]"
                         inputHandler={handleInputChange}
                       />
@@ -247,13 +314,13 @@ export default function Signup() {
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                           onClick={() => setShowPassword(!showPassword)}
                         >
-                           {showPassword ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                        </svg>
-                          : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                          </svg>}
+                          {showPassword ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                          </svg>
+                            : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>}
                         </button>
                       </InputCom>
                       <InputCom
@@ -271,13 +338,13 @@ export default function Signup() {
                           onClick={() => setShowRePassword(!showRePassword)}
                         >
                           {showPassword ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                        </svg>
-                          : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                           </svg>
-                        }
+                            : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                          }
                         </button>
                       </InputCom>
                     </div>

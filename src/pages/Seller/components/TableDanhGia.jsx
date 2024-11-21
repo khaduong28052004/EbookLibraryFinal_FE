@@ -6,6 +6,7 @@ import ModalSanPham from './ModalDanhGia';
 import DanhGiaService from '../../../service/Seller/danhGiaService';
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './pagination';
+import {ExportExcel} from "./ExportExcel"
 
 const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,6 +26,7 @@ const TableTwo = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
+  const [size, setSize] = useState(5);
   const [sortColumn, setSortColumn] = useState("id");
   useEffect(() => {
     getList();
@@ -37,7 +39,7 @@ const TableTwo = () => {
   }, [search, isStatus]);
 
   const getList = async () => {
-    const response = await DanhGiaService.getData(search, pageNumber, sortBy, sortColumn);
+    const response = await DanhGiaService.getData(search, pageNumber, sortBy, sortColumn, size);
     setListDanhGia(response.data.result.content);
     setTotalPages(response.data.result.totalPages);
     setTotalElements(response.data.result.totalElements);
@@ -61,6 +63,17 @@ const TableTwo = () => {
       setPageNumber(pageNumber + 1);
     }
   };
+
+  const handleExport = async () => {
+    const sheetNames = ['Danh Sách Đánh Giá'];
+    try {
+      const response = await DanhGiaService.getData(search, pageNumber, sortBy, sortColumn, totalElements);
+      return ExportExcel("Danh Sách Đánh Giá.xlsx", sheetNames, [response.data.result.content]);
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi xuất Excel:", error);
+      toast.error("Có lỗi xảy ra khi xuất dữ liệu");
+    }
+  }
 
   const openModal = (danhGia) => {
     setDataPhanHoi({
@@ -112,6 +125,7 @@ const TableTwo = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
+          onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel

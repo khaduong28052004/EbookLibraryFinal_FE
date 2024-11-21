@@ -4,6 +4,8 @@ import VoucherService from "../../../service/Seller/voucherService"
 import { toast, ToastContainer } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Pagination from './pagination';
+import { ExportExcel } from "./ExportExcel"
+
 const TableVoucher = () => {
   const [listVoucherDetail, setListVoucherDetail] = useState([]);
   const [search, setSearch] = useState('');
@@ -14,7 +16,8 @@ const TableVoucher = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
-  const [sortColumn, setSortColumn] = useState("id")
+  const [sortColumn, setSortColumn] = useState("id");
+  const [size, setSize] = useState(5);
 
   // Lấy voucher_id từ query parameters
   const searchParams = new URLSearchParams(location.search);
@@ -32,7 +35,16 @@ const TableVoucher = () => {
       setPageNumber(pageNumber - 1);
     }
   };
-
+  const handleExport = async () => {
+    const sheetNames = ['Danh Sách Voucher Chi Tiết'];
+    try {
+      const response = await VoucherService.getDetail(voucher_id, search, pageNumber, sortBy, sortColumn, size);
+      return ExportExcel("Danh Sách Voucher Chi Tiết.xlsx", sheetNames, [response.data.result.content]);
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi xuất Excel:", error);
+      toast.error("Có lỗi xảy ra khi xuất dữ liệu");
+    }
+  }
   const handleNext = () => {
     if (pageNumber < totalPages - 1) {
       setPageNumber(pageNumber + 1);
@@ -41,7 +53,7 @@ const TableVoucher = () => {
 
   const loadListVoucherDetail = async () => {
     try {
-      const response = await VoucherService.getDetail(voucher_id, search, pageNumber, sortBy, sortColumn);
+      const response = await VoucherService.getDetail(voucher_id, search, pageNumber, sortBy, sortColumn, size);
       setListVoucherDetail(response.data.result);
       console.log("SUCCESSFULLY LOAD LIST VOUCHER DETAIL", response.data.result);
     } catch (error) {
@@ -93,6 +105,7 @@ const TableVoucher = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel

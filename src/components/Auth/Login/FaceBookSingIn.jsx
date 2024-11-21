@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, } from 'react-router-dom';
 import { FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../../../config/firebase';
 

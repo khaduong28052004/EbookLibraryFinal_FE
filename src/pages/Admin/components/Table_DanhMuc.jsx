@@ -45,14 +45,10 @@ const TableTwo = () => {
     const deleteCategory = async (id) => {
         try {
             const response = await category.delete({ id });
-            if (response.data.code === 1000) {
-                toast.success(response.data.message);
-            } else{
-                toast.error(response.data.message);
-            }
+            toast.success(response.data.message);
             findAllCategory();
         } catch (error) {
-            toast.error("Lỗi hệ thống");
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
