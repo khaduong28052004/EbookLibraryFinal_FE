@@ -17,15 +17,15 @@ export default function ForgotPassword() {
         try {
             const response = await AuthService.Otp({ email });
             if (response.status) {
-                toast.success('Link to reset your password has been sent!');
+                toast.success('Gửi mail thành công vui lòng kiểm tra email!');
                 setTimeout(() => {
                     navigate('/login');
                   }, 2000);
             } else {
-                toast.error('Failed to send reset link. Please try again.');
+                toast.error('Lỗi!.');
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || 'An error occurred.');
+            toast.error(error?.response?.data?.message || 'Email này không account này không tồn tại!.');
         }
 
         setLoading(false);

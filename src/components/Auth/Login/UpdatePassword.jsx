@@ -37,7 +37,6 @@ export default function UpdatePassword() {
                 setLoading(false);
                 return;
             }
-
             const data = {
                 email: email,
                 otp: otpToken,
@@ -45,13 +44,16 @@ export default function UpdatePassword() {
             };
             const response = await AuthService.verifyOTP(data);
             if (response.status) {
-                toast.success("Password updated successfully!");
-                navigate('/login');
+                toast.success("Đổi mật khẩu thành công!");
+                setTimeout(() => {
+                    navigate('/login');
+                }, 4000);
             } else {
-                toast.error("Failed to update password. Please try again.");
+                toast.error("Đổi mật khẩu không thành công!");
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || "An error occurred.");
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Lỗi đặt lại mật khẩu không thành công!.");
         }
 
         setLoading(false);
@@ -59,18 +61,6 @@ export default function UpdatePassword() {
 
     return (
         <Layout childrenClasses=" pt-0 pb-0">
-            <ToastContainer
-                position="bottom-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                style={{ zIndex: 9999 }}
-            />
             <div className="update-password-page-wrapper w-full py-10">
                 <div className="container-x mx-auto flex justify-center">
                     <div className="lg:w-[572px] w-full bg-white flex flex-col justify-center sm:p-10 p-5 border border-[#E0E0E0] rounded-md shadow-md">

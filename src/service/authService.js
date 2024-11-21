@@ -66,7 +66,6 @@ const AuthService = {
     return axiosAuth("null", "post", url,data);
   },
 
-
     //CÂP NHẬT TK
     updateAccount: (id, data) => {
       const url = `/api/v1/user/updateAccount/${id}`;
