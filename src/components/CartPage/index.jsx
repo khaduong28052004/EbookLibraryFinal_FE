@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import BreadcrumbCom from "../BreadcrumbCom";
 import EmptyCardError from "../EmptyCardError";
-import InputCom from "../Helpers/InputCom";
 import PageTitle from "../Helpers/PageTitle";
 import Layout from "../Partials/Layout";
 import { useRequest } from "../Request/RequestProvicer";
@@ -155,8 +154,8 @@ export default function CardPage({ cart = true }) {
           <div className="container-x mx-auto">
             <BreadcrumbCom
               paths={[
-                { name: "home", path: "/" },
-                { name: "cart", path: "/cart" },
+                { name: "Trang chủ", path: "/" },
+                { name: "giỏ hàng", path: "/cart" },
               ]}
             />
             <EmptyCardError />
@@ -166,17 +165,17 @@ export default function CardPage({ cart = true }) {
         <div className="cart-page-wrapper w-full bg-white pb-[60px]">
           <div className="w-full">
             <PageTitle
-              title="Your Cart"
+              title="Giỏ hàng của bạn"
               breadcrumb={[
-                { name: "home", path: "/" },
-                { name: "cart", path: "/cart" },
+                { name: "Trang chủ", path: "/" },
+                { name: "giỏ hàng", path: "/cart" },
               ]}
             />
           </div>
           <div className="w-full mt-[23px]">
             <div className="container-x mx-auto">
               <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} removeCart={removeCart} />
-              <div className="w-full sm:flex justify-between">
+              {/* <div className="w-full sm:flex justify-between">
                 <div className="discount-code sm:w-[270px] w-full mb-5 sm:mb-0 h-[50px] flex">
                   <div className="flex-1 h-full">
                     <InputCom type="text" placeholder="Discount Code" />
@@ -199,7 +198,7 @@ export default function CardPage({ cart = true }) {
                     </div>
                   </a>
                 </div>
-              </div>
+              </div> */}
               <div className="w-full mt-[30px] flex sm:justify-end">
                 <div className="sm:w-[370px] w-full border border-[#EDEDED] px-[30px] py-[26px]">
                   <div className="sub-total mb-6">

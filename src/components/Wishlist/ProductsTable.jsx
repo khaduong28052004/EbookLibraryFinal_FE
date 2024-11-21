@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import InputQuantityCom from "../Helpers/InputQuantityCom";
+import axios from "axios";
+import { useRequest } from "../Request/RequestProvicer";
 
-export default function ProductsTable({ className, datas }) {
+export default function ProductsTable({ className, datas, handleDelete }) {
   const [quantity, setQuantity] = useState();
   const [favorites, setFavorites] = useState();
+
+
+
   useEffect(() => {
     setFavorites(datas?.map(favorite => ({
       ...favorite, quantity: 1  // Thêm thuộc tính 'quantity' vào mỗi đối tượng
@@ -19,6 +24,8 @@ export default function ProductsTable({ className, datas }) {
       )
     );
   }
+
+
 
 
   return (
@@ -79,7 +86,8 @@ export default function ProductsTable({ className, datas }) {
               <td className="text-right py-4">
                 <div className="flex space-x-1 items-center justify-center">
                   <span>
-                    <svg
+                    <svg className="cursor-pointer"
+                      onClick={() => { handleDelete(favorite?.id) }}
                       width="10"
                       height="10"
                       viewBox="0 0 10 10"

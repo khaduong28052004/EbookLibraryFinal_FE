@@ -4,7 +4,6 @@ import { FaMicrophone } from 'react-icons/fa';
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import Cart from "../../../Cart";
-import Compair from "../../../Helpers/icons/Compair";
 import ThinBag from "../../../Helpers/icons/ThinBag";
 import ThinLove from "../../../Helpers/icons/ThinLove";
 import ThinPeople from "../../../Helpers/icons/ThinPeople";
@@ -69,7 +68,6 @@ export default function Middlebar({ className, type }) {
   }, [listening]);
   const [data, setData] = useState();
   useEffect(() => {
-
     if (!isRequesting) {
       const token = sessionStorage.getItem("token");
 
@@ -82,6 +80,19 @@ export default function Middlebar({ className, type }) {
             total += seller?.cart?.length;
           });
           setTotalCart(total);
+        }).catch(error => console.error("fetch cart error " + error));
+      }
+    }
+  }, [isRequesting]);
+  // favorite
+  const [totalFavorite, setTotalFavorite] = useState(0);
+  useEffect(() => {
+    if (!isRequesting) {
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const id_account = sessionStorage.getItem("id_account");
+        axios.get('http://localhost:8080/api/v1/user/favorite/getall/' + id_account).then(response => {
+          setTotalFavorite(response.data.result.datas?.length);
         }).catch(error => console.error("fetch cart error " + error));
       }
 
@@ -126,7 +137,7 @@ export default function Middlebar({ className, type }) {
               )}
             </div>
 
-            <div className="w-[517px] h-[44px] flex">
+            <div className="w-[717px] h-[44px] flex">
               <SearchBox type={type} className="search-com" />
               <div onClick={() => { setListening(true) }} className="flex items-center justify-center   border rounded-full p-3 ml-2 cursor-pointer"><FaMicrophone size={20} color="gray" /></div>
               {/* mic */}
@@ -144,7 +155,7 @@ export default function Middlebar({ className, type }) {
               {/* ---------------------------------------- */}
             </div>
             <div className="flex space-x-6 items-center">
-              <div className="compaire relative">
+              {/* <div className="compaire relative">
                 <a href="/products-compaire">
                   <span>
                     <Compair />
@@ -156,7 +167,7 @@ export default function Middlebar({ className, type }) {
                 >
                   2
                 </span>
-              </div>
+              </div> */}
               <div className="favorite relative">
                 <a href="/wishlist">
                   <span>
@@ -167,7 +178,7 @@ export default function Middlebar({ className, type }) {
                   className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-qyellow"
                     }`}
                 >
-                  1
+                  {totalFavorite}
                 </span>
               </div>
               <div className="cart-wrapper group relative py-4">
