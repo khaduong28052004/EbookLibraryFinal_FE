@@ -78,7 +78,7 @@ export default function FlashSale({ products, lastDate,totalProducts }) {
                             ))} */}
 
 
-                        <DataIteration datas={products} startLength={0} endLength={4}>
+                        <DataIteration datas={products} startLength={0} endLength={products?.length}>
                             {({ datas }) => (
                                 <div data-aos="fade-up" key={datas.id} className="item">
                                     <ProductCardStyleOne datas={datas.product} />

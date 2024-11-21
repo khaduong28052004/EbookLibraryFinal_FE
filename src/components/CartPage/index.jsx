@@ -21,6 +21,7 @@ export default function CardPage({ cart = true }) {
   const { startRequest, endRequest, setItem } = useRequest();
   const localtion = useLocation();
   const [feeSeller, setFeeSeller] = useState({});
+  const { isRequest } = useRequest();
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -34,7 +35,7 @@ export default function CardPage({ cart = true }) {
       navigate("/login", { replace: true });
       window.location.reload();
     }
-  }, []);
+  }, [localtion]);
 
   const getServiceFee = async (idSeller, weight, quantity, addressFrom, addressTo) => {
     try {
@@ -90,7 +91,7 @@ export default function CardPage({ cart = true }) {
           totalSeller += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
         }
 
-        getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, fromAddress)
+        getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, toAddress)
       });
       if (seller?.voucher?.id > 0) {
         if (((seller?.voucher?.sale * totalSeller) / 100) > seller?.voucher?.totalPriceOrder) {
@@ -147,6 +148,18 @@ export default function CardPage({ cart = true }) {
     }).catch(error => console.error("delete cart error " + error));
 
   }
+  const handleQuantityCartIndex = (quantity, idCart) => {
+    startRequest();
+    axios.get("http://localhost:8080/api/v1/user/cart/update/" + idCart + "?quantity=" + quantity).then(response => {
+      if (response.data.result) {
+        const id_account = sessionStorage.getItem("id_account");
+        axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
+          setData(response.data.result);
+          setUser(response.data.result.user);
+        }).catch(error => console.error("fetch cart error " + error));
+      }
+    }).catch(error => console.error("update cart error " + error + "id =" + idCart + "quantity " + quantity));
+  }
   return (
     <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>
       {cart === false ? (
@@ -174,7 +187,7 @@ export default function CardPage({ cart = true }) {
           </div>
           <div className="w-full mt-[23px]">
             <div className="container-x mx-auto">
-              <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} removeCart={removeCart} />
+              <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} removeCart={removeCart} handleQuantityCartIndex={handleQuantityCartIndex} />
               {/* <div className="w-full sm:flex justify-between">
                 <div className="discount-code sm:w-[270px] w-full mb-5 sm:mb-0 h-[50px] flex">
                   <div className="flex-1 h-full">
@@ -216,18 +229,20 @@ export default function CardPage({ cart = true }) {
                     </span>
                     <ul className="flex flex-col space-y-1">
                       {dataSubmit?.map(seller => (<li>
-                        {seller?.voucher ? (<div className="flex justify-between items-center">
-                          <div className="flex space-x-2.5 items-center">
-                            <div className="input-radio">
+                        {seller?.voucher?.id > 0 ? (
+                          <div className="flex justify-between items-center">
+                            <div className="flex space-x-2.5 items-center">
+                              <div className="input-radio">
+                              </div>
+                              <span className="text-[13px] text-normal text-qgraytwo">
+                                {seller.shopName}
+                              </span>
                             </div>
                             <span className="text-[13px] text-normal text-qgraytwo">
-                              {seller.shopName}
+                              -{seller.voucher.sale}%, tối đa -{seller?.voucher.totalPriceOrder}<sup>đ</sup>
                             </span>
                           </div>
-                          <span className="text-[13px] text-normal text-qgraytwo">
-                            -{seller.voucher.sale}%, tối đa -{seller?.voucher.totalPriceOrder}<sup>đ</sup>
-                          </span>
-                        </div>) : (<div>Không có voucher</div>)}
+                        ) : (<div></div>)}
                       </li>))}
                       {/* <li>
                         <div className="flex justify-between items-center">

@@ -2,6 +2,7 @@ import { GiftIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from "react";
 import { toast } from 'react-toastify';
 import InputQuantityCom from "../Helpers/InputQuantityCom";
+import { useRequest } from '../Request/RequestProvicer';
 import VoucherDialog from '../voucher/VoucherDialog';
 const sellers = {
   id: 1, // Seller ID
@@ -27,7 +28,7 @@ const sellers = {
 };
 
 
-export default function ProductsTable({ datas, handleSaveProduct, removeCart }) {
+export default function ProductsTable({ datas, handleSaveProduct, removeCart, handleQuantityCartIndex }) {
 
   const [idProduct, setIdProduct] = useState();
 
@@ -40,6 +41,8 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
   const [totalOrderSeller, setTotalOrderSeller] = useState();
 
   const [saveProductOfSeller, setSaveProductOfSeller] = useState();
+
+  const { startRequest, endRequest } = useRequest();
 
 
 
@@ -317,7 +320,9 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
   }
   // const handle 
 
-  const handleQuantity = () => { }
+  const handleQuantityCart = (quantity, idCart) => {
+    handleQuantityCartIndex(quantity, idCart);
+  }
 
 
   return (
@@ -428,7 +433,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart }) 
                   </td>
                   <td className=" py-4  w-[150px]">
                     <div className="flex justify-center items-center">
-                      <InputQuantityCom quantityCart={cart?.quantity} handleQuantity={() => console.log("")} />
+                      <InputQuantityCom quantityCart={cart?.quantity} idCart={cart?.id} handleQuantity={() => { console.log("") }} handleQuantityCart={handleQuantityCart} />
                     </div>
                   </td>
 
