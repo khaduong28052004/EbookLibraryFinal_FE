@@ -5,8 +5,6 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
-import Selectbox from "../Helpers/Selectbox";
-import Arrow from "../Helpers/icons/Arrow";
 import Layout from "../Partials/Layout";
 import ProductsFilter from "./ProductsFilter";
 
@@ -134,11 +132,11 @@ export default function AllProductPage() {
               </div>
 
               <div className="flex-1">
-                <div className="products-sorting w-full bg-white md:h-[70px] flex md:flex-row flex-col md:space-y-0 space-y-5 md:justify-between md:items-center p-[30px] mb-[5px]">
+                {/* <div className="products-sorting w-full bg-white md:h-[70px] flex md:flex-row flex-col md:space-y-0 space-y-5 md:justify-between md:items-center p-[30px] mb-[5px]">
                   <div>
                     <p className="font-400 text-[13px]">
-                      {/* <span className="text-qgray"> Showing</span> 1–16 of 66
-                      results */}
+                      <span className="text-qgray"> Showing</span> 1–16 of 66
+                      results
                     </p>
                   </div>
                   <div className="flex space-x-3 items-center">
@@ -157,7 +155,7 @@ export default function AllProductPage() {
 
 
                   </div>
-                </div>
+                </div> */}
                 <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1  xl:gap-[30px] gap-5 mb-[5px]">
                   {/* <DataIteration datas={products} startLength={0} endLength={6}>
                     {({ datas }) => (

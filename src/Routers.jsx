@@ -38,10 +38,8 @@ export default function Routers() {
   function isTokenExpired(token) {
     const [, payloadBase64] = token.split('.');
     const payload = JSON.parse(atob(payloadBase64));
-
     const expirationTime = payload.exp * 1000; // Chuyển đổi giây thành milliseconds
     const currentTimestamp = Date.now();
-
     return expirationTime < currentTimestamp;
   }
   
