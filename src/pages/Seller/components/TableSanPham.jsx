@@ -8,6 +8,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import CategoryService from "../../../service/Seller/categoryService";
 import Pagination from './pagination';
 import { storage, getDownloadURL, ref } from '../../../config/firebase';
+import { ExportExcel } from "./ExportExcel"
+
 const TableSanPham = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
@@ -42,6 +44,7 @@ const TableSanPham = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [idCategory, setIdCategory] = useState(0);
   const [expandedRowId, setExpandedRowId] = useState(null);
+  const [size, setSize] = useState(5);
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -85,13 +88,24 @@ const TableSanPham = () => {
 
   const loadListProduct = async () => {
     try {
-      const response = await SanPhamService.getAll(search, pageNumber, sortBy, sortColumn);
+      const response = await SanPhamService.getAll(search, pageNumber, sortBy, sortColumn, size);
       setListProduct(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
       loadListDoanhMuc();
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  const handleExport = async () => {
+    const sheetNames = ['Danh Sách Sản Phẩm'];
+    try {
+      const response = await SanPhamService.getAll(search, pageNumber, sortBy, sortColumn, totalElements);
+      return ExportExcel("Danh Sách Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi xuất Excel:", error);
+      toast.error("Có lỗi xảy ra khi xuất dữ liệu");
     }
   }
 
@@ -121,7 +135,6 @@ const TableSanPham = () => {
     try {
       const response = await SanPhamService.edit(product_id);
       const product = response.data.result;
-      console.log("Product", product);
       setDataProduct({
         id: product.id,
         price: product.price,
@@ -149,7 +162,7 @@ const TableSanPham = () => {
       setIsOpenModalSP(true);
       console.log(dataProduct);
     } catch (error) {
-      console.error(error);
+      toast.error(error.response.data.message);
     }
   }
 
@@ -174,7 +187,7 @@ const TableSanPham = () => {
       loadListProduct();
       setIsOpenModalSP(false);
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.message);
     }
   }
 
@@ -221,12 +234,12 @@ const TableSanPham = () => {
 
       // Kiểm tra dữ liệu trả về
       const blob = await response.blob();
-      console.log(blob);  // Xem kiểu dữ liệu của blob
 
       setDataProduct((prevData) => ({
         ...prevData,
         imageProducts: [...prevData.imageProducts, { url, blob }]
       }));
+      // handleAddFiles(blob);
     } catch (error) {
       console.error("Error fetching image from Firebase:", error);
     }
@@ -243,7 +256,7 @@ const TableSanPham = () => {
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <ToastContainer />
+      <ToastContainer className={`z-999999`} />
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
         <form>
           <div className="relative pt-3">
@@ -280,6 +293,9 @@ const TableSanPham = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
+            onClick={
+              handleExport
+            }
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
@@ -390,7 +406,11 @@ const TableSanPham = () => {
                     {index + 1 + pageNumber * pageSize}
                   </td>
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                    {item.imageProducts.map((image) => (
+                      <img className="h-12.5 w-12.5 rounded-md" src={image.name} alt="ImageProduct" />
+                    ))}
                     <p className="text-sm text-black dark:text-white truncate w-24">{item.name}</p>
+
                   </td>
 
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -412,13 +432,15 @@ const TableSanPham = () => {
                   </td>
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                     <div className="flex space-x-3.5">
-                      <button onClick={() => {
+                      <button onClick={(event) => {
+                        event.stopPropagation();
                         setIsOpen(true);
                         setProductId(item.id);
                       }}>
                         <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
                       </button>
-                      <button onClick={() => {
+                      <button onClick={(event) => {
+                        event.stopPropagation();
                         editProduct(item.id);
                         setIsStatus(true)
                       }}>
@@ -494,7 +516,7 @@ const TableSanPham = () => {
         buttonBgColor={'bg-red-600'}
       />
 
-      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-999999">
+      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-99999">
         <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -534,7 +556,7 @@ const TableSanPham = () => {
                         onChange={handDataProduct}
                         placeholder="Số Lượng..."
                         required
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        className="w-full rounded b order-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
                   </div>
@@ -586,7 +608,6 @@ const TableSanPham = () => {
                             multiple
                             accept="image/*"
                             className="hidden"
-                            required
                             onChange={(e) => handleAddFiles(e.target.files)}
                           />
                         </label>
@@ -597,7 +618,7 @@ const TableSanPham = () => {
                         {dataProduct.imageProducts.length > 0 ? (
                           <div className="grid grid-cols-4 gap-2">
                             {dataProduct.imageProducts.map((file, index) => (
-                              
+
                               <div key={index} className="relative w-full h-20">
                                 <img
                                   key={index}
@@ -707,7 +728,7 @@ const TableSanPham = () => {
                     </div>
                   </div>
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                    <div className="w-full xl:w-1/2">
+                    <div className="w-full xl:w-1/3">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giá
                       </label>
@@ -721,7 +742,7 @@ const TableSanPham = () => {
                       />
                     </div>
 
-                    <div className="w-full xl:w-1/2">
+                    <div className="w-full xl:w-1/3">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giảm Giá
                       </label>
@@ -731,6 +752,20 @@ const TableSanPham = () => {
                         value={dataProduct.sale}
                         onChange={handDataProduct}
                         placeholder="Giám giá..."
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      />
+                    </div>
+
+                    <div className="w-full xl:w-1/3">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                        Khối Lượng
+                      </label>
+                      <input
+                        type="number"
+                        name="weight"
+                        value={dataProduct.weight}
+                        onChange={handDataProduct}
+                        placeholder="Khối lượng..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>

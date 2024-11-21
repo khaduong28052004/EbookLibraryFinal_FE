@@ -5,7 +5,7 @@ import Modal from "./ModalThongBao";
 import Table_NotPermisson from './Table_NotPermisson';
 import permission from '../../../service/admin/Permission';
 import rolePermission from '../../../service/admin/PermissionDetails';
-
+import { toast, ToastContainer } from 'react-toastify';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
 
@@ -37,8 +37,11 @@ const TableTwo = () => {
         try {
             const response = await rolePermission.delete({ id: entityRolePermission.id });
             findAllPermission();
-            console.log("content: " + response.data.result.message);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
+            }
         } catch (error) {
+            toast.error("Lỗi hệ thống");
             console.log("Error: " + error);
         }
     };
@@ -68,11 +71,11 @@ const TableTwo = () => {
     }, [searchItem, option, currentPage, sortBy, sortColumn, status]);
 
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách FlashSale'];
+        const sheetNames = ['Danh Sách Quyền'];
         try {
             console.log("totalElements: " + data.totalElements);
             const response = await permission.findAllByRole({ page: currentPage, size: data.totalElements, role: option, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách FlashSale.xlsx", sheetNames, [response.data.result.content]);
+            return ExportExcel("Danh Sách Quyền.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -85,6 +88,7 @@ const TableTwo = () => {
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer></ToastContainer>
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3">

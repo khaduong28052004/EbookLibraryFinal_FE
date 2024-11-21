@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import accountService from '../../../service/admin/Account';
+import { formToJSON } from 'axios';
 
 const ModalSanPham = ({
     status,
@@ -33,22 +34,19 @@ const ModalSanPham = ({
     const postNhanVien = async () => {
         try {
             const response = await accountService.post({ data: formData });
+            toast.success("Thêm nhân viên thành công");
+            setFormData(initialFormData);
+            setOpen(false);
             setStatus(!status);
-            if (response.data.code === 1000) {
-                toast.success("Thêm nhân viên thành công");
-            } else {
-                toast.error(response.data.message);
-            }
         } catch (error) {
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
     const handleSubmit = (e) => {
+        e.preventDefault();
         postNhanVien(formData);
-        setFormData(initialFormData);
-        e.preventDefault(); // Chặn hành vi reload trang khi submit form
-        setOpen(false); // Đóng modal sau khi submit
     };
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">

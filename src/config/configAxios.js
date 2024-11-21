@@ -62,14 +62,30 @@ axiosConfig.interceptors.request.use(config => {
   }
 );
 
-axiosConfig.interceptors.response.use(config => {
-  console.log('Request data:', config);  // Debug the request configuration
-  return config;
+axiosConfig.interceptors.response.use(response => {
+  console.log('Request data:', response);  // Debug the request configuration
+  return response;
 },
   (error) => {
     return Promise.reject(error);
   }
 );
+
+// axios.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {                        `1`11`111`1111`11111`111111`1111111`11111111`111111111`1111111111 e //       if (error.response.status === 401 && !error.config._retry) {
+//           error.config._retry = true;
+//           const { data } = await axios.post('/api/v1/user/token', {
+//               refreshToken: localStorage.getItem('refreshToken'),
+//           });
+//           localStorage.setItem('accessToken', data.accessToken);
+//           axios.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
+//           return axios(error.config);
+//       }
+//       return Promise.reject(error);
+//   }
+// );
+
 
 export default axiosConfig;
 export { axiosAuth };

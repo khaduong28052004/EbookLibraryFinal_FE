@@ -32,7 +32,7 @@ export default function SearchBox({ className, type }) {
         <div className="w-[1px] h-[22px] bg-qgray-border"></div>
 
         <button
-          className={` w-[93px] h-full text-sm font-600  ${type === 3 ? 'bg-qh3-blue text-white' : 'search-btn'}`}
+          className={` w-[93px] h-full text-sm font-600 text-gray-700`}
           type="button" onClick={() => handleSubmitSearch()}
         >
           Tìm Kiếm

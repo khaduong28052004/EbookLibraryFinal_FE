@@ -1,5 +1,4 @@
 import axios from "axios";
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInMonths, differenceInSeconds, differenceInYears } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import BreadcrumbCom from "../BreadcrumbCom";
@@ -7,6 +6,7 @@ import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
 import InputCom from "../Helpers/InputCom";
 import Layout from "../Partials/Layout";
+import { formatTimeAgo } from "../service/DateTime";
 import ProductView from "./ProductView";
 import Reviews from "./Reviews";
 import SallerInfo from "./SallerInfo";
@@ -22,7 +22,6 @@ export default function SingleProductPage() {
   const [reviewLoading, setLoading] = useState(false);
   const reviewElement = useRef(null);
   const [report, setReport] = useState(false);
-
 
   const [commnets, setComments] = useState([
     {
@@ -91,7 +90,6 @@ export default function SingleProductPage() {
   const [seller, setSeller] = useState();
   const [relatedProduct, setRelatedProduct] = useState();
   const [productSeller, setProductSeller] = useState();
-
   const local = useLocation();
   const query = new URLSearchParams(local.search);
   const fetchProduct = async () => {
@@ -121,21 +119,7 @@ export default function SingleProductPage() {
     fetchProductSeller();
   }, []);
 
-  const createAt = (date) => {
-    if (differenceInSeconds(new Date(), new Date(date)) < 60) {
-      return differenceInSeconds(new Date(), new Date(date)) + " giây trước";
-    } else if (differenceInMinutes(new Date(), new Date(date)) < 60) {
-      return differenceInMinutes(new Date(), new Date(date)) + " phút trước";
-    } else if (differenceInHours(new Date(), new Date(date)) < 24) {
-      return differenceInHours(new Date(), new Date(date)) + " tiếng trước";
-    } else if (differenceInDays(new Date(), new Date(date)) < 30) {
-      return differenceInDays(new Date(), new Date(date)) + " ngày trước";
-    } else if (differenceInMonths(new Date(), new Date(date)) < 12) {
-      return differenceInMonths(new Date(), new Date(date)) + " tháng trước";
-    } else {
-      return differenceInYears(new Date(), new Date(date)) + " năm trước";
-    }
-  }
+
   return (
     <>
       <Layout childrenClasses="pt-0 pb-0">
@@ -226,7 +210,7 @@ export default function SingleProductPage() {
                           Số lượng còn lại : {product?.quantity}
                         </li>
                         <li className="font-normal text-qgray leading-9">
-                          Ngày đăng : {createAt("2024-11-07T10:00:00.000+00:00")}
+                          Ngày đăng : {formatTimeAgo(product?.createAt)}
                         </li>
                       </ul>
                     </div>
@@ -240,21 +224,9 @@ export default function SingleProductPage() {
                     {/* review-comments */}
                     <div className="w-full">
                       <Reviews
-                        reviewLoading={reviewLoading}
-                        reviewAction={reviewAction}
-                        comments={commnets.slice(0, 2)}
-                        name={name}
-                        nameHandler={(e) => setName(e.target.value)}
-                        email={email}
-                        emailHandler={(e) => setEmail(e.target.value)}
-                        phone={phone}
-                        phoneHandler={(e) => setPhone(e.target.value)}
-                        message={message}
-                        messageHandler={(e) => setMessage(e.target.value)}
-                        rating={rating}
-                        ratingHandler={setRating}
-                        hoverRating={hover}
-                        hoverHandler={setHover}
+
+                        comments={product?.evalues}
+
                       />
                     </div>
                   </div>
