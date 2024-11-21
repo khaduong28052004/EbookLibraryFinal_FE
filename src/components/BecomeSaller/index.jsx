@@ -144,7 +144,7 @@ export default function BecomeSaller() {
       if (response.data.liveness.is_live === 'false') {
         // Kiểm tra nếu không phải là "live"
         toast.error(`Xác thực không thành công! ${response.data.liveness.message}`);
-      } else if (response.data.face_match.similarity < 90) {
+      } else if (response.data.face_match.similarity < 70) {
         // Kiểm tra nếu độ tương đồng giữa khuôn mặt thấp
         toast.error("Xác thực không thành công. Độ tương đồng khuôn mặt quá thấp.");
       } else {
@@ -301,7 +301,7 @@ export default function BecomeSaller() {
             console.log("Images uploaded successfully");
           } catch (uploadError) {
             console.error("Error uploading images:", uploadError);
-            toast.error("Đã xảy ra lỗi trong quá trình tải ảnh lên.");
+            // toast.error("Đã xảy ra lỗi trong quá trình tải ảnh lên.");
           }
         }
 
@@ -609,7 +609,7 @@ export default function BecomeSaller() {
               <p className="text-sm text-gray-500">
                 Vui lòng đưa khuôn mặt vào khung camera để xác thực.
               </p>
-              <input type="file" name="imageTest" onChange={handleImageTest} />
+              {/* <input type="file" name="imageTest" onChange={handleImageTest} /> */}
 
               {countdown !== null && (
                 <p className="text-lg font-bold text-blue-500">{countdown}s</p>
