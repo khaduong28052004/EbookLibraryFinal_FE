@@ -1,4 +1,3 @@
-import { UserPlusIcon } from '@heroicons/react/24/solid';
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
 import Star from "../Helpers/icons/Star";
@@ -23,17 +22,15 @@ export default function SallerInfo({ seller, datas }) {
             </p>
             <div className="flex items-center mt-4">
               <div className="flex">
-                <Star w="15" h="15" />
-                <Star w="15" h="15" />
-                <Star w="15" h="15" />
-                <Star w="15" h="15" />
-                <Star w="15" h="15" />
+                {Array.from({ length: Math.round(seller?.totalStar) }, (_, index) => (
+                  <Star key={index} w="15" h="15" />
+                ))}
               </div>
-              <span className="text-[13px] font-normal ml-1">(4.5)</span>
-              <button class="w-35 flex ml-5 px-4 py-2 text-sm bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 active:bg-blue-700">
+              <span className="text-[13px] font-normal ml-1">({seller?.totalStar})</span>
+              {/* <button class="w-35 flex ml-5 px-4 py-2 text-sm bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 active:bg-blue-700">
                 <UserPlusIcon className="w-5 h-5 mr-2" />
                 Theo dõi
-              </button>
+              </button> */}
 
 
             </div>
@@ -47,7 +44,7 @@ export default function SallerInfo({ seller, datas }) {
                 <span className="text-[15px] font-normal text-qblack">
                   Sản phẩm
                 </span>
-                : 120
+                : {seller?.products?.length}
               </li>
               <li className="text-qgray leading-[30px]">
                 <span className="text-[15px] font-normal text-qblack">
