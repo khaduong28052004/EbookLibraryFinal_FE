@@ -136,7 +136,8 @@ const TableCategory = () => {
   }
 
   const handleSearch = (e) => {
-    setSearch(e.target.value)
+    setSearch(e.target.value);
+    setPageNumber(0);
   }
   const handleDanhMuc = (e) => {
     const value = e.target.value;

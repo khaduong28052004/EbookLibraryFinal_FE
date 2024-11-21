@@ -59,7 +59,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
               type="text"
               placeholder="Tìm kiếm..."
               name="search"
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {setSearch(e.target.value); setPageNumber(0)}}
               className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
             />
 
