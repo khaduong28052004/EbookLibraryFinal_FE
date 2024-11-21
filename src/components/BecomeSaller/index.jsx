@@ -324,6 +324,8 @@ export default function BecomeSaller() {
                       </div>
                     </div>
                     <div className="flex-1 mb-10 xl:mb-0">
+
+
                       <div className="update-cover w-full">
                         <p className="text-sm text-qgraytwo mb-5">
                           Ảnh chụp mặt trước của thẻ CCCD
@@ -340,7 +342,7 @@ export default function BecomeSaller() {
                               type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 1)} />
                             <div
                               onClick={browseimgBefore}
-                              className="w-[32px] h-[32px] absolute -bottom-4 right-4 bg-[#F539F8] hover:bg-[#F539F8] rounded-full cursor-pointer"
+                              className="w-[32px] h-[32px] absolute -bottom-4 right-4 bg-[#83bef2] hover:bg-[#0f4e81bb] rounded-full cursor-pointer"
                             >
                               <svg
                                 width="32"
@@ -363,7 +365,9 @@ export default function BecomeSaller() {
                         </div>
                       </div>
 
+
                       <div className="update-cover w-full">
+                        <br />
                         <p className="text-sm text-qgraytwo mb-5">
                           Ảnh chụp mặt sau của thẻ CCCD
                         </p>
@@ -376,10 +380,9 @@ export default function BecomeSaller() {
                             />
 
                             <input ref={imgAfterInput} name="imgAfter" type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 2)} />
-
                             <div
                               onClick={browseimgAfter}
-                              className="w-[32px] h-[32px] absolute -bottom-4 right-4 bg-[#F539F8] hover:bg-[#F539F8] rounded-full cursor-pointer"
+                              className="w-[32px] h-[32px] absolute -bottom-4 right-4 bg-[#83bef2] hover:bg-[#44dbe6bb] rounded-full cursor-pointer"
                             >
                               <svg
                                 width="32"
@@ -401,6 +404,8 @@ export default function BecomeSaller() {
                           </div>
                         </div>
                       </div>
+
+                      
                     </div>
                   </div>
                 </div>
