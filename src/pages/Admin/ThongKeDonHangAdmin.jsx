@@ -37,6 +37,10 @@ const DoanhThuSanPham = () => {
     findAllDoanhThu();
   }, [currentPage, dateStart, orderStatusId, dateEnd, sortColumn, sortBy]);
 
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [orderStatusId]);
+
   return (
     <>
       <Breadcrumb pageName="Thống Kê Đơn Hàng" status='Quản Trị' />
