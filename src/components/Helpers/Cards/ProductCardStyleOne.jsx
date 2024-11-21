@@ -6,7 +6,6 @@ import Compair from "../icons/Compair";
 import QuickViewIco from "../icons/QuickViewIco";
 import Star from "../icons/Star";
 import ThinLove from "../icons/ThinLove";
-import LazyLoad from 'react-lazyload'
 
 export default function ProductCardStyleOne({ datas, type }) {
   const navigate = useNavigate();
@@ -120,12 +119,23 @@ export default function ProductCardStyleOne({ datas, type }) {
           </p>
         </a>
         <p className="price">
-          <span className="offer-price text-qred font-600 text-[18px] ml-2 mr-1">
-            {Intl.NumberFormat().format(datas.price - ((datas.price * datas.sale) / 100))}<sup>đ</sup>
-          </span>
-          <span className="main-price text-qgray line-through font-600 text-[15px]">
-            {Intl.NumberFormat().format(datas.price)}<sup>đ</sup>
-          </span>
+          {datas?.flashSaleDetail ?
+            (<>
+              <span className="offer-price text-qred font-600 text-[18px] ml-2 mr-1">
+                {Intl.NumberFormat().format(
+                  datas?.price - ((datas?.price * datas?.sale) / 100) - ((datas?.price - ((datas?.price * datas?.sale) / 100)) * (datas?.flashSaleDetail?.sale / 100))
+
+                )}<sup>đ</sup>
+              </span>
+              <span className="main-price text-qgray line-through font-600 text-[15px]">
+                {Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup>
+
+              </span>
+            </>) :
+            (<>
+              <span className="text-[15px] font-light line-through">{Intl.NumberFormat().format(datas?.price)}<sup>đ</sup></span>
+              <span className="text-[15px] font-bold">{Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup></span>
+            </>)}
 
         </p>
       </div>
