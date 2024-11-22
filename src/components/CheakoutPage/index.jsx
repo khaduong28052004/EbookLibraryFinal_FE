@@ -47,35 +47,42 @@ export default function CheakoutPage() {
               }
             }
             else {
-              totalPrice += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
+              totalPrice += (cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * cartItem.quantity;
             }
           });
 
-          if (totalPrice * ((seller?.voucher?.sale) / 100) >= seller?.voucher?.totalPriceOrder) {
-            totalPrice -= (seller?.voucher.totalPriceOrder);
-          } else {
-            totalPrice -= (totalPrice * (((seller?.voucher?.sale) / 100)));
+          if (seller.voucher.id > 0) {
+            if (totalPrice * ((seller?.voucher?.sale) / 100) >= seller?.voucher?.totalPriceOrder) {
+              totalPrice -= (seller?.voucher.totalPriceOrder);
+            } else {
+              totalPrice -= (totalPrice * (((seller?.voucher?.sale) / 100)));
+            }
           }
           setService_fee(service => service + seller?.service_fee);
-          voucherAdmins?.forEach(voucher => {
-            if (totalPrice > voucher?.minOrder) {
-              if ((seller?.service_fee * voucher?.sale) > voucher?.totalPriceOrder) {
-                // setService_fee(fee => fee - (voucher?.totalPriceOrder));
-                saleAdmin = (voucher?.totalPriceOrder);
-                totalSale += (voucher?.totalPriceOrder);
-              } else {
-                // setService_fee(fee => fee - (seller?.service_fee * voucher?.sale));
-                saleAdmin = seller?.service_fee * voucher?.sale;
-                totalSale += seller?.service_fee * voucher?.sale;
+          try {
+            voucherAdmins?.forEach(voucher => {
+              if (totalPrice > voucher?.minOrder) {
+                if ((seller?.service_fee * voucher?.sale) > voucher?.totalPriceOrder) {
+                  // setService_fee(fee => fee - (voucher?.totalPriceOrder));
+                  saleAdmin = (voucher?.totalPriceOrder);
+                  totalSale += (voucher?.totalPriceOrder);
+                } else {
+                  // setService_fee(fee => fee - (seller?.service_fee * voucher?.sale));
+                  saleAdmin = seller?.service_fee * voucher?.sale;
+                  totalSale += seller?.service_fee * voucher?.sale;
+                }
+                voucherAdmin = voucher;
               }
-              voucherAdmin = voucher;
-            }
-          });
+            });
+          } catch (error) {
+
+          }
           setService_fee(service => service - saleAdmin);
           return {
             ...seller,
             voucherAdmin: voucherAdmin,
             total: totalPrice + seller?.service_fee - saleAdmin,
+            // total: totalPrice + seller?.service_fee - saleAdmin,
             sale: saleAdmin
           };
         })
@@ -164,9 +171,8 @@ export default function CheakoutPage() {
         'Authorization': `Bearer ${token}`,
       }
     }).then(response => {
-      console.log('Payment success:', response.data);
+      navigate("/profile#order");
     }).catch();
-    navigate("/");
   }
   return (
     <Layout childrenClasses="pt-0 pb-0">
@@ -391,7 +397,7 @@ export default function CheakoutPage() {
                       <p className="text-2xl font-medium text-qred">{Intl.NumberFormat().format(data?.total + service_fee - data?.sale)}<sup>đ</sup></p>
                     </div>
                   </div>
-                  <div className="shipping mt-[30px]">
+                  {/* <div className="shipping mt-[30px]">
                     <ul className="flex flex-col space-y-1">
                       <li className=" mb-5">
                         <div className="flex space-x-2.5 items-center mb-4">
@@ -451,7 +457,7 @@ export default function CheakoutPage() {
                         </div>
                       </li>
                     </ul>
-                  </div>
+                  </div> */}
                   <a onClick={() => pay()}>
                     <div className="w-full h-[50px] black-btn flex justify-center items-center">
                       <span className="text-sm font-semibold">
