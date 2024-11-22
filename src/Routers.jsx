@@ -31,21 +31,30 @@ const SingleProductPage = lazy(() => import('./components/SingleProductPage/inde
 import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
 import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
 import ChatBot from "./pages/Seller/ChatBot2.jsx"
+import AuthService from "./service/authService.js";
 
 export default function Routers() {
   const location = useLocation();
   function isTokenExpired(token) {
     const [, payloadBase64] = token.split('.');
     const payload = JSON.parse(atob(payloadBase64));
-
     const expirationTime = payload.exp * 1000; // Chuyển đổi giây thành milliseconds
     const currentTimestamp = Date.now();
-
     return expirationTime < currentTimestamp;
   }
+  
+ 
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
+    
+    // setTimeout(() => {
+    //   const response = AuthService.tokenrenewal(token)// tạo lại token
+    //   if (response) {
+    //        AuthService.setItem(response);
+    //   }
+    // }, 20000);
+
     if (token) {
       if (isTokenExpired(token)) {
         sessionStorage.removeItem("token");

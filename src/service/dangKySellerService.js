@@ -58,6 +58,7 @@ export const uploadImages1 = async (id, formData) => {
     throw error;
   }
 };
+
 export const getSeller = async (id) => {
   try {
     const response = await axios.get(`${API_Java}/${id}`, {});

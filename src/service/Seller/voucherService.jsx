@@ -6,6 +6,7 @@ const createUrl = (path, params = '') => `/api/v1/seller/voucher/${path}${params
 
 const VoucherService = {
   getData: (search, page, sortBy, sortColumn, size) => axiosAuth('null', 'get', createUrl('getAll', `?account_id=${account_id}&search=${search}&page=${page}&sortBy=${sortBy}&sortColumn=${sortColumn}&size=${size}`)),
+  getDataAdmin: (search, page, sortBy, sortColumn, size) => axiosAuth('', 'get', createUrl('getAllAdmin', `?search=${search}&page=${page}&sortBy=${sortBy}&sortColumn=${sortColumn}&size=${size}`)),
   create: (data) => axiosAuth('null', 'post', createUrl('create'), data),
   update: (data) => axiosAuth('null', 'post', createUrl('update'), data),
   edit: (voucher_id) => axiosAuth('null', 'get', createUrl('edit', `?voucher_id=${voucher_id}`)),

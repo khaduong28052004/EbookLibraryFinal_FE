@@ -5,12 +5,13 @@ const token = sessionStorage.getItem("token")
 const userOrderService = {
 
     fetchOrder: ({ userID, orderStatusId }) => {
-        console.log("token",token);
-        console.log("orderStatusId", orderStatusId)
-        console.log("userID", userID)
+        console.log("token BILL" ,token);
+        console.log("orderStatusId BILL", orderStatusId)
+        console.log("userID BILL", userID)
         
         const url = `http://localhost:8080/api/v1/user/bill/read?userId=${userID}&orderStatusFind=${orderStatusId}`;
-      
+        console.log("SAU FETCH BILL", userID)
+
         return axiosAuth(token, "get", url);
     },
 

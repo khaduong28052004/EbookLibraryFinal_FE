@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Arrow from "../../../Helpers/icons/Arrow";
 
 export default function Navbar({ className, type }) {
   const [categoryToggle, setToggle] = useState(false);
@@ -25,15 +24,14 @@ export default function Navbar({ className, type }) {
 
   return (
     <div
-      className={`nav-widget-wrapper w-full  h-[60px] relative z-30 ${
-        type === 3 ? "bg-qh3-blue" : "bg-sky-200"
-      }  ${className || ""}`}
+      className={`nav-widget-wrapper w-full  h-[40px] relative z-30 ${type === 3 ? "bg-qh3-blue" : "bg-sky-200"
+        }  ${className || ""}`}
     >
       <div className="container-x mx-auto h-full">
         <div className="w-full h-full relative">
           <div className="w-full h-full flex justify-between items-center">
             <div className="category-and-nav flex xl:space-x-7 space-x-3 items-center">
-              <div className="category w-[270px] h-[53px] bg-white px-5 rounded-t-md mt-[6px] relative">
+              {/* <div className="category w-[270px] h-[53px] bg-white px-5 rounded-t-md mt-[6px] relative">
                 <button
                   onClick={handler}
                   type="button"
@@ -747,7 +745,8 @@ export default function Navbar({ className, type }) {
                     </li>
                   </ul>
                 </div>
-              </div>
+              </div> */}
+              {/* =========================================================================================== */}
               <div className="nav">
                 <ul className="nav-wrapper flex xl:space-x-10 space-x-5">
                   {/* <li className="relative">
@@ -1174,84 +1173,68 @@ export default function Navbar({ className, type }) {
                       </div>
                     </div>
                   </li> */}
-                  <li>
-                    <Link to="/about">
-                      <span
-                        className={`flex items-center text-sm font-600 cursor-pointer ${
-                          type === 3 ? "text-white" : "text-qblacktext"
-                        }`}
-                      >
-                        <span>Giới Thiệu</span>
-                      </span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/blogs">
-                      <span
-                        className={`flex items-center text-sm font-600 cursor-pointer ${
-                          type === 3 ? "text-white" : "text-qblacktext"
-                        }`}
-                      >
-                            <span>Yêu Thích</span>
-                      </span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/contact">
-                      <span
-                        className={`flex items-center text-sm font-600 cursor-pointer ${
-                          type === 3 ? "text-white" : "text-qblacktext"
-                        }`}
-                      >
-                         <span>Lịch sử</span>
-                   
-                      </span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/login">
-                      <span
-                        className={`flex items-center text-sm font-600 cursor-pointer ${
-                          type === 3 ? "text-white" : "text-qblacktext"
-                        }`}
-                      >
-                        <span>Đăng Nhập</span>
-                      </span>
-                    </Link>
-                  </li>
+
                 </ul>
               </div>
             </div>
             <div className="become-seller-btn">
               <Link to="/become-saller">
-                <div className="black-btn w-[161px] h-[40px] flex justify-center items-center cursor-pointer">
+                <div className="w-[181px] h-[20px] flex justify-center items-center cursor-pointer">
                   <div className="flex space-x-2 items-center">
                     <span className="text-sm font-600">Trở Thành Người Bán</span>
                     <span>
-                      <svg
-                        className="fill-current"
-                        width="6"
-                        height="10"
-                        viewBox="0 0 6 10"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <rect
-                          x="1.08984"
-                          width="6.94106"
-                          height="1.54246"
-                          transform="rotate(45 1.08984 0)"
-                          fill="white"
-                        />
-                        <rect
-                          x="6"
-                          y="4.9082"
-                          width="6.94106"
-                          height="1.54246"
-                          transform="rotate(135 6 4.9082)"
-                          fill="white"
-                        />
-                      </svg>
+                      <div className="flex">
+
+                        <svg
+                          // className="fill-black-2"
+                          width="6"
+                          height="10"
+                          viewBox="0 0 6 10"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="1.08984"
+                            width="6.94106"
+                            height="1.54246"
+                            transform="rotate(45 1.08984 0)"
+                            fill="black"
+                          />
+                          <rect
+                            x="6"
+                            y="4.9082"
+                            width="6.94106"
+                            height="1.54246"
+                            transform="rotate(135 6 4.9082)"
+                            fill="black"
+                          />
+                        </svg>
+                        <svg
+                          // className="fill-black-2"
+                          width="6"
+                          height="10"
+                          viewBox="0 0 6 10"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            x="1.08984"
+                            width="6.94106"
+                            height="1.54246"
+                            transform="rotate(45 1.08984 0)"
+                            fill="black"
+                          />
+                          <rect
+                            x="6"
+                            y="4.9082"
+                            width="6.94106"
+                            height="1.54246"
+                            transform="rotate(135 6 4.9082)"
+                            fill="black"
+                          />
+                        </svg>
+
+
+                      </div>
+
                     </span>
                   </div>
                 </div>

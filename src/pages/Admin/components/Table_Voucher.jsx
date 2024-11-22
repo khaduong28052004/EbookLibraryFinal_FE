@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import VoucherService from "../../../service/Seller/voucherService"
@@ -7,7 +7,8 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { format, parse } from 'date-fns';
 import { toast, ToastContainer } from 'react-toastify';
 import { Link } from 'react-router-dom';
-import Pagination from './Pagination';
+import Pagination from '../../Seller/components/pagination';
+import { ExportExcel } from "../../../service/admin/ExportExcel"
 const TableVoucher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusVoucher, setStatusVoucher] = useState(false);
@@ -17,6 +18,7 @@ const TableVoucher = () => {
     id: null,
     name: "",
     note: "",
+    minOrder: null,
     totalPriceOrder: null,
     sale: null,
     quantity: null,
@@ -33,8 +35,18 @@ const TableVoucher = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
-  const [sortColumn, setSortColumn] = useState("id")
-  
+  const [sortColumn, setSortColumn] = useState("id");
+  const [size, setSize] = useState(5);
+  const [expandedRowId, setExpandedRowId] = useState(null);
+
+  const toggleRow = (id) => {
+    if (expandedRowId === id) {
+      setExpandedRowId(null);
+    } else {
+      setExpandedRowId(id);
+    }
+  };
+
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -47,20 +59,29 @@ const TableVoucher = () => {
     }
   };
 
-
   useEffect(() => {
     loadListVoucher();
   }, [search, pageNumber, sortBy, sortColumn]);
 
   const loadListVoucher = async () => {
     try {
-      const response = await VoucherService.getData(search, pageNumber, sortBy, sortColumn);
+      const response = await VoucherService.getDataAdmin(search, pageNumber, sortBy, sortColumn, size);
       setListVoucher(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
-      console.log('SUCCESSFULLY GET LIST VOUCHER', response);
     } catch (error) {
-      console.log('ERROR GET LIST VOUCHER', error);
+      toast.error(error?.response?.data?.message);
+    }
+  }
+
+  const handleExport = async () => {
+    const sheetNames = ['Danh Sách Voucher'];
+    try {
+      const response = await VoucherService.getDataAdmin(search, pageNumber, sortBy, sortColumn, totalElements);
+      return ExportExcel("Danh Sách Voucher.xlsx", sheetNames, [response.data.result.content]);
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi xuất Excel:", error);
+      toast.error("Có lỗi xảy ra khi xuất dữ liệu");
     }
   }
 
@@ -72,6 +93,7 @@ const TableVoucher = () => {
         id: voucher.id,
         name: voucher.name,
         note: voucher.note,
+        minOrder: voucher.minOrder,
         totalPriceOrder: voucher.totalPriceOrder,
         sale: voucher.sale,
         quantity: voucher.quantity,
@@ -81,9 +103,8 @@ const TableVoucher = () => {
         account: voucher.account.id
       })
       setIsOpenModalSP(true);
-      console.log("SUCCESSFULLY GET EDIT VOUCHER", response.data.result);
     } catch (error) {
-      console.log("ERROR EDIT VOUCHER", error);
+      toast.success(error?.response?.data?.message);
 
     }
   }
@@ -96,8 +117,8 @@ const TableVoucher = () => {
         ...dataVoucher,
         dateStart: formatDateForDisplay(dataVoucher.dateStart),
         dateEnd: formatDateForDisplay(dataVoucher.dateEnd),
+        typeVoucher: 2,
       };
-      console.log("DATA VOUCHER", formattedData);
       if (!isStatus) {
         response = await VoucherService.create(formattedData);
       } else {
@@ -107,7 +128,7 @@ const TableVoucher = () => {
       loadListVoucher();
       setIsOpenModalSP(false);
     } catch (error) {
-      console.log("ERROR", error);
+      toast.error(error?.response?.data?.message);
     }
   }
 
@@ -115,16 +136,16 @@ const TableVoucher = () => {
     try {
       const response = await VoucherService.delete(voucherId);
       toast.success(response.data.message);
-      console.log("SUCCESSFULLY DELETE VOUCHER", response.data.result);
       loadListVoucher();
     } catch (error) {
-      console.log("ERROR DELETE VOUCHER", error);
+      toast.error(error?.response?.data?.message);
     }
   }
 
   const handSearch = (event) => {
     const value = event.target.value;
     setSearch(value);
+    setPageNumber(0);
   }
 
   const handDataVoucher = (e) => {
@@ -132,7 +153,7 @@ const TableVoucher = () => {
     const isDateField = name === 'dateStart' || name === 'dateEnd';
     setDataVoucher((prev) => ({
       ...prev,
-      [name]: isDateField ? value : value, // Store date in 'yyyy-MM-dd' format for compatibility
+      [name]: isDateField ? value : value,
     }));
   };
 
@@ -142,9 +163,9 @@ const TableVoucher = () => {
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <ToastContainer />
+      <ToastContainer className={'z-999999'}/>
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-        <form method="POST">
+        <form action="https://formbold.com/s/unique_form_id" method="POST">
           <div className="relative pt-3">
             <button className="absolute left-0 top-6 -translate-y-1/2">
               <svg
@@ -179,6 +200,7 @@ const TableVoucher = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
@@ -189,12 +211,13 @@ const TableVoucher = () => {
                 id: null,
                 name: "",
                 note: "",
+                minOrder: null,
                 totalPriceOrder: null,
                 sale: null,
                 quantity: null,
                 dateStart: '',
                 dateEnd: '',
-                typeVoucher: 2,
+                typeVoucher: 1,
                 account: sessionStorage.getItem("id_account")
               });
               setIsOpenModalSP(true);
@@ -210,6 +233,7 @@ const TableVoucher = () => {
       <table className="w-full border-collapse border border-stroke dark:border-strokedark">
         <thead>
           <tr className="border-t border-stroke dark:border-strokedark">
+            <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
               onClick={() => {
@@ -222,19 +246,6 @@ const TableVoucher = () => {
                 <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
-
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
-              onClick={() => {
-                setSortBy(!sortBy);
-                setSortColumn("totalPriceOrder");
-              }}>
-              <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Điều Kiện</span>
-                <ArrowLongDownIcon className={`h-4 w-4  dark:text-white ${sortBy == false && sortColumn == "totalPriceOrder" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "totalPriceOrder" ? "text-black" : "text-gray-500"}`} />
-              </div>
-            </th>
-
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
               onClick={() => {
                 setSortBy(!sortBy);
@@ -246,16 +257,26 @@ const TableVoucher = () => {
                 <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "sale" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
-
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
               onClick={() => {
                 setSortBy(!sortBy);
-                setSortColumn("quantity");
+                setSortColumn("dateStart");
               }}>
               <div className="flex items-center gap-1 hidden lg:flex">
-                <span className="text-sm text-black dark:text-white">Số Lượng</span>
-                <ArrowLongDownIcon className={`h-4 w-4  dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-500"}`} />
+                <span className="text-sm text-black dark:text-white">Ngày Bắt Đầu</span>
+                <ArrowLongDownIcon className={`h-4 w-4  dark:text-white ${sortBy == false && sortColumn == "dateStart" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "dateStart" ? "text-black" : "text-gray-500"}`} />
+              </div>
+            </th>
+            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("dateEnd");
+              }}>
+              <div className="flex items-center gap-1 hidden lg:flex">
+                <span className="text-sm text-black dark:text-white">Ngày Kết Thúc</span>
+                <ArrowLongDownIcon className={`h-4 w-4  dark:text-white ${sortBy == false && sortColumn == "dateEnd" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4  dark:text-white ${sortBy == true && sortColumn == "dateEnd" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
@@ -284,50 +305,89 @@ const TableVoucher = () => {
             </tr>
           ) : (
             listVoucher?.content?.map((voucher, index) => (
-              <tr key={index} className="border-t border-stroke dark:border-strokedark">
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                  {index + 1 + pageNumber * pageSize}
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                  <p className="text-sm text-black dark:text-white truncate w-24">{voucher.name}</p>
-                </td>
+              <React.Fragment key={index}>
+                <tr className="border-t border-stroke dark:border-strokedark" onClick={() => toggleRow(voucher.id)}>
+                  <td className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white" >
+                    {expandedRowId !== voucher.id ? (
+                      <ChevronRightIcon className="text-sm h-5 w-5 text-gray-400 dark:text-white ml-auto" />
+                    ) : (
+                      <ChevronDownIcon className="text-sm h-5 w-5 text-black dark:text-white ml-auto" />
+                    )}
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                    {index + 1 + pageNumber * pageSize}
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                    <p className="text-sm text-black dark:text-white truncate w-24">{voucher.name}</p>
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                    <div className="flex items-center gap-1 hidden xl:flex">
+                      {`${voucher.sale}%`}
+                    </div>
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                    <div className="flex items-center gap-1 hidden xl:flex">
+                      {new Date(voucher.dateStart).toLocaleDateString("en-GB")}
+                    </div>
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                    <div className="flex items-center gap-1 hidden xl:flex">
+                      {new Date(voucher.dateEnd).toLocaleDateString("en-GB")}
+                    </div>
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
+                    <div className="flex items-center gap-1 hidden lg:flex">
+                      <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${!voucher.delete ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
+                        {!voucher.delete ? 'Hoạt Động' : 'Đã Ngừng'}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                    <div className="flex space-x-3.5">
+                      <button>
+                        <Link to={`/seller/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
+                      </button>
+                      <button onClick={(event) => {
+                        event.stopPropagation();
+                        setIsOpen(true);
+                        setVoucherId(voucher.id);
+                        setStatusVoucher(voucher.delete)
+                      }}>
+                        {!voucher.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600 dark:text-white' />)}
+                      </button>
+                      <button onClick={(event) => {
+                        event.stopPropagation();
+                        editVoucher(voucher.id);
+                        setIsStatus(true)
+                      }}>
+                        <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {expandedRowId === voucher.id && (
+                  <tr className="border-t border-stroke dark:border-strokedark bg-gray-50 dark:bg-gray-800">
+                    <td colSpan={8} className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                      <div className="grid grid-cols-3 gap-x-8 gap-y-2">
+                        <p><strong>Điều Kiện:</strong>
+                          {(voucher.minOrder || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                        </p>
 
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                  <div className="flex items-center gap-1 hidden xl:flex">
-                    {voucher.totalPriceOrder.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                  <div className="flex items-center gap-1 hidden xl:flex">
-                    {voucher.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                  <div className="flex items-center gap-1 hidden xl:flex">
-                    {voucher.quantity}
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                  <div className="flex items-center gap-1 hidden lg:flex">
-                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${!voucher.delete ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                      {!voucher.delete ? 'Hoạt Động' : 'Đã Ngừng'}
-                    </span>
-                  </div>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                  <div className="flex space-x-3.5">
-                    <button>
-                      <Link to={`/admin/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
-                    </button>
-                    <button onClick={() => { setIsOpen(true); setVoucherId(voucher.id); setStatusVoucher(voucher.delete) }}>
-                      {!voucher.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600 dark:text-white' />)}
-                    </button>
-                    <button onClick={() => { editVoucher(voucher.id); setIsStatus(true) }}>
-                      <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                        <p>
+                          <strong>Giá Giảm Tối Đa:</strong>
+                          {(voucher.totalPriceOrder || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                        </p>
+
+                        <p>
+                          <strong>Số Lượng:</strong>
+                          {voucher.quantity}
+                        </p>
+
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             ))
           )}
         </tbody>
@@ -340,7 +400,6 @@ const TableVoucher = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
-        size={2}
       />
 
       <Modal
@@ -366,7 +425,7 @@ const TableVoucher = () => {
         buttonBgColor={!statusVoucher ? 'bg-green-600' : 'bg-red-600'}
       />
 
-      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-999999">
+      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-9999">
         <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -438,14 +497,43 @@ const TableVoucher = () => {
                       />
                     </div>
                   </div>
-
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                    <div className="w-full xl:w-1/2">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                        Loại Voucher
+                      </label>
+                      <select name="tyVoucher" id=""
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+
+                      >
+                        <option value="">Giảm phí vận chuyển</option>
+                      </select>
+                    </div>
+
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Điều Kiện
                       </label>
                       <input
                         type="number"
+                        name="minOrder"
+                        value={dataVoucher.minOrder}
+                        onChange={handDataVoucher}
+                        min={0}
+                        placeholder="Giám giá..."
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                    <div className="w-full xl:w-1/2">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                        Giá Tối Đa Được Giảm
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
                         name="totalPriceOrder"
                         value={dataVoucher.totalPriceOrder}
                         onChange={handDataVoucher}
@@ -461,6 +549,8 @@ const TableVoucher = () => {
                       <input
                         type="number"
                         name="sale"
+                        min={0}
+                        max={100}
                         value={dataVoucher.sale}
                         onChange={handDataVoucher}
                         placeholder="Giám giá..."
