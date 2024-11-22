@@ -30,7 +30,7 @@ const SingleProductPage = lazy(() => import('./components/SingleProductPage/inde
 
 import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
 import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
-
+import ChatBot from "./pages/Seller/ChatBot2.jsx"
 
 export default function Routers() {
   const location = useLocation();
@@ -59,8 +59,8 @@ export default function Routers() {
   return (
     <>
       <RequestProvider>
+      <ChatBot />
         <Routes location={location} key={location.pathname} >
-
           <Route exact path="/" element={
             <Suspense fallback={<Loader />}>
               <Home />
@@ -97,8 +97,8 @@ export default function Routers() {
           <Route exact path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route exact path="/terms-condition" element={<TermsCondition />} />
           <Route exact path="*" element={<FourZeroFour />} />
-      <Route exact path="/forgot-password" element={<ForgotPassword />} />
-      <Route exact path="/change-password/*" element={<UpdatePassword />} />
+          <Route exact path="/forgot-password" element={<ForgotPassword />} />
+          <Route exact path="/change-password/*" element={<UpdatePassword />} />
         </Routes>
       </RequestProvider>
     </>
