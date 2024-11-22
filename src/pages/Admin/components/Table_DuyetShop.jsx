@@ -143,7 +143,7 @@ const TableTwo = ({ status, setStatus }) => {
                             </div>
                         </th>
 
-                        <th
+                        {/* <th
                             onClick={() => {
                                 setSortColumn("numberId");
                                 setSortBy(!sortBy);
@@ -154,7 +154,7 @@ const TableTwo = ({ status, setStatus }) => {
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
-                        </th>
+                        </th> */}
 
                         <th
                             onClick={() => {
@@ -209,11 +209,11 @@ const TableTwo = ({ status, setStatus }) => {
                                     <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
                                 </td>
 
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
                                         {entity.numberId}
                                     </div>
-                                </td>
+                                </td> */}
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
                                         {entity.email}

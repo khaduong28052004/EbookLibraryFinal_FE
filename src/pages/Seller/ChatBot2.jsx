@@ -32,11 +32,10 @@ const ChatBubbleApp = () => {
                 },
             });
 
-                 const data = await response.json();
 
         // Kiểm tra và lấy phần text trả về
-        if (data?.candidates?.length > 0) {
-            const aiResponse = data.candidates[0].content.parts[0].text
+        if (response?.data?.candidates?.length > 0) {
+            const aiResponse = response.data.candidates[0].content.parts[0].text
             return aiResponse;
         } else {
             return "Không có câu trả lời từ AI.";
