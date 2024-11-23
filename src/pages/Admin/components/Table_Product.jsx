@@ -334,7 +334,7 @@ const TableTwo = () => {
                 handlePrevious={handlePrevious}
                 handleNext={handleNext}
                 setPageNumber={setCurrentPage}
-                size={data.size}></Pagination>
+                size={data?.size}></Pagination>
 
             {!active ? (
                 <Modal
