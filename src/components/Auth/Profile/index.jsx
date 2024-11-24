@@ -25,7 +25,7 @@ export default function Profile() {
   const location = useLocation();
   const getHashContent = location.hash.split("#");
   const [active, setActive] = useState("dashboard");
- 
+  const [isToken, setIsToken] = useState(false);
   function isTokenExpired(token) {
     const [, payloadBase64] = token.split('.');
     const payload = JSON.parse(atob(payloadBase64));
@@ -56,6 +56,9 @@ export default function Profile() {
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     retoken(token);
+    if (token) {
+      setIsToken(true);
+    }
     setActive(
       getHashContent && getHashContent.length > 1
         ? getHashContent[1]
@@ -206,18 +209,32 @@ export default function Profile() {
                         </div>
                       </Link>
                     </div> */}
-                    <div className="item group">
-                      <Link to="/profile#profile">
-                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack" onClick={handlogoout}>
-                          <span>
-                            <IcoLogout />
-                          </span>
-                          <span className=" font-normal text-base">
-                            Đăng xuất
-                          </span>
-                        </div>
-                      </Link>
-                    </div>
+                    {
+                      isToken ? (<div className="item group">
+                        <Link to="/login">
+                          <div className="flex space-x-3 items-center text-qgray hover:text-qblack" onClick={handlogoout}>
+                            <span>
+                              <IcoLogout />
+                            </span>
+                            <span className=" font-normal text-base">
+                              Đăng xuất
+                            </span>
+                          </div>
+                        </Link>
+                      </div>) : (<div className="item group">
+                        <Link to="/login">
+                          <div className="flex space-x-3 items-center text-qgray hover:text-qblack" onClick={handlogoout}>
+                            <span>
+                              <IcoLogout />
+                            </span>
+                            <span className=" font-normal text-base">
+                              Đăng nhập
+                            </span>
+                          </div>
+                        </Link>
+                      </div>)
+                    }
+
                   </div>
                 </div>
                 <div className="flex-1">
@@ -263,9 +280,9 @@ export default function Profile() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </Layout>
+          </div >
+        </div >
+      </div >
+    </Layout >
   );
 }

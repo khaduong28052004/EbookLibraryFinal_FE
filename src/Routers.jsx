@@ -30,8 +30,8 @@ const SingleProductPage = lazy(() => import('./components/SingleProductPage/inde
 
 import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
 import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
+import ChatBot from "./pages/Seller/ChatBot2.jsx"
 import AuthService from "./service/authService.js";
-
 
 export default function Routers() {
   const location = useLocation();
@@ -68,8 +68,8 @@ export default function Routers() {
   return (
     <>
       <RequestProvider>
+      <ChatBot />
         <Routes location={location} key={location.pathname} >
-
           <Route exact path="/" element={
             <Suspense fallback={<Loader />}>
               <Home />

@@ -19,9 +19,11 @@ import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
 import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
 import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
+import ChatBot from "./pages/Seller/ChatBot"
 export default function RouterAdmins() {
   return (
     <DefaultLayout>
+      <ChatBot/>
       <Routes>
         <Route
           path="/home"

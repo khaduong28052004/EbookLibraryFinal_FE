@@ -11,9 +11,11 @@ import ThongKeSanPham from "./pages/Seller/ThongKeSanPhamSeller"
 import ThongKeKhachHang from "./pages/Seller/ThongKeKhachHangSeller"
 import DanhGiaSeller from "./pages/Seller/DanhGiaSeller"
 import VoucherDetailSeller from "./pages/Seller/VoucherDetailSeller"
+import ChatBot from "./pages/Seller/ChatBot"
 export default function RouterSellers() {
   return (
     <SellerLayout>
+      <ChatBot />
       <Routes>
         <Route
           path="/home"

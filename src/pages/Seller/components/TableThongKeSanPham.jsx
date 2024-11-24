@@ -4,10 +4,10 @@ import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, 
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
-import {ExportExcel} from "./ExportExcel"
+import { ExportExcel } from "./ExportExcel"
 
-const TableThongKeDonHang = ({ list,search, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, setSortBy, setSortColumn, sortBy, sortColumn }) => {
-  
+const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, setSortBy, setSortColumn, sortBy, sortColumn }) => {
+
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Thống Kê Sản Phẩm'];
     try {
@@ -52,7 +52,7 @@ const TableThongKeDonHang = ({ list,search, setSearch, pageSize, pageNumber, tot
               type="text"
               placeholder="Tìm kiếm..."
               name="search"
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setPageNumber(0) }}
               className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
             />
 
@@ -65,7 +65,7 @@ const TableThongKeDonHang = ({ list,search, setSearch, pageSize, pageNumber, tot
 
           </button>
           <button
-          onClick={handleExport}
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4 md:mb-0"
           >
             Excel
@@ -131,10 +131,10 @@ const TableThongKeDonHang = ({ list,search, setSearch, pageSize, pageNumber, tot
             </th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
-             onClick={() => {
-              setSortBy(!sortBy);
-              setSortColumn("trungBinhDanhGia");
-            }}
+              onClick={() => {
+                setSortBy(!sortBy);
+                setSortColumn("trungBinhDanhGia");
+              }}
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trung Bình Lượt Đánh Giá</span>
@@ -149,7 +149,7 @@ const TableThongKeDonHang = ({ list,search, setSearch, pageSize, pageNumber, tot
                 setSortBy(!sortBy);
                 setSortColumn("luotYeuThich");
               }}
-              >
+            >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Lượt Yêu Thích</span>
                 <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotYeuThich" ? "text-black" : "text-gray-500"}`} />

@@ -50,6 +50,7 @@ const TableTwo = () => {
   const handSearch = (event) => {
     const value = event.target.value;
     setSearch(value);
+    setPageNumber(0);
   }
 
   const handlePrevious = () => {

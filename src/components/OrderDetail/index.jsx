@@ -73,7 +73,8 @@ export default function OrderDetail({ orderId, clearOrderId }) {
         try {
             setLoading(true);
             const response = await userOrderDetailService.cancelOrderDetail({ billId });
-            
+
+
             if (response.data.status === "successfully") {
                 setTaskCompleted(true);
                 toast.success('Đơn hàng đã được hủy');
@@ -256,7 +257,10 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                                                                     (
                                                                         <div className="productInfo-butoton w-[100%] flex items-end mt-auto">
                                                                             <div className="productInfo-rating">
-                                                                                <button onClick={() => setValue(product.billDetailId, product.productId)} className="w-[100px] h-[35px] rounded text-[#608BC1] text-[15px]  
+                                                                                <button onClick={(event) => {
+                                                                                    event.preventDefault(); // Ngăn điều hướng khi bấm nút
+                                                                                    setValue(product.billDetailId, product.productId);
+                                                                                }} className="w-[100px] h-[35px] rounded text-[#608BC1] text-[15px]  
                                                                                 px-2 py-0 border border-[#608BC1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">Đánh giá</button>
                                                                             </div>
                                                                         </div>

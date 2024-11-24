@@ -1,22 +1,30 @@
 import axios from "axios";
 
+
 async function Service_Fee(weight, quantity, fromAddress, addressTo) {
     console.log("district from" + fromAddress.district);
     console.log("wardCode from" + fromAddress.wardCode);
     console.log("district To " + addressTo.district);
     console.log("wardCode to " + addressTo.wardCode);
-    console.log("id"+fromAddress.id)
+    console.log("id" + fromAddress.id)
     try {
         // Gửi yêu cầu POST với dữ liệu trong phần 'data'
         const result = await axios.post("https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee", {
-            "from_district_id": fromAddress?.district,
-            "from_ward_code": fromAddress?.wardCode,
-            "service_id": 53320,
-            "to_district_id": addressTo?.wardCode,
-            "to_ward_code": addressTo?.wardCode,
-            "weight": weight * quantity
+            "service_id": 53321,
+            "from_district_id": 1823,
+            "from_ward_code": "640706",
+            "to_district_id": 1452,
+            "to_ward_code": "21010",
+            "weight": weight,
+            "insurance_value": 0,
+            "coupon": null,
+            "items": [
+                {
+                    "name": "TEST1",
+                    "quantity": quantity
 
-
+                }
+            ]
         }, {
             headers: {
                 'Content-Type': 'application/json',

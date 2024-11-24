@@ -1,16 +1,16 @@
-import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Turnstile from "react-turnstile";
 
+import AuthService from "../../../service/authService";
 import InputCom from "../../Helpers/InputCom";
 import Layout from "../../Partials/Layout";
-import Thumbnail from "./Thumbnail";
-import AuthService from "../../../service/authService";
-import LoginGG from "./loginGG";
 import FaceBookSingIn from "./FaceBookSingIn";
+import LoginGG from "./loginGG";
+import Thumbnail from "./Thumbnail";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -66,9 +66,9 @@ export default function Login() {
           if (response.data.roles === "USER") {
             navigate('/');
           } else if (response.data.roles === "SELLER") {
-            navigate('/seller');
+            navigate('/seller/home');
           } else {
-            navigate('/admin');
+            navigate('/admin/home');
           }
         }, 2000);
         toast.success("Đăng nhập thành công!");

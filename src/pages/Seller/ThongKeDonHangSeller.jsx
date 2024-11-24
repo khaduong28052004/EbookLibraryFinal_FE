@@ -46,6 +46,7 @@ const SanPhamSeller = () => {
 
   const handleSearch = () => {
     loadTable();
+    setPageNumber(0);
   }
   return (
     <>

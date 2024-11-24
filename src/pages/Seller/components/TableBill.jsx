@@ -83,6 +83,7 @@ const TableTwo = () => {
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
+    setPageNumber(0);
   }
   const toggleRow = (id) => {
     if (expandedRowId === id) {

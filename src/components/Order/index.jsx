@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { toast, ToastContainer } from 'react-toastify';
-import OrderDetail from '../OrderDetail/index';
+import React, { useEffect, useState } from "react";
 import BeatLoader from "react-spinners/BeatLoader";
+import { toast } from 'react-toastify';
 import userOrderService from "../../service/user/order";
+import OrderDetail from '../OrderDetail/index';
 // npm install --save react-spinners
 
 
@@ -30,11 +30,14 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             setLoading(true);
 
             const orderStatusId = activeMenu;
+
             const userID = getIdAccountFromSession().id_account;
 
             const response = await userOrderService.fetchOrder({ userID, orderStatusId });
 
-            if (response && response.data && response.data.data) {
+            
+            console.log('response.data.data', response.data.data);
+            if (response.data.data) {
                 const data = response.data.data;
 
                 setOrders(Array.isArray(data) ? data : []);
@@ -146,12 +149,17 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
     useEffect(() => {
         fetchOrders();
+        console.log("tesst 1");
     }, []);
 
     useEffect(() => {
         fetchOrders();
         console.log(orderId);
     }, [orderId]);
+
+    useEffect(() => {
+        console.log("orders ",orders);
+    }, [orders]);
 
     useEffect(() => {
         console.log(orders);

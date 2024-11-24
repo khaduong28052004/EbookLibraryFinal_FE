@@ -23,6 +23,8 @@ const TableSanPham = () => {
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
+  const [statusButton, setStatusButton] = useState(false);
+  const [idProduct, setIdProduct] = useState(null);
   const [dataProduct, setDataProduct] = useState({
     id: null,
     price: null,
@@ -45,6 +47,9 @@ const TableSanPham = () => {
   const [idCategory, setIdCategory] = useState(0);
   const [expandedRowId, setExpandedRowId] = useState(null);
   const [size, setSize] = useState(5);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -114,12 +119,12 @@ const TableSanPham = () => {
     const totalFiles = dataProduct.imageProducts.length + selectedFiles.length;
 
     if (totalFiles > 4) {
-      setErrorMessage("Bạn chỉ được chọn tối đa 4 ảnh.");
+      toast.error("Bạn chỉ được chọn tối đa 4 ảnh.");
       return;
     }
 
     if (selectedFiles.length < 1) {
-      setErrorMessage("Bạn cần chọn ít nhất 1 ảnh.");
+      toast.error("Bạn cần chọn ít nhất 1 ảnh.");
       return;
     }
 
@@ -131,10 +136,49 @@ const TableSanPham = () => {
     }));
   };
 
+  // const editProduct = async (product_id) => {
+  //   try {
+  //     const response = await SanPhamService.edit(product_id);
+  //     const product = response.data.result;
+  //     setDataProduct({
+  //       id: product.id,
+  //       price: product.price,
+  //       sale: product.sale,
+  //       weight: product.weight,
+  //       name: product.name,
+  //       introduce: product.introduce,
+  //       writerName: product.writerName,
+  //       publishingCompany: product.publishingCompany,
+  //       isDelete: product.delete,
+  //       quantity: product.quantity,
+  //       isActive: product.active,
+  //       account: sessionStorage.getItem("id_account"),
+  //       category: product.category.id,
+  //       imageProducts: []
+  //     });
+
+  //     setIdCategory(product.category.idParent);
+  //     loadListTheLoai(product.category.idParent);
+  //     if (product.imageProducts && product.imageProducts.length > 0) {
+  //       for (const image of product.imageProducts) {
+  //         await addImageFromFirebase(image.name);
+  //       }
+  //     }
+  //     setIsOpenModalSP(true);
+  //     console.log(dataProduct);
+  //     setStatusButton(false);
+  //   } catch (error) {
+  //     setStatusButton(false);
+  //     toast.error(error.response.data.message);
+  //   }
+  // }
+
   const editProduct = async (product_id) => {
     try {
       const response = await SanPhamService.edit(product_id);
       const product = response.data.result;
+  
+      // Cập nhật dữ liệu sản phẩm
       setDataProduct({
         id: product.id,
         price: product.price,
@@ -149,55 +193,139 @@ const TableSanPham = () => {
         isActive: product.active,
         account: sessionStorage.getItem("id_account"),
         category: product.category.id,
-        imageProducts: []
+        imageProducts: [] // Dữ liệu ảnh sẽ được cập nhật sau
       });
-
+  
       setIdCategory(product.category.idParent);
       loadListTheLoai(product.category.idParent);
+  
+      // Tải ảnh từ Firebase đồng thời
       if (product.imageProducts && product.imageProducts.length > 0) {
-        for (const image of product.imageProducts) {
-          await addImageFromFirebase(image.name);
-        }
+        const imagePromises = product.imageProducts.map((image) =>
+          addImageFromFirebase(image.name)
+        );
+  
+        // Chờ tất cả ảnh được xử lý
+        const imageBlobs = await Promise.all(imagePromises);
+  
+        // Cập nhật imageProducts sau khi tải xong
+        setDataProduct((prevData) => ({
+          ...prevData,
+          imageProducts: imageBlobs
+        }));
       }
+  
       setIsOpenModalSP(true);
       console.log(dataProduct);
+      setStatusButton(false);
     } catch (error) {
-      toast.error(error.response.data.message);
+      setStatusButton(false);
+      toast.error(error.response?.data?.message || "Đã xảy ra lỗi!");
     }
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+
+    if (!dataProduct.imageProducts || dataProduct.imageProducts.length === 0) {
+      toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
+      return;
+    }
+    setIsSubmitting(true); // Bật trạng thái chờ
+
     try {
-      let response;
       const formData = new FormData();
-      dataProduct.imageProducts.forEach((file, index) => {
-        formData.append(`imageProducts`, file);
+
+      // Thêm hình ảnh vào formData
+      dataProduct.imageProducts.forEach((file) => {
+        formData.append("imageProducts", file);
       });
+
+      console.log("DATAAAAAA PRODUCT", dataProduct);
+
+      // Gửi các yêu cầu đồng thời
+      let response;
       if (!isStatus) {
-        console.log(dataProduct);
-        response = await SanPhamService.create(dataProduct);
-        const responseImg = await SanPhamService.createSaveImg(formData);
+        [response] = await Promise.all([
+          SanPhamService.create(dataProduct),
+          SanPhamService.createSaveImg(idProduct, formData),
+        ]);
       } else {
-        console.log(dataProduct);
-        response = await SanPhamService.update(dataProduct);
-        const responseImg = await SanPhamService.updateSaveImg(formData);
+        [response] = await Promise.all([
+          SanPhamService.update(dataProduct),
+          SanPhamService.updateSaveImg(idProduct, formData),
+        ]);
       }
+
+      // Hiển thị thông báo thành công và thực hiện các thao tác khác
       toast.success(response.data.message);
       loadListProduct();
       setIsOpenModalSP(false);
+      setStatusButton(false);
+      setIsSubmitting(false);
     } catch (error) {
-      toast.error(error.response.data.message);
+      setStatusButton(false);
+      setIsSubmitting(false);
+      toast.error(error.response?.data?.message || "Đã xảy ra lỗi!");
     }
-  }
+  };
+
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (isSubmitting) return;
+
+  //   if (!dataProduct.imageProducts || dataProduct.imageProducts.length === 0) {
+  //     toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
+  //     return;
+  //   }
+  //   setIsSubmitting(true); // Bật trạng thái chờ
+
+  //   try {
+  //     let response;
+  //     const formData = new FormData();
+
+  //     // Thêm hình ảnh vào formData
+  //     dataProduct.imageProducts.forEach((file) => {
+  //       formData.append("imageProducts", file);
+  //     });
+
+  //     console.log("DATAAAAAA PRODUCT", dataProduct);
+
+  //     // Gửi dữ liệu đến API tùy theo trạng thái
+  //     if (!isStatus) {
+  //       response = await SanPhamService.create(dataProduct);
+  //       await SanPhamService.createSaveImg(idProduct, formData);
+  //     } else {
+  //       response = await SanPhamService.update(dataProduct);
+  //       await SanPhamService.updateSaveImg(idProduct, formData);
+  //     }
+
+  //     // Hiển thị thông báo thành công và thực hiện các thao tác khác
+  //     toast.success(response.data.message);
+  //     loadListProduct();
+  //     setIsOpenModalSP(false);
+  //     setStatusButton(false);
+  //     setIsSubmitting(false);
+  //   } catch (error) {
+  //     setStatusButton(false);
+  //     setIsSubmitting(false);
+  //     toast.error(error.response?.data?.message || "An error occurred");
+  //   }
+  // };
 
   const deleteProduct = async () => {
     try {
       const response = await SanPhamService.delete(productId);
       toast.success(response.data.message);
       loadListProduct();
+      setStatusButton(false);
     } catch (error) {
-      console.error(error);
+      setStatusButton(false);
+      toast.error(error.response.data.message);
     }
   }
 
@@ -211,6 +339,7 @@ const TableSanPham = () => {
   const handSearch = (event) => {
     const value = event.target.value;
     setSearch(value);
+    setPageNumber(0);
   }
 
   const handleDanhMuc = (e) => {
@@ -226,22 +355,34 @@ const TableSanPham = () => {
     }));
   };
 
+  // const addImageFromFirebase = async (imagePath) => {
+  //   const imageRef = ref(storage, imagePath); // Đường dẫn tới ảnh trong Firebase Storage
+  //   try {
+  //     const url = await getDownloadURL(imageRef);
+  //     const response = await fetch(url);
+
+  //     // Kiểm tra dữ liệu trả về
+  //     const blob = await response.blob();
+
+  //     setDataProduct((prevData) => ({
+  //       ...prevData,
+  //       imageProducts: [...prevData.imageProducts, blob]
+  //     }));
+  //   } catch (error) {
+  //     console.error("Error fetching image from Firebase:", error);
+  //   }
+  // };
+
   const addImageFromFirebase = async (imagePath) => {
     const imageRef = ref(storage, imagePath); // Đường dẫn tới ảnh trong Firebase Storage
     try {
       const url = await getDownloadURL(imageRef);
       const response = await fetch(url);
-
-      // Kiểm tra dữ liệu trả về
-      const blob = await response.blob();
-
-      setDataProduct((prevData) => ({
-        ...prevData,
-        imageProducts: [...prevData.imageProducts, { url, blob }]
-      }));
-      // handleAddFiles(blob);
+      const blob = await response.blob(); // Trả về Blob của ảnh
+      return blob;
     } catch (error) {
       console.error("Error fetching image from Firebase:", error);
+      return null; // Trả về null nếu gặp lỗi
     }
   };
 
@@ -318,6 +459,7 @@ const TableSanPham = () => {
                 category: null,
                 imageProducts: []
               })
+              setIsStatus(false);
               setIsOpenModalSP(true);
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
@@ -432,17 +574,19 @@ const TableSanPham = () => {
                   </td>
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                     <div className="flex space-x-3.5">
-                      <button onClick={(event) => {
+                      <button disabled={statusButton} onClick={(event) => {
                         event.stopPropagation();
                         setIsOpen(true);
                         setProductId(item.id);
                       }}>
                         <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
                       </button>
-                      <button onClick={(event) => {
+                      <button disabled={statusButton} onClick={(event) => {
                         event.stopPropagation();
+                        setStatusButton(true);
                         editProduct(item.id);
-                        setIsStatus(true)
+                        setIsStatus(true);
+                        setIdProduct(item.id);
                       }}>
                         <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
                       </button>
@@ -515,8 +659,18 @@ const TableSanPham = () => {
         iconBgColor={'bg-red-100'}
         buttonBgColor={'bg-red-600'}
       />
-
+      {(statusButton) && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-99999">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600"></div>
+        </div>
+      )}
       <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-99999">
+        {(isSubmitting) && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600"></div>
+          </div>
+        )}
+
         <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -556,7 +710,7 @@ const TableSanPham = () => {
                         onChange={handDataProduct}
                         placeholder="Số Lượng..."
                         required
-                        className="w-full rounded b order-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
                   </div>
@@ -787,14 +941,17 @@ const TableSanPham = () => {
 
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
+                    disabled={isSubmitting}
                     type="submit"
                     className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
                   >
-                    Xác Nhận
+                    {isSubmitting ? "Vui lòng chờ..." : "Xác Nhận"}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setIsOpenModalSP(false)}
+                    onClick={() => {
+                      setIsOpenModalSP(false);
+                    }}
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                   >
                     Hủy
