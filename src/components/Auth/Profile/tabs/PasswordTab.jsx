@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthService from "../../../../service/authService";
 import { toast, ToastContainer } from "react-toastify";
 export default function PasswordTab() {
+  const [error, setError] = useState(false)
   const [oldPass, setOldPass] = useState("hide-password");
   const [newPass, setNewPass] = useState("hide-password");
   const [confirmPass, setConfirmPass] = useState("hide-password");
@@ -66,15 +67,18 @@ export default function PasswordTab() {
         const response = await AuthService.UpdatePass(data.id, data.new_password, data.old_password);
         if (response.status === 200) {
           toast.success("Cập nhật mật khẩu thành công!");
+          setError(true);
           setTimeout(() => {
             navigate('/profile#dashboard');
           }, 2000);
         } else {
+          setError(false);
           toast.warning("Cập nhật mật khẩu thất bại!");
         }
       } catch (error) {
         console.error(error);
-        toast.error(error.response.data|| "lỗi! ");
+        setError(false);
+        toast.error(error.response.data || "lỗi! ");
       }
     }
   };
@@ -83,16 +87,20 @@ export default function PasswordTab() {
   const checkForm = (data) => {
     if (!data.old_password) {
       toast.warn("Mật khẩu không được để trống!");
+      setError(false);
       return false;
     }
     if (!data.new_password) {
+      setError(false);
       toast.warn("Mật khẩu không được để trống!");
       return false;
     }
     if (data.confirm_password !== data.new_password) {
+      setError(false);
       toast.warn("Xác nhận mật khẩu không khớp!");
       return false;
     }
+    setError(true);
     return true;
   };
 
@@ -112,8 +120,11 @@ export default function PasswordTab() {
             <div className="input-wrapper border border-[#E8E8E8] w-full  h-[58px] overflow-hidden relative ">
               <input
                 placeholder="● ● ● ● ● ●"
-                className="input-field placeholder:text-base text-bese px-4 text-dark-gray w-full h-full bg-[#FAFAFA] focus:ring-0 focus:outline-none"
-                type="password"
+                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300" // Error state
+                  // : errorFrom.usernameF === 2
+                  //   ? "border-green-500 bg-red-400" // Success state
+                  //   : ""
+                  }`} type="password"
                 id="old_password"
                 name="old_password"
                 onChange={handleData}
@@ -185,8 +196,13 @@ export default function PasswordTab() {
             <div className="input-wrapper border border-[#E8E8E8] w-full  h-[58px] overflow-hidden relative ">
               <input
                 placeholder="● ● ● ● ● ●"
-                className="input-field placeholder:text-base text-bese px-4 text-dark-gray w-full h-full bg-[#FAFAFA] focus:ring-0 focus:outline-none"
-                type="password"
+                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300"
+                  // errorFrom.usernameF === 1
+                  // ? "border-red-500 bg-red-400" // Error state
+                  // : errorFrom.usernameF === 2
+                  //   ? "border-green-500 bg-red-400" // Success state
+                  //   : ""
+                  }`} type="password"
                 id="new_password"
                 name="new_password"
                 onChange={handleData}
@@ -258,8 +274,13 @@ export default function PasswordTab() {
             <div className="input-wrapper border border-[#E8E8E8] w-full  h-[58px] overflow-hidden relative ">
               <input
                 placeholder="● ● ● ● ● ●"
-                className="input-field placeholder:text-base text-bese px-4 text-dark-gray w-full h-full bg-[#FAFAFA] focus:ring-0 focus:outline-none"
-                type="password"
+                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300"
+                  // errorFrom.usernameF === 1
+                  // ? "border-red-500 bg-red-400" // Error state
+                  // : errorFrom.usernameF === 2
+                  //   ? "border-green-500 bg-red-400" // Success state
+                  //   : ""
+                  }`} type="password"
                 id="confirm_password"
                 name="confirm_password"
                 onChange={handleData}

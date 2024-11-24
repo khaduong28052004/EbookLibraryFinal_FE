@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Layout from "../../Partials/Layout";
 import Thumbnail from "./Thumbnail";
 import AuthService from "../../../service/authService";
+// import   from "../config/configAxios";
 import { toast, ToastContainer } from "react-toastify";
 import axios, { Axios } from "axios";
 export default function Signup() {
@@ -125,21 +126,31 @@ export default function Signup() {
     }
     console.log(formData);
 
-    try {
-      const response = await AuthService.register(formData);
-      if (response.status === 200) {
-        toast.success("Đăng ký thành công");
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-      } else {
-        toast.error("đăng ký thất bại,", response.data);
+    // checkEmailTONTAI(formData.email)
+    const token = import.meta.env.VITE_TOKEN_HUNTER;
+    const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${formData.email}&api_key=${token}`);
+    console.log(response);
+    if (response?.data?.data?.status === "valid") {
+      try {
+        const response = await AuthService.register(formData);
+        if (response.status === 200) {
+          toast.success("Đăng ký thành công");
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
+        } else {
+          toast.error("đăng ký thất bại,", response.data);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error?.response?.data || " Lỗi!");
       }
-    } catch (error) {
-      console.log(error);
-      toast.error(error?.response?.data || "An error occurred during registration");
+      console.log("oke");
+    } else {
+      toast.error("(" + formData.email + ")" + " Email Không tồn tại!");
+      console.log("ko oke");
+
     }
-    console.log("oke");
   };
 
   const generatePassword = () => {

@@ -36,18 +36,18 @@ export default function Login() {
       seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
       toast.error("Vui lòng kiểm tra tên đăng nhập!");
       return;
-    }else{
+    } else {
       seterrorFrom((prev) => ({ ...prev, usernameF: 0 }));
     }
-    
+
     if (password.trim() === "") {
       seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
       toast.error("Vui lòng kiểm tra tên đăng nhập!");
       return;
-    } else{
+    } else {
       seterrorFrom((prev) => ({ ...prev, passwordF: 0 }));
     }
-    
+
 
     if (!captchaToken) {
       toast.error("Please complete the captcha");
@@ -60,7 +60,7 @@ export default function Login() {
         password,
         captchaToken,
       });
-      seterrorFrom((prev) => ({ ...prev, passwordF: 2,usernameF:2 }));
+      seterrorFrom((prev) => ({ ...prev, passwordF: 2, usernameF: 2 }));
       if (response.status) {
         setTimeout(() => {
           if (response.data.roles === "USER") {
@@ -116,16 +116,23 @@ export default function Login() {
                       label="Username*"
                       name="username"
                       type="text"
-                      inputClasses={
-                        errorFrom.usernameF === 1
-                          ? "border-red-500 bg-red-400" // Error state
-                          : errorFrom.usernameF === 2
-                            ? "border-green-500 bg-red-400" // Success state
-                            : "" // Default state
-                      }
+                      inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.usernameF === 1
+                        ? "border-red-300 bg-red-300" // Error state
+                        : errorFrom.usernameF === 2
+                          ? "border-green-300 bg-red-300" // Success state
+                          : ""}`}
+
+
+                      // errorFrom.usernameF === 1
+                      //   ? "border-red-500 bg-red-400" // Error state
+                      //   : errorFrom.usernameF === 2
+                      //     ? "border-green-500 bg-red-400" // Success state
+                      //     : "" // Default state
+
                       value={username}
                       inputHandler={(e) => setUsername(e.target.value)}
                     />
+                    {/* inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.username?.error ? 'bg-red-100 ring-red-500' : ''}`} */}
 
                   </div>
                   <div className="input-item mb-5 relative">
@@ -134,13 +141,11 @@ export default function Login() {
                       label="Password*"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      inputClasses={
-                        errorFrom.passwordF === 1
-                          ? "border-red-500 bg-red-400" // Error state
-                          : errorFrom.passwordF === 2
-                            ? "border-green-500 bg-red-400" // Success state
-                            : "" // Default state
-                      }
+                      inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.passwordF === 1
+                        ? "border-red-300 bg-red-300" // Error state
+                        : errorFrom.passwordF === 2
+                          ? "border-green-300 bg-red-300" // Success state
+                          : ""}`}
                       value={password}
                       inputHandler={(e) => setPassword(e.target.value)}
                     >
