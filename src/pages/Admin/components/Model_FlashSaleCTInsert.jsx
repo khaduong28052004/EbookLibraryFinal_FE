@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { toast, ToastContainer } from 'react-toastify';
 import flashSaleDetails from '../../../service/admin/FlashSaleDetails';
 
-const ModalFlashSale = ({
+const ModalFlashSaleDetails = ({
+    entity,
     product,
     flashSaleId,
     open,
@@ -17,8 +18,6 @@ const ModalFlashSale = ({
     const initialFormData = {
         quantity: '',
         sale: '',
-        product: product.id,
-        flashSale: flashSaleId,
     };
     const [formData, setFormData] = useState(initialFormData);
 
@@ -36,10 +35,23 @@ const ModalFlashSale = ({
     const postFlashSaleDetails = async () => {
         try {
             const response = await flashSaleDetails.post({ data: formData });
-            toast.success("Thêm sản phẩm thành công");
+            toast.success(response.data.message);
             setStatus(!status);
             setFormData(initialFormData);
-            setOpen(false); 
+            setOpen(false);
+        } catch (error) {
+            toast.error(error.response.data.message);
+            console.log("Error: " + error);
+        }
+    }
+
+    const putFlashSaleDetails = async () => {
+        try {
+            const response = await flashSaleDetails.put({ data: formData });
+            toast.success(response.data.message);
+            setStatus(!status);
+            setFormData(initialFormData);
+            setOpen(false);
         } catch (error) {
             toast.error(error.response.data.message);
             console.log("Error: " + error);
@@ -48,8 +60,31 @@ const ModalFlashSale = ({
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        postFlashSaleDetails(formData);
-    };
+        if (entity == null) {
+            postFlashSaleDetails();
+        } else {
+            putFlashSaleDetails();
+        }
+    }
+    useEffect(() => {
+        if (entity == null) {
+            setFormData({
+                quantity: '',
+                sale: '',
+                product: product.id,
+                flashSale: flashSaleId,
+            })
+        } else {
+            setFormData({
+                id: entity.id,
+                quantity: entity.quantity || '',
+                sale: entity.sale || '',
+                product: product.id,
+                flashSale: flashSaleId,
+            })
+        }
+    }, [entity]);
+    ;
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
@@ -76,7 +111,7 @@ const ModalFlashSale = ({
                                             type="number"
                                             placeholder='% giảm giá'
                                             max={100}
-                                            min={5}
+                                            min={1}
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
@@ -123,4 +158,4 @@ const ModalFlashSale = ({
     );
 };
 
-export default ModalFlashSale;
+export default ModalFlashSaleDetails;
