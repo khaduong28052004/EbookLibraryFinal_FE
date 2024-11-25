@@ -15,6 +15,7 @@ import Faq from "./components/Faq/index.jsx";
 import FlashSale from "./components/FlashSale/index.jsx";
 import FourZeroFour from "./components/FourZeroFour/index.jsx";
 import Loader from "./components/Helpers/Loaders/LoaderStyleOne.jsx";
+import Home from "./components/Home/index.jsx";
 import PrivacyPolicy from "./components/PrivacyPolicy/index.jsx";
 import ProductsCompaire from "./components/ProductsCompaire/index";
 import { RequestProvider } from "./components/Request/RequestProvicer.jsx";
@@ -23,15 +24,13 @@ import Sallers from "./components/Sellers/index.jsx";
 import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
-
-const Home = lazy(() => import('./components/Home/index.jsx'));
+// const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));
 const SingleProductPage = lazy(() => import('./components/SingleProductPage/index.jsx'))
 
 import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
 import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
-import ChatBot from "./pages/Seller/ChatBot2.jsx"
-import AuthService from "./service/authService.js";
+import ChatBot from "./pages/Seller/ChatBot2.jsx";
 
 export default function Routers() {
   const location = useLocation();
@@ -71,9 +70,10 @@ export default function Routers() {
       <ChatBot />
         <Routes location={location} key={location.pathname} >
           <Route exact path="/" element={
-            <Suspense fallback={<Loader />}>
+            // <Suspense fallback={<Loader />}>
               <Home />
-            </Suspense>
+            // </Suspense>
+            
           }
           />
           <Route exact path="/search" element={<AllProductPage />} />

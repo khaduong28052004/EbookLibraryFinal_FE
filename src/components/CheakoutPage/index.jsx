@@ -151,28 +151,13 @@ export default function CheakoutPage() {
     // const dataNew = JSON.stringify(data);
     const idUser = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
-    // axios.post('http://localhost:8080/api/v1/user/pay/' + idUser, data, {
-    //   auth: {
-    //     username: "khauser",
-    //     password: "123"
-    //   },
+    // axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=1", data, {
     //   headers: {
-    //     'Content-Type': 'application/json'
+    //     'Authorization': `Bearer ${token}`,
     //   }
-    // })
-    //   .then(response => {
-    //     console.log('Payment success:', response.data);
-    //   })
-    //   .catch(error => {
-    //     console.error('Error:', error.response ? error.response.data : error.message);
-    //   });
-    axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=1", data, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      }
-    }).then(response => {
-      navigate("/profile#order");
-    }).catch();
+    // }).then(response => {
+    //   navigate("/profile#order");
+    // }).catch();
   }
   return (
     <Layout childrenClasses="pt-0 pb-0">

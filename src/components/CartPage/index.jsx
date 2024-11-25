@@ -2,14 +2,15 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import AuthService from "../../service/authService";
 import BreadcrumbCom from "../BreadcrumbCom";
 import EmptyCardError from "../EmptyCardError";
 import PageTitle from "../Helpers/PageTitle";
 import Layout from "../Partials/Layout";
 import { useRequest } from "../Request/RequestProvicer";
-import Service_Fee from "../service/Service_Fee";
+import Service_Fee, { service } from "../service/Service_Fee";
 import ProductsTable from "./ProductsTable";
-import AuthService from "../../service/authService";
+
 
 export default function CardPage({ cart = true }) {
   const navigate = useNavigate(); // Đưa useNavigate ra ngoài useEffect
@@ -22,8 +23,14 @@ export default function CardPage({ cart = true }) {
   const { startRequest, endRequest, setItem } = useRequest();
   const localtion = useLocation();
   const [feeSeller, setFeeSeller] = useState({});
-
+  const [serviceId, setServiceId] = useState();
   const { isRequest } = useRequest();
+
+  const [fromAddress, setFromAddress] = useState();
+  const [toAddress, setToAddress] = useState();
+  const [quantity, setQuantity] = useState();
+  const [idSeller, setIdseller] = useState();
+  const [weight, setWeight] = useState();
 
   // token
   function isTokenExpired(token) {
@@ -74,10 +81,23 @@ export default function CardPage({ cart = true }) {
     }
   }, [localtion]);
 
-  const getServiceFee = async (idSeller, weight, quantity, addressFrom, addressTo) => {
+  // const getServiceFee = async (idSeller, weight, quantity, addressFrom, addressTo) => {
+  //   try {
+  //     const { service_fee } = await Service_Fee(serviceId,weight, quantity, addressFrom, addressTo);
+  //     setServiceFee(fee => fee + service_fee);
+  //     setFeeSeller(seller => ({
+  //       ...seller,
+  //       [idSeller]: service_fee
+  //     }))
+  //   } catch (error) {
+  //     console.error("Error in fetching service fee:", error);
+  //   }
+  // };
+
+  const getServiceFee = async (serviceId, idSeller, weight, quantity, addressFrom, addressTo) => {
     try {
-      const { service_fee } = await Service_Fee(weight, quantity, addressFrom, addressTo);
-      setServiceFee(fee => fee + service_fee);
+      const { service_fee } = await Service_Fee(serviceId, weight, quantity, addressFrom, addressTo);
+      setServiceFee(serviceFee + service_fee);
       setFeeSeller(seller => ({
         ...seller,
         [idSeller]: service_fee
@@ -86,6 +106,19 @@ export default function CardPage({ cart = true }) {
       console.error("Error in fetching service fee:", error);
     }
   };
+
+  const setService = async (idSeller, weight, quantity, fromAddress, toAddress) => {
+    try {
+      const { service_id } = await service(fromAddress, toAddress);
+      setServiceId(service_id);
+      console.log("service Id " + service_id);
+      getServiceFee(service_id, idSeller, weight, quantity, fromAddress, toAddress);
+      // console.log()
+    } catch (error) {
+      console.error("Error in fetching serviceId:", error);
+    }
+  }
+
 
   const handleSaveProduct = (value) => {
     var fromAddress = {};
@@ -108,7 +141,6 @@ export default function CardPage({ cart = true }) {
       }
       var totalSeller = 0;
       seller?.cart.map(cartItem => {
-
         if (cartItem?.product?.flashSaleDetail) {
           if (cartItem?.quantity <= cartItem?.product?.flashSaleDetail?.quantity) {
             total += (
@@ -127,8 +159,14 @@ export default function CardPage({ cart = true }) {
           total += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
           totalSeller += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
         }
-
-        getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, toAddress)
+        console.log("is seller log " + seller?.id);
+        setIdseller(seller?.id);
+        setWeight(200);
+        setQuantity(cartItem.quantity);
+        setFromAddress(fromAddress);
+        setToAddress(toAddress);
+        setService(seller?.id,100, 2, fromAddress, toAddress);
+        // getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, toAddress);
       });
       if (seller?.voucher?.id > 0) {
         if (((seller?.voucher?.sale * totalSeller) / 100) > seller?.voucher?.totalPriceOrder) {
