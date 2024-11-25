@@ -23,7 +23,7 @@ const FalshSaleAdmin = () => {
       setCurrentPage(0);
       findAllFlashSale();
     } catch (error) {
-      toast.error("Lỗi hệ thống");
+      toast.error(error.response.data.message);
       console.log("Error: " + error);
     }
   }

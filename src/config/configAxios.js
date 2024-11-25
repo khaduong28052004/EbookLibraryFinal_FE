@@ -13,6 +13,26 @@ const axiosConfig = axios.create({
   paramsSerializer: params => queryString.stringify(params),
 });
 
+const axiosInstance = axios.create({
+  baseURL: 'https://api.hunter.io/v2',
+  timeout: 10000, // Timeout nếu cần
+});
+
+ const verifyEmail = async (email) => {
+  try {
+    const response = await axiosInstance.get('/email-verifier', {
+      params: { 
+        email, 
+        api_key: process.env.VITE_TOKEN_HUNTER // Token từ môi trường
+      },
+    });
+    return response.data; // Trả về dữ liệu nếu thành công
+  } catch (error) {
+    console.error("Lỗi khi xác thực email:", error);
+    return false; // Trả về false nếu lỗi
+  }
+};
+
 
 const axiosAuth = (TOKEN, method, url, data, status) => {
   const token = sessionStorage.getItem("accessToken");
@@ -87,5 +107,6 @@ axiosConfig.interceptors.response.use(response => {
 // );
 
 
+
 export default axiosConfig;
-export { axiosAuth };
+export { axiosAuth, verifyEmail };

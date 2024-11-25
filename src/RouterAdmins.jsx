@@ -20,10 +20,11 @@ import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
 import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
 import ChatBot from "./pages/Seller/ChatBot"
+import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
 export default function RouterAdmins() {
   return (
     <DefaultLayout>
-      <ChatBot/>
+      <ChatBot />
       <Routes>
         <Route
           path="/home"
@@ -112,6 +113,15 @@ export default function RouterAdmins() {
             <>
               <PageTitle title="Danh Mục" />
               <DanhMucAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/quanLy/chietkhau"
+          element={
+            <>
+              <PageTitle title="Chiết khấu" />
+              <DiscountRateAdmin />
             </>
           }
         />

@@ -236,7 +236,7 @@ const TableTwo = () => {
                 open={isOpen}
                 setOpen={setIsOpen}
                 title={'Xóa quyền'}
-                message={'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'}
+                message={'Bạn chắc chắn muốn xóa quyền này không?'}
                 onConfirm={handleConfirm}
                 confirmText={'Xác Nhận'}
                 cancelText="Thoát"
@@ -251,7 +251,7 @@ const TableTwo = () => {
                 optionRole={option}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
-                title="Thêm Sản Phẩm Mới"
+                title="Thêm Quyền Mới"
             />
         </div>
     );
