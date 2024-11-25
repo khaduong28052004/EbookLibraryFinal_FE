@@ -228,22 +228,14 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
             <Modal
                 open={isOpen}
                 setOpen={setIsOpen}
-                title={statusentity
-                    ? 'Ngừng Hoạt Động'
-                    : 'Khôi Phục'}
-                message={statusentity
-                    ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                    : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+                title={'Xóa'}
+                message={'Bạn chắc chắn muốn xóa Flashsale này không?'}
                 onConfirm={handleConfirm}
-                confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
+                confirmText={'Xác Nhận'}
                 cancelText="Thoát"
-                icon={statusentity ? (
-                    <TrashIcon className="h-6 w-6 text-red-600" />
-                ) : (
-                    <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
-                )}
-                iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+                icon={<TrashIcon className="h-6 w-6 text-red-600" />}
+                iconBgColor={'bg-red-100'}
+                buttonBgColor={'bg-red-600'} />
             <ModalFlashSale
                 status={status}
                 setStatus={setStatus}

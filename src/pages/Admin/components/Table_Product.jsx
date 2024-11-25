@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { TrashIcon, ReceiptRefundIcon,ArrowPathIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import product from '../../../service/admin/Product';
 import Modal from "./ModalThongBao";
@@ -300,7 +300,7 @@ const TableTwo = () => {
                                             setStatusentity(!entity.delete);
                                             setActive(entity.active ? false : true)
                                         }}>
-                                            {entity.delete == false ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                            {entity.delete == false ? (<ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />) : (<></>)}
                                         </button>
                                     </div>
                                 </td>
@@ -361,19 +361,17 @@ const TableTwo = () => {
                     setStatus={setStatus}
                     open={isOpen}
                     setOpen={setIsOpen}
-                    title={statusentity ? 'Hủy' : 'Duyệt'}
-                    message={statusentity
-                        ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
-                        : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
+                    title={ 'Duyệt Sản Phẩm' }
+                    message={'Bạn có chắc muốn duyệt sản phẩm này không?'}
                     confirmText={'Duyệt'}
                     cancelText={"Hủy"}
                     icon={statusentity ? (
-                        <TrashIcon className="h-6 w-6 text-red-600" />
+                        <ArrowPathIcon className="h-6 w-6 text-yellow-600" />
                     ) : (
                         <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
                     )}
-                    iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                    buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+                    iconBgColor={statusentity ? 'bg-yellow-100' : 'bg-yellow-100'}
+                    buttonBgColor={statusentity ? 'bg-blue-600' : 'bg-yellow-600'} />
             )}
         </div>
     );

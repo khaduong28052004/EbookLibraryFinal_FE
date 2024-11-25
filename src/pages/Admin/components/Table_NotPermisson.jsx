@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLongDownIcon, TrashIcon, ArrowPathIcon, ArrowLongUpIcon, PlusCircleIcon} from '@heroicons/react/24/solid'
+import { ArrowLongDownIcon, TrashIcon, ArrowPathIcon, ArrowLongUpIcon, PlusIcon} from '@heroicons/react/24/solid'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import permission from '../../../service/admin/Permission';
 import rolePermission from '../../../service/admin/PermissionDetails';
@@ -163,7 +163,7 @@ const Table_NotPermission = ({
                                                     setEntityPermission(entity);
                                                     setIsOpen(true);
                                                 }}>
-                                                    <PlusCircleIcon className='w-5 h-5 text-black hover:text-success  dark:text-white' />
+                                                    <PlusIcon className='w-5 h-5 text-black hover:text-success  dark:text-white' />
                                                 </button>
                                             </div>
                                         </td>
