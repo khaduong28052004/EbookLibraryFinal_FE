@@ -18,6 +18,8 @@ const TableTwo = ({ status }) => {
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
+    const [contents, setContents] = useState("");
+
     const handleConfirm = () => {
         setIsOpen(false);
         putStatus();
@@ -50,11 +52,12 @@ const TableTwo = ({ status }) => {
 
     const putStatus = async () => {
         try {
-            const response = await accountService.putStatus({ id });
+            const response = await accountService.putStatus({ id, contents });
             console.log("Mã Code status: " + response.data.code);
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
             }
+            setContents("");
             findAllAccount();
         } catch (error) {
             toast.error("Lỗi hệ thống");
@@ -321,6 +324,8 @@ const TableTwo = ({ status }) => {
 
 
             <Modal
+                content={contents}
+                setContent={setContents}
                 open={isOpen}
                 setOpen={setIsOpen}
                 title={statusentity
