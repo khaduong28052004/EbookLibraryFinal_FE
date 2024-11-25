@@ -23,14 +23,7 @@ export default function CardPage({ cart = true }) {
   const { startRequest, endRequest, setItem } = useRequest();
   const localtion = useLocation();
   const [feeSeller, setFeeSeller] = useState({});
-  const [serviceId, setServiceId] = useState();
-  const { isRequest } = useRequest();
 
-  const [fromAddress, setFromAddress] = useState();
-  const [toAddress, setToAddress] = useState();
-  const [quantity, setQuantity] = useState();
-  const [idSeller, setIdseller] = useState();
-  const [weight, setWeight] = useState();
 
   // token
   function isTokenExpired(token) {
@@ -70,7 +63,11 @@ export default function CardPage({ cart = true }) {
     retoken(token);
     if (token) {
       const id_account = sessionStorage.getItem("id_account");
-      axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
+      axios.get('http://localhost:8080/api/v1/user/cart/' + id_account, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      }).then(response => {
         setData(response.data.result);
         setUser(response.data.result.user);
       }).catch(error => console.error("fetch cart error " + error));
@@ -110,8 +107,6 @@ export default function CardPage({ cart = true }) {
   const setService = async (idSeller, weight, quantity, fromAddress, toAddress) => {
     try {
       const { service_id } = await service(fromAddress, toAddress);
-      setServiceId(service_id);
-      console.log("service Id " + service_id);
       getServiceFee(service_id, idSeller, weight, quantity, fromAddress, toAddress);
       // console.log()
     } catch (error) {
@@ -159,13 +154,7 @@ export default function CardPage({ cart = true }) {
           total += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
           totalSeller += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
         }
-        console.log("is seller log " + seller?.id);
-        setIdseller(seller?.id);
-        setWeight(200);
-        setQuantity(cartItem.quantity);
-        setFromAddress(fromAddress);
-        setToAddress(toAddress);
-        setService(seller?.id,100, 2, fromAddress, toAddress);
+        setService(seller?.id, 100, 2, fromAddress, toAddress);
         // getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, toAddress);
       });
       if (seller?.voucher?.id > 0) {
@@ -192,7 +181,7 @@ export default function CardPage({ cart = true }) {
     }
   }, [feeSeller]);
   const handSubmitPay = () => {
-    if (dataSubmit) {
+    if (dataSubmit.length > 0) {
       const data = {
         datas: dataSubmit,
         user: user,
@@ -201,7 +190,7 @@ export default function CardPage({ cart = true }) {
         service_fee: serviceFee
       }
       setItem("data", data);
-      sessionStorage.setItem("pay", JSON.stringify(data));
+      // sessionStorage.setItem("pay", JSON.stringify(data));
       navigate("/checkout");
     } else {
       toast.warn("Chưa chọn sản phẩm")
