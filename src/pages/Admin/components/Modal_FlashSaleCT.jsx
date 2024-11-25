@@ -384,7 +384,7 @@ const Modal_FlashSaleCT = ({
                                         </div>
                                     </th>
                                     <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                                        <span className="text-sm text-black dark:text-white truncate w-24">Actions</span>
+                                        <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
                                     </th>
                                 </tr>
                             </thead>
@@ -400,7 +400,7 @@ const Modal_FlashSaleCT = ({
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                             <div className="flex items-center gap-1 hidden xl:flex">
-                                                {(entity.product.price - entity.product.sale).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                                {(entity.product.price - (entity.product.price * entity.product.sale/100)).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                             </div>
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
