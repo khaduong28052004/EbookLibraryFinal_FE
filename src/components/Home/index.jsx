@@ -15,12 +15,7 @@ export default function Home() {
 
   const [data_FlashSale, setData_FlashSale] = useState();
   const [data_ProductAll, setData_ProducAll] = useState();
-
-  const [totalPage, setTotalPage] = useState(5);
-  const [currentPages, setCurrentPages] = useState(4);
-
   const location = useLocation();
-
 
   const fetchDataFlashSale = async () => {
     try {
@@ -33,10 +28,8 @@ export default function Home() {
   };
 
   const fetchDataSelectAll = async () => {
-    await axios.get("http://localhost:8080/api/v1/user/home/selectall?size=" + currentPages).then(response => {
+    await axios.get("http://localhost:8080/api/v1/user/home/selectall").then(response => {
       setData_ProducAll(response.data.result);
-      setTotalPage(response.data.result.totalPages);
-      setCurrentPages(response.data.result?.datas.length);
     }).catch(error => {
       console.log("fetch selectall error " + error);
     })
@@ -44,16 +37,7 @@ export default function Home() {
   useEffect(() => {
     fetchDataFlashSale();
     fetchDataSelectAll();
-  }, []);
-
-  useEffect( () => {
-     fetchDataSelectAll();
-  }, [currentPages]);
-
-  const handleChangePage = (current) => {
-    setCurrentPages(current);
-    console.log("currrent " + current);
-  }
+  }, [location]);
   return (
     <>
       <Layout>
@@ -77,9 +61,6 @@ export default function Home() {
           sectionTitle="Sản phẩm"
           seeMoreUrl="/all-products"
           className="new-products mb-[60px]"
-          endLength={currentPages}
-          totalPages={totalPage}
-          onChange={handleChangePage}
         />
       </Layout>
     </>

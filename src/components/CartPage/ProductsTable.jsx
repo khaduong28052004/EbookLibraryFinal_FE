@@ -318,7 +318,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
     // saveIdProduct();
     autoActiveVoucher();
   }
-  // const handle 
+
 
   const handleQuantityCart = (quantity, idCart) => {
     handleQuantityCartIndex(quantity, idCart);
