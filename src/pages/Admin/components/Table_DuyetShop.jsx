@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon,ArrowPathIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ModalDuyetShop from "./Modal_DuyetShop";
 import accountService from '../../../service/admin/Account';
@@ -229,7 +229,7 @@ const TableTwo = ({ status, setStatus }) => {
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
                                         <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
-                                            {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                            {entity.status ? (<ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                         </button>
                                     </div>
                                 </td>
@@ -269,19 +269,17 @@ const TableTwo = ({ status, setStatus }) => {
                 status={status}
                 setStatus={setStatus}
                 setOpen={setIsOpen}
-                title={statusentity ? 'Hủy' : 'Duyệt'}
-                message={statusentity
-                    ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
-                    : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
+                title={'Duyệt shop'}
+                message={'Bạn muốn duyệt shop này không?'}
                 confirmText={'Duyệt'}
                 cancelText={"Hủy"}
                 icon={statusentity ? (
-                    <TrashIcon className="h-6 w-6 text-red-600" />
+                    <ArrowPathIcon className="h-6 w-6 text-yellow-600" />
                 ) : (
                     <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
                 )}
-                iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+                iconBgColor={statusentity ? 'bg-yellow-100' : 'bg-yellow-100'}
+                buttonBgColor={statusentity ? 'bg-blue-600' : 'bg-yellow-600'} />
         </div >
     );
 };

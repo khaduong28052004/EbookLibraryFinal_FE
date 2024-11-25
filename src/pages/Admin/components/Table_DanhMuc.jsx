@@ -279,8 +279,8 @@ const TableTwo = () => {
             <Modal
                 open={isOpen}
                 setOpen={setIsOpen}
-                title={'Ngừng Hoạt Động'}
-                message={'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'}
+                title={'Xóa danh mục'}
+                message={'Bạn chắc chắn muốn xóa danh mục này không?'}
                 onConfirm={handleConfirm}
                 confirmText={'Xác Nhận'}
                 cancelText="Thoát"
@@ -294,7 +294,7 @@ const TableTwo = () => {
                 setStatus={setStatus}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
-                title="Thêm Sản Phẩm Mới"
+                title={post ? 'Thêm danh mục' : 'Cập nhật danh mục'}
                 confirmText="Lưu"
                 cancelText="Hủy" />
         </div>

@@ -327,8 +327,8 @@ const TableTwo = ({ status }) => {
                     ? 'Ngừng Hoạt Động'
                     : 'Khôi Phục'}
                 message={statusentity
-                    ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                    : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+                    ? 'Bạn chắc chắn muốn ngừng hoạt động shop này không?'
+                    : 'Bạn có chắc muốn khôi phục shop này không?'}
                 onConfirm={handleConfirm}
                 confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
                 cancelText="Thoát"
