@@ -42,7 +42,7 @@ export default function AddressesTab() {
         const id = sessionStorage.getItem("id_account") || 1;
         try {
             const response = await axios.get(`http://localhost:8080/api/v1/user/rest/address/fill/${id}`, {
-                params: { accountId }
+                // params: { accountId }
             });
             setAddresses(response.data.data);
         } catch (error) {
