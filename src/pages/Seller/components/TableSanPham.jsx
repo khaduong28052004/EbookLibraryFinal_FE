@@ -136,49 +136,11 @@ const TableSanPham = () => {
     }));
   };
 
-  // const editProduct = async (product_id) => {
-  //   try {
-  //     const response = await SanPhamService.edit(product_id);
-  //     const product = response.data.result;
-  //     setDataProduct({
-  //       id: product.id,
-  //       price: product.price,
-  //       sale: product.sale,
-  //       weight: product.weight,
-  //       name: product.name,
-  //       introduce: product.introduce,
-  //       writerName: product.writerName,
-  //       publishingCompany: product.publishingCompany,
-  //       isDelete: product.delete,
-  //       quantity: product.quantity,
-  //       isActive: product.active,
-  //       account: sessionStorage.getItem("id_account"),
-  //       category: product.category.id,
-  //       imageProducts: []
-  //     });
-
-  //     setIdCategory(product.category.idParent);
-  //     loadListTheLoai(product.category.idParent);
-  //     if (product.imageProducts && product.imageProducts.length > 0) {
-  //       for (const image of product.imageProducts) {
-  //         await addImageFromFirebase(image.name);
-  //       }
-  //     }
-  //     setIsOpenModalSP(true);
-  //     console.log(dataProduct);
-  //     setStatusButton(false);
-  //   } catch (error) {
-  //     setStatusButton(false);
-  //     toast.error(error.response.data.message);
-  //   }
-  // }
-
   const editProduct = async (product_id) => {
     try {
       const response = await SanPhamService.edit(product_id);
       const product = response.data.result;
   
-      // Cập nhật dữ liệu sản phẩm
       setDataProduct({
         id: product.id,
         price: product.price,
@@ -193,22 +155,19 @@ const TableSanPham = () => {
         isActive: product.active,
         account: sessionStorage.getItem("id_account"),
         category: product.category.id,
-        imageProducts: [] // Dữ liệu ảnh sẽ được cập nhật sau
+        imageProducts: [] 
       });
   
       setIdCategory(product.category.idParent);
       loadListTheLoai(product.category.idParent);
   
-      // Tải ảnh từ Firebase đồng thời
       if (product.imageProducts && product.imageProducts.length > 0) {
         const imagePromises = product.imageProducts.map((image) =>
           addImageFromFirebase(image.name)
         );
   
-        // Chờ tất cả ảnh được xử lý
         const imageBlobs = await Promise.all(imagePromises);
   
-        // Cập nhật imageProducts sau khi tải xong
         setDataProduct((prevData) => ({
           ...prevData,
           imageProducts: imageBlobs
@@ -233,20 +192,18 @@ const TableSanPham = () => {
       toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
       return;
     }
-    setIsSubmitting(true); // Bật trạng thái chờ
+    setIsSubmitting(true); 
 
     try {
       const formData = new FormData();
 
-      // Thêm hình ảnh vào formData
       dataProduct.imageProducts.forEach((file) => {
         formData.append("imageProducts", file);
       });
 
       console.log("DATAAAAAA PRODUCT", dataProduct);
 
-      // Gửi các yêu cầu đồng thời
-      let response;
+     let response;
       if (!isStatus) {
         [response] = await Promise.all([
           SanPhamService.create(dataProduct),
@@ -259,7 +216,6 @@ const TableSanPham = () => {
         ]);
       }
 
-      // Hiển thị thông báo thành công và thực hiện các thao tác khác
       toast.success(response.data.message);
       loadListProduct();
       setIsOpenModalSP(false);
@@ -271,51 +227,6 @@ const TableSanPham = () => {
       toast.error(error.response?.data?.message || "Đã xảy ra lỗi!");
     }
   };
-
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (isSubmitting) return;
-
-  //   if (!dataProduct.imageProducts || dataProduct.imageProducts.length === 0) {
-  //     toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
-  //     return;
-  //   }
-  //   setIsSubmitting(true); // Bật trạng thái chờ
-
-  //   try {
-  //     let response;
-  //     const formData = new FormData();
-
-  //     // Thêm hình ảnh vào formData
-  //     dataProduct.imageProducts.forEach((file) => {
-  //       formData.append("imageProducts", file);
-  //     });
-
-  //     console.log("DATAAAAAA PRODUCT", dataProduct);
-
-  //     // Gửi dữ liệu đến API tùy theo trạng thái
-  //     if (!isStatus) {
-  //       response = await SanPhamService.create(dataProduct);
-  //       await SanPhamService.createSaveImg(idProduct, formData);
-  //     } else {
-  //       response = await SanPhamService.update(dataProduct);
-  //       await SanPhamService.updateSaveImg(idProduct, formData);
-  //     }
-
-  //     // Hiển thị thông báo thành công và thực hiện các thao tác khác
-  //     toast.success(response.data.message);
-  //     loadListProduct();
-  //     setIsOpenModalSP(false);
-  //     setStatusButton(false);
-  //     setIsSubmitting(false);
-  //   } catch (error) {
-  //     setStatusButton(false);
-  //     setIsSubmitting(false);
-  //     toast.error(error.response?.data?.message || "An error occurred");
-  //   }
-  // };
 
   const deleteProduct = async () => {
     try {
@@ -354,24 +265,6 @@ const TableSanPham = () => {
       [name]: value
     }));
   };
-
-  // const addImageFromFirebase = async (imagePath) => {
-  //   const imageRef = ref(storage, imagePath); // Đường dẫn tới ảnh trong Firebase Storage
-  //   try {
-  //     const url = await getDownloadURL(imageRef);
-  //     const response = await fetch(url);
-
-  //     // Kiểm tra dữ liệu trả về
-  //     const blob = await response.blob();
-
-  //     setDataProduct((prevData) => ({
-  //       ...prevData,
-  //       imageProducts: [...prevData.imageProducts, blob]
-  //     }));
-  //   } catch (error) {
-  //     console.error("Error fetching image from Firebase:", error);
-  //   }
-  // };
 
   const addImageFromFirebase = async (imagePath) => {
     const imageRef = ref(storage, imagePath); // Đường dẫn tới ảnh trong Firebase Storage
@@ -752,7 +645,6 @@ const TableSanPham = () => {
                     </label>
 
                     <div className="flex space-x-4">
-                      {/* Phần chọn ảnh */}
                       <div className="w-1/3 border border-gray-300 rounded-md p-4 bg-gray-50 flex flex-col items-center">
                         <label htmlFor="productImage" className="cursor-pointer flex flex-col items-center">
                           <ArrowUpTrayIcon className="h-10 w-10 mt-3 text-blue-400" />
@@ -767,7 +659,6 @@ const TableSanPham = () => {
                         </label>
                       </div>
 
-                      {/* Phần hiển thị ảnh đã chọn */}
                       <div className="w-2/3 border border-gray-300 rounded-md p-2 flex justify-center items-center bg-white">
                         {dataProduct.imageProducts.length > 0 ? (
                           <div className="grid grid-cols-4 gap-2">
