@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import LazyLoad from "react-lazyload";
 import { useLocation } from "react-router-dom";
 import BreadcrumbCom from "../BreadcrumbCom";
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
@@ -10,7 +11,6 @@ import { formatTimeAgo } from "../service/DateTime";
 import ProductView from "./ProductView";
 import Reviews from "./Reviews";
 import SallerInfo from "./SallerInfo";
-import LazyLoad from "react-lazyload";
 
 export default function SingleProductPage() {
   const [tab, setTab] = useState("des");
@@ -116,12 +116,11 @@ export default function SingleProductPage() {
 
   useEffect(() => {
     fetchProduct();
+  }, [local]);
+  useEffect(() => {
     fetchRelated();
     fetchProductSeller();
-  }, [local]);
-
-
-
+  }, [product, seller]);
   return (
     <>
       <Layout childrenClasses="pt-0 pb-0">
