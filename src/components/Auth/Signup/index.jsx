@@ -68,7 +68,8 @@ export default function Signup() {
           },
         }));
       case "email":
-        const emailPattern = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|vn)$/i;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]{2,}(\.[a-z]{2,})?$/i;
+
         setError((prev) => ({
           ...prev,
           email: {
@@ -159,7 +160,7 @@ export default function Signup() {
 
       return;
     }
-    
+
     console.log(formData);
 
     // checkEmailTONTAI(formData.email)
@@ -219,7 +220,18 @@ export default function Signup() {
       // Validate input
       validateInput(name, value);
     };
-  }, [formData.password, formData.confirmPassword]);
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]{2,}(\.[a-z]{2,})?$/i;
+
+    setError((prev) => ({
+      ...prev,
+      email: {
+        error: !emailPattern.test(formData.email),
+        message: !emailPattern.test(formData.email) ? "Email không hợp lệ!" : "",
+      },
+    }));
+
+  }, [formData.password, formData.confirmPassword ,formData.phone,formData.email ]);
 
   const handleSelectChange = () => {
     let selectedPassword = generatePassword();
@@ -238,8 +250,13 @@ export default function Signup() {
         message: "Mật khâu mạnh!",
       },
     }));
+
+
+    
     validateInput({ name: "password", value: selectedPassword });
     validateInput({ name: "confirmPassword", value: selectedPassword });
+ 
+
   };
 
   const getPasswordStrengthClass = (strength) => {
@@ -314,7 +331,8 @@ export default function Signup() {
                         name="phone"
                         type="text"
                         id="phone"
-                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.phone?.error ? 'bg-red-100 ring-red-500' : ''}`}
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 
+                          ${error.phone?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
 
@@ -333,9 +351,10 @@ export default function Signup() {
                         placeholder="Demo@gmail.com"
                         label="Email :"
                         name="email"
-                        type="email"  
+                        type="email"
                         id="email"
-                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.email?.error ? 'bg-red-100 ring-red-500' : ''}`}
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6
+                           ${error?.email?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
 
@@ -349,9 +368,9 @@ export default function Signup() {
                         value={formData.password}
                         type={showPassword ? "text" : "password"}
                         inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.password?.strength === "weak" ? "bg-red-100 ring-red-500" :
-                          error.password?.strength === "medium" ? "ring-yellow-100" :
-                            error.password?.strength === "strong" ? "ring-green-500" :
-                              ""
+                            error.password?.strength === "medium" ? "ring-yellow-500" :
+                              error.password?.strength === "strong" ? "ring-green-500" :
+                                ""
                           }`}
                         inputHandler={handleInputChange}
                       >
