@@ -49,8 +49,26 @@ export default function Signup() {
           },
         }));
         break;
+      case "fullname":
+        setError((prev) => ({
+          ...prev,
+          fullname: {
+            error: value.length < 0,
+            message: value.length < 0 ? "Tên tài khoản quá ngắn!" : "",
+          },
+        }));
+        break;
+      case "phone":
+        setError((prev) => ({
+          ...prev,
+          phone: {
+            error: value.length !== 10,
+            message: value.length !== 10 ? "Số điện thoại phải chứa đúng 10 số!" : "",
+
+          },
+        }));
       case "email":
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.(com|net|org|edu|gov|vn)$/i;
         setError((prev) => ({
           ...prev,
           email: {
@@ -125,9 +143,23 @@ export default function Signup() {
     }
 
     if (Object.values(error).some((field) => field.error)) {
-      toast.error("Please fix the errors before submitting.");
+      toast.error("Vui lòng điền đầy đủ thông tin!.");
       return;
     }
+    const charset = /^[a-zA-Z0-9!@#$%^&*]*$/;
+    if (!charset.test(formData.username)) {
+      setError((prev) => ({
+        ...prev,
+        username: {
+          error: true,
+          message: true ? "Tên tài khoản quá ngắn!" : "",
+        },
+      }));
+      toast.error("Tên tài khoản không được chứa ký tự bỏ dấu hoặc không hợp lệ!");
+
+      return;
+    }
+    
     console.log(formData);
 
     // checkEmailTONTAI(formData.email)
@@ -197,7 +229,7 @@ export default function Signup() {
       password: selectedPassword,
       confirmPassword: selectedPassword,
     }));
-    
+
     setError((prev) => ({
       ...prev,
       password: {
@@ -272,7 +304,7 @@ export default function Signup() {
                         name="fullname"
                         type="text"
                         id="fullname"
-                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.username?.error ? 'bg-red-100 ring-red-500' : ''}`}
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.fullname?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
 
@@ -282,7 +314,7 @@ export default function Signup() {
                         name="phone"
                         type="text"
                         id="phone"
-                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.username?.error ? 'bg-red-100 ring-red-500' : ''}`}
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.phone?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
 
@@ -301,7 +333,7 @@ export default function Signup() {
                         placeholder="Demo@gmail.com"
                         label="Email :"
                         name="email"
-                        type="email"
+                        type="email"  
                         id="email"
                         inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.email?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
@@ -316,10 +348,9 @@ export default function Signup() {
                         id="password"
                         value={formData.password}
                         type={showPassword ? "text" : "password"}
-                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${
-                          error.password?.strength === "weak" ? "bg-red-100 ring-red-500" :
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.password?.strength === "weak" ? "bg-red-100 ring-red-500" :
                           error.password?.strength === "medium" ? "ring-yellow-100" :
-                          error.password?.strength === "strong" ? "ring-green-500" :
+                            error.password?.strength === "strong" ? "ring-green-500" :
                               ""
                           }`}
                         inputHandler={handleInputChange}
