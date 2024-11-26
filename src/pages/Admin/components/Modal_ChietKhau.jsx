@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { toast, ToastContainer } from 'react-toastify';
-import flashSaleDetails from '../../../service/admin/FlashSaleDetails';
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
+import discountRateService from '../../../service/admin/DisscountRate';
 
-const ModalFlashSaleDetails = ({
+const ModalSanPham = ({
+    status,
     entity,
-    product,
-    flashSaleId,
+    setStatus,
     open,
     setOpen,
     title,
     confirmText = 'Confirm',
     cancelText = 'Cancel',
-    status,
-    setStatus
 }) => {
     const initialFormData = {
-        quantity: '',
-        sale: '',
+        discount: '',
+        dateStart: ''
     };
     const [formData, setFormData] = useState(initialFormData);
 
@@ -26,61 +24,55 @@ const ModalFlashSaleDetails = ({
         setFormData((prev) => ({
             ...prev,
             [name]: value,
-            product: product.id,
-            flashSale: flashSaleId,
-
         }));
     };
 
-    const postFlashSaleDetails = async () => {
+    const postChietKhau = async () => {
         try {
-            const response = await flashSaleDetails.post({ data: formData });
+            const response = await discountRateService.post(formData);
             toast.success(response.data.message);
-            setStatus(!status);
             setFormData(initialFormData);
             setOpen(false);
+            setStatus(!status);
         } catch (error) {
             toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
-    const putFlashSaleDetails = async () => {
+    const putChietKhau = async () => {
         try {
-            const response = await flashSaleDetails.put({ data: formData });
+            const response = await discountRateService.put(formData);
             toast.success(response.data.message);
-            setStatus(!status);
             setFormData(initialFormData);
             setOpen(false);
+            setStatus(!status);
         } catch (error) {
             toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (entity == null) {
-            postFlashSaleDetails();
+            postChietKhau();
         } else {
-            putFlashSaleDetails();
+            putChietKhau();
         }
     }
     useEffect(() => {
         if (entity == null) {
             setFormData({
-                quantity: '',
-                sale: '',
-                product: product.id,
-                flashSale: flashSaleId,
+                discount: '',
+                dateStart: '',
             })
         } else {
             setFormData({
                 id: entity.id,
-                quantity: entity.quantity || '',
-                sale: entity.sale || '',
-                product: product.id,
-                flashSale: flashSaleId,
+                discount: entity.discount || '',
+                dateStart: entity.dateStart || '',
             })
         }
     }, [entity]);
@@ -102,48 +94,44 @@ const ModalFlashSaleDetails = ({
                                 <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
-                                            Giảm giá
+                                            Phần trăm chiết khấu
                                         </label>
                                         <input
-                                            name="sale"
-                                            value={formData.sale}
+                                            name="discount"
+                                            value={formData.discount}
                                             onChange={handleChange}
                                             type="number"
-                                            placeholder='% giảm giá'
-                                            max={100}
-                                            min={1}
+                                            placeholder="Phần trăm chiết khấu..."
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
 
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
-                                            Số lượng sale
+                                            Ngày bắt đầu
                                         </label>
                                         <input
-                                            name="quantity"
-                                            value={formData.quantity}
+                                            name="dateStart"
+                                            value={formData.dateStart}
                                             onChange={handleChange}
-                                            type="number"
-                                            placeholder='Số lượng sale'
-                                            max={product.quantity}
-                                            min={1}
+                                            type="datetime-local"
+                                            placeholder="Ngày bắt đầu..."
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
-
                                 </div>
-
                             </div>
+
                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                 <button
+                                    onClick={handleSubmit}
                                     type="submit"
                                     className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
                                 >
                                     {confirmText}
                                 </button>
                                 <button
-                                    type="submit"
+                                    type="button"
                                     onClick={() => setOpen(false)}
                                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                                 >
@@ -158,4 +146,4 @@ const ModalFlashSaleDetails = ({
     );
 };
 
-export default ModalFlashSaleDetails;
+export default ModalSanPham;

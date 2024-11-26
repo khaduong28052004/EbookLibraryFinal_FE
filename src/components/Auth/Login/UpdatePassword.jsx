@@ -7,6 +7,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 export default function UpdatePassword() {
     const [email, setEmail] = useState("");
+    const [error, setError] = useState(false);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -26,15 +27,17 @@ export default function UpdatePassword() {
         setLoading(true);
 
         if (password !== confirmPassword) {
-            toast.error("Passwords do not match!");
+            toast.error("Mật khẩu không khớp!");
             setLoading(false);
+            setError(false);
             return;
         }
 
         try {
             if (!email || !otpToken) {
-                toast.error("Email or OTP token is missing.");
+                toast.error("Email và OTP không được để trống!");
                 setLoading(false);
+                setError(false);
                 return;
             }
             const data = {
@@ -45,13 +48,16 @@ export default function UpdatePassword() {
             const response = await AuthService.verifyOTP(data);
             if (response.status) {
                 toast.success("Đổi mật khẩu thành công!");
+                setError(true);
                 setTimeout(() => {
                     navigate('/login');
                 }, 4000);
             } else {
+                setError(false);
                 toast.error("Đổi mật khẩu không thành công!");
             }
         } catch (error) {
+            setError(false);
             console.log(error);
             toast.error(error?.response?.data?.message || "Lỗi đặt lại mật khẩu không thành công!.");
         }
@@ -74,7 +80,12 @@ export default function UpdatePassword() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Nhập email"
-                                    className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
+                                    className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error
+                                            ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300" // Error state
+                                        // : errorFrom.usernameF === 2
+                                        //   ? "border-green-500 bg-red-400" // Success state
+                                        //   : ""
+                                        }`}
                                     required
                                 />
                             </div>
@@ -87,7 +98,13 @@ export default function UpdatePassword() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Nhập mật khẩu mới"
-                                    className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
+                                    // className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
+                                    className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error
+                                            ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300" // Error state
+                                        // : errorFrom.usernameF === 2
+                                        //   ? "border-green-500 bg-red-400" // Success state
+                                        //   : ""
+                                        }`}
                                     required
                                 />
                             </div>
@@ -100,7 +117,14 @@ export default function UpdatePassword() {
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     placeholder="Xác nhận mật khẩu"
-                                    className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
+                                    // className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
+                                    className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${
+                                        error
+                                        ?  "border-green-300 bg-green-300":"border-red-300 bg-red-300" // Error state
+                                        // : errorFrom.usernameF === 2
+                                        //   ? "border-green-500 bg-red-400" // Success state
+                                        //   : ""
+                                        }`}
                                     required
                                 />
                             </div>

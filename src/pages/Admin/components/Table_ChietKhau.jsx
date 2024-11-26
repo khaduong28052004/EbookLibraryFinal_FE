@@ -1,30 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLongDownIcon, ArrowLongUpIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
-import ModalCategory from './Modal_Category';
-import category from '../../../service/admin/Category';
+import { format, parse } from 'date-fns';
+
+import { TrashIcon } from '@heroicons/react/24/outline'
+import Modal from "./Modal_ThongBao_ChietKhau";
+import ModalChietKhau from './Modal_ChietKhau';
+import chietKhauService from '../../../service/admin/DisscountRate';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
 
 const TableTwo = () => {
     const [data, setData] = useState([]);
-    const [dataByIdParent, setDataByIdParent] = useState([]);
     const [searchItem, setSearchItem] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
 
     const [post, setPost] = useState(null);
-    const [entityCategory, setEntityCategory] = useState(null);
+    const [entityChietKhau, setEntityChietKhau] = useState('');
     const [status, setStatus] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenModalSP, setIsOpenModalSP] = useState(false);
-    const [expandedRowId, setExpandedRowId] = useState(null);
-
     const handleConfirm = () => {
-        deleteCategory(entityCategory.id);
+        deleteChietKhau();
         setIsOpen(false);
     };
     const handlePageChange = (newPage) => {
@@ -42,45 +41,40 @@ const TableTwo = () => {
         handlePageChange(currentPage + 1);
     };
 
-    const deleteCategory = async (id) => {
+    const deleteChietKhau = async () => {
         try {
-            const response = await category.delete({ id });
-            toast.success(response.data.message);
-            findAllCategory();
+            const response = await chietKhauService.delete(entityChietKhau.id);
+            console.log("xóa: " + response.data.message);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
+            }
+            findAllChietKhau();
         } catch (error) {
             toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
 
-    const findAllCategory = async () => {
+    const findAllChietKhau = async () => {
         try {
-            const response = await category.findAllCategory({ page: currentPage, size: 2, searchItem, sortColumn, sortBy });
+            const response = await chietKhauService.findAllChietKhau(currentPage, 2, searchItem, sortColumn, sortBy);
             console.log("content: " + response.data.result.content);
             setData(response.data.result);
-            toast.success(response.data.message);
-
         } catch (error) {
             console.log("Error: " + error);
         }
     };
 
-    const findAllCategoryByIdParent = async () => {
-        try {
-            const response = await category.findAllCategoryByIdParent({ idParent: entityCategory.id });
-            console.log("content: " + response.data.result.content);
-            setDataByIdParent(response.data.result);
-        } catch (error) {
-            console.log("Error: " + error);
-        }
-    };
-
+    useEffect(() => {
+        findAllChietKhau();
+    }, [searchItem, currentPage, sortBy, sortColumn, status]);
+    ;
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách nhân viên'];
+        const sheetNames = ['Danh Sách Chiết Khấu'];
         try {
             console.log("data.totalElements: " + data.totalElements);
-            const response = await category.findAllCategory({ page: currentPage, size: data.totalElements, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+            const response = await chietKhauService.findAllChietKhau(currentPage, data.totalElements, searchItem, sortColumn, sortBy);
+            return ExportExcel("Danh Sách Chiết Khấu.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -91,25 +85,11 @@ const TableTwo = () => {
         e.preventDefault();
     };
 
-    const toggleRow = (id) => {
-        if (expandedRowId === id) {
-            setExpandedRowId(null); // Nếu đã mở thì click lại sẽ đóng
-        } else {
-            setExpandedRowId(id); // Mở hàng chi tiết
-        }
-    };
-
-    useEffect(() => {
-        findAllCategory();
-        findAllCategoryByIdParent();
-    }, [searchItem, currentPage, sortBy, sortColumn, status, entityCategory]);
-
-
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <ToastContainer />
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
-                <form method="POST">
+                {/* <form method="POST">
                     <div className="relative pt-3">
                         <button className="absolute left-0 top-6 -translate-y-1/2">
                             <svg
@@ -142,9 +122,9 @@ const TableTwo = () => {
                             placeholder="Tìm kiếm..."
                             className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125" />
                     </div>
-                </form>
+                </form> */}
                 <form onSubmit={handleSubmit}
-                    className="flex items-center space-x-2">
+                    className="ml-auto mr-3 items-center space-x-2">
                     <button
                         onClick={handleExport}
                         type="button"
@@ -169,32 +149,62 @@ const TableTwo = () => {
                 <thead>
                     <tr className="border-t border-stroke dark:border-strokedark">
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("name");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Tên danh mục </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th>
 
                         <th
                             onClick={() => {
-                                setSortColumn("account.fullname");
+                                setSortColumn("discount");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white ">Người tạo</span>
+                                <span className="text-sm text-black dark:text-white">Chiết khấu</span>
+                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                            </div>
+                        </th>
+                        <th
+                            onClick={() => {
+                                setSortColumn("dateInsert");
+                                setSortBy(!sortBy);
+                            }}
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <div className="flex items-center gap-1">
+                                <span className="text-sm text-black dark:text-white">Ngày tạo </span>
                                 <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
                                 <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
                             </div>
                         </th>
 
+                        <th
+                            onClick={() => {
+                                setSortColumn("dateStart");
+                                setSortBy(!sortBy);
+                            }}
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden xl:flex">
+                                <span className="text-sm text-black dark:text-white ">Ngày áp dụng</span>
+                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                            </div>
+                        </th>
+
+                        <th
+                            onClick={() => {
+                                setSortColumn("dateDelete");
+                                setSortBy(!sortBy);
+                            }}
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden lg:flex">
+                                <span className="text-sm text-black dark:text-white">Ngày xóa</span>
+                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                            </div>
+                        </th>
+                        <th className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden lg:flex">
+                                <span className="text-sm text-black dark:text-white">Trạng Thái</span>
+                            </div>
+                        </th>
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
                         </th>
@@ -203,67 +213,64 @@ const TableTwo = () => {
 
                 <tbody>
                     {data?.content?.map((entity, index) => (
-                        <>
-                            <tr key={index} className={`border-t border-stroke dark:border-strokedark ${expandedRowId === entity.id ? `bg-slate-100` : `bg-white`}`}
-                                onClick={() => {
-                                    setEntityCategory(entity);
-                                    toggleRow(entity.id)
-                                }}>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                    {data.pageable.pageNumber * data.size + index + 1}
-                                </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
-                                </td>
+                        <tr key={index} className="border-t border-stroke dark:border-strokedark">
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                {data.pageable.pageNumber * data.size + index + 1}
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.discount} %
+                                </div>
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                                <p className="text-sm text-black dark:text-white">
+                                    {new Date(entity.dateInsert).toLocaleString("en-GB")}
+                                </p>
+                            </td>
 
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {new Date(entity.dateStart).toLocaleString("en-GB")}
+                                </div>
+                            </td>
 
-                                        {entity.account.fullname}
-                                    </div>
-                                </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.dateDelete == null ? '' : new Date(entity.dateDelete).toLocaleString("en-GB")}
+                                </div>
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
+                                <div className="flex items-center gap-1 hidden lg:flex">
+                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.dateDelete == null ? '' : 'bg-danger text-danger'}`}>
+                                        {entity.dateDelete == null ? '' : 'Đã Ngừng'}
+                                    </span>
+                                </div>
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                                <div className="flex space-x-3.5">
+                                    {entity.dateDelete == null ? (
+                                        <>
+                                            <button onClick={() => {
+                                                setEntityChietKhau(entity);
+                                                setIsOpen(true);
+                                            }}>
+                                                <TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />
+                                            </button>
+                                            {new Date(entity.dateStart).getTime() > new Date().getTime() ? (
+                                                <button onClick={() => {
+                                                    setPost(false);
+                                                    setEntityChietKhau(entity);
+                                                    setIsOpenModalSP(true);
+                                                }}>
+                                                    <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
+                                                </button>
+                                            ) : (<></>)}
+                                        </>
+                                    ) : (<></>)}
 
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                                    <div className="flex space-x-3.5">
-                                        <button onClick={() => {
-                                            setEntityCategory(entity);
-                                            setIsOpen(true);
-                                        }}>
-                                            <TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />
-                                        </button>
-                                        <button onClick={() => {
-                                            setPost(false);
-                                            setEntityCategory(entity);
-                                            setIsOpenModalSP(true);
-                                        }}>
-                                            <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            {expandedRowId === entity.id && (
-                                <tr>
-                                    <td colSpan="9">
-                                        <div className="p-5 border border-gray-100 hover:bg-slate-100">
-                                            {dataByIdParent.length > 0 ? (
-                                                <>
-                                                    <p><strong>Các thể loại:</strong></p>
-                                                    {dataByIdParent.map((entityIdParent, index) => (
-                                                        <div key={index} className="pl-20 pt-2 gap-1 grid grid-cols-2">
-                                                            <p>Tên danh mục: {entityIdParent.name}</p>
-                                                            <p>Người tạo: {entityIdParent.account?.fullname || 'Không xác định'}</p>
-                                                        </div>
-                                                    ))}
-                                                </>
-                                            ) : (
-                                                <p className="text-gray-500 pl-20 text-center">Không có danh mục con</p>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            )}
-
-                        </>
+                                </div>
+                            </td>
+                        </tr>
                     ))}
                 </tbody>
             </table>
@@ -279,8 +286,8 @@ const TableTwo = () => {
             <Modal
                 open={isOpen}
                 setOpen={setIsOpen}
-                title={'Xóa danh mục'}
-                message={'Bạn chắc chắn muốn xóa danh mục này không?'}
+                title={'Xóa chiết khấu'}
+                message={'Bạn chắc chắn muốn xóa chiết khấu này không?'}
                 onConfirm={handleConfirm}
                 confirmText={'Xác Nhận'}
                 cancelText="Thoát"
@@ -288,16 +295,16 @@ const TableTwo = () => {
                 iconBgColor={'bg-red-100'}
                 buttonBgColor={'bg-red-600'} />
 
-            <ModalCategory
-                entity={post ? null : entityCategory}
+            <ModalChietKhau
                 status={status}
+                entity={post ? null : entityChietKhau}
                 setStatus={setStatus}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
-                title={post ? 'Thêm danh mục' : 'Cập nhật danh mục'}
+                title={post ? 'Thêm chiết khấu' : 'Cập nhật chiết khấu'}
                 confirmText="Lưu"
                 cancelText="Hủy" />
-        </div>
+        </div >
     );
 };
 

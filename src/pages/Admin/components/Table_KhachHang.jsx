@@ -7,44 +7,71 @@ import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
 import { toast, ToastContainer } from 'react-toastify';
 
-const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
+const TableTwo = () => {
+    const [data, setData] = useState([]);
     const [searchItem, setSearchItem] = useState('');
-    const [gender, setGender] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
-    const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
+    const [currentPage, setCurrentPage] = useState(0);
 
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
+    const [contents, setContents] = useState("");
+
     const handleConfirm = () => {
+        putStatusKhachHang();
         setIsOpen(false);
-        onIdChange(id);
     };
     const handlePageChange = (newPage) => {
-        if (newPage >= 0 && newPage < entityData.totalPages) {
-            onPageChange(searchItem, gender, newPage, sortBy, sortColumn);
+        if (newPage >= 0 && newPage < data.totalPages) {
+            setCurrentPage(newPage);
             console.log("currentPage: " + newPage);
         }
     };
 
     const handlePrevious = () => {
-        handlePageChange(entityData?.pageable?.pageNumber - 1);
+        handlePageChange(currentPage - 1);
     };
 
     const handleNext = () => {
-        handlePageChange(entityData?.pageable?.pageNumber + 1);
+        handlePageChange(currentPage + 1);
+    };
+
+    const putStatusKhachHang = async () => {
+        try {
+            const response = await accountService.putStatus({ id, contents });
+            console.log("Mã Code: " + response.data.code);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
+            }
+            setContents("");
+            findAllAccount();
+        } catch (error) {
+            toast.error("Lỗi hệ thống");
+            console.log("Error: " + error);
+        }
+    }
+
+    const findAllAccount = async () => {
+        try {
+            const response = await accountService.findAllAccount({ currentPage, size: 2, role: "USER", searchItem, sortColumn, sortBy });
+            console.log("content: " + response.data.result.content);
+            setData(response.data.result);
+            console.log(data);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
     };
 
     useEffect(() => {
-        onPageChange(searchItem, gender, currentPage, sortBy, sortColumn);
-    }, [searchItem, gender, currentPage, sortBy, sortColumn]);
-    ;
+        findAllAccount();
+    }, [searchItem, currentPage, sortBy, sortColumn]);
     const handleExport = async () => {
         const sheetNames = ['Danh Sách nhân viên'];
         try {
-            console.log("totalElements: " + entityData.totalElements);
-            const response = await accountService.findAllAccount({ currentPage: 0, size: entityData.totalElements, role: "USER", searchItem, gender: '', sortColumn, sortBy });
+            console.log("totalElements: " + data.totalElements);
+            const response = await accountService.findAllAccount({ currentPage: 0, size: data.totalElements, role: "USER", searchItem, sortColumn, sortBy });
             return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -189,10 +216,10 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 </thead>
 
                 <tbody>
-                    {entityData?.content?.map((entity, index) => (
+                    {data?.content?.map((entity, index) => (
                         <tr key={index} className="border-t border-stroke dark:border-strokedark">
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {entityData.pageable.pageNumber * entityData.size + index + 1}
+                                {data.pageable.pageNumber * data.size + index + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                 <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
@@ -240,22 +267,24 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
             </table>
             <Pagination
                 pageNumber={currentPage}
-                totalPages={entityData?.totalPages}
-                totalElements={entityData?.totalElements}
+                totalPages={data?.totalPages}
+                totalElements={data?.totalElements}
                 handlePrevious={handlePrevious}
                 handleNext={handleNext}
                 setPageNumber={setCurrentPage}
-                size={entityData.size}></Pagination>
+                size={data.size}></Pagination>
 
             <Modal
+                content={contents}
+                setContent={setContents}
                 open={isOpen}
                 setOpen={setIsOpen}
                 title={statusentity
                     ? 'Ngừng Hoạt Động'
                     : 'Khôi Phục'}
                 message={statusentity
-                    ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                    : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+                    ? 'Bạn chắc chắn muốn ngừng hoạt động khách hàng này không?'
+                    : 'Bạn có chắc muốn khôi phục khách hàng này không?'}
                 onConfirm={handleConfirm}
                 confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
                 cancelText="Thoát"

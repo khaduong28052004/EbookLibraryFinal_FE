@@ -133,8 +133,8 @@ const ChartOne = ({ data, years, getData }) => {
   useEffect(() => {
     if (data && Array.isArray(data.listDoanhSo) && Array.isArray(data.listDoanhThu)) {
       // Tính tổng doanh số và tổng doanh thu
-      const totalDoanhSo = data.listDoanhSo.reduce((sum, item) => sum + item.value, 0);
-      const totalDoanhThu = data.listDoanhThu.reduce((sum, item) => sum + item.value, 0);
+      const totalDoanhSo = data.listDoanhSo.reduce((sum, item) => sum + item.value, 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+      const totalDoanhThu = data.listDoanhThu.reduce((sum, item) => sum + item.value, 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
       // Tìm giá trị lớn nhất trong listDoanhSo và listDoanhThu
       const maxDoanhSo = Math.max(...data.listDoanhSo.map(item => item.value));
@@ -173,7 +173,7 @@ const ChartOne = ({ data, years, getData }) => {
             </span>
             <div className="w-full">
               <p className="font-semibold text-primary">Tổng Doanh Số</p>
-              <p className="text-sm font-medium">{state.totalDoanhSo}<sup>đ</sup></p>
+              <p className="text-sm font-medium">{state.totalDoanhSo}</p>
             </div>
           </div>
           <div className="flex min-w-47.5">
@@ -182,7 +182,7 @@ const ChartOne = ({ data, years, getData }) => {
             </span>
             <div className="w-full">
               <p className="font-semibold text-secondary">Tổng Doanh Thu</p>
-              <p className="text-sm font-medium">{state.totalDoanhThu} <sup>đ</sup></p>
+              <p className="text-sm font-medium">{state.totalDoanhThu}</p>
             </div>
           </div>
         </div>

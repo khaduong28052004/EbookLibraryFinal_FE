@@ -11,7 +11,8 @@ import ThongKeSanPham from "./pages/Seller/ThongKeSanPhamSeller"
 import ThongKeKhachHang from "./pages/Seller/ThongKeKhachHangSeller"
 import DanhGiaSeller from "./pages/Seller/DanhGiaSeller"
 import VoucherDetailSeller from "./pages/Seller/VoucherDetailSeller"
-import ChatBot from "./pages/Seller/ChatBot"
+import ChatBot from "./pages/Seller/ChatBot2"
+import Shop from "./pages/Seller/ThongTinShopSeller"
 export default function RouterSellers() {
   return (
     <SellerLayout>
@@ -107,6 +108,13 @@ export default function RouterSellers() {
             </>
           }
         />
+        <Route path="shop"
+          element={
+            <>
+              <PageTitle title="Shop" />
+              <Shop/>
+            </>
+          } />
       </Routes>
     </SellerLayout>
   );
