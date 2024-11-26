@@ -4,7 +4,7 @@ import { ArrowLongDownIcon, ArrowLongUpIcon, ArrowPathIcon } from '@heroicons/re
 import { format, parse } from 'date-fns';
 
 import { TrashIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
+import Modal from "./Modal_ThongBao_ChietKhau";
 import ModalChietKhau from './Modal_ChietKhau';
 import chietKhauService from '../../../service/admin/DisscountRate';
 import { ExportExcel } from '../../../service/admin/ExportExcel';

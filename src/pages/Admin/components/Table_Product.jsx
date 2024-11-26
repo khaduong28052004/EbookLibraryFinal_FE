@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon,ArrowPathIcon } from '@heroicons/react/24/outline'
+import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import product from '../../../service/admin/Product';
 import Modal from "./ModalThongBao";
@@ -23,6 +23,8 @@ const TableTwo = () => {
     const [status, setStatus] = useState(null);
 
     const [active, setActive] = useState(null);
+    const [contents, setContents] = useState("");
+
     const findAllProduct = async () => {
         try {
             const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 2, sortColumn, sortBy });
@@ -44,9 +46,9 @@ const TableTwo = () => {
     //         console.log("Error: " + error);
     //     }
     // }
-    const putStatus = async (id) => {
+    const putStatus = async (id, contents) => {
         try {
-            const response = await product.putStatus({ id });
+            const response = await product.putStatus({ id, contents });
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
             }
@@ -58,7 +60,7 @@ const TableTwo = () => {
     }
 
     const handleConfirm = () => {
-        putStatus(entityProduct.id);
+        putStatus(entityProduct.id, contents);
         findAllProduct();
         setIsOpen(false);
     };
@@ -300,7 +302,8 @@ const TableTwo = () => {
                                             setStatusentity(!entity.delete);
                                             setActive(entity.active ? false : true)
                                         }}>
-                                            {entity.delete == false ? (<ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />) : (<></>)}
+                                            <ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />
+                                            {/* {entity.delete == false ? (<ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />) : (<></>)} */}
                                         </button>
                                     </div>
                                 </td>
@@ -338,6 +341,8 @@ const TableTwo = () => {
 
             {!active ? (
                 <Modal
+                    content={contents}
+                    setContent={setContents}
                     open={isOpen}
                     setOpen={setIsOpen}
                     title={statusentity ? 'Ngừng Hoạt Động' : 'Khôi Phục'}
@@ -361,7 +366,7 @@ const TableTwo = () => {
                     setStatus={setStatus}
                     open={isOpen}
                     setOpen={setIsOpen}
-                    title={ 'Duyệt Sản Phẩm' }
+                    title={'Duyệt Sản Phẩm'}
                     message={'Bạn có chắc muốn duyệt sản phẩm này không?'}
                     confirmText={'Duyệt'}
                     cancelText={"Hủy"}

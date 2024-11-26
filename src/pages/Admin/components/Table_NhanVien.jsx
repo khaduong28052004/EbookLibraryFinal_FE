@@ -20,6 +20,8 @@ const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusentity, setStatusentity] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+  const [contents, setContents] = useState("");
+
   const handleConfirm = () => {
     putStatusNhanVien(entityNhanVien.id);
     setIsOpen(false);
@@ -41,11 +43,12 @@ const TableTwo = () => {
 
   const putStatusNhanVien = async (id) => {
     try {
-      const response = await accountService.putStatus({ id });
+      const response = await accountService.putStatus({ id, contents });
       console.log("xóa: " + response.data.message);
       if (response.data.code === 1000) {
         toast.success(response.data.message);
       }
+      setContents("");
       findAllAccount();
     } catch (error) {
       toast.error("Cập nhật thất bại");
@@ -270,6 +273,8 @@ const TableTwo = () => {
         size={data.size}></Pagination>
 
       <Modal
+        content={contents}
+        setContent={setContents}
         open={isOpen}
         setOpen={setIsOpen}
         title={statusentity
