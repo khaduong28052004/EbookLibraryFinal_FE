@@ -60,24 +60,36 @@ export default function CheakoutPage() {
           }
           setService_fee(service => service + seller?.service_fee);
           try {
+
+            var maxSale = 0;
             voucherAdmins?.forEach(voucher => {
-              if (totalPrice > voucher?.minOrder) {
-                if ((seller?.service_fee * voucher?.sale) > voucher?.totalPriceOrder) {
-                  // setService_fee(fee => fee - (voucher?.totalPriceOrder));
-                  saleAdmin = (voucher?.totalPriceOrder);
-                  totalSale += (voucher?.totalPriceOrder);
-                } else {
-                  // setService_fee(fee => fee - (seller?.service_fee * voucher?.sale));
-                  saleAdmin = seller?.service_fee * voucher?.sale;
-                  totalSale += seller?.service_fee * voucher?.sale;
-                }
+              if (totalPrice > voucher?.minOrder && voucher.sale > maxSale) {
+                // alert("voucher " + voucher?.minOrder)
+                maxSale = voucher.sale;
                 voucherAdmin = voucher;
               }
             });
           } catch (error) {
 
           }
-          setService_fee(service => service - saleAdmin);
+          if (voucherAdmin?.id > 0) {
+            //  alert("voucheradmin "+voucherAdmin?.sale)
+            if (((seller?.service_fee * voucherAdmin?.sale) / 100) > voucherAdmin?.totalPriceOrder) {
+              // setService_fee(fee => fee - (voucher?.totalPriceOrder));
+              // alert("sale admin" + saleAdmin);
+              saleAdmin = (voucherAdmin?.totalPriceOrder);
+              totalSale += (voucherAdmin?.totalPriceOrder);
+            } else {
+              // setService_fee(fee => fee - (seller?.service_fee * voucher?.sale));
+              saleAdmin = seller?.service_fee * voucherAdmin?.sale / 100;
+              totalSale += ((seller?.service_fee * voucherAdmin?.sale) / 100);
+            }
+            if (saleAdmin > seller?.service_fee) {
+              setService_fee(service => service - 0);
+            } else {
+              setService_fee(service => service - saleAdmin);
+            }
+          }
           return {
             ...seller,
             voucherAdmin: voucherAdmin,
