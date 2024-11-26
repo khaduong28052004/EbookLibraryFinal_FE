@@ -126,7 +126,7 @@ export default function CardPage({ cart = true }) {
         // console.log("toaddress    " + toAddress);
       }
     }
-
+    // console.log("voucher " + value[0]?.voucher?.length);
     setServiceFee(0);
     value?.forEach(seller => {
       for (let address of seller?.addresses) {
