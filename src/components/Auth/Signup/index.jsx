@@ -110,6 +110,10 @@ export default function Signup() {
   const handleRegister = async (event) => {
     event.preventDefault();
     // const { username, email, password, confirmPassword, phone, fullname } = formData;
+    if (!formData.fullname || !formData.username || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+      toast.error("Vui lòng điền đầy đủ thông tin!");
+      return;
+    }
     if (!checked) {
       toast.warn("Điều khoản tài khoản!");
       return
@@ -166,6 +170,13 @@ export default function Signup() {
     return password;
   };
   useEffect(() => {
+    setError((prev) => ({
+      ...prev,
+      confirmPassword: {
+        error: formData.confirmPassword !== formData.password,
+        message: formData.confirmPassword !== formData.password ? "Mật khẩu không khớp!" : "",
+      },
+    }));
     const handleInputChange = (event) => {
       const { name, value } = event.target;
       setFormData((prevData) => ({
@@ -185,6 +196,15 @@ export default function Signup() {
       ...prevFormData,
       password: selectedPassword,
       confirmPassword: selectedPassword,
+    }));
+    
+    setError((prev) => ({
+      ...prev,
+      password: {
+        error: false, // true if password is less than 8 characters
+        strength: "strong",
+        message: "Mật khâu mạnh!",
+      },
     }));
     validateInput({ name: "password", value: selectedPassword });
     validateInput({ name: "confirmPassword", value: selectedPassword });
@@ -296,10 +316,11 @@ export default function Signup() {
                         id="password"
                         value={formData.password}
                         type={showPassword ? "text" : "password"}
-                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.password?.strength === "weak" ? "bg-red-100 ring-red-500" :
-                          error.password?.strength === "medium" ? "bg-yellow-100" :
-                            error.password?.strength === "strong" ? "bg-green-100" :
-                              "bg-green-100"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${
+                          error.password?.strength === "weak" ? "bg-red-100 ring-red-500" :
+                          error.password?.strength === "medium" ? "ring-yellow-100" :
+                          error.password?.strength === "strong" ? "ring-green-500" :
+                              ""
                           }`}
                         inputHandler={handleInputChange}
                       >
@@ -324,7 +345,7 @@ export default function Signup() {
                         id="confirmPassword"
                         value={formData.confirmPassword}
                         type={showRePassword ? "text" : "password"}
-                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.confirmPassword?.error ? 'bg-red-100 ring-red-500' : ''}`}
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.confirmPassword?.error ? 'bg-red-100 ring-red-500' : 'bg-green-100 ring-green-500'}`}
 
                         inputHandler={handleInputChange}
                       >
