@@ -207,6 +207,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
         total += cart.quantity * (cart.product.price - ((cart.product.price * cart.product.sale) / 100));
       });
     });
+    // alert("voucher " + total);
     // if (!selectedVoucher) {
     const filteredSeller2 = datas.map(seller => {
       let saleMax = 0;
@@ -214,7 +215,9 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       seller.vouchers.forEach(voucher => {
         if (voucher.sale > saleMax && voucher.totalPriceOrder < total) {
           saleMax = voucher.sale;
-          voucherNew = voucher;
+          if (voucher?.minOrder < total) {
+            voucherNew = voucher;
+          }
         }
       });
       return {

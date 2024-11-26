@@ -190,7 +190,7 @@ export default function CardPage({ cart = true }) {
         service_fee: serviceFee
       }
       setItem("data", data);
-      // sessionStorage.setItem("pay", JSON.stringify(data));
+      sessionStorage.setItem("pay", JSON.stringify(data));
       navigate("/checkout");
     } else {
       toast.warn("Chưa chọn sản phẩm")
