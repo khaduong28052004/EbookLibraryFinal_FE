@@ -37,7 +37,7 @@ const TableTwo = ({ status, setStatus }) => {
 
     const findAllSellerNotBrowse = async () => {
         try {
-            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: 2, searchItem, sortColumn, sortBy });
+            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: 10, searchItem, sortColumn, sortBy });
             console.log("FindAllSellerNotBrowse: ");
             setData(response.data.result);
             console.log(data);

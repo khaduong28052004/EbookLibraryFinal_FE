@@ -58,7 +58,7 @@ const TableTwo = () => {
 
   const findAllAccount = async () => {
     try {
-      const response = await accountService.findAllAccount({ page: currentPage, size: 2, role: "ADMINV1", searchItem, sortColumn, sortBy });
+      const response = await accountService.findAllAccount({ page: currentPage, size: 10, role: "ADMINV1", searchItem, sortColumn, sortBy });
       console.log("content: " + response.data.result.content);
       setData(response.data.result);
     } catch (error) {

@@ -27,7 +27,7 @@ const TableTwo = () => {
 
     const findAllProduct = async () => {
         try {
-            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 2, sortColumn, sortBy });
+            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 10, sortColumn, sortBy });
             setData(response.data.result);
         } catch (error) {
             console.log("Error: " + error);

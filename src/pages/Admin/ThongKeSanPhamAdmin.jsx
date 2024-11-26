@@ -17,7 +17,7 @@ const DoanhThuSanPham = () => {
 
   const findAllDoanhThu = async () => {
     try {
-      const response = await Thongke.product({ dateStart, dateEnd, option, currentPage, size: 5, searchItem, sortColumn, sortBy });
+      const response = await Thongke.product({ dateStart, dateEnd, option, currentPage, size: 10, searchItem, sortColumn, sortBy });
       setData(response.data.result.thongke);
       setHeader(response.data.result);
     } catch (error) {

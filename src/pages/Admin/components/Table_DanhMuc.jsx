@@ -55,7 +55,7 @@ const TableTwo = () => {
 
     const findAllCategory = async () => {
         try {
-            const response = await category.findAllCategory({ page: currentPage, size: 2, searchItem, sortColumn, sortBy });
+            const response = await category.findAllCategory({ page: currentPage, size: 10, searchItem, sortColumn, sortBy });
             console.log("content: " + response.data.result.content);
             setData(response.data.result);
             toast.success(response.data.message);

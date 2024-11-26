@@ -25,7 +25,7 @@ const Table_NotPermission = ({
 
     const findlAllNotRole = async () => {
         try {
-            const response = await permission.findlAllNotRole({ page: currentPage, size: 2, role: optionRole, sortColumn, sortBy });
+            const response = await permission.findlAllNotRole({ page: currentPage, size: 5, role: optionRole, sortColumn, sortBy });
             console.log("content: " + response.data.result.content);
             setData(response.data.result);
         } catch (error) {

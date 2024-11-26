@@ -57,7 +57,7 @@ const TableTwo = () => {
 
     const findAllChietKhau = async () => {
         try {
-            const response = await chietKhauService.findAllChietKhau(currentPage, 2, searchItem, sortColumn, sortBy);
+            const response = await chietKhauService.findAllChietKhau(currentPage, 10, searchItem, sortColumn, sortBy);
             console.log("content: " + response.data.result.content);
             setData(response.data.result);
         } catch (error) {
