@@ -19,7 +19,7 @@ import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
 import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
 import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
-import ChatBot from "./pages/Seller/ChatBot"
+import ChatBot from "./pages/Seller/ChatBot2"
 import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
 export default function RouterAdmins() {
   return (
