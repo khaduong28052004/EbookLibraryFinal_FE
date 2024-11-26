@@ -14,8 +14,8 @@ export default function CheakoutPage() {
   const navigate = useNavigate();
   const [service_fee, setService_fee] = useState(0);
   const [voucherAdmins, setVoucherAdmins] = useState();
-
-
+  const [isVnpay, setIsVnpay] = useState(false);
+  const { setItem, startRequest, endRequest } = useRequest();
   useEffect(() => {
     axios.get("http://localhost:8080/api/v1/user/pay/voucheradmin").then(response => {
       setVoucherAdmins(response.data.result.datas);
@@ -98,7 +98,7 @@ export default function CheakoutPage() {
   const vnp_TmnCode = "Z3USXN5J";
   const vnp_HashSecret = "0KEFC6UYKU33SAJH2KOJFU63DHSSHVJR";
   const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-  var vnp_ReturnUrl = "http://localhost:3000/pay";
+  var vnp_ReturnUrl = "http://localhost:5173/checkout/success";
 
   const createPaymentUrl = async () => {
     const params = {
@@ -110,7 +110,7 @@ export default function CheakoutPage() {
       vnp_TxnRef: generateTransactionRef(),
       vnp_OrderInfo: "Payment for order 123456789",
       vnp_OrderType: "other",
-      vnp_Amount: 100000 * 100,
+      vnp_Amount: (data?.total + service_fee - data?.sale) * 100,
       vnp_ReturnUrl,
       vnp_IpAddr: "127.0.0.1",
       vnp_CreateDate: new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 14)
@@ -151,13 +151,22 @@ export default function CheakoutPage() {
     // const dataNew = JSON.stringify(data);
     const idUser = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
-    // axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=1", data, {
-    //   headers: {
-    //     'Authorization': `Bearer ${token}`,
-    //   }
-    // }).then(response => {
-    //   navigate("/profile#order");
-    // }).catch();
+
+    if (isVnpay) {
+      setItem("data", data);
+      createPaymentUrl();
+    } else {
+      startRequest();
+      axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=1", data, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      }).then(response => {
+        endRequest();
+        navigate("/profile#order");
+        sessionStorage.removeItem("appData");
+      }).catch();
+    }
   }
   return (
     <Layout childrenClasses="pt-0 pb-0">
@@ -382,33 +391,13 @@ export default function CheakoutPage() {
                       <p className="text-2xl font-medium text-qred">{Intl.NumberFormat().format(data?.total + service_fee - data?.sale)}<sup>đ</sup></p>
                     </div>
                   </div>
-                  {/* <div className="shipping mt-[30px]">
+                  <div className="shipping mt-[30px]">
                     <ul className="flex flex-col space-y-1">
-                      <li className=" mb-5">
-                        <div className="flex space-x-2.5 items-center mb-4">
-                          <div className="input-radio">
-                            <input
-                              type="radio"
-                              name="price"
-                              className="accent-pink-500"
-                              id="transfer"
-                            />
-                          </div>
-                          <label
-                            htmlFor="transfer"
-                            className="text-[18px] text-normal text-qblack"
-                          >
-                            Thanh toán khi nhận hàng
-                          </label>
-                        </div>
-                        <p className="text-qgraytwo text-[15px] ml-6">
-                          Thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã đơn hàng của bạn làm tham chiếu thanh toán.
-                        </p>
-                      </li>
+
                       <li>
                         <div className="flex space-x-2.5 items-center mb-5">
                           <div className="input-radio">
-                            <input
+                            <input onChange={() => setIsVnpay(false)}
                               type="radio"
                               name="price"
                               className="accent-pink-500"
@@ -423,26 +412,29 @@ export default function CheakoutPage() {
                           </label>
                         </div>
                       </li>
-                      <li>
-                        <div className="flex space-x-2.5 items-center mb-5">
+                      <li className=" mb-5">
+                        <div className="flex space-x-2.5 items-center mb-4">
                           <div className="input-radio">
-                            <input
+                            <input onChange={() => setIsVnpay(true)}
                               type="radio"
                               name="price"
                               className="accent-pink-500"
-                              id="bank"
+                              id="transfer"
                             />
                           </div>
                           <label
-                            htmlFor="bank"
+                            htmlFor="transfer"
                             className="text-[18px] text-normal text-qblack"
                           >
-                            Thanh toán Paypal
+                            Thanh toán VNPAY
                           </label>
                         </div>
+                        <p className="text-qgraytwo text-[15px] ml-6">
+                          Thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã đơn hàng của bạn làm tham chiếu thanh toán.
+                        </p>
                       </li>
                     </ul>
-                  </div> */}
+                  </div>
                   <a onClick={() => pay()}>
                     <div className="w-full h-[50px] black-btn flex justify-center items-center">
                       <span className="text-sm font-semibold">

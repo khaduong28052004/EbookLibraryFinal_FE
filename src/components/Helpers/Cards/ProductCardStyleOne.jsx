@@ -54,7 +54,7 @@ export default function ProductCardStyleOne({ datas, type }) {
       </div>
       <div className="product-card-details px-[30px] pb-[15px] relative">
         {/* add to card button */}
-        <div onClick={() => { navigate("/productdetail?idProduct=" + datas.id); window.location.reload() }} className="absolute w-full h-10 px-[30px] left-0 top-40 group-hover:top-[80px] transition-all duration-300 ease-in-out z-50">
+        <div onClick={() => { navigate("/productdetail?idProduct=" + datas.id); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="absolute w-full h-10 px-[30px] left-0 top-40 group-hover:top-[80px] transition-all duration-300 ease-in-out z-50">
           <button
             type="button"
             className={type === 3 ? "blue-btn" : "yellow-btn"}

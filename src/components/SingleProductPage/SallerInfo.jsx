@@ -1,12 +1,12 @@
 import { UserMinusIcon, UserPlusIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import LazyLoad from 'react-lazyload';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
 import Star from "../Helpers/icons/Star";
-import LazyLoad from 'react-lazyload';
 export default function SallerInfo({ seller, datas }) {
   const local = useLocation();
   const [isFollower, setIsFollower] = useState(false);

@@ -286,14 +286,14 @@ const TableTwo = () => {
             <Modal
                 open={isOpen}
                 setOpen={setIsOpen}
-                title={'Ngừng Hoạt Động'}
-                message={'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'}
+                title={'Xóa chiết khấu'}
+                message={'Bạn chắc chắn muốn xóa chiết khấu này không?'}
                 onConfirm={handleConfirm}
                 confirmText={'Xác Nhận'}
                 cancelText="Thoát"
                 icon={<TrashIcon className="h-6 w-6 text-red-600" />}
-                iconBgColor={'bg-yellow-100'}
-                buttonBgColor={'bg-yellow-600'} />
+                iconBgColor={'bg-red-100'}
+                buttonBgColor={'bg-red-600'} />
 
             <ModalChietKhau
                 status={status}
@@ -301,7 +301,7 @@ const TableTwo = () => {
                 setStatus={setStatus}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
-                title="Thêm Chiết khấu"
+                title={post ? 'Thêm chiết khấu' : 'Cập nhật chiết khấu'}
                 confirmText="Lưu"
                 cancelText="Hủy" />
         </div >

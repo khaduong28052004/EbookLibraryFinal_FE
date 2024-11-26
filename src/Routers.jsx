@@ -27,7 +27,7 @@ import Wishlist from "./components/Wishlist/index.jsx";
 // const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));
 const SingleProductPage = lazy(() => import('./components/SingleProductPage/index.jsx'))
-
+const CheakoutSuccess = lazy(() => import("./components/CheakoutPage/success.jsx"))
 import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
 import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
 import ChatBot from "./pages/Seller/ChatBot2.jsx";
@@ -41,12 +41,12 @@ export default function Routers() {
     const currentTimestamp = Date.now();
     return expirationTime < currentTimestamp;
   }
-  
- 
+
+
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    
+
     // setTimeout(() => {
     //   const response = AuthService.tokenrenewal(token)// tạo lại token
     //   if (response) {
@@ -67,13 +67,13 @@ export default function Routers() {
   return (
     <>
       <RequestProvider>
-      <ChatBot />
+        <ChatBot />
         <Routes location={location} key={location.pathname} >
           <Route exact path="/" element={
             // <Suspense fallback={<Loader />}>
-              <Home />
+            <Home />
             // </Suspense>
-            
+
           }
           />
           <Route exact path="/search" element={<AllProductPage />} />
@@ -88,6 +88,11 @@ export default function Routers() {
             </Suspense>
           } />
           <Route exact path="/checkout" element={<CheakoutPage />} />
+          <Route exact path="/checkout/success" element={
+            <Suspense fallback={<Loader />}>
+              <CheakoutSuccess />
+            </Suspense>
+          } />
           <Route exact path="/wishlist" element={<Wishlist />} />
           <Route exact path="/flash-sale" element={<FlashSale />} />
           <Route exact path="/saller-page" element={<SallerPage />} />
