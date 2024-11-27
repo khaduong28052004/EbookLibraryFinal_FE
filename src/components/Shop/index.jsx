@@ -144,7 +144,7 @@ const data_Products = {
 };
 
 
-export default function ShopHome({ shopId }) {
+export default function ShopHome({ shopId = 5 }) {
 
     if (shopId == null) {
         return (
