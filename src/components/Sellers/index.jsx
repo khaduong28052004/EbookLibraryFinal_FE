@@ -109,7 +109,7 @@ export default function Sallers() {
                     <div>
                       <Link to="/saller-page">
                         <div className="w-[116px] h-[40px]">
-                          <div className="yellow-btn flex justify-center">
+                          <div className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none flex justify-center">
                             <div className="flex space-x-2 items-center">
                               <span>Shop Now</span>
                               <span>
@@ -249,7 +249,7 @@ export default function Sallers() {
                     <div>
                       <Link to="/saller-page">
                         <div className="w-[116px] h-[40px]">
-                          <div className="yellow-btn flex justify-center">
+                          <div className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none flex justify-center">
                             <div className="flex space-x-2 items-center">
                               <span>Shop Now</span>
                               <span>
@@ -390,7 +390,7 @@ export default function Sallers() {
                     <div>
                       <Link to="/saller-page">
                         <div className="w-[116px] h-[40px]">
-                          <div className="yellow-btn flex justify-center">
+                          <div className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none flex justify-center">
                             <div className="flex space-x-2 items-center">
                               <span>Shop Now</span>
                               <span>
@@ -531,7 +531,7 @@ export default function Sallers() {
                     <div>
                       <Link to="/saller-page">
                         <div className="w-[116px] h-[40px]">
-                          <div className="yellow-btn flex justify-center">
+                          <div className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none flex justify-center">
                             <div className="flex space-x-2 items-center">
                               <span>Shop Now</span>
                               <span>
@@ -672,7 +672,7 @@ export default function Sallers() {
                     <div>
                       <Link to="/saller-page">
                         <div className="w-[116px] h-[40px]">
-                          <div className="yellow-btn flex justify-center">
+                          <div className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none flex justify-center">
                             <div className="flex space-x-2 items-center">
                               <span>Shop Now</span>
                               <span>
@@ -813,7 +813,7 @@ export default function Sallers() {
                     <div>
                       <Link to="/saller-page">
                         <div className="w-[116px] h-[40px]">
-                          <div className="yellow-btn flex justify-center">
+                          <div className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none flex justify-center">
                             <div className="flex space-x-2 items-center">
                               <span>Shop Now</span>
                               <span>

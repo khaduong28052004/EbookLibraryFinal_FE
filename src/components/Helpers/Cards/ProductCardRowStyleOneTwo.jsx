@@ -34,7 +34,7 @@ export default function ProductCardRowStyleOneTwo({ className, datas }) {
               </span>
             </p>
             <button type="button" className="w-[116px] h-[40px]">
-              <span className="yellow-btn"> Add To Cart</span>
+              <span className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none"> Add To Cart</span>
             </button>
           </div>
         </div>

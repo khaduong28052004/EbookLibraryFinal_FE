@@ -428,7 +428,7 @@ export default function PasswordTab() {
           <div className="w-full mt-[30px] flex justify-start">
             <div className="sm:flex sm:space-x-[30px] items-center">
               <div className="w-[180px] h-[50px]">
-                <button type="button" onClick={handleClick} className="yellow-btn">
+                <button type="button" onClick={handleClick} className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none">
                   <div className="w-full text-sm font-semibold">
                     Upldate Password
                   </div>
