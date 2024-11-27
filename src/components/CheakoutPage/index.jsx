@@ -2,7 +2,6 @@ import axios from 'axios';
 import CryptoJS from 'crypto-js';
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
-import InputCom from "../Helpers/InputCom";
 import PageTitle from "../Helpers/PageTitle";
 import Layout from "../Partials/Layout";
 import { useRequest } from "../Request/RequestProvicer";
@@ -15,7 +14,9 @@ export default function CheakoutPage() {
   const [service_fee, setService_fee] = useState(0);
   const [voucherAdmins, setVoucherAdmins] = useState();
   const [isVnpay, setIsVnpay] = useState(false);
+  const [saleServiceFee, SetSaleServiceFee] = useState(0);
   const { setItem, startRequest, endRequest } = useRequest();
+
   useEffect(() => {
     axios.get("http://localhost:8080/api/v1/user/pay/voucheradmin").then(response => {
       setVoucherAdmins(response.data.result.datas);
@@ -60,7 +61,6 @@ export default function CheakoutPage() {
           }
           setService_fee(service => service + seller?.service_fee);
           try {
-
             var maxSale = 0;
             voucherAdmins?.forEach(voucher => {
               if (totalPrice > voucher?.minOrder && voucher.sale > maxSale) {
@@ -74,7 +74,7 @@ export default function CheakoutPage() {
           }
           if (voucherAdmin?.id > 0) {
             //  alert("voucheradmin "+voucherAdmin?.sale)
-            if (((seller?.service_fee * voucherAdmin?.sale) / 100) > voucherAdmin?.totalPriceOrder) {
+            if (((seller?.service_fee * voucherAdmin?.sale) / 100) > voucherAdmin?.totalPriceOrder && voucherAdmin?.sale != 100) {
               // setService_fee(fee => fee - (voucher?.totalPriceOrder));
               // alert("sale admin" + saleAdmin);
               saleAdmin = (voucherAdmin?.totalPriceOrder);
@@ -85,9 +85,11 @@ export default function CheakoutPage() {
               totalSale += ((seller?.service_fee * voucherAdmin?.sale) / 100);
             }
             if (saleAdmin > seller?.service_fee) {
-              setService_fee(service => service - 0);
+              // setService_fee(service => service - 0);
+              SetSaleServiceFee(seller?.service_fee);
             } else {
-              setService_fee(service => service - saleAdmin);
+              // setService_fee(service => service - saleAdmin);
+              SetSaleServiceFee(saleAdmin);
             }
           }
           return {
@@ -95,7 +97,7 @@ export default function CheakoutPage() {
             voucherAdmin: voucherAdmin,
             total: totalPrice + seller?.service_fee - saleAdmin,
             // total: totalPrice + seller?.service_fee - saleAdmin,
-            sale: saleAdmin
+            sale: saleAdmin + data?.sale
           };
         })
       }
@@ -105,7 +107,7 @@ export default function CheakoutPage() {
       navigate('/login');
       window.location.reload();
     }
-  }, [voucherAdmins]);
+  }, [voucherAdmins, localtion]);
   // ========================================VNPAY==========================================================================
   const vnp_TmnCode = "Z3USXN5J";
   const vnp_HashSecret = "0KEFC6UYKU33SAJH2KOJFU63DHSSHVJR";
@@ -159,7 +161,7 @@ export default function CheakoutPage() {
   };
   // =========================================END===========================================================================
   const pay = () => {
-    sessionStorage.setItem("item", JSON.stringify(data));
+    // sessionStorage.setItem("item", JSON.stringify(data));
     // const dataNew = JSON.stringify(data);
     const idUser = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
@@ -175,8 +177,9 @@ export default function CheakoutPage() {
         }
       }).then(response => {
         endRequest();
-        navigate("/profile#order");
+        window.location.href = "/profile#order";
         sessionStorage.removeItem("appData");
+        setData("");
       }).catch();
     }
   }
@@ -218,99 +221,8 @@ export default function CheakoutPage() {
               </div>
             </div> */}
             <div className="w-full lg:flex lg:space-x-[30px]">
-              <div className="lg:w-1/2 w-full">
-                <h1 className="sm:text-2xl text-xl text-qblack font-medium mb-5">
-                  Thông tin mua hàng
-                </h1>
-                <div className="form-area">
-                  <form>
-                    <div className="sm:flex sm:space-x-5 items-center mb-6">
-                      <div className="sm:w-1/2  mb-5 sm:mb-0">
-                        <InputCom
-                          label="Họ và tên*"
-                          placeholder="Nguyễn Văn A"
-                          inputClasses="w-full h-[50px]"
-                          value={user?.user.fullname}
 
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <InputCom
-                          label="Số điện thoại*"
-                          placeholder="0899*******"
-                          inputClasses="w-full h-[50px]"
-                          value={user?.user.phone}
-                        />
-                      </div>
-                    </div>
-                    <div className="mb-6">
-                      <div className="w-full">
-                        <InputCom
-                          label="Địa chỉ email*"
-                          placeholder="toel2024@gmail.com"
-                          inputClasses="w-full h-[50px]"
-                          value={user?.user.email}
-                        />
-                      </div>
-                    </div>
-                    {/* <div className="mb-6">
-                      <h1 className="input-label capitalize block  mb-2 text-qgray text-[13px] font-normal">
-                        Country*
-                      </h1>
-                      <div className="w-full h-[50px] border border-[#EDEDED] px-5 flex justify-between items-center mb-2">
-                        <span className="text-[13px] text-qgraytwo">
-                          Select Country
-                        </span>
-                        <span>
-                          <svg
-                            width="11"
-                            height="7"
-                            viewBox="0 0 11 7"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M5.4 6.8L0 1.4L1.4 0L5.4 4L9.4 0L10.8 1.4L5.4 6.8Z"
-                              fill="#222222"
-                            ></path>
-                          </svg>
-                        </span>
-                      </div>
-                    </div> */}
-                    <div className=" mb-6">
-                      <div className="w-full">
-                        <InputCom
-                          label="Địa chỉ nhận hàng*"
-                          placeholder="your address here"
-                          inputClasses="w-full h-[50px]"
 
-                        />
-                      </div>
-                    </div>
-                    {/* <div className=" mb-6">
-                      <div className="w-full">
-                        <InputCom
-                          label="Tên đường*"
-                          placeholder="your address here"
-                          inputClasses="w-full h-[50px]"
-                        />
-                      </div>
-                    </div> */}
-
-                    <div className="flex space-x-2 items-center mb-10">
-                      <div>
-                        <input type="checkbox" name="" id="create" />
-                      </div>
-                      <label
-                        htmlFor="create"
-                        className="text-qblack text-[15px] select-none"
-                      >
-                        Đặt làm mặc định?
-                      </label>
-                    </div>
-                  </form>
-                </div>
-              </div>
               <div className="flex-1">
                 <h1 className="sm:text-2xl text-xl text-qblack font-medium mb-5">
                   Thông tin đơn hàng
@@ -319,10 +231,10 @@ export default function CheakoutPage() {
                 <div className="w-full px-10 py-[30px] border border-[#EDEDED]">
                   <div className="sub-total mb-6">
                     <div className=" flex justify-between mb-5">
-                      <p className="text-[13px] font-medium text-qblack uppercase">
+                      <p className="text-[20px] font-medium text-qblack uppercase">
                         SẢN PHẨM
                       </p>
-                      <p className="text-[13px] font-medium text-qblack uppercase">
+                      <p className="text-[20px] font-medium text-qblack uppercase">
                         TỔNG
                       </p>
                     </div>
@@ -338,19 +250,28 @@ export default function CheakoutPage() {
                               <li key={index}>
                                 <div className="flex justify-between items-center">
                                   <div>
-                                    <h4 className="text-[15px] text-qblack mb-2.5">
+                                    <h4 className="text-[20px] font-semibold text-qblack mb-2.5">
                                       {cartItem.product?.name || 'Unnamed Product'}
-                                      <sup className="text-[13px] text-qgray ml-2 mt-2">
+                                      <sup className="text-[15px] text-qgray ml-2 mt-2">
                                         x{cartItem.quantity || 1}
                                       </sup>
                                     </h4>
-                                    <p className="text-[13px] text-qgray">
-                                      Thể loại : {cartItem.product.category.name}
-                                    </p>
+                                    <div className="text-[15px] font-medium text-qgray">
+                                      <span className='text-black-2'>Thể loại</span> : {cartItem.product.category.name}
+                                    </div>
+                                    {seller?.saleSeller > 0 ? (
+                                      <>
+                                        <p className="text-[15px] text-qgray font-medium">
+                                          <span className='text-black-2'>  {seller?.voucher?.name} </span> : <span className='text-red-500'>-{Intl.NumberFormat().format(seller?.saleSeller)}<sup>đ</sup></span>
+                                        </p>
+                                      </>) : (<></>)}
                                   </div>
                                   <div>
-                                    <span className="text-[15px] text-qblack font-medium">
-                                      {Intl.NumberFormat().format((cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity) || 'N/A'}<sup>đ</sup>
+                                    <span className="text-[15px] font-semibold text-qblack font-medium">
+                                      {cartItem?.product?.flashSaleDetail?.id > 0 ?
+                                        Intl.NumberFormat().format((((cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem?.product?.flashSaleDetail?.sale) / 100) * cartItem.quantity) || 'N/A' :
+                                        Intl.NumberFormat().format((cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity) || 'N/A'
+                                      }<sup>đ</sup>
                                     </span>
                                   </div>
                                 </div>
@@ -368,39 +289,45 @@ export default function CheakoutPage() {
 
                   <div className="mt-[30px]">
                     <div className=" flex justify-between mb-5">
-                      <p className="text-[13px] font-medium text-qblack uppercase">
+                      <p className="text-[20px] font-medium text-qblack uppercase">
                         Tổng tiền
                       </p>
-                      <p className="text-[15px] font-medium text-qblack uppercase">
-                        {Intl.NumberFormat().format(data?.total - data?.sale)}<sup className='lowercase'>đ</sup>
+                      <p className="text-[20px] font-medium  uppercase">
+                        {Intl.NumberFormat().format(data?.total - data?.sale || 0)} VND
                       </p>
                     </div>
                   </div>
 
                   <div className="w-full mt-[30px]">
                     <div className="sub-total mb-6">
-                      {service_fee > 0 ? (<div className=" flex justify-between mb-1">
+                      <div className=" flex justify-between mb-1">
                         <div>
-                          <span className="text-xs text-qgraytwo mb-3 block">
+                          <span className="text-[15px] text-qgraytwo mb-3 block">
                             Phí vận chuyển
                           </span>
-
                         </div>
                         <p className="text-[15px] font-medium text-qblack">
-                          {Intl.NumberFormat().format(service_fee)}<sup>đ</sup>
+                          {Intl.NumberFormat().format(service_fee)} VND
                         </p>
-                      </div>) : (<p className="text-base font-medium text-qblack">
-                        Miễn phí vận chuyển
-                      </p>)}
-
+                      </div>
+                      {saleServiceFee > 0 ? (<div className=" flex justify-between mb-1">
+                        <div>
+                          <span className="text-[15px] text-qgraytwo mb-3 block">
+                            TOEL voucher
+                          </span>
+                        </div>
+                        <p className="text-[15px] font-medium text-qblack">
+                          {Intl.NumberFormat().format(saleServiceFee)} VND
+                        </p>
+                      </div>) : (<></>)}
                       <div className="w-full h-[1px] bg-[#EDEDED]"></div>
                     </div>
                   </div>
 
                   <div className="mt-[30px]">
                     <div className=" flex justify-between mb-5">
-                      <p className="text-2xl font-medium text-qblack">Thành tiền</p>
-                      <p className="text-2xl font-medium text-qred">{Intl.NumberFormat().format(data?.total + service_fee - data?.sale)}<sup>đ</sup></p>
+                      <p className="text-2xl font-medium text-qblack">Tổng thanh toán</p>
+                      <p className="text-2xl font-medium text-qred">{Intl.NumberFormat().format((data?.total + service_fee - data?.sale - saleServiceFee) || 0)} VND</p>
                     </div>
                   </div>
                   <div className="shipping mt-[30px]">

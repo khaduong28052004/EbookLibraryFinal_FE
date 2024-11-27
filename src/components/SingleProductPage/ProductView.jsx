@@ -23,38 +23,20 @@ export default function ProductView({ className, reportHandler, product }) {
   //   seconds: 0,
   // });
 
-  // const end = new Date("2024-11-19 23:59:00.000000");
-
-  // const startInterval = () => {
-  //   const timer = setInterval(() => {
-  //     const now = new Date(); // Cập nhật 'now' mỗi lần setInterval gọi
-  //     console.log("vao r");
-  //     const second = differenceInSeconds(now, end);
-  //     if (second <= 0) {
-  //       clearInterval(timer);
-  //       return; // Dừng đồng hồ khi đã hết thời gian
-  //     }
-  //     setTimeDifference({
-  //       hours: differenceInHours(end, now) % 24,
-  //       minutes: differenceInMinutes(end, now) % 60,
-  //       seconds: differenceInSeconds(end, now) % 60,
-  //     });
-  //   }, 1000);
-  // };
-
-  // useEffect(() => {
-  //   startInterval();
-
-  // }, []);
-
   // =================================== END
   const changeImgHandhgler = (current) => {
     setSrc(current);
   };
   const [quantity, setQuantity] = useState(1);
   const increment = () => {
-    if (quantity <= product.quantity) {
-      setQuantity((prev) => prev + 1);
+    if (product?.flashSaleDetail?.id > 0) {
+      if (quantity < product?.flashSaleDetail?.quantity) {
+        setQuantity((prev) => prev + 1);
+      }
+    } else {
+      if (quantity < product.quantity) {
+        setQuantity((prev) => prev + 1);
+      }
     }
   };
   const decrement = () => {
@@ -267,11 +249,11 @@ export default function ProductView({ className, reportHandler, product }) {
               <span className="text-qblack">Tags :</span> Beer, Foamer
             </p> */}
             <p className="text-[13px] text-qgray leading-7">
-              <span className="text-qblack">Mã sản phẩm:</span> {product?.id}
+              <span className="text-qblack">Số lượng:</span> {product?.quantity}
             </p>
           </div>
 
-          <div
+          {/* <div
             data-aos="fade-up"
             className="flex space-x-2 items-center mb-[20px]"
           >
@@ -296,9 +278,9 @@ export default function ProductView({ className, reportHandler, product }) {
               className="text-qred font-semibold text-[13px]">
               Báo cáo mục này
             </button>
-          </div>
+          </div> */}
 
-          <div
+          {/* <div
             data-aos="fade-up"
             className="social-share flex  items-center w-full"
           >
@@ -350,7 +332,7 @@ export default function ProductView({ className, reportHandler, product }) {
                 </svg>
               </span>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
