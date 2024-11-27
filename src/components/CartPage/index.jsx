@@ -126,7 +126,7 @@ export default function CardPage({ cart = true }) {
         // console.log("toaddress    " + toAddress);
       }
     }
-
+    // console.log("voucher " + value[0]?.voucher?.length);
     setServiceFee(0);
     value?.forEach(seller => {
       for (let address of seller?.addresses) {
@@ -190,7 +190,7 @@ export default function CardPage({ cart = true }) {
         service_fee: serviceFee
       }
       setItem("data", data);
-      // sessionStorage.setItem("pay", JSON.stringify(data));
+      sessionStorage.setItem("pay", JSON.stringify(data));
       navigate("/checkout");
     } else {
       toast.warn("Chưa chọn sản phẩm")

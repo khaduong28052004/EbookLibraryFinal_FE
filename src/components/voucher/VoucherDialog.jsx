@@ -11,18 +11,18 @@ const VoucherDialog = ({ open, onClose, sellers, onSelectVoucher, selected, sell
       // Lọc selected dựa trên sellerId và cập nhật state
       const selectedVouchers = selected.filter(seller => seller.id == sellerId);
       setSelectedVoucher(selectedVouchers[0]);
+
     }
-  }, [open,selected]); 
+  }, [open, selected, totalOrderSeller]);
   const handleVoucherClick = (voucher) => {
-    const updatedVoucher = {
-      ...selectedVoucher,
-      vouchers: voucher
-    };
-
-    setSelectedVoucher(updatedVoucher);
-
-    onSelectVoucher(updatedVoucher);
-
+    if (totalOrderSeller > voucher?.minOrder) {
+      const updatedVoucher = {
+        ...selectedVoucher,
+        vouchers: voucher
+      };
+      setSelectedVoucher(updatedVoucher);
+      onSelectVoucher(updatedVoucher);
+    }
   };
 
 
@@ -75,7 +75,7 @@ const VoucherDialog = ({ open, onClose, sellers, onSelectVoucher, selected, sell
                           datas.length > 0 && datas[0]?.vouchers?.length > 0 ? (
                             datas[0].vouchers.map((voucher, index) => {
                               // Kiểm tra điều kiện voucher.totalPriceOrder < totalOrderSeller
-                              if (voucher.totalPriceOrder < totalOrderSeller) {
+                              if (voucher?.minOrder < totalOrderSeller) {
                                 return (
                                   <li key={index} className="py-3 list-none">
                                     <button
@@ -105,7 +105,8 @@ const VoucherDialog = ({ open, onClose, sellers, onSelectVoucher, selected, sell
                                     </button>
                                   </li>
                                 );
-                              } else {
+                              }
+                              else {
                                 // Trả về thông báo nếu không có voucher hợp lệ
                                 return null;
                               }

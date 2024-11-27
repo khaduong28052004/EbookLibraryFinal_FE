@@ -33,16 +33,18 @@ const CheakoutSuccess = lazy(() => import("./components/CheakoutPage/success.jsx
 import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
 import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
 import ChatBot from "./pages/Seller/ChatBot2.jsx";
-
+import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx";
+import { toast ,ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function Routers() {
   const location = useLocation();
-  function isTokenExpired(token) {
-    const [, payloadBase64] = token.split('.');
-    const payload = JSON.parse(atob(payloadBase64));
-    const expirationTime = payload.exp * 1000; // Chuyển đổi giây thành milliseconds
-    const currentTimestamp = Date.now();
-    return expirationTime < currentTimestamp;
-  }
+  // function isTokenExpired(token) {
+  //   const [, payloadBase64] = token.split('.');
+  //   const payload = JSON.parse(atob(payloadBase64));
+  //   const expirationTime = payload.exp * 1000; // Chuyển đổi giây thành milliseconds
+  //   const currentTimestamp = Date.now();
+  //   return expirationTime < currentTimestamp;
+  // }
 
 
 
@@ -56,18 +58,19 @@ export default function Routers() {
     //   }
     // }, 20000);
 
-    if (token) {
-      if (isTokenExpired(token)) {
-        sessionStorage.removeItem("token");
-        console.log("token het han")
-      } else {
-        console.log("Token còn hạn.");
-      }
-    }
+    // if (token) {
+    //   if (isTokenExpired(token)) {
+    //     sessionStorage.removeItem("token");
+    //     console.log("token het han")
+    //   } else {
+    //     console.log("Token còn hạn.");
+    //   }
+    // }
 
   }, []);
   return (
     <>
+      <ToastContainer/>
       <RequestProvider>
         <ChatBot />
         <Routes location={location} key={location.pathname} >
@@ -108,7 +111,10 @@ export default function Routers() {
           <Route exact path="/faq" element={<Faq />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/signup" element={<Signup />} />
-          <Route exact path="/profile" element={<Profile />} />
+          <Route exact path="/profile" element={
+            <ProtectedRoute element={<Profile />} />
+          } />
+
           <Route exact path="/become-saller" element={<BecomeSaller />} />
           <Route exact path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route exact path="/terms-condition" element={<TermsCondition />} />
