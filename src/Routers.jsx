@@ -24,6 +24,8 @@ import Sallers from "./components/Sellers/index.jsx";
 import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
+import HomeShop from "./components/shop/index.jsx"
+
 // const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));
 const SingleProductPage = lazy(() => import('./components/SingleProductPage/index.jsx'))
@@ -113,9 +115,11 @@ export default function Routers() {
           <Route exact path="*" element={<FourZeroFour />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route exact path="/change-password/*" element={<UpdatePassword />} />
-        </Routes>
+          <Route exact path="/home-shop/*" element={<HomeShop />} />
+          </Routes>
       </RequestProvider>
     </>
 
-  );
+ 
+);
 }
