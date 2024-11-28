@@ -73,9 +73,9 @@ export default function Routers() {
         <ChatBot />
         <Routes location={location} key={location.pathname} >
           <Route exact path="/" element={
-            // <Suspense fallback={<Loader />}>
-            <Home />
-            // </Suspense>
+            <Suspense fallback={<Loader />}>
+              <Home />
+            </Suspense>
 
           }
           />
