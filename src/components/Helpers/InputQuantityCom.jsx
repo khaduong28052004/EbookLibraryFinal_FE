@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 
-export default function InputQuantityCom({ quantityCart, handleQuantity, idFavorite, idCart, handleQuantityCart }) {
+export default function InputQuantityCom({ quantityCart, handleQuantity, idFavorite, idCart, handleQuantityCart, maxQuantity }) {
   const [quantity, setQuantity] = useState(quantityCart);
   const increment = () => {
-    setQuantity((prev) => prev + 1);
+
+    if (quantity < maxQuantity) {
+      setQuantity((prev) => prev + 1);
+    }
   };
   const decrement = () => {
     if (quantity > 1) {
@@ -11,9 +14,10 @@ export default function InputQuantityCom({ quantityCart, handleQuantity, idFavor
     }
   };
   useEffect(() => {
-    handleQuantity(idFavorite, quantity);
     if (idCart > 0) {
       handleQuantityCart(quantity, idCart)
+    } else {
+      handleQuantity(idFavorite, quantity);
     }
   }, [quantity])
   return (

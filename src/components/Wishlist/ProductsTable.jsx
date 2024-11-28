@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import InputQuantityCom from "../Helpers/InputQuantityCom";
-import axios from "axios";
-import { useRequest } from "../Request/RequestProvicer";
 
 export default function ProductsTable({ className, datas, handleDelete }) {
   const [quantity, setQuantity] = useState();
   const [favorites, setFavorites] = useState();
-
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -56,7 +55,7 @@ export default function ProductsTable({ className, datas, handleDelete }) {
                     />
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <p className="font-medium text-[15px] text-qblack">
+                    <p className="font-medium text-[15px] text-qblack cursor-pointer hover:text-blue-600" onClick={() => navigate("/productdetail?idProduct=" + favorite?.product?.id)}>
                       {favorite?.product?.name}
                     </p>
                   </div>
@@ -69,18 +68,39 @@ export default function ProductsTable({ className, datas, handleDelete }) {
               </td>
               <td className="text-center py-4 px-2">
                 <div className="flex space-x-1 items-center justify-center">
-                  <span className="text-[15px] font-normal line-through">{Intl.NumberFormat().format(favorite?.product?.price)}<sup>đ</sup></span>
-                  <span className="text-[15px] font-normal line-through">{Intl.NumberFormat().format(favorite?.product?.price * ((100 - favorite?.product?.sale)) / 100)}<sup>đ</sup></span>
+                  {favorite?.product?.flashSaleDetail ?
+                    (<>
+                      <span className="text-[15px] font-light line-through">{Intl.NumberFormat().format(favorite?.product?.price - ((favorite?.product?.price * favorite?.product?.sale) / 100))}<sup>đ</sup></span>
+                      <span className="text-[15px] font-bold text-red-500">{Intl.NumberFormat().format(
+                        favorite?.product?.price - ((favorite?.product?.price * favorite?.product?.sale) / 100) - ((favorite?.product?.price - ((favorite?.product?.price * favorite?.product?.sale) / 100)) * (favorite?.product?.flashSaleDetail?.sale / 100))
+
+                      )}<sup>đ</sup></span>
+                    </>) :
+                    (<>
+                      <span className="text-[15px] font-light line-through">{Intl.NumberFormat().format(favorite?.product?.price)}<sup>đ</sup></span>
+                      <span className="text-[15px] font-bold">{Intl.NumberFormat().format(favorite?.product?.price - ((favorite?.product?.price * favorite?.product?.sale) / 100))}<sup>đ</sup></span>
+                    </>)}
                 </div>
               </td>
               <td className=" py-4">
                 <div className="flex justify-center items-center">
-                  <InputQuantityCom quantityCart={favorite?.quantity} handleQuantity={updateQuantity} idFavorite={favorite?.id} />
+                  {
+                    favorite?.product.flashSaleDetail?.id > 0 ? (<InputQuantityCom quantityCart={favorite?.quantity} handleQuantity={updateQuantity} idFavorite={favorite?.id} maxQuantity={favorite?.product?.flashSaleDetail?.quantity} />)
+                      :
+                      (<InputQuantityCom quantityCart={favorite?.quantity} handleQuantity={updateQuantity} idFavorite={favorite?.id} maxQuantity={favorite?.product?.quantity} />)
+
+                  }
                 </div>
               </td>
               <td className="text-right py-4">
                 <div className="flex space-x-1 items-center justify-center">
-                  <span className="text-[15px] font-normal">{Intl.NumberFormat().format((favorite?.product?.price * ((100 - favorite?.product?.sale)) / 100) * favorite?.quantity)}<sup>đ</sup></span>
+                  <span className="text-[15px] font-normal">{
+                    favorite?.product?.flashSaleDetail?.id > 0 ?
+                      Intl.NumberFormat().format(((favorite?.product?.price * ((100 - favorite?.product?.sale)) / 100) * favorite?.product?.flashSaleDetail?.sale) * favorite?.quantity)
+                      :
+                      Intl.NumberFormat().format((favorite?.product?.price * ((100 - favorite?.product?.sale)) / 100) * favorite?.quantity)
+
+                  }<sup>đ</sup></span>
                 </div>
               </td>
               <td className="text-right py-4">

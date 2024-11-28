@@ -111,14 +111,15 @@ export default function FlashSale() {
           <div className="w-full">
             <div
               style={{
-                background: `url(/assets/images/flash-sale-ads.png) no-repeat`,
+                background: `url(${"https://firebasestorage.googleapis.com/v0/b/ebookstore-4fbb3.appspot.com/o/Orange%20Modern%20Flash%20Sale%20Twitter%20Header.png?alt=media"}) no-repeat`,
                 backgroundSize: "cover",
               }}
               data-aos="fade-right"
-              className="flash-ad w-full h-[400px] flex sm:justify-end justify-center items-center"
+              // className="flash-ad w-full h-[400px] flex sm:justify-end justify-center items-center"
+              className="flash-ad w-full h-[400px] flex sm:justify-start justify-center "
             >
               <div className="sm:mr-[75px]">
-                <div className="countdown-wrapper w-full flex sm:space-x-6 space-x-3 sm:justify-between justify-evenly">
+                <div className="countdown-wrapper w-full flex sm:space-x-6 space-x-3 sm:justify-between justify-evenly mt-3 ml-5">
                   {/* <div className="countdown-item">
                     <div className="countdown-number sm:w-[100px] sm:h-[100px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#EB5757]">
@@ -130,7 +131,7 @@ export default function FlashSale() {
                     </p>
                   </div> */}
                   <div className="countdown-item">
-                    <div className="countdown-number sm:w-[100px] sm:h-[100px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
+                    <div className="countdown-number sm:w-[50px] sm:h-[50px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#2F80ED]">
                         {showHour}
                       </span>
@@ -140,7 +141,7 @@ export default function FlashSale() {
                     </p>
                   </div>
                   <div className="countdown-item">
-                    <div className="countdown-number sm:w-[100px] sm:h-[100px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
+                    <div className="countdown-number sm:w-[50px] sm:h-[50px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#219653]">
                         {showMinute}
                       </span>
@@ -150,7 +151,7 @@ export default function FlashSale() {
                     </p>
                   </div>
                   <div className="countdown-item">
-                    <div className="countdown-number sm:w-[100px] sm:h-[100px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
+                    <div className="countdown-number sm:w-[50px] sm:h-[50px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#EF5DA8]">
                         {showSecound}
                       </span>
