@@ -93,8 +93,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Khách Hàng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "khachHang" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "khachHang" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "khachHang" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "khachHang" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -106,8 +106,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Số Sản Phẩm Đã Mua</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "soSanPham" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "soSanPham" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "soSanPham" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "soSanPham" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -119,8 +119,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Lượt Mua</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotMua" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotMua" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotMua" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotMua" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -132,8 +132,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượt Đã Đánh Giá</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -145,8 +145,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số Tiền Đã Chi</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "soTien" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "soTien" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "soTien" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "soTien" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 

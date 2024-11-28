@@ -58,7 +58,7 @@ export default function RouterSellers() {
           path="/quanLy/category"
           element={
             <>
-              <PageTitle title="Thể Loại" />
+              <PageTitle title="Danh mục" />
               <CategorySeller />
             </>
           }

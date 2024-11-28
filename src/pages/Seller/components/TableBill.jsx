@@ -261,7 +261,8 @@ const TableTwo = () => {
                       {item.orderStatus.id < 4 && (
                         <ArrowPathIcon
                           className="w-5 h-5 text-black hover:text-green-600 dark:text-white"
-                          onClick={() => {
+                          onClick={(event) => {
+                            event.stopPropagation();
                             setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
                             setOrderStatusId(true);
                             setIsOpen(true);
@@ -273,7 +274,8 @@ const TableTwo = () => {
                       {item.orderStatus.id <= 2 && (
                         <TrashIcon
                           className="w-5 h-5 text-black hover:text-red-600 dark:text-white"
-                          onClick={() => {
+                          onClick={(event) => {
+                            event.stopPropagation();
                             setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
                             setOrderStatusId(false);
                             setIsOpen(true);
