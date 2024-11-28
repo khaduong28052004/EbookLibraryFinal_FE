@@ -27,6 +27,8 @@ const AuthService = {
       avatar: response.avatar,
       roles: response.roles,
     };
+    //
+    sessionStorage.setItem("permission", JSON.stringify(response.permission));
     // Lưu riêng token
     sessionStorage.setItem("token", response.accessToken);
     // const token = sessionStorage.getItem("token");
@@ -39,6 +41,7 @@ const AuthService = {
     sessionStorage.removeItem("id_account");
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
+    sessionStorage.removeItem("permission");
     return;
   },
   getItem: (key) => {
@@ -65,11 +68,11 @@ const AuthService = {
     const url = "/api/v1/otp/verify";
     return axiosAuth("null", "post", url, data);
   },
-  tokenrenewal: (data) =>{
+  tokenrenewal: (data) => {
     const url = "/api/v1/user/token";
-    const accessToken = {accessToken: data,}
+    const accessToken = { accessToken: data, }
     //accessToken
-    return axiosAuth("null", "post", url, accessToken); 
+    return axiosAuth("null", "post", url, accessToken);
   },
 
   //CÂP NHẬT TK

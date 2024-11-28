@@ -1,5 +1,5 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,6 +11,10 @@ import Layout from "../../Partials/Layout";
 import FaceBookSingIn from "./FaceBookSingIn";
 import LoginGG from "./loginGG";
 import Thumbnail from "./Thumbnail";
+
+
+import CryptoJS from 'crypto-js';
+import Cookies from 'js-cookie';
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -28,7 +32,16 @@ export default function Login() {
   const turnstileRef = useRef(null);
   const rememberMe = () => setChecked(!checked);
 
-
+  useEffect(() => {
+    try {
+      setUsername(Cookies.get('username'));
+      // const encryptedPassword = CryptoJS.AES.encrypt(Cookies.get('password'), 'secret_key').toString();
+      const decryptedPassword = CryptoJS.AES.decrypt(Cookies.get('password'), import.meta.env.VITE_SITEKEY_PASSWORDCOOKIES).toString(CryptoJS.enc.Utf8);
+      setPassword(decryptedPassword);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -50,10 +63,19 @@ export default function Login() {
 
 
     if (!captchaToken) {
-      toast.error("Please complete the captcha");
+      toast.error("Vui lòng điền capchat!");
       return;
     }
 
+    if (checked) {//import.meta.env.VITE_API_BASEURL
+      const SITEKEY = import.meta.env.VITE_SITEKEY_PASSWORDCOOKIES;
+      const encryptedPassword = CryptoJS.AES.encrypt(password, SITEKEY).toString();
+      Cookies.set('username', username, { expires: 3 });
+      Cookies.set('password', encryptedPassword, { expires: 3 });
+    } else {
+      Cookies.remove('username');
+      Cookies.remove('password');
+    }
     try {
       const response = await AuthService.login({
         username,
@@ -77,7 +99,9 @@ export default function Login() {
       }
       AuthService.setItem(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
+      // toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
+      toast.error("Đăng nhập thất bại!");
+
     }
   };
 
