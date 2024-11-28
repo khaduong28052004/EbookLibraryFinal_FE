@@ -1,10 +1,10 @@
 import { GiftIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import InputQuantityCom from "../Helpers/InputQuantityCom";
 import { useRequest } from '../Request/RequestProvicer';
 import VoucherDialog from '../voucher/VoucherDialog';
-import { useNavigate } from 'react-router-dom';
 const sellers = {
   id: 1, // Seller ID
   // name: "Seller A",
@@ -210,8 +210,9 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       });
       let saleMax = 0;
       let voucherNew = {};
-      seller.vouchers.forEach(voucher => {
-        if (voucher.sale > saleMax && voucher.totalPriceOrder < total) {
+
+      seller?.vouchers?.forEach(voucher => {
+        if (voucher.sale > saleMax ) {
           saleMax = voucher.sale;
           if (voucher?.minOrder < total) {
             voucherNew = voucher;
