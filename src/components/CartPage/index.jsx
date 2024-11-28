@@ -170,14 +170,16 @@ export default function CardPage({ cart = true }) {
     const fillterValueSetSale = value.map(seller => {
       var totalPriceSeller = 0;
       seller?.cart?.forEach(cartItem => {
-        if (cartItem?.product?.flashSaleDetail) {
+        if (cartItem?.product?.flashSaleDetail?.id>0) {
           if (cartItem?.quantity <= cartItem?.product?.flashSaleDetail?.quantity) {
             totalPriceSeller += (
               cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))
             ) * cartItem.quantity
           } else {
+            alert("voucher "+cartItem?.product?.flashSaleDetail?.id)
             var quantityFlashSale = cart?.product?.flashSaleDetail?.quantity;
-            var priceSale = totalPrice = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100));
+            var priceFinishSale = cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100);
+           var  priceSale = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100));
             totalPriceSeller += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
           }
         } else {
