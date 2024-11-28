@@ -148,8 +148,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
                                 <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -161,8 +161,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white ">Họ và tên</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -174,8 +174,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white">Giới tính</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "gender" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "gender" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -187,8 +187,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Email</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -200,8 +200,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Số điện thoại</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
                         <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -256,7 +256,11 @@ const TableTwo = () => {
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                 <div className="flex space-x-3.5">
-                                    <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
+                                    <button onClick={() => {
+                                        setId(entity.id);
+                                        setIsOpen(true);
+                                        setStatusentity(entity.status);
+                                    }}>
                                         {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                     </button>
                                 </div>
