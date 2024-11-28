@@ -19,9 +19,8 @@ import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
 import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
 import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
-import ChatBot from "./pages/Seller/ChatBot"
+import ChatBot from "./pages/Seller/ChatBot2"
 import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
-import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
 export default function RouterAdmins() {
   return (
     <DefaultLayout>
@@ -30,28 +29,19 @@ export default function RouterAdmins() {
         <Route
           path="/home"
           element={
-            <ProtectedRoute
-              element={
-                <>
-                  <PageTitle title="Trang Chủ" />
-                  <TrangChuAdmin />
-                </>
-              }
-            />
+            <>
+              <PageTitle title="Trang Chủ" />
+              <TrangChuAdmin />
+            </>
           }
         />
         <Route
           path="/quanLy/nhanVien"
           element={
-            <ProtectedRoute
-              element={
-                <>
-                  <PageTitle title="Nhân Viên" />
-                  <NhanVienAdmin />
-                </>
-              }
-            />
-
+            <>
+              <PageTitle title="Nhân Viên" />
+              <NhanVienAdmin />
+            </>
           }
         />
         <Route
@@ -91,7 +81,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-path="/quanLy/shop"
+          path="/quanLy/shop"
           element={
             <>
               <PageTitle title="Shop" />

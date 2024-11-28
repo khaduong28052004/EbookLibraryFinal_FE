@@ -126,7 +126,7 @@ export default function CardPage({ cart = true }) {
         // console.log("toaddress    " + toAddress);
       }
     }
-
+    // console.log("voucher " + value[0]?.voucher?.length);
     setServiceFee(0);
     value?.forEach(seller => {
       for (let address of seller?.addresses) {
@@ -144,17 +144,18 @@ export default function CardPage({ cart = true }) {
             totalSeller += (
               cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))
             ) * cartItem.quantity
-          } else {
-            var quantityFlashSale = cart?.product?.flashSaleDetail?.quantity;
-            var priceSale = totalPrice = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100));
-            total += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
-            totalSeller += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
           }
+          // else {
+          //   var quantityFlashSale = cart?.product?.flashSaleDetail?.quantity;
+          //   var priceSale = totalPrice = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100));
+          //   total += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
+          //   totalSeller += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
+          // }
         } else {
           total += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
           totalSeller += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
         }
-        setService(seller?.id, 100, 2, fromAddress, toAddress);
+        setService(seller?.id, cartItem?.product?.weight, cartItem?.quantity, fromAddress, toAddress);
         // getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, toAddress);
       });
       if (seller?.voucher?.id > 0) {
@@ -166,9 +167,33 @@ export default function CardPage({ cart = true }) {
       }
     });
 
+    const fillterValueSetSale = value.map(seller => {
+      var totalPriceSeller = 0;
+      seller?.cart?.forEach(cartItem => {
+        if (cartItem?.product?.flashSaleDetail) {
+          if (cartItem?.quantity <= cartItem?.product?.flashSaleDetail?.quantity) {
+            totalPriceSeller += (
+              cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))
+            ) * cartItem.quantity
+          } else {
+            var quantityFlashSale = cart?.product?.flashSaleDetail?.quantity;
+            var priceSale = totalPrice = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100));
+            totalPriceSeller += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
+          }
+        } else {
+          totalPriceSeller += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
+        }
+      });
+
+      return {
+        ...seller,
+        saleSeller: ((seller?.voucher?.sale * totalPriceSeller) / 100) > seller?.voucher?.totalPriceOrder ? seller?.voucher?.totalPriceOrder : (seller?.voucher?.sale * totalPriceSeller) / 100
+
+      }
+    });
     setTotalSale(sale);
     setTotal(total);
-    setDataSubmit(value);
+    setDataSubmit(fillterValueSetSale);
   }
   useEffect(() => {
     if (dataSubmit?.length > 0) {
@@ -187,10 +212,10 @@ export default function CardPage({ cart = true }) {
         user: user,
         total: total,
         sale: totalSale,
-        service_fee: serviceFee
+        // service_fee: serviceFee
       }
       setItem("data", data);
-      // sessionStorage.setItem("pay", JSON.stringify(data));
+      sessionStorage.setItem("pay", JSON.stringify(data));
       navigate("/checkout");
     } else {
       toast.warn("Chưa chọn sản phẩm")
@@ -220,6 +245,7 @@ export default function CardPage({ cart = true }) {
         axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
           setData(response.data.result);
           setUser(response.data.result.user);
+          endRequest();
         }).catch(error => console.error("fetch cart error " + error));
       }
     }).catch(error => console.error("update cart error " + error + "id =" + idCart + "quantity " + quantity));
@@ -277,35 +303,44 @@ export default function CardPage({ cart = true }) {
                 </div>
               </div> */}
               <div className="w-full mt-[30px] flex sm:justify-end">
-                <div className="sm:w-[370px] w-full border border-[#EDEDED] px-[30px] py-[26px]">
+                <div className="sm:w-[520px] w-full border border-[#EDEDED] px-[30px] py-[26px]">
                   <div className="sub-total mb-6">
                     <div className=" flex justify-between mb-6">
                       <p className="text-[15px] font-medium text-qblack">
                         Tổng thu
                       </p>
-                      <p className="text-[15px] font-medium text-qred">{Intl.NumberFormat().format(total)}<sup>đ</sup></p>
+                      <p className="text-[15px] font-medium text-qred">{Intl.NumberFormat().format(total)} VND</p>
                     </div>
                     <div className="w-full h-[1px] bg-[#EDEDED]"></div>
                   </div>
                   <div className="shipping mb-6">
                     <span className="text-[15px] font-medium text-qblack mb-[18px] block">
-                      Giảm giá
+                      Voucher của shop
                     </span>
                     <ul className="flex flex-col space-y-1">
                       {dataSubmit?.map(seller => (<li>
                         {seller?.voucher?.id > 0 ? (
-                          <div className="flex justify-between items-center">
-                            <div className="flex space-x-2.5 items-center">
-                              <div className="input-radio">
+                          <>
+                            <div className="flex">
+                              <img src={seller?.avatar} alt="" className=" w-7 h-7 rounded-full mr-2" />
+                              <span className="font-medium text-sm">{seller.shopName}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <div className="flex space-x-2.5 items-center ">
+                                <div className="input-radio">
+                                </div>
+                                <span className="text-[13px] text-normal text-qgraytwo">
+                                  {seller?.voucher?.name}
+                                </span>
                               </div>
                               <span className="text-[13px] text-normal text-qgraytwo">
-                                {seller.shopName}
+                                giảm : {seller?.voucher.sale}%, tối đa {Intl.NumberFormat().format(seller?.voucher.totalPriceOrder)}<sup>đ</sup>
                               </span>
                             </div>
-                            <span className="text-[13px] text-normal text-qgraytwo">
-                              -{seller.voucher.sale}%, tối đa -{seller?.voucher.totalPriceOrder}<sup>đ</sup>
-                            </span>
-                          </div>
+                            <div className="flex justify-end mt-2">
+                              <span className="text-[13px] text-normal text-qgraytwo font-medium text-red-400">-{Intl.NumberFormat().format(seller?.saleSeller)} VND</span>
+                            </div>
+                          </>
                         ) : (<div></div>)}
                       </li>))}
                       {/* <li>
@@ -327,9 +362,9 @@ export default function CardPage({ cart = true }) {
                   <div className="total mb-6">
                     <div className=" flex justify-between">
                       <p className="text-[18px] font-medium text-qblack">
-                        Thành tiền
+                        Tổng tiền
                       </p>
-                      <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total - totalSale)}<sup>đ</sup></p>
+                      <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total - totalSale)} VND</p>
                     </div>
                   </div>
                   <a onClick={handSubmitPay}>

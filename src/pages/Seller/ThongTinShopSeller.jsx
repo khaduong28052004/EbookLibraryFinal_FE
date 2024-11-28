@@ -1,20 +1,173 @@
 import { Link } from 'react-router-dom';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import { ArrowPathIcon, PhoneIcon, MapPinIcon, EnvelopeIcon } from '@heroicons/react/24/outline'
+
+import {
+  ArrowPathIcon,
+  PhoneIcon,
+  MapPinIcon,
+  EnvelopeIcon,
+} from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
-import ShopService from "../../service/Seller/ShopService";
-import { toast } from 'react-toastify';
+import ShopService from '../../service/Seller/ShopService';
+import { toast, ToastContainer } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
+import axios from 'axios';
+import { uploadImages1 } from "../../service/dangKySellerService";
+import AuthService from "../../service/authService";
+
+import {
+  loadProvinces,
+  postAddress,
+  loadDistricts,
+  loadWards,
+  putAddress,
+  getOneAddress,
+} from '../../service/addressService';
 const ShopSeller = () => {
   const [data, setData] = useState({
+    id: null,
     avatar: null,
     background: null,
     fullname: '',
-    shopName: ''
+    shopName: '',
+    posts: 0,
+    followers : null,
+    following: 0,
+    phone: '',
+    email: '',
+    fullNameAddress: '', // tên đường cộng với data-name (commune), data-name (district), data-name (province)
+    province: '', // lưu id của nó
+    district: '', // lưu id của nó
+    commune: '', // lưu id của nó
+    wardCode: '',
   });
+  const [editingAddressId, setEditingAddressId] = useState(null);
+  const [error, setError] = useState('');
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wardCode, setWards] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState({
+    id: '',
+    name: '',
+  });
+  const [loading, setLoading] = useState(false);
+
+  const [selectedDistrict, setSelectedDistrict] = useState({
+    id: '',
+    name: '',
+  });
+  const [selectedWard, setSelectedWard] = useState({ id: '', name: '' });
+  const [imgAvartar, setimgAvartar] = useState(null);
+  const [imgBackgrourd, setimgBackgrourd] = useState(null);
+  const [dragActive, setDragActive] = useState({
+    avatar: false,
+    background: false,
+  });
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const provincesData = await loadProvinces();
+        setProvinces(provincesData);
+        console.log(provincesData);
+      } catch (error) {
+        setError('Failed to load provinces. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProvinces();
+  }, []);
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (selectedProvince.id) {
+        setLoading(true);
+        setError('');
+        try {
+          const districtsData = await loadDistricts(
+            parseInt(selectedProvince.id, 10),
+          );
+          setDistricts(districtsData);
+          console.log(districtsData);
+        } catch (error) {
+          setError('Failed to load districts. Please try again.');
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setDistricts([]);
+        setWards([]);
+      }
+    };
+    fetchDistricts();
+  }, [selectedProvince]);
+  useEffect(() => {
+    const fetchWards = async () => {
+      if (selectedDistrict.id) {
+        setLoading(true);
+        setError('');
+        try {
+          const wardsData = await loadWards(parseInt(selectedDistrict.id, 10));
+          setWards(wardsData);
+          console.log(wardsData);
+        } catch (error) {
+          setError('Failed to load wards. Please try again.');
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setWards([]);
+      }
+    };
+    fetchWards();
+  }, [selectedDistrict]);
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
+  useEffect(() => {
+    const fetchdata = async () => {
+      if (editingAddressId) {
+        try {
+          const data = await getOneAddress(editingAddressId);
+          setData((prevData) => ({
+            ...prevData,
+            ...data, // cập nhật đầy đủ dữ liệu từ API
+          }));
+          setSelectedProvince({ id: data.province, name: data.provinceName });
+          setSelectedDistrict({ id: data.district, name: data.districtName });
+          setSelectedWard({ id: data.wardCode, name: data.wardsName });
+          console.log('Tải dữ liệu chỉnh sửa thành công');
+        } catch (error) {
+          console.log('Lỗi khi tải dữ liệu chỉnh sửa');
+        }
+      }
+    };
+    // console.log('hhbh' + editingAddressId);
+    fetchdata();
+  }, [editingAddressId]);
+
+  const handleProvinceChange = (e) => {
+    const selectedOption = e.target.options[e.target.selectedIndex];
+    setSelectedProvince({
+      id: selectedOption.value,
+      name: selectedOption.getAttribute('data-name'),
+    });
+  };
+  const handleDistrictChange = (e) => {
+    const selectedOption = e.target.options[e.target.selectedIndex];
+    setSelectedDistrict({
+      id: selectedOption.value,
+      name: selectedOption.getAttribute('data-name'),
+    });
+  };
   const [image, setImage] = useState({
     avatar: null,
-    background: null
+    background: null,
   });
 
   const [isOpen, setIsOpen] = useState(false);
@@ -22,29 +175,166 @@ const ShopSeller = () => {
   useEffect(() => {
     loadData();
   }, []);
+  const handleImageChange = (event, type) => {
+    const file = event.target.files[0];
+    if (file) {
+      handleFile(file, type);
+    }
+  };
+  const handleFile = (file, type) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Vui lòng chỉ tải lên tệp hình ảnh');
+      return;
+    }
 
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File quá lớn. Vui lòng chọn file nhỏ hơn 5MB');
+      return;
+    }
+
+    if (type === 'avatar') {
+      setimgAvartar(file);
+    } else if (type === 'background') {
+      setimgBackgrourd(file);
+    }
+  };
+ 
   const loadData = async () => {
     try {
-      const response = await ShopService.get();
-      console.log(response);
-      const account = response.data.result;
+      const id = sessionStorage.getItem('id_account'); // Lấy id từ sessionStorage
+  
+      // Gọi API lấy thông tin shop
+      const shopResponse = await axios.get(
+        `http://localhost:8080/api/v1/seller/shop/followers/count?shop_id=${id}`
+      );
+      const followers = shopResponse.data.result; // Số lượng followers
+  
+      const shopfollowingResponse = await axios.get(
+        `http://localhost:8080/api/v1/seller/shop/following/count?account_id=${id}`
+      );
+      const following = shopfollowingResponse.data.result; // Số lượng following
+
+      const postResponse = await axios.get(
+        `http://localhost:8080/api/v1/seller/shop/posts/count?account_id=${id}`
+      );
+      const posts = postResponse.data.result; // Số lượng post
+      // Gọi API lấy thông tin tài khoản
+      const accountResponse = await ShopService.get();
+
+      const account = accountResponse.data.result;
+  
+      // Gọi API lấy địa chỉ
+      const addressResponse = await axios.get(
+        `http://localhost:8080/api/v1/user/rest/address/active/${id}`
+      );
+      const addresses = addressResponse.data.data;
+  
+      const activeAddress =
+        addresses.find((address) => address.status === true) ||
+        { fullNameAddress: 'Chưa có địa chỉ', id: null };
+  
+      // Cập nhật state
       setData({
-        avatar: account.avatar,
-        background: account.background,
+        imgAvartar: account.avatar,
+        imgBackgrourd: account.background,
         fullname: account.fullname,
-        shopName: account.shopName
+        shopName: account.shopName,
+        posts, // Số bài viết
+        followers, // Số lượng followers
+        following, // Số người đang theo dõi
+        phone: account.phone || '', // Số điện thoại
+        fullNameAddress: activeAddress.fullNameAddress || 'Chưa có địa chỉ',
+        email: account.email || 'Chưa có email', // Email
       });
+  
+      setEditingAddressId(activeAddress.id); // Cập nhật id địa chỉ đang chỉnh sửa
+      console.log('Địa chỉ đang chỉnh sửa:', activeAddress.id);
     } catch (error) {
-      toast.error(error);
+      toast.error('Không thể tải thông tin từ server.');
+      console.error('Lỗi khi tải dữ liệu:', error);
     }
+  };
+  
+  const handleWardChange = (e) => {
+    const selectedOption = e.target.options[e.target.selectedIndex];
+    setSelectedWard({
+      id: selectedOption.value,
+      name: selectedOption.getAttribute('data-name'),
+    });
+  };
+  const handleSave = async (event) => {
+    if (!data.phone || data.phone.trim() === '') {
+      toast.error('Vui lòng nhập số điện thoại!');
+      return;
+    }
+    if (!data.province || data.province === 'default') {
+      toast.error('Vui lòng chọn Tỉnh/Thành Phố!');
+      return;
+    }
+
+    if (!data.district || data.district === 'default') {
+      toast.error('Vui lòng chọn Quận/Huyện!');
+      return;
+    }
+
+    if (!data.wardCode || data.wardCode === 'default') {
+      toast.error('Vui lòng chọn Xã/Phường!');
+      return;
+    }
+    event.preventDefault();
+    const id = sessionStorage.getItem('id_account') || 1;
+  try {
+    // Kiểm tra nếu có `data.id` để xác định là cập nhật hay thêm mới
+    if (data.id) {
+      // Tạo fullNameAddress bằng cách nối các trường
+      const fullNameAddress = [
+        data.fullNameAddress || '',
+        selectedWard?.name || '',
+        selectedDistrict?.name || '',
+        selectedProvince?.name || '',
+      ]
+        .filter((part) => part.trim() !== '') // Loại bỏ phần rỗng
+        .join(', '); // Nối các phần bằng dấu phẩy
+      // Cập nhật dữ liệu địa chỉ
+      const updatedAddressData = {
+        ...data,
+        fullNameAddress: fullNameAddress,
+      };
+      try {
+        if (imgAvartar || imgBackgrourd) {
+          const formDataImages = new FormData();
+          if (imgAvartar) formDataImages.append('imgAvartar', imgAvartar);
+          if (imgBackgrourd) formDataImages.append('imgBackgrourd', imgBackgrourd);
+          await uploadImages1(id, formDataImages); // Upload hình ảnh
+        }
+        // Cập nhật thông tin tài khoản
+        await AuthService.updateAccount(id, data);
+        await putAddress(id, updatedAddressData);
+        toast.success('Cập nhật thành công!');
+      } catch (error) {
+        toast.error('Có lỗi xảy ra khi cập nhật!');
+        console.error(error);
+      }
+    }
+    console.log('Address processed:', data);
+    setIsOpen(false); // Đóng modal sau khi xử lý thành công
+  } catch (error) {
+    console.error('Error processing address:', error);
+    toast.error('Lỗi khi xử lý địa chỉ!');
   }
+  };
+  
+  
   return (
     <>
-      <Breadcrumb pageName="Thông Tin Chung" status='Quản Trị' />
+    <ToastContainer /> 
+      <Breadcrumb pageName="Thông Tin Chung" status="Quản Trị" />
       <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="relative z-20 h-35 md:h-65">
           <img
-            src={data.background}
+             src={
+              imgBackgrourd ? URL.createObjectURL(imgBackgrourd) : data.imgBackgrourd
+            }
             alt="profile cover"
             className="h-full w-full rounded-tl-sm rounded-tr-sm object-cover object-center"
           />
@@ -53,7 +343,14 @@ const ShopSeller = () => {
               htmlFor="cover"
               className="flex cursor-pointer items-center justify-center gap-2 rounded bg-primary py-1 px-2 text-sm font-medium text-white hover:bg-opacity-90 xsm:px-4"
             >
-              <input type="file" name="cover" id="cover" className="sr-only" />
+              <input
+                id="cover"
+                name="backgrourd"
+                type="file"
+                className="sr-only"
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, 'background')}
+              />
               <span>
                 <svg
                   className="fill-current"
@@ -82,9 +379,14 @@ const ShopSeller = () => {
           </div>
         </div>
         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
-          <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
+          <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full  sm:h-44 sm:max-w-44 sm:p-3">
             <div className="relative drop-shadow-md">
-              <img src={data.avatar} alt="profile" class="w-36 h-36 rounded-full object-cover" />
+              <img
+                className=" border rounded-full  mx-auto    h-30 w-full max-w-30"
+                src={
+                  imgAvartar ? URL.createObjectURL(imgAvartar) : data.imgAvartar
+                }
+              />
               <label
                 htmlFor="profile"
                 className="absolute bottom-0 right-0 flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
@@ -111,10 +413,15 @@ const ShopSeller = () => {
                   />
                 </svg>
                 <input
+                  name="imgAvartar"
                   type="file"
-                  name="profile"
-                  id="profile"
                   className="sr-only"
+                  accept="image/*"
+                  onChange={(e) => handleImageChange(e, 'avatar')}
+                  // type="file"
+                  // name="profile"
+                  id="profile"
+                  // className="sr-only"
                 />
               </label>
             </div>
@@ -127,42 +434,50 @@ const ShopSeller = () => {
             <div className="mx-auto mt-4.5 mb-5.5 grid max-w-94 grid-cols-3 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
               <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
                 <span className="font-semibold text-black dark:text-white">
-                  259
+                  {data.posts}
                 </span>
                 <span className="text-sm">Posts</span>
               </div>
               <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
                 <span className="font-semibold text-black dark:text-white">
-                  129K
+                  {data.followers}
                 </span>
                 <span className="text-sm">Followers</span>
               </div>
               <div className="flex flex-col items-center justify-center gap-1 px-4 xsm:flex-row">
                 <span className="font-semibold text-black dark:text-white">
-                  2K
+                  {data.following}
                 </span>
                 <span className="text-sm">Following</span>
               </div>
             </div>
 
             <div className="pt-4 flex justify-center">
-              <PhoneIcon className='h-5 w-5 mr-1' /> +84 0844098787  <MapPinIcon className='h-5 w-5 ml-3 mr-1' /> Số 32, Đường Trần Hoàng Na, ..., Quận Ninh Kiều, Thành Phố Cần Thơ.
+              <PhoneIcon className="h-5 w-5 mr-1" /> {data.phone}{' '}
+              <MapPinIcon className="h-5 w-5 ml-3 mr-1" />{' '}
+              {data.fullNameAddress}
               <button
                 onClick={() => {
                   setIsOpen(true);
                 }}
-                className="flex cursor-pointer items-center justify-center ml-3 gap-2 rounded bg-primary px-4 text-sm font-medium text-white hover:bg-opacity-90 xsm:px-4">
-                <ArrowPathIcon className='text-white h-5 w-5' />
+                // onClick={() => {
+                //   setIsOpen(true);
+                // }}
+                className="flex cursor-pointer items-center justify-center ml-3 gap-2 rounded bg-primary px-4 text-sm font-medium text-white hover:bg-opacity-90 xsm:px-4"
+              >
+                <ArrowPathIcon className="text-white h-5 w-5" />
                 <span>Edit</span>
               </button>
             </div>
-            <div className='flex justify-center pt-2'>
-              <EnvelopeIcon className='h-5 w-5 mr-2 mt-0.5' /> phuckemz03@gmail.com
+            <div className="flex justify-center pt-2">
+              <EnvelopeIcon className="h-5 w-5 mr-2 mt-0.5" />
+              {data.email}
 
-
-              <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-9999">
-
-
+              <Dialog
+                open={isOpen}
+                onClose={() => setIsOpen(false)}
+                className="relative z-9999"
+              >
                 <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
 
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -182,27 +497,37 @@ const ShopSeller = () => {
                               </label>
                               <input
                                 type="text"
-                                name="name"
-                                // value={dataProduct.name}
-                                // onChange={handDataProduct}
-                                placeholder="Email..."
+                                id="email"
+                                placeholder="Vui lòng nhập email"
+                                value={data.email}
+                                onChange={handleChange}
                                 required
                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                               />
                             </div>
+
                             <div className="w-full xl:w-1/2">
                               <label className="mb-2.5 block text-black dark:text-white">
-                                Số Điện Thoại
+                                Tỉnh, Thành Phố
                               </label>
-                              <input
-                                type="text"
-                                name="name"
-                                // value={dataProduct.name}
-                                // onChange={handDataProduct}
-                                placeholder="Số điện thoại..."
-                                required
+                              <select
                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                              />
+                                id="province"
+                                value={selectedProvince.id}
+                                onChange={handleProvinceChange}
+                                required
+                              >
+                                <option value="">Chọn tỉnh/thành phố</option>
+                                {provinces.map((province) => (
+                                  <option
+                                    key={province.ProvinceID}
+                                    value={province.ProvinceID}
+                                    data-name={province.ProvinceName}
+                                  >
+                                    {province.ProvinceName}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
                           </div>
                           <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
@@ -212,10 +537,51 @@ const ShopSeller = () => {
                               </label>
                               <input
                                 type="text"
-                                name="name"
-                                // value={dataProduct.name}
-                                // onChange={handDataProduct}
+                                name="fullNameAddress"
+                                id="fullNameAddress"
+                                value={data.fullNameAddress}
+                                onChange={handleChange}
+                                required
                                 placeholder="Số nhà, đường..."
+                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                              />
+                            </div>
+                            <div className="w-full xl:w-1/2">
+                              <label className="mb-2.5 block text-black dark:text-white">
+                                Quận, Huyện
+                              </label>
+                              <select
+                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                id="district"
+                                value={selectedDistrict.id}
+                                onChange={handleDistrictChange}
+                                required
+                              >
+                                <option value="">Chọn quận/huyện</option>
+                                {districts.map((district) => (
+                                  <option
+                                    key={district.DistrictID}
+                                    value={district.DistrictID}
+                                    data-name={district.DistrictName}
+                                  >
+                                    {district.DistrictName}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                          <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                            <div className="w-full xl:w-1/2">
+                              <label className="mb-2.5 block text-black dark:text-white">
+                                Số Điện Thoại
+                              </label>
+                              <input
+                                type="text"
+                                id="phone"
+                                name="phone"
+                                placeholder="Vui lòng nhập số điện thoại"
+                                value={data.phone}
+                                onChange={handleChange}
                                 required
                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                               />
@@ -226,43 +592,30 @@ const ShopSeller = () => {
                                 Xã, Phường
                               </label>
                               <select
-                                name=""
-                                id=""
-                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
-                                <option value=""></option>
+                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                id="wardCode"
+                                value={selectedWard.id}
+                                onChange={handleWardChange}
+                                required
+                              >
+                                <option value="">Chọn xã/phường</option>
+                                {wardCode.map((ward) => (
+                                  <option
+                                    key={ward.WardCode}
+                                    value={ward.WardCode}
+                                    data-name={ward.WardName}
+                                  >
+                                    {ward.WardName}
+                                  </option>
+                                ))}
                               </select>
-                            </div>
-                          </div>
-                          <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                            <div className="w-full xl:w-1/2">
-                              <label className="mb-2.5 block text-black dark:text-white">
-                                Tỉnh, Thành Phố
-                              </label>
-                              <select
-                                name=""
-                                id=""
-                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
-                                <option value=""></option>
-                              </select>
-                            </div>
-
-                            <div className="w-full xl:w-1/2">
-                              <label className="mb-2.5 block text-black dark:text-white">
-                                Quận, Huyện
-                              </label>
-                              <select
-                                name=""
-                                id=""
-                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
-                                <option value=""></option>
-                              </select>
-
                             </div>
                           </div>
                         </div>
 
                         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                           <button
+                            onClick={handleSave}
                             type="submit"
                             className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
                           >
@@ -285,8 +638,8 @@ const ShopSeller = () => {
               </Dialog>
             </div>
           </div>
-        </div >
-      </div >
+        </div>
+      </div>
     </>
   );
 };
