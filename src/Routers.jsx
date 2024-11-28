@@ -121,7 +121,7 @@ export default function Routers() {
           <Route exact path="*" element={<FourZeroFour />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route exact path="/change-password/*" element={<UpdatePassword />} />
-          <Route exact path="/home-shop/*" element={<HomeShop />} />
+          <Route exact path="/home-shop/*" element={<HomeShop/>} />
           </Routes>
       </RequestProvider>
     </>

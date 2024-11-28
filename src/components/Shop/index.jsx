@@ -3,6 +3,8 @@ import SectionStyleThree from '../Helpers/SectionStyleThree';
 import Voucher from '../Shop/voucher';
 import ShopInfo from '../Shop/shopinfo';
 import ErrorThumb from '../../components/FourZeroFour'
+// import Layout from '../../Partials/Layout';
+import Layout from "../Partials/Layout";
 const shopDataEX = {
     shopName: 'Shop Name 123',
     avatarUrl:
@@ -13,7 +15,7 @@ const shopDataEX = {
         totalReviews: 21,
     },
     followers: 58,
-    joinDate: '12/2023',
+    joinDate: '12/2023',    
     isFollowed: true,
 };
 
@@ -146,16 +148,16 @@ const data_Products = {
 
 export default function ShopHome({ shopId = 5 }) {
 
+
     if (shopId == null) {
         return (
-            <> 
-            <ErrorThumb/>
+            <>
+                <ErrorThumb />
             </>
         )
     }
-
     return (
-        <>
+        <Layout childrenClasses="pt-0 pb-0">
             <div className="flex flex-col  gap-5   ">
                 <div className="bg-white py-5">
                     <ShopInfo shopData={shopDataEX} />
@@ -176,6 +178,6 @@ export default function ShopHome({ shopId = 5 }) {
                     </div>
                 </div>
             </div>
-        </>
+        </Layout>
     );
 }
