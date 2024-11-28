@@ -6,7 +6,7 @@ import ModalSanPham from './ModalDanhGia';
 import DanhGiaService from '../../../service/Seller/danhGiaService';
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './pagination';
-import {ExportExcel} from "./ExportExcel"
+import { ExportExcel } from "./ExportExcel"
 
 const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -126,7 +126,7 @@ const TableTwo = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
-          onClick={handleExport}
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
@@ -147,8 +147,8 @@ const TableTwo = () => {
               }}>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Khách Hàng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -160,8 +160,8 @@ const TableTwo = () => {
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Sản Phẩm</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -178,8 +178,8 @@ const TableTwo = () => {
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Nội Dung Đánh Giá</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -191,8 +191,8 @@ const TableTwo = () => {
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số Sao</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -236,7 +236,10 @@ const TableTwo = () => {
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                 <div className="flex space-x-3.5">
-                  <button onClick={() => openModal(danhGia)}>
+                  <button onClick={(event) => {
+                    event.stopPropagation();
+                    openModal(danhGia)
+                  }}>
                     <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
                   </button>
                 </div>

@@ -55,7 +55,7 @@ const TableTwo = () => {
 
     const findAllCategory = async () => {
         try {
-            const response = await category.findAllCategory({ page: currentPage, size: 2, searchItem, sortColumn, sortBy });
+            const response = await category.findAllCategory({ page: currentPage, size: 10, searchItem, sortColumn, sortBy });
             console.log("content: " + response.data.result.content);
             setData(response.data.result);
             toast.success(response.data.message);
@@ -177,8 +177,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
                                 <span className="text-sm text-black dark:text-white">Tên danh mục </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -190,8 +190,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white ">Người tạo</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -225,13 +225,15 @@ const TableTwo = () => {
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
-                                        <button onClick={() => {
+                                        <button onClick={(event) => {
+                                            event.stopPropagation();
                                             setEntityCategory(entity);
                                             setIsOpen(true);
                                         }}>
                                             <TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />
                                         </button>
-                                        <button onClick={() => {
+                                        <button onClick={(event) => {
+                                            event.stopPropagation();
                                             setPost(false);
                                             setEntityCategory(entity);
                                             setIsOpenModalSP(true);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon,ArrowPathIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ModalDuyetShop from "./Modal_DuyetShop";
 import accountService from '../../../service/admin/Account';
@@ -37,7 +37,7 @@ const TableTwo = ({ status, setStatus }) => {
 
     const findAllSellerNotBrowse = async () => {
         try {
-            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: 2, searchItem, sortColumn, sortBy });
+            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: 10, searchItem, sortColumn, sortBy });
             console.log("FindAllSellerNotBrowse: ");
             setData(response.data.result);
             console.log(data);
@@ -48,8 +48,8 @@ const TableTwo = ({ status, setStatus }) => {
 
     useEffect(() => {
         findAllSellerNotBrowse();
-    }, [searchItem, currentPage, sortBy, sortColumn,status]);
-    
+    }, [searchItem, currentPage, sortBy, sortColumn, status]);
+
     const handleExport = async () => {
         const sheetNames = ['Danh Sách Đăng Ký Người Bán'];
         try {
@@ -138,8 +138,8 @@ const TableTwo = ({ status, setStatus }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
                                 <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -151,8 +151,8 @@ const TableTwo = ({ status, setStatus }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white">Số CCCD</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "description" ? "text-black" : "text-gray-500"} text-black`} />
+                                            <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "description" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th> */}
 
@@ -164,8 +164,8 @@ const TableTwo = ({ status, setStatus }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Email</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -177,8 +177,8 @@ const TableTwo = ({ status, setStatus }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Số điện thoại</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
