@@ -23,19 +23,6 @@ export default function Voucher({ vouchers }) {
     }
   };
 
-  // const handleArrowClick = (direction) => {
-  //     const scrollAmount = 500; //khoảng cách scroll
-  //     if (tabBoxRef.current) {
-  //         tabBoxRef.current.scrollBy({
-  //             left: direction === "left" ? -scrollAmount : scrollAmount,
-  //             behavior: "smooth", // Cuộn mượt
-  //         });
-  //         setTimeout(() => {
-  //             handleIcons(); // Cập nhật hiển thị của các arrow
-  //         }, 300);
-  //     }
-  // };
-
   const handleArrowClick = (direction) => {
     const scrollAmount =
       tabBoxRef.current.scrollWidth - tabBoxRef.current.clientWidth; // Khoảng cách cuộn (pixels)
@@ -102,7 +89,7 @@ export default function Voucher({ vouchers }) {
     };
   }, [isDragging]);
 
-  if (vouchers === null) {
+  if (vouchers == []) {
     return (
       <></>
     )
@@ -147,26 +134,28 @@ export default function Voucher({ vouchers }) {
           ref={tabBoxRef}
           className="tabBox flex gap-6 list-none overflow-x-hidden overflow-y-hidden scroll-smooth"
         >
-          {vouchers.map((voucher, index) => (
-            <li key={index} className="tab rounded-lg">
-              <div className="border border-sky-500 bg-sky-100 w-[250px] h-[100px] p-2 flex items-center select-none">
-                <div className="flex-row w-7/12 text-[7px] text-gray-600 justify-center">
-                  <p>Giảm {voucher.discount}</p>
-                  <p>Đơn tối thiểu {voucher.minOrder}</p>
-                  <p>HSD: {voucher.expiry}</p>
+          {vouchers.map((voucher) => (
+            (new Date(voucher.dateEnd) < new Date() || voucher.delete == true) ? null : (
+              <li key={voucher.id} className="tab rounded-lg">
+                <div className="border border-sky-500 bg-sky-100 w-[350px] h-[100px] p-2 flex items-center select-none">
+                  <div className="flex-row w-8/12 text-[7px] text-gray-600 justify-center">
+                    <p>{voucher.name}</p>
+                    <p>Đơn tối thiểu {voucher.totalPriceOrder}</p>
+                    <p>HSD: {voucher.dateEnd}</p>
+                  </div>
+                  <div className="flex w-4/12 items-end">
+                    <button
+                      className={`${voucher.isSaved
+                        ? 'border border-sky-500 text-sky-500'
+                        : 'bg-sky-500 text-white'
+                        } px-5 py-1 rounded-sm text-[15px] w-full hover:cursor-pointer`}
+                    >
+                      {voucher.isSaved ? 'Đã lưu' : 'Lưu'}
+                    </button>
+                  </div>
                 </div>
-                <div className="flex w-5/12 items-end">
-                  <button
-                    className={`${voucher.isSaved
-                      ? 'border border-sky-500 text-sky-500'
-                      : 'bg-sky-500 text-white'
-                      } px-5 py-1 rounded-sm text-[5px] w-full hover:cursor-pointer`}
-                  >
-                    {voucher.isSaved ? 'Đã lưu' : 'Lưu'}
-                  </button>
-                </div>
-              </div>
-            </li>
+              </li>
+            )
           ))}
         </ul>
 

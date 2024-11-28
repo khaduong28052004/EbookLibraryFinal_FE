@@ -1,33 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 export default function ShopInfo({ shopData }) {
+  const [shopInfo, setShopInfo] = useState({});
+  const [rating, setRating] = useState([]);  // Initialize as an empty array
 
-  if (shopData == null) {
-    return (
-      <></>
-    )
-  }
+
+  useEffect(() => {
+    setShopInfo(shopData.shopDataEX);
+    setRating(shopData.rating);
+  }, [shopData])
+
+  // if (shopData == {}) {
+  //   return (
+  //     <></>
+  //   )
+  // }
+
   return (
     <div className="container-x mx-auto">
-      <div className="rounded-md py-5 px-5 flex gap-5">
+      <div className="rounded-md py-5 px-5 flex">
         {/* Shop Info */}
-        <div className="border rounded-md w-5/12 py-2 px-5 bg-black">
+        <div className="border rounded-md w-6/12 py-2 px-5 bg-black">
           <div className="w-full inline-flex gap-1 mb-1">
             <div className="w-50% items-center">
               <img
-                src={shopData.avatarUrl}
+                src={shopInfo.avatar}
                 alt="avatar"
                 className="rounded-full shadow-5 w-[70px] h-[70px] border"
               />
             </div>
             <div className="mx-5 pt-3">
               <div className="text-base text-white font-medium">
-                <h1>{shopData.shopName}</h1>
+                <h1>{shopInfo.shopName}</h1>
               </div>
             </div>
           </div>
           <div className="mt-2">
-            {shopData.isFollowed ? (
+            {shopInfo.isFollowed ? (
               <button className="border border-sky-500 text-sky-500 w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
                 Đã theo dõi
               </button>
@@ -39,9 +48,9 @@ export default function ShopInfo({ shopData }) {
           </div>
         </div>
         {/* Shop Statistics */}
-        <div className="w-7/12 flex flex-col justify-around py-2 px-5 text-gray-800 text-[15px]">
+        <div className="w-6/12 flex flex-col justify-around py-2 px-10 text-gray-800 text-[15px]">
           <div className="flex py-2">
-            <div className="flex flex-1 gap-2">
+            <div className="flex flex-1 gap-2 items-center">
               <div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -59,9 +68,9 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Sản phẩm:</p>
-              <span className="text-sky-600">{shopData.productsCount}</span>
+              <span className="text-sky-600">{shopInfo.numberOfProducts}</span>
             </div>
-            <div className="flex flex-1 gap-2">
+            <div className="flex flex-1 gap-2 items-center">
               <div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -80,12 +89,12 @@ export default function ShopInfo({ shopData }) {
               </div>
               <p>Đánh giá:</p>
               <span className="text-sky-600">
-                {shopData.rating.score} ({shopData.rating.totalReviews} Đánh giá)
+                {rating.averageStars} ({rating.totalReviews})
               </span>
             </div>
           </div>
           <div className="flex py-2">
-            <div className="flex flex-1 gap-2">
+            <div className="flex flex-1 gap-2 items-center items-center">
               <div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -103,9 +112,9 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Người theo dõi:</p>
-              <span className="text-sky-600">{shopData.followers}</span>
+              <span className="text-sky-600">{shopInfo.numberOfFollowers}</span>
             </div>
-            <div className="flex flex-1 gap-2">
+            <div className="flex flex-1 gap-2 items-center">
               <div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +132,11 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Tham gia:</p>
-              <span className="text-sky-600">{shopData.joinDate}</span>
+              <span className="text-sky-600"> {shopInfo?.participationTime >= 365 ? (
+                <p>{Math.floor(shopInfo?.participationTime / 365)} năm</p>
+              ) : (
+                <p>{shopInfo?.participationTime} Ngày </p>
+              )}</span>
             </div>
           </div>
         </div>

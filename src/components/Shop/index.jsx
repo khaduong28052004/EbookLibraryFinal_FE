@@ -3,31 +3,75 @@ import SectionStyleThree from '../Helpers/SectionStyleThree';
 import Voucher from '../Shop/voucher';
 import ShopInfo from '../Shop/shopinfo';
 import ErrorThumb from '../../components/FourZeroFour'
-// import Layout from '../../Partials/Layout';
 import Layout from "../Partials/Layout";
-const shopDataEX = {
-    shopName: 'Shop Name 123',
-    avatarUrl:
-        'https://down-bs-vn.img.susercontent.com/vn-11134216-7ras8-m1f4tydj1wt400_tn.webp',
-    productsCount: 58,
-    rating: {
-        score: 5.0,
-        totalReviews: 21,
-    },
-    followers: 58,
-    joinDate: '12/2023',    
-    isFollowed: true,
-};
+import homeShopService from "../../service/Seller/homeShopService";
+import BeatLoader from "react-spinners/BeatLoader";
+import { toast, ToastContainer } from "react-toastify";
 
-const vouchers = [
-    { discount: '1k', minOrder: '1k', expiry: '22/12/2024', isSaved: true },
-    { discount: '2k', minOrder: '2k', expiry: '25/12/2024', isSaved: false },
-    { discount: '1k', minOrder: '1k', expiry: '20/12/2024', isSaved: true },
-    { discount: '2k', minOrder: '2k', expiry: '15/12/2024', isSaved: false },
-];
+// const shopDataEX = {
+//     "rating": {
+//         "totalReviews": 10000,
+//         "averageStars": 4.4,
+//         "totalStars": 5
+//     },
+//     "shopDataEX": {
+//         "idSeller": 8,
+//         "avatar": "avatar3.png",
+//         "background": "background3.png",
+//         "shopName": "Cong ty Anh Vang",
+//         "district": "789 Oak Street",
+//         "averageStarRating": null,
+//         "numberOfFollowers": 167747,
+//         "numberOfProducts": 1111111116,
+//         "createAtSeller": "2023-11-19T17:00:00.000+00:00",
+//         "participationTime": 365,
+//         "trackingNumber": 8,
+//         "shopCancellationRate": 8,
+//         "isSaved": true
+
+//     }
+// };
+
+
+// const vouchers = [
+//     {
+//         "id": 2,
+//         "name": "Voucher Giảm Giá 20%",
+//         "note": "Giảm 20% cho đơn hàng trên 300k",
+//         "totalPriceOrder": 300000,
+//         "sale": 20,
+//         "quantity": 30,
+//         "minOrder": 0,
+//         "dateStart": "2024-10-15",
+//         "dateEnd": "2025-11-15",
+//         "typeVoucher": {
+//             "id": 2,
+//             "name": "Voucher combo"
+//         },
+//         "account": {},
+//         "delete": false
+//     },
+//     {
+//         "id": 1,
+//         "name": "Voucher Giảm Giá 10%",
+//         "note": "Giảm 10% cho đơn hàng trên 200k",
+//         "totalPriceOrder": 200000,
+//         "sale": 10,
+//         "quantity": 50,
+//         "minOrder": 0,
+//         "dateStart": "2024-10-01",
+//         "dateEnd": "2024-11-31",
+//         "typeVoucher": {
+//             "id": 1,
+//             "name": "Voucher miễn phí vận chuyển"
+//         },
+//         "account": {},
+//         "delete": false
+//     }
+// ]
 
 const data_Products = {
-    datas: [
+    data: [
         {
             id: 1,
             name: 'Áo sơ mi nam cao cấp',
@@ -146,24 +190,105 @@ const data_Products = {
 };
 
 
-export default function ShopHome({ shopId = 5 }) {
+export default function ShopHome({ shopId }) {
+    const [shopInfo, setShopInfo] = useState({});
+    const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
+    const [loading, setLoading] = useState(false);
+
+    const getIdAccountFromSession = () => {
+        const user = sessionStorage.getItem("user");
+
+        if (user) {
+            const userObject = JSON.parse(user);
+            return userObject; 
+        }
+
+        return null;
+    };
 
 
-    if (shopId == null) {
-        return (
-            <>
-                <ErrorThumb />
-            </>
-        )
+    const fetchShopInfo = async () => {
+        try {
+            setLoading(true);
+            const idSeller = 8;
+            const response = await homeShopService.fetchShopInfo({ idSeller });
+
+            if (response.data.result) {
+                const data = response.data.result;
+                setShopInfo(data);
+                setLoading(true);
+            } else {
+                toast.warn('Lỗi truyền tải dữ liệu');
+                throw new Error('Không có dữ liệu');
+            }
+        } catch (error) {
+            toast.warn('Lỗi truyền tải dữ liệu');
+        } finally {
+            setLoading(false);
+        }
     }
+
+    const fetchVoucherShopHome = async () => {
+        try {
+            setLoading(true);
+            const idSeller = 8;
+            const response = await homeShopService.fetchVoucherShopHome({ idSeller });
+
+            if (response.data.result) {
+                const data = response.data.result.Voucher;
+                setVouchers(data);
+                setLoading(true);
+            } else {
+                throw new Error('Không có dữ liệu');
+            }
+        } catch (error) {
+            toast.warn('Lỗi truyền tải dữ liệu');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
+    useEffect(() => {
+        fetchShopInfo();
+        fetchVoucherShopHome();
+    }, [])
+
+
+
+    useEffect(() => {
+        console.log("vouchers", vouchers);
+    }, [vouchers])
+
+    useEffect(() => {
+        console.log("shopInfo", shopInfo);
+    }, [shopInfo])
+
+    
+    // if (shopId == null ) {
+    //     return (
+    //         <>
+    //             <ErrorThumb />
+    //         </>
+    //     )
+    // }
+
+
+
     return (
         <Layout childrenClasses="pt-0 pb-0">
+            <ToastContainer />
+
             <div className="flex flex-col  gap-5   ">
                 <div className="bg-white py-5">
-                    <ShopInfo shopData={shopDataEX} />
+                    {shopInfo && Object.keys(shopInfo).length > 0 && (
+                        <ShopInfo shopData={shopInfo} />
+                    )}
                 </div>
                 <div className=" container-x mx-auto mb-3">
-                    <Voucher vouchers={vouchers} />
+                    {vouchers.length > 0 ? (
+                        <Voucher vouchers={vouchers} />
+                    ) : null}
                 </div>
                 <div className="flex-col align-middle justify-center">
                     <div className="max-w-[1216px] mx-auto px-2 sm:px-6">
