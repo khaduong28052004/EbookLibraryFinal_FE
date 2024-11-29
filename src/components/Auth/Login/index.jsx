@@ -39,7 +39,7 @@ export default function Login() {
       const decryptedPassword = CryptoJS.AES.decrypt(Cookies.get('password'), import.meta.env.VITE_SITEKEY_PASSWORDCOOKIES).toString(CryptoJS.enc.Utf8);
       setPassword(decryptedPassword);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, []);
 
@@ -224,6 +224,9 @@ export default function Login() {
                     Đăng nhập
                   </button>
                 </form>
+                <p className="text-base text-qgraytwo font-normal flex justify-center">
+                  ___________Hoặc___________
+                </p>
                 <div className="social-login-buttons flex space-x-4 mt-6">
                   <button className="w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
                     <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENTID_GG}>
@@ -237,6 +240,9 @@ export default function Login() {
                 </div>
                 <div className="social-login-buttons flex space-x-4 mt-6">
                   <Link to="/signup" className="text-base text-qyellow">Đăng ký tài khoản!</Link>
+                </div>
+                <div className="social-login-buttons flex space-x-4 mt-6">
+                  <Link to="/singupLinkFrom" className="text-base text-qyellow">Đăng ký tài khoản v2!</Link>
                 </div>
               </div>
             </div>

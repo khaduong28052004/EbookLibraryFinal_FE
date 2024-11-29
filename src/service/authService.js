@@ -52,9 +52,13 @@ const AuthService = {
     const url = "/api/v1/user/register";
     return axiosAuth("null", "post", url, data);
   },
-  registerV2: (data) => {
-    const url = "/api/v2/user/register";
+  registerV2: (data,otp,email) => {
+    const url = `/api/v2/user/register?otp=${encodeURIComponent(otp)}&email=${encodeURIComponent(email)}`;
     return axiosAuth("null", "post", url, data);
+  },
+  registerOTPV2: ({ email }) => {
+    const url = "/api/v2/user/register/generateOTP";
+    return axiosAuth("null", "post", url, { email });
   },
   UpdatePass: (id, repass, oldpass) => {
     const url = `/api/v1/user/updatePass?id=${encodeURIComponent(id)}&repass=${encodeURIComponent(repass)}&oldpass=${encodeURIComponent(oldpass)}`;
@@ -64,6 +68,7 @@ const AuthService = {
     const url = "/api/v1/otp/generate";
     return axiosAuth("null", "post", url, { email });
   },
+  
   verifyOTP: (data) => {
     const url = "/api/v1/otp/verify";
     return axiosAuth("null", "post", url, data);

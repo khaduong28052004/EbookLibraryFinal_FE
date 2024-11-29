@@ -4,24 +4,46 @@ import { useNavigate, Link } from 'react-router-dom';
 import Layout from "../../Partials/Layout";
 import Thumbnail from "./Thumbnail";
 import AuthService from "../../../service/authService";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import LoginGG from "../Login/loginGG";
+import FaceBookSingIn from "../Login/FaceBookSingIn";
+
+// import   from "../config/configAxios";
 import { toast, ToastContainer } from "react-toastify";
 import axios, { Axios } from "axios";
 export default function Signup() {
+  // const [showPassword, setShowPassword] = useState(false);
   const [checked, setValue] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [otpToken, setOtpToken] = useState("");
   const [formData, setFormData] = useState({
-    fullname: '',
-    phone: '',
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    phone: '',
+    fullname: ''
   });
-  const [error, setError] = useState({});
-  const navigate = useNavigate(); // Hook for navigation
-  const handleInputChange = (event) => {
 
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const otp = queryParams.get('otp');
+    const emailurl = queryParams.get('email');
+    setOtpToken(otp);
+    setFormData((prev) => ({
+      ...prev,
+      email: emailurl,
+    }));
+  }, [location]);
+  const [error, setError] = useState({}); // State for error messages
+  const navigate = useNavigate(); // Hook for navigation
+
+  const rememberMe = () => {
+    setValue(!checked);
+  };
+  // Handle input changes 
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -32,108 +54,8 @@ export default function Signup() {
     validateInput(name, value);
   };
 
-  const rememberMe = () => {
-    setValue(!checked);
-  };
-
-  // const checkEmailTONTAI = async (email) => {
-  //   const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=ee1beb55bc8107ec2de384a942597e4e973330cb`);
-  //   console.log(response);
-  //   if (response?.data?.data?.status === "valid") {
-  //     console.log("oke");
-  //     return true;
-  //   } else {
-  //     toast.error("Email này không tồn tại!");
-  //     console.log("ko oke");
-  //     return false;
-  //   }
-  // }
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    const { username, email, password, confirmPassword, phone, fullname } = formData;
-    if (!fullname || !username || !email || !phone || !password || !confirmPassword) {
-      toast.error("Vui lòng điền đầy đủ thông tin!");
-      return;
-    }
-    if (password !== confirmPassword) {
-      toast.error("Xác nhận mật khẩu không khớp!");
-      return;
-    }
-
-    if (error?.username?.error) {
-      toast.warn(error?.username?.message);
-      return
-    }
-    if (error?.fullname?.error) {
-      toast.warn(error?.fullname?.message);
-      return
-    }
-    if (error?.email.error) {
-      toast.warn(error?.email?.message);
-      return
-    }
-    if (error?.phone?.error) {
-      toast.warn(error?.phone?.message);
-      return
-    }
-
-    if (!checked) {
-      toast.warn("Điều khoản tài khoản!");
-      return
-    }
-    // checkEmailTONTAI(formData.email)
-    const token = import.meta.env.VITE_TOKEN_HUNTER;
-    const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${formData.email}&api_key=${token}`);
-    console.log(response);
-    if (response?.data?.data?.status === "valid") {
-      try {
-        const response = await AuthService.register(formData);
-        if (response.status === 200) {
-          toast.success("Đăng ký thành công");
-          setTimeout(() => {
-            navigate('/login');
-          }, 2000);
-        } else {
-          toast.error("đăng ký thất bại,", response.data);
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error(error?.response?.data || "An error occurred during registration");
-      }
-      console.log("oke");
-    } else {
-      toast.error("(" + formData.email + ")" + " Email Không tồn tại!");
-      console.log("ko oke");
-
-    }
-    // try {
-    //   const response = await AuthService.register(formData);
-    //   if (response.status === 200) {
-    //     toast.success("Đăng ký thành công");
-    //     setTimeout(() => {
-    //       navigate('/login');
-    //     }, 2000);
-    //   } else {
-    //     toast.error("đăng ký thất bại,", response.data);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    //   toast.error(error?.response?.data || "An error occurred during registration");
-    // }
-  };
-
   const validateInput = (name, value) => {
     switch (name) {
-      // case "fullname":
-      //   setError((prev) => ({
-      //     ...prev,
-      //     fullname: {
-      //       error: value.length < 3,
-      //       message: value.length < 3 ? "Vui lòng kiểm tra họ và tên!" : "",
-      //     },
-      //   }));
-      //   break;
       case "username":
         setError((prev) => ({
           ...prev,
@@ -143,19 +65,27 @@ export default function Signup() {
           },
         }));
         break;
-      // case "phone":
-      //   const phoneF = /^\d{10}$/;  // Regex to match exactly 10 digits
-      //   setError((prev) => ({
-      //     ...prev,
-      //     phone: {
-      //       error: !phoneF.test(value),
-      //       message: !phoneF.test(value) ? "Số điện thoại phải là 10 chữ số!" : "",
-      //     },
-      //   }));
+      case "fullname":
+        setError((prev) => ({
+          ...prev,
+          fullname: {
+            error: value.length < 0,
+            message: value.length < 0 ? "Tên tài khoản quá ngắn!" : "",
+          },
+        }));
+        break;
+      case "phone":
+        setError((prev) => ({
+          ...prev,
+          phone: {
+            error: value.length !== 10,
+            message: value.length !== 10 ? "Số điện thoại phải chứa đúng 10 số!" : "",
 
-      // break;
+          },
+        }));
       case "email":
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]{2,}(\.[a-z]{2,})?$/i;
+
         setError((prev) => ({
           ...prev,
           email: {
@@ -191,7 +121,7 @@ export default function Signup() {
         setError((prev) => ({
           ...prev,
           password: {
-            error: !isLongEnough,
+            error: !isLongEnough, // true if password is less than 8 characters
             strength: strength,
             message: passwordMessage,
           },
@@ -205,6 +135,8 @@ export default function Signup() {
             error: value !== formData.password,
             message: value !== formData.password ? "Mật khẩu không khớp!" : "",
           },
+
+
         }));
         break;
       default:
@@ -212,12 +144,101 @@ export default function Signup() {
     }
   };
 
-  // useEffect(() => {
-  //   validateInput("password", formData.password);
-  //   validateInput("confirmPassword", formData.confirmPassword);
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    // const { username, email, password, confirmPassword, phone, fullname } = formData;
+    if (!formData.fullname || !formData.username || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+      toast.error("Vui lòng điền đầy đủ thông tin!");
+      return;
+    }
+    if (!checked) {
+      toast.warn("Điều khoản tài khoản!");
+      return
+    }
+    // Ensure all fields are valid
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    // if(otpToken.includes)      toast.error("Passwords do not match");return;
 
-  // }, [formData.password, formData.confirmPassword]);
+    if (Object.values(error).some((field) => field.error)) {
+      toast.error("Vui lòng điền đầy đủ thông tin!.");
+      return;
+    }
+    const charset = /^[a-zA-Z0-9!@#$%^&*]*$/;
+    if (!charset.test(formData.username)) {
+      setError((prev) => ({
+        ...prev,
+        username: {
+          error: true,
+          message: true ? "Tên tài khoản quá ngắn!" : "",
+        },
+      }));
+      toast.error("Tên tài khoản không được chứa ký tự bỏ dấu hoặc không hợp lệ!");
+
+      return;
+    }
+
+    console.log(formData);
+
+    // checkEmailTONTAI(formData.email)
+    const token = import.meta.env.VITE_TOKEN_HUNTER;
+    const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${formData.email}&api_key=${token}`);
+    console.log(response);
+    if (response?.data?.data?.status === "valid") {
+      try {
+        const response = await AuthService.registerV2(formData, otpToken, formData.email);
+        if (response.status === 200) {
+          toast.success("Đăng ký thành công");
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
+        } else {
+          toast.error("đăng ký thất bại,", response.data);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error?.response?.data || " Lỗi!");
+      }
+      console.log("oke");
+    } else {
+      toast.error("(" + formData.email + ")" + " Email Không tồn tại!");
+      console.log("ko oke");
+
+    }
+  };
+
+  const generatePassword = () => {
+    const length = 16; // Adjusted length for the password
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let password = "@";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
+    }
+
+    return password;
+  };
   useEffect(() => {
+    setError((prev) => ({
+      ...prev,
+      confirmPassword: {
+        error: formData.confirmPassword !== formData.password,
+        message: formData.confirmPassword !== formData.password ? "Mật khẩu không khớp!" : "",
+      },
+      fullname: {
+        error: formData.fullname.length <= 0,
+        message: formData.fullname.length <= 0 ? "Tên tài khoản quá ngắn!" : "",
+      }, phone: {
+        error: formData.phone.length !== 10,
+        message: formData.phone.length !== 10 ? "Số điện thoại phải chứa đúng 10 số!" : "",
+
+      },
+
+
+    }));
     const handleInputChange = (event) => {
       const { name, value } = event.target;
       setFormData((prevData) => ({
@@ -228,20 +249,18 @@ export default function Signup() {
       // Validate input
       validateInput(name, value);
     };
-  }, [formData.password, formData.confirmPassword]);
 
-  const generatePassword = () => {
-    const length = 5; // Adjusted length for the password
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let password = "@password";
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]{2,}(\.[a-z]{2,})?$/i;
 
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charset.length);
-      password += charset[randomIndex];
-    }
+    setError((prev) => ({
+      ...prev,
+      email: {
+        error: !emailPattern.test(formData.email),
+        message: !emailPattern.test(formData.email) ? "Email không hợp lệ!" : "",
+      },
+    }));
 
-    return password;
-  };
+  }, [formData.password, formData.confirmPassword, formData.phone, formData.email, formData.fullname, formData.username]);
 
   const handleSelectChange = () => {
     let selectedPassword = generatePassword();
@@ -251,13 +270,37 @@ export default function Signup() {
       password: selectedPassword,
       confirmPassword: selectedPassword,
     }));
+
+    setError((prev) => ({
+      ...prev,
+      password: {
+        error: false, // true if password is less than 8 characters
+        strength: "strong",
+        message: "Mật khâu mạnh!",
+      },
+    }));
+
     validateInput({ name: "password", value: selectedPassword });
     validateInput({ name: "confirmPassword", value: selectedPassword });
 
+
   };
+
+  const getPasswordStrengthClass = (strength) => {
+    switch (strength) {
+      case "weak":
+        return "bg-red-100 ring-red-500";
+      case "medium":
+        return "bg-yellow-100";
+      case "strong":
+        return "bg-green-100";
+      default:
+        return "";
+    }
+  };
+
   return (
     <Layout childrenClasses="pt-0 pb-0">
-     
       {/* <ToastContainer
         position="bottom-center"
         autoClose={5000}
@@ -297,7 +340,7 @@ export default function Signup() {
                   </div>
                 </div>
                 <div className="input-area">
-                  <form onSubmit={handleLogin}>
+                  <form onSubmit={handleRegister}>
                     <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
                       <InputCom
                         placeholder="Họ và tên"
@@ -305,18 +348,21 @@ export default function Signup() {
                         name="fullname"
                         type="text"
                         id="fullname"
-                        inputClasses="h-[50px]"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.fullname?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
+
                       <InputCom
-                        placeholder="Demo@gmail.com"
-                        label="Email :"
-                        name="email"
-                        type="email"
-                        id="email"
-                        inputClasses="h-[50px]"
+                        placeholder="09039 *********"
+                        label="Số điện thoại :"
+                        name="phone"
+                        type="text"
+                        id="phone"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 
+                          ${error.phone?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
+
                     </div>
                     <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
                       <InputCom
@@ -325,21 +371,23 @@ export default function Signup() {
                         name="username"
                         type="text"
                         id="username"
-                        inputClasses="h-[50px]"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.username?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
                       <InputCom
-                        placeholder="09039 *********"
-                        label="Số điện thoại :"
-                        name="phone"
-                        type="text"
-                        id="phone"
-                        inputClasses="h-[50px]"
+                        placeholder="Demo@gmail.com"
+                        label="Email :"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        id="email"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6
+                           ${error?.email?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
+
                     </div>
                     <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
-
                       <InputCom
                         placeholder="Mật khẩu"
                         label="Mật khẩu :"
@@ -347,9 +395,9 @@ export default function Signup() {
                         id="password"
                         value={formData.password}
                         type={showPassword ? "text" : "password"}
-                        inputClasses={`${error.password?.strength === "weak" ? "bg-red-100 ring-red-500" :
-                          error.password?.strength === "medium" ? "bg-yellow-100" :
-                            error.password?.strength === "strong" ? "bg-green-100" :
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.password?.strength === "weak" ? "bg-red-100 ring-red-500" :
+                          error.password?.strength === "medium" ? "ring-yellow-500" :
+                            error.password?.strength === "strong" ? "ring-green-500" :
                               ""
                           }`}
                         inputHandler={handleInputChange}
@@ -368,7 +416,6 @@ export default function Signup() {
                             </svg>}
                         </button>
                       </InputCom>
-
                       <InputCom
                         placeholder="Xác nhận mật khẩu"
                         label="Xác nhận mật khẩu :"
@@ -376,11 +423,8 @@ export default function Signup() {
                         id="confirmPassword"
                         value={formData.confirmPassword}
                         type={showRePassword ? "text" : "password"}
-                        inputClasses={`${error.confirmPassword?.strength === "weak" ? "bg-red-100 ring-red-500" :
-                          error.confirmPassword?.strength === "medium" ? "bg-yellow-100" :
-                            error.confirmPassword?.strength === "strong" ? "bg-green-100" :
-                              ""
-                          }`}
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.confirmPassword?.error ? 'bg-red-100 ring-red-500' : 'bg-green-100 ring-green-500'}`}
+
                         inputHandler={handleInputChange}
                       >
                         <button
@@ -399,7 +443,6 @@ export default function Signup() {
                         </button>
                       </InputCom>
                     </div>
-
                     <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
                       {error.password?.message && <span className={`ml-2 ${error.password.strength === "weak" ? "text-red-500" : error.password.strength === "medium" ? "text-yellow-500" : error.password.strength === "strong" ? "text-green-500" : ""}`}>{error.password.message}</span>}
                       {(error.password?.strength === "weak" || error.password?.strength === "medium") && (
@@ -451,6 +494,21 @@ export default function Signup() {
                       </div>
                     </div>
                   </form>
+                  <p className="text-base text-qgraytwo font-normal flex justify-center">
+                    ___________Hoặc___________
+                  </p>
+                  <div className="social-login-buttons flex space-x-4 mt-6">
+
+                    <button className="w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
+                      <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENTID_GG}>
+                        <LoginGG />
+                      </GoogleOAuthProvider>
+                    </button>
+                    <h1>||</h1>
+                    <button className="w-full flex justify-center items-center text-bg-[#3b5998] font-medium rounded-md">
+                      <FaceBookSingIn />
+                    </button>
+                  </div>
                   <div className="signup-area flex justify-center">
                     <p className="text-base text-qgraytwo font-normal">
                       Đã có tài khoản?
