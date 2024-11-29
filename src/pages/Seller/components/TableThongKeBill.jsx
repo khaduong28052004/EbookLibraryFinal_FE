@@ -231,34 +231,11 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd, setDateStart, setDateEn
 
                       <p>
                         <strong>Phí Vận Chuyển: </strong>
-                        {/* <span>
+                        <span>
                           {item.priceShipping
                             ? item.priceShipping.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
                             : "Không Có"}
-                        </span> */}
-                        {item.voucherDetails.map((voucherDetails) => {
-                          if (voucherDetails.voucher.typeVoucher.id === 2) {
-                            const finalPrice = item.priceShipping - (item.priceShipping * (voucherDetails.voucher.sale / 100));
-                            return (
-                              <span key={voucherDetails.id}>
-                                {finalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
-                                <span style={{ textDecoration: "line-through", marginLeft: "8px", color: "gray" }}>
-                                  {item.priceShipping.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
-                                </span>
-                                <span style={{ marginLeft: "4px" }}>
-                                  (Giảm {voucherDetails.voucher.sale}%)
-                                </span>
-                              </span>
-                            );
-                          }
-                          return null;
-                        }) || (
-                            <span>
-                              {item.priceShipping
-                                ? item.priceShipping.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
-                                : "Không Có"}
-                            </span>
-                          )}
+                        </span>
                       </p>
                       <p>
                         <strong>Voucher: </strong>
