@@ -3,7 +3,7 @@ import { ArrowLongDownIcon, TrashIcon, ArrowPathIcon, ArrowLongUpIcon, PlusIcon 
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import permission from '../../../service/admin/Permission';
 import rolePermission from '../../../service/admin/PermissionDetails';
-import Modal from "./ModalThongBao";
+import Modal from "./Modal_ThongBao_NotMail";
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './Pagination';
 
