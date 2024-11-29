@@ -24,8 +24,7 @@ export default function Voucher({ vouchers }) {
   };
 
   const handleArrowClick = (direction) => {
-    const scrollAmount =
-      tabBoxRef.current.scrollWidth - tabBoxRef.current.clientWidth; // Khoảng cách cuộn (pixels)
+    const scrollAmount = 330 // Khoảng cách cuộn (pixels)
     const duration = 400; // Thời gian cuộn (ms)
 
     if (tabBoxRef.current) {
@@ -38,7 +37,7 @@ export default function Voucher({ vouchers }) {
 
   const smoothScroll = (scrollContainer, direction, distance, duration) => {
     const start = scrollContainer.scrollLeft; // Vị trí ban đầu
-    const end = start + (direction === 'left' ? -distance : distance); // Điểm đến: "end = start + distance" và ngược lại "end = start + distance"
+    const end = direction === "left" ? start - distance : start + distance;// Điểm đến (0 khi quay lại đầu)
     const startTime = performance.now(); // Thời gian bắt đầu cuộn
 
     //currentTime: Thời điểm hiện tại (do requestAnimationFrame cung cấp)
@@ -50,6 +49,7 @@ export default function Voucher({ vouchers }) {
         progress < 0.5 //Tính toán giá trị tiến trình theo hàm easing (mượt)
           ? 4 * progress ** 3 //Tăng tốc (cubic ease-in) khi progress < 0.5
           : 1 - Math.pow(-2 * progress + 2, 3) / 2; //Giảm tốc (ease-out cubic) khi progress >= 0.5.
+
       scrollContainer.scrollLeft = start + (end - start) * easing; // Cuộn theo easing
 
       if (progress < 1) {
@@ -78,6 +78,22 @@ export default function Voucher({ vouchers }) {
       tabBox.addEventListener('mouseleave', onMouseLeave);
     }
 
+    // const interval = setInterval(() => {
+    //   const maxScrollableWidth =
+    //     tabBox.scrollWidth - tabBox.clientWidth; // Khoảng cuộn tối đa
+    //   const scrollVal = Math.round(tabBox.scrollLeft); // Vị trí cuộn hiện tại
+
+    //   if (scrollVal >= maxScrollableWidth) {
+    //     // Khi đã cuộn đến cuối, quay về đầu
+    //     tabBox.scrollLeft = 0;
+    //     smoothScroll(tabBox, "right", -scrollVal, 2000); // Quay về đầu trong 1 giây
+
+    //   } else {
+    //     smoothScroll(tabBox, "right", 200, 1900);
+    //   }
+    // }, 3000); // Thời gian chờ giữa các lần cuộn (3 giây)
+
+
     // Cleanup: loại bỏ sự kiện khi component bị unmount
     return () => {
       if (tabBox) {
@@ -85,6 +101,7 @@ export default function Voucher({ vouchers }) {
         tabBox.removeEventListener('mousemove', onMouseMove);
         tabBox.removeEventListener('mouseup', onMouseUp);
         tabBox.removeEventListener('mouseleave', onMouseLeave);
+        // clearInterval(interval); // Dừng interval khi component unmount
       }
     };
   }, [isDragging]);
@@ -96,11 +113,11 @@ export default function Voucher({ vouchers }) {
   }
 
   return (
-    <div className=" container-x h-full relative p-2 mx-auto gap-5 bg-white py-4 rounded-sm flex items-center ">
-      <div className="wrapper  max-w-full overflow-x-hidden bg-white">
+    <div className=" container-x h-full relative p-2 mx-auto bg-blue-100 shadow py-4 rounded-sm flex items-center group">
+      <div className="wrapper  max-w-full overflow-x-hidden bg-blue-100 ">
         {isLeftArrowVisible && (
-          <div className="icon cursor-pointer absolute top-0 left-[-1rem] h-[100%] w-[120px] flex items-center  ">
-            <div className="rounded-full p-1 bg-white  shadow hover:bg-whiter ">
+          <div className="icon cursor-pointer absolute top-0 left-0 h-[100%] w-[120px] flex items-center  ">
+            <div className="rounded-r-lg  bg-white opacity-0 shadow  group-hover:opacity-60  ">
               <svg
                 ref={(el) => (arrowRef.current[0] = el)}
                 id="left"
@@ -114,7 +131,7 @@ export default function Voucher({ vouchers }) {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke-width=""
-                stroke="gray"
+                stroke="blue"
                 class="size-6"
               >
                 <path
@@ -134,22 +151,20 @@ export default function Voucher({ vouchers }) {
           {vouchers.map((voucher) => (
             (new Date(voucher.dateEnd) < new Date() || voucher.delete == true) ? null : (
               <li key={voucher.id} className="tab">
-                <div className="border  rounded-sm border-sky-500 bg-sky-100 w-[250px] h-[100px] p-2 flex items-center select-none">
+                <div className="border  rounded-sm border-blue-500 bg-blue-200 w-[300px] h-[100px] p-2 flex items-center select-none">
                   <div className="flex-row w-8/12 text-[7px] text-gray-600 justify-center">
                     <p>{voucher.name}</p>
                     <p>Đơn tối thiểu {voucher.totalPriceOrder}</p>
                     <p>HSD: {voucher.dateEnd}</p>
                   </div>
-                  <div className="flex w-4/12 items-end">
+                  <div className="flex w-5/12 items-end">
                     <button
-                      className={`${voucher.isSaved
-                        ? 'border border-sky-500 text-sky-500'
-                        : 'bg-sky-500 text-white'
-                        } px-5 py-1 rounded-sm text-[15px] w-full hover:cursor-pointer`}
-                    >
-                      {voucher.isSaved ? 'Đã lưu' : 'Lưu'}
+                      className='border border-blue-500 text-blue-500
+                         px-5 py-1 rounded-sm text-[10px] w-full hover:cursor-pointer'
+                    > Sử dụng
                     </button>
                   </div>
+
                 </div>
               </li>
             )
@@ -157,8 +172,8 @@ export default function Voucher({ vouchers }) {
         </ul>
 
         {isRightArrowVisible && (
-          <div className="icon  cursor-pointer justify-end absolute top-0  right-[-1rem]  h-[100%] w-[120px] flex items-center  ">
-            <div className="rounded-full p-1 bg-white shadow hover:bg-whiter ">
+          <div className="icon  cursor-pointer justify-end absolute top-0  right-0 h-[100%] w-[120px] flex items-center  ">
+            <div className="rounded-l-lg bg-white opacity-0 shadow group-hover:opacity-60">
               <svg
                 ref={(el) => (arrowRef.current[1] = el)}
                 id="right"
@@ -170,7 +185,7 @@ export default function Voucher({ vouchers }) {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke-width=""
-                stroke="gray"
+                stroke="blue"
                 class="size-6"
               >
                 <path
