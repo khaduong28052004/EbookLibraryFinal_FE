@@ -201,13 +201,13 @@ export default function Login() {
                   </button>
                 </form>
                 <div className="social-login-buttons flex space-x-4 mt-6 text-[10px]">
-                  <button >
-                    <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENTID_GG}>
-                      <LoginGG />
-                    </GoogleOAuthProvider>
-                  </button>
-                  {/* <button> */}
-                    <FaceBookSingIn />
+                  {/* <button className="w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md"> */}
+                  <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENTID_GG}>
+                    <LoginGG />
+                  </GoogleOAuthProvider>
+                  {/* </button> */}
+                  {/* <button className="w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md px-66"> */}
+                  <FaceBookSingIn />
                   {/* </button> */}
                 </div>
                 <div className="social-login-buttons flex space-x-1 mt-6 text-sm">
@@ -218,7 +218,7 @@ export default function Login() {
             <Thumbnail />
           </div>
         </div>
-      </div >
-    </Layout >
+      </div>
+    </Layout>
   );
 }

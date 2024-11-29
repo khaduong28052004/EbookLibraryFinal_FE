@@ -1189,7 +1189,7 @@ export default function Navbar({ className, type }) {
               </div>
             </div>
             <div className="become-seller-btn  mx-3">
-              {/* <Link to="/login">
+              <Link to="/login">
                 <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
                   <div className="flex space-x-2 items-center">
                     <span className="text-sm text-[#FFFFFF] ">Đăng nhập </span>
@@ -1223,7 +1223,7 @@ export default function Navbar({ className, type }) {
                     <span className="text-sm text-[#FFFFFF] ">|</span>
                   </div>
                 </div>
-              </Link> */}
+              </Link>
             </div>
             <div className="become-seller-btn">
               <Link to="/become-saller">
@@ -1231,8 +1231,8 @@ export default function Navbar({ className, type }) {
                   {/* <div className="flex space-x-2 items-center">
                     <span className="text-sm font-600">Trở Thành Người Bán</span>
                   </div> */}
-                  <div className="flex space-x-2 items-center text-[#F5F5F5] hover:cursor-pointer w-full">
-                    <span className="text-sm  ">Đăng Ký Trở Thành Người Bán</span>
+                  <div className="flex space-x-2 items-center text-[#F5F5F5] hover:cursor-pointer w-full p-2">
+                    <span className="text-sm">Đăng Ký Trở Thành Người Bán</span>
                     <span>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#F5F5F5" class="size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
