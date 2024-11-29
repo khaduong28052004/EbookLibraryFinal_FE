@@ -7,8 +7,8 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { format, parse } from 'date-fns';
 import { toast, ToastContainer } from 'react-toastify';
 import { Link } from 'react-router-dom';
-import Pagination from './pagination';
-import { ExportExcel } from "./ExportExcel"
+import Pagination from '../../Seller/components/pagination';
+import { ExportExcel } from "../../../service/admin/ExportExcel"
 const TableVoucher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusVoucher, setStatusVoucher] = useState(false);
@@ -24,7 +24,7 @@ const TableVoucher = () => {
     quantity: null,
     dateStart: '',
     dateEnd: '',
-    typeVoucher: 1,
+    typeVoucher: 2,
     account: sessionStorage.getItem("id_account")
   });
   const [search, setSearch] = useState('');
@@ -65,7 +65,7 @@ const TableVoucher = () => {
 
   const loadListVoucher = async () => {
     try {
-      const response = await VoucherService.getData(search, pageNumber, sortBy, sortColumn, size);
+      const response = await VoucherService.getDataAdmin(search, pageNumber, sortBy, sortColumn, size);
       setListVoucher(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
@@ -77,7 +77,7 @@ const TableVoucher = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Voucher'];
     try {
-      const response = await VoucherService.getData(search, pageNumber, sortBy, sortColumn, totalElements);
+      const response = await VoucherService.getDataAdmin(search, pageNumber, sortBy, sortColumn, totalElements);
       return ExportExcel("Danh Sách Voucher.xlsx", sheetNames, [response.data.result.content]);
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
@@ -117,6 +117,7 @@ const TableVoucher = () => {
         ...dataVoucher,
         dateStart: formatDateForDisplay(dataVoucher.dateStart),
         dateEnd: formatDateForDisplay(dataVoucher.dateEnd),
+        typeVoucher: 2,
       };
       if (!isStatus) {
         response = await VoucherService.create(formattedData);
@@ -144,6 +145,7 @@ const TableVoucher = () => {
   const handSearch = (event) => {
     const value = event.target.value;
     setSearch(value);
+    setPageNumber(0);
   }
 
   const handDataVoucher = (e) => {
@@ -161,7 +163,7 @@ const TableVoucher = () => {
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <ToastContainer className={'z-999999'}/>
+      <ToastContainer className={'z-999999'} />
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
         <form action="https://formbold.com/s/unique_form_id" method="POST">
           <div className="relative pt-3">
@@ -345,21 +347,25 @@ const TableVoucher = () => {
                       <button>
                         <Link to={`/seller/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
                       </button>
-                      <button onClick={(event) => {
-                        event.stopPropagation();
-                        setIsOpen(true);
-                        setVoucherId(voucher.id);
-                        setStatusVoucher(voucher.delete)
-                      }}>
-                        {!voucher.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600 dark:text-white' />)}
-                      </button>
-                      <button onClick={(event) => {
-                        event.stopPropagation();
-                        editVoucher(voucher.id);
-                        setIsStatus(true)
-                      }}>
-                        <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
-                      </button>
+                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() ? (
+                        <>
+                          <button onClick={(event) => {
+                            event.stopPropagation();
+                            setIsOpen(true);
+                            setVoucherId(voucher.id);
+                            setStatusVoucher(voucher.delete)
+                          }}>
+                            <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
+                          </button>
+                          <button onClick={(event) => {
+                            event.stopPropagation();
+                            editVoucher(voucher.id);
+                            setIsStatus(true)
+                          }}>
+                            <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
+                          </button>
+                        </>
+                      ) : (<></>)}
                     </div>
                   </td>
                 </tr>
@@ -404,8 +410,8 @@ const TableVoucher = () => {
         open={isOpen}
         setOpen={setIsOpen}
         title={
-          !statusVoucher ? "Khôi Phục Hoạt Động" :
-            'Ngừng Hoạt Động'
+          !statusVoucher ? "Ngừng Hoạt Động" :
+            'Khôi Phục Hoạt Động'
         }
         message={!statusVoucher ? 'Bạn chắc chắn muốn ngừng hoạt động voucher này không?' : 'Bạn chắc chắn muốn khôi phục hoạt động voucher này không?'}
         onConfirm={deleteVoucher}
@@ -414,13 +420,13 @@ const TableVoucher = () => {
         }
         cancelText="Thoát"
         icon={
-          statusVoucher ?
+          !statusVoucher ?
             <TrashIcon className="h-6 w-6 text-red-600" />
             :
             <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
         }
-        iconBgColor={!statusVoucher ? 'bg-green-100' : 'bg-red-100'}
-        buttonBgColor={!statusVoucher ? 'bg-green-600' : 'bg-red-600'}
+        iconBgColor={!statusVoucher ? 'bg-red-100' : 'bg-green-100'}
+        buttonBgColor={!statusVoucher ? 'bg-red-600' : 'bg-green-600'}
       />
 
       <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-9999">
@@ -504,7 +510,7 @@ const TableVoucher = () => {
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
 
                       >
-                        <option value="">Giảm Tổng Hóa Đơn</option>
+                        <option value="">Giảm phí vận chuyển</option>
                       </select>
                     </div>
 

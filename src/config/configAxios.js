@@ -13,6 +13,15 @@ const axiosConfig = axios.create({
   paramsSerializer: params => queryString.stringify(params),
 });
 
+const axiosConfigPython = axios.create({
+  baseURL: import.meta.env.VITE_API_PYTHON,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  paramsSerializer: params => queryString.stringify(params),
+});
+
+
 const axiosInstance = axios.create({
   baseURL: 'https://api.hunter.io/v2',
   timeout: 10000, // Timeout nếu cần
@@ -70,6 +79,31 @@ const axiosAuth = (TOKEN, method, url, data, status) => {
 };
 
 
+const axiosAuthPython = (TOKEN, method, url, data) => {
+  const token = sessionStorage.getItem("accessToken");
+  let headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+  };
+  if (TOKEN != "null") {
+    headers = {
+      Authorization: `Bearer ${TOKEN}`,
+    }
+  } else {
+    headers = {
+      "Content-Type": "multipart/form-data",
+    };
+  }
+
+  return axiosConfigPython({
+    method: method,
+    headers: headers,
+    url: url,
+    data: data,
+  });
+};
+
+
 
 
 axiosConfig.interceptors.request.use(config => {
@@ -109,4 +143,4 @@ axiosConfig.interceptors.response.use(response => {
 
 
 export default axiosConfig;
-export { axiosAuth, verifyEmail };
+export { axiosAuth, verifyEmail, axiosAuthPython };

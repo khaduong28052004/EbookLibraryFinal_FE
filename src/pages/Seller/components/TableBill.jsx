@@ -327,7 +327,7 @@ const TableTwo = () => {
 
 
               )}
-            </React.Fragment>
+            </React.Fragment> 
           ))}
         </tbody>
       </table>
