@@ -15,20 +15,20 @@ interface Permission {
 }
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
- // Retrieve permissions from sessionStorage and parse it
-   const [permissions, setPermissions] = useState<Permission[]>([]);
+  // Retrieve permissions from sessionStorage and parse it
+  const [permissions, setPermissions] = useState<Permission[]>([]);
 
-   useEffect(() => {
-     const storedPermissions = sessionStorage.getItem("permissions");
-     if (storedPermissions) {
-       const parsedPermissions: Permission[] = JSON.parse(storedPermissions);  // Ensure the correct type
-       setPermissions(parsedPermissions);
-     }
-   }, []); // Empty dependency array to run only once when the component mounts
- 
-   const hasPermission = (cotSlug: string) => {
-     return permissions.some(permission => permission.cotSlug === cotSlug);
-   };
+  useEffect(() => {
+    const storedPermissions = sessionStorage.getItem("permissions");
+    if (storedPermissions) {
+      const parsedPermissions: Permission[] = JSON.parse(storedPermissions);  // Ensure the correct type
+      setPermissions(parsedPermissions);
+    }
+  }, []); // Empty dependency array to run only once when the component mounts
+
+  const hasPermission = (cotSlug: string) => {
+    return permissions.some(permission => permission.cotSlug === cotSlug);
+  };
 
 
   const location = useLocation();
@@ -45,7 +45,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   // close on click outside
   useEffect(() => {
 
-    
+
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
       if (
@@ -228,8 +228,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           }`}
                       >
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                          <li>
-                          {!hasPermission('READ_PRODUCT')?
+                          {!hasPermission('READ_ACCOUNT') ? <li>
+
                             <NavLink
                               to="/admin/quanLy/nhanVien"
                               className={({ isActive }) =>
@@ -238,107 +238,127 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               }
                             >
                               Nhân Viên
-                            </NavLink>:<></>}
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/voucher"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Voucher
                             </NavLink>
                           </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/product"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Sản Phẩm
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/flashSale"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Flash Sale
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/khachHang"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Khách Hàng
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/shop"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Shop
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/report"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Report
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/phanQuyen"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Phân Quyền
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/danhMuc"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Danh Mục
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/chietkhau"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Chiết Khấu
-                            </NavLink>
-                          </li>
+                            : <></>}
+                          {!hasPermission('READ_VOUCHER') ?
+                            <li>
+
+                              <NavLink
+                                to="/admin/quanLy/voucher"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Voucher
+                              </NavLink>
+                            </li>
+                            : <></>}
+                          {!hasPermission('READ_PRODUCT') ?
+                            <li>
+                              <NavLink
+                                to="/admin/quanLy/product"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Sản Phẩm
+                              </NavLink>
+                            </li> : <></>}
+                          {!hasPermission('READ_FLASHSALE') ?
+                            <li>
+                              <NavLink
+                                to="/admin/quanLy/flashSale"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Flash Sale
+                              </NavLink>
+                            </li> : <></>}
+                          {hasPermission('READ_KHACHHANG') ?
+                            <li>
+                              <NavLink
+                                to="/admin/quanLy/khachHang"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Khách Hàng
+                              </NavLink>
+                            </li> : <></>}
+                          {hasPermission('READ_SHOP') ?
+                            <li>
+                              <NavLink
+                                to="/admin/quanLy/shop"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Shop
+                              </NavLink>
+                            </li> :
+                            <></>}
+                          {hasPermission('READ_SHOP') ?
+                            <li>
+                              <NavLink
+                                to="/admin/quanLy/report"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Report
+                              </NavLink>
+                            </li> :
+                            <></>}
+                          {hasPermission('READ_ROLE_PERMISSION') ?
+                            <li>
+
+                              <NavLink
+                                to="/admin/quanLy/phanQuyen"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Phân Quyền
+                              </NavLink>
+                            </li> :
+                            <></>}
+                          {hasPermission('READ_DANHMUC') ?
+                            <li>
+                              <NavLink
+                                to="/admin/quanLy/danhMuc"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Danh Mục
+                              </NavLink>
+                            </li>
+                            :
+                            <></>}
+                          {hasPermission('READ_CHIETKHAU') ?
+                            <li>
+                              <NavLink
+                                to="/admin/quanLy/chietkhau"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Chiết Khấu
+                              </NavLink>
+                            </li>
+                            :
+                            <></>}
                         </ul>
                       </div>
                       {/* <!-- Dropdown Menu End --> */}
