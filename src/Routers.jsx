@@ -34,6 +34,9 @@ import ChatBot from "./pages/Seller/ChatBot2.jsx";
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx";
 import { toast ,ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import QuyCheHoatDong from "./components/QuyCheHoatDong";
+import HuongDanBanHang from "./components/HuongDanBanHang";
+import ChinhSachNguoiBan from "./components/ChinhSachNguoiBan";
 export default function Routers() {
   const location = useLocation();
   // function isTokenExpired(token) {
@@ -107,6 +110,8 @@ export default function Routers() {
           <Route exact path="/tracking-order" element={<TrackingOrder />} />
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/faq" element={<Faq />} />
+          <Route exact path="/ban-hang" element={<HuongDanBanHang />} />
+          <Route exact path="/chinh-sach" element={<ChinhSachNguoiBan />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/signup" element={<Signup />} />
           <Route exact path="/profile" element={
@@ -116,6 +121,9 @@ export default function Routers() {
           <Route exact path="/become-saller" element={<BecomeSaller />} />
           <Route exact path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route exact path="/terms-condition" element={<TermsCondition />} />
+          <Route exact path="/quyche-hoatdong" element={<QuyCheHoatDong />} />
+          
+
           <Route exact path="*" element={<FourZeroFour />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route exact path="/change-password/*" element={<UpdatePassword />} />

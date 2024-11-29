@@ -1,13 +1,13 @@
-import { useRef } from "react";
-import { Link } from "react-router-dom";
-import BlogCard from "../Helpers/Cards/BlogCard";
-import Star from "../Helpers/icons/Star";
-import PageTitle from "../Helpers/PageTitle";
-import SimpleSlider from "../Helpers/SliderCom";
-import Layout from "../Partials/Layout";
+import { useRef } from 'react';
+import { Link } from 'react-router-dom';
+import BlogCard from '../Helpers/Cards/BlogCard';
+import Star from '../Helpers/icons/Star';
+import PageTitle from '../Helpers/PageTitle';
+import SimpleSlider from '../Helpers/SliderCom';
+import Layout from '../Partials/Layout';
 
-import blog from "../../data/blogs.json";
-import DataIteration from "../Helpers/DataIteration";
+import blog from '../../data/blogs.json';
+import DataIteration from '../Helpers/DataIteration';
 
 export default function About() {
   const settings = {
@@ -16,7 +16,7 @@ export default function About() {
     autoplay: true,
     centerMode: true,
     infinite: true,
-    centerPadding: "60px",
+    centerPadding: '60px',
     dots: false,
     responsive: [
       {
@@ -51,8 +51,8 @@ export default function About() {
           <PageTitle
             title="About Us"
             breadcrumb={[
-              { name: "home", path: "/" },
-              { name: "About us", path: "/about" },
+              { name: 'home', path: '/' },
+              { name: 'About us', path: '/about' },
             ]}
           />
         </div>
@@ -69,31 +69,80 @@ export default function About() {
               </div>
               <div className="content flex-1">
                 <h1 className="text-[18px] font-medium text-qblack mb-2.5">
-                  What is e-commerce business?
+                  Sàn thương mại điện tử sách
                 </h1>
-                <p className="text-[15px] text-qgraytwo leading-7 mb-2.5">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry. Lorem Ipsum has been the industry's
-                  standard dummy text ever since the 1500s, when an unknown
-                  printer took a galley of type and scrambled it to make a type
-                  specimen book. It has survived not only five centuries but
-                  also the on leap into electronic typesetting.
-                </p>
+                <p className="text-[15px] text-qgraytwo leading-7 mb-2.5"></p>
                 <ul className="text-[15px] text-qgraytwo leading-7 list-disc ml-5 mb-5">
-                  <li>slim body with metal cover</li>
                   <li>
-                    latest Intel Core i5-1135G7 processor (4 cores / 8 threads)
+                    <strong>Kinh doanh thương mại điện tử</strong> (thương mại
+                    điện tử) là hoạt động mua bán sản phẩm hoặc dịch vụ thông
+                    qua các nền tảng điện tử, chủ yếu là internet. Các hoạt động
+                    này bao gồm việc giao dịch trực tuyến, quản lý kho hàng, vận
+                    chuyển, thanh toán, và tiếp thị sản phẩm hoặc dịch vụ.{' '}
+                    <br />
                   </li>
-                  <li>8GB DDR4 RAM and fast 512GB PCIe SSD</li>
                   <li>
-                    NVIDIA GeForce MX350 2GB GDDR5 graphics card backlit
-                    keyboard
+                    <strong>Sàn thương mại điện tử bán sách online </strong> có
+                    thể được xây dựng với các công nghệ như Vite + React cho
+                    giao diện người dùng, Node.js cho backend, Spring Boot cho
+                    API, MySQL cho cơ sở dữ liệu, Redis Cloud cho lưu trữ dữ
+                    liệu tạm thời, và Firebase cho các dịch vụ như xác thực
+                    người dùng, thông báo, và lưu trữ dữ liệu thời gian thực.{' '}
+                    <br />
+                  </li>
+                  <li>
+                    {' '}
+                    <strong>
+                      Cấu trúc cơ bản cho một sàn thương mại điện tử bán sách
+                      online có thể như sau:
+                    </strong>{' '}
+                    <br />
+                  </li>
+                  <li>
+                    <strong>Giao diện người dùng (Frontend):</strong> <br />
+                  </li>
+                  <li>
+                    <strong>Vite + React: </strong> Vite giúp tối ưu hóa quá
+                    trình phát triển frontend, React giúp xây dựng giao diện
+                    người dùng linh hoạt và dễ bảo trì. <br />
+                    Người dùng có thể tìm kiếm, duyệt các sách, thêm vào giỏ
+                    hàng và thanh toán. <br />
+                    <strong>Backend: </strong> <br />
+                  </li>
+                  <li>
+                    <strong>Node.js </strong> có thể dùng để xây dựng RESTful
+                    API, xử lý các yêu cầu từ frontend, như xử lý đăng ký, đăng
+                    nhập, thêm sản phẩm vào giỏ hàng, và thanh toán. <br />
+                    <strong>Spring Boot:</strong> Cung cấp API mạnh mẽ, bảo mật
+                    cho các hoạt động như quản lý sách, đơn hàng, và người dùng.{' '}
+                    <br />
+                    <strong>Cơ sở dữ liệu: </strong> <br />
+                  </li>
+                  <li>
+                    {' '}
+                    <strong> MySQL:</strong> Lưu trữ thông tin về sách, người
+                    dùng, đơn hàng, v.v. <br />
+                    <strong>Redis Cloud:</strong> Dùng cho lưu trữ dữ liệu tạm
+                    thời hoặc lưu trữ thông tin phiên người dùng (session).{' '}
+                    <br />
+                    Dịch vụ bổ sung: <br />
+                  </li>
+                  <li>
+                    <strong>Firebase:</strong> Xử lý xác thực người dùng (login,
+                    signup), gửi thông báo đẩy (push notifications) cho người
+                    dùng về trạng thái đơn hàng hoặc các khuyến mãi mới. <br />
+                  </li>
+                  <li>
+                    Với cấu trúc này, bạn có thể xây dựng một sàn thương mại
+                    điện tử bán sách online, nơi người dùng có thể mua sắm,
+                    thanh toán trực tuyến, và nhận sách một cách nhanh chóng và
+                    thuận tiện. <br />
                   </li>
                 </ul>
 
                 <Link to="/contact">
-                  <div className="w-[121px] h-10">
-                    <span className="yellow-btn">Contact Us</span>
+                  <div className="w-[150px] h-10">
+                    <span className="yellow-btn">Liên hệ với chúng tôi</span>
                   </div>
                 </Link>
               </div>
@@ -101,7 +150,7 @@ export default function About() {
           </div>
         </div>
 
-        <div className="customer-feedback w-full bg-white py-[60px]">
+        {/* <div className="customer-feedback w-full bg-white py-[60px]">
           <div className="title flex justify-center mb-5">
             <h1 className="text-[30px] font-semibold text-qblack">
               Customers Feedback
@@ -496,7 +545,7 @@ export default function About() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="container-x mx-auto my-[60px]">
           <div
             data-aos="fade-down"
@@ -700,7 +749,7 @@ export default function About() {
           </div>
         </div>
 
-        <div className="blog-post-wrapper w-full mb-[30px]">
+        {/* <div className="blog-post-wrapper w-full mb-[30px]">
           <div className="container-x mx-auto">
             <div className="blog-post-title flex justify-center items-cente mb-[30px]">
               <h1 className="text-3xl font-semibold text-qblack">
@@ -724,7 +773,7 @@ export default function About() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </Layout>
   );
