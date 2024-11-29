@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon, ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
@@ -9,7 +9,7 @@ import CategoryService from "../../../service/Seller/categoryService";
 import Pagination from './pagination';
 import { storage, getDownloadURL, ref } from '../../../config/firebase';
 import { ExportExcel } from "./ExportExcel"
-
+import { Editor } from "@tinymce/tinymce-react";
 const TableSanPham = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
@@ -49,7 +49,13 @@ const TableSanPham = () => {
   const [size, setSize] = useState(5);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const editorRef = useRef(null);
 
+  const logContent = () => {
+    if (editorRef.current) {
+      console.log(editorRef.current.getContent());
+    }
+  };
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -136,49 +142,11 @@ const TableSanPham = () => {
     }));
   };
 
-  // const editProduct = async (product_id) => {
-  //   try {
-  //     const response = await SanPhamService.edit(product_id);
-  //     const product = response.data.result;
-  //     setDataProduct({
-  //       id: product.id,
-  //       price: product.price,
-  //       sale: product.sale,
-  //       weight: product.weight,
-  //       name: product.name,
-  //       introduce: product.introduce,
-  //       writerName: product.writerName,
-  //       publishingCompany: product.publishingCompany,
-  //       isDelete: product.delete,
-  //       quantity: product.quantity,
-  //       isActive: product.active,
-  //       account: sessionStorage.getItem("id_account"),
-  //       category: product.category.id,
-  //       imageProducts: []
-  //     });
-
-  //     setIdCategory(product.category.idParent);
-  //     loadListTheLoai(product.category.idParent);
-  //     if (product.imageProducts && product.imageProducts.length > 0) {
-  //       for (const image of product.imageProducts) {
-  //         await addImageFromFirebase(image.name);
-  //       }
-  //     }
-  //     setIsOpenModalSP(true);
-  //     console.log(dataProduct);
-  //     setStatusButton(false);
-  //   } catch (error) {
-  //     setStatusButton(false);
-  //     toast.error(error.response.data.message);
-  //   }
-  // }
-
   const editProduct = async (product_id) => {
     try {
       const response = await SanPhamService.edit(product_id);
       const product = response.data.result;
-  
-      // Cập nhật dữ liệu sản phẩm
+
       setDataProduct({
         id: product.id,
         price: product.price,
@@ -193,28 +161,25 @@ const TableSanPham = () => {
         isActive: product.active,
         account: sessionStorage.getItem("id_account"),
         category: product.category.id,
-        imageProducts: [] // Dữ liệu ảnh sẽ được cập nhật sau
+        imageProducts: []
       });
-  
+
       setIdCategory(product.category.idParent);
       loadListTheLoai(product.category.idParent);
-  
-      // Tải ảnh từ Firebase đồng thời
+
       if (product.imageProducts && product.imageProducts.length > 0) {
         const imagePromises = product.imageProducts.map((image) =>
           addImageFromFirebase(image.name)
         );
-  
-        // Chờ tất cả ảnh được xử lý
+
         const imageBlobs = await Promise.all(imagePromises);
-  
-        // Cập nhật imageProducts sau khi tải xong
+
         setDataProduct((prevData) => ({
           ...prevData,
           imageProducts: imageBlobs
         }));
       }
-  
+
       setIsOpenModalSP(true);
       console.log(dataProduct);
       setStatusButton(false);
@@ -233,19 +198,17 @@ const TableSanPham = () => {
       toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
       return;
     }
-    setIsSubmitting(true); // Bật trạng thái chờ
+    setIsSubmitting(true);
 
     try {
       const formData = new FormData();
 
-      // Thêm hình ảnh vào formData
       dataProduct.imageProducts.forEach((file) => {
         formData.append("imageProducts", file);
       });
 
       console.log("DATAAAAAA PRODUCT", dataProduct);
 
-      // Gửi các yêu cầu đồng thời
       let response;
       if (!isStatus) {
         [response] = await Promise.all([
@@ -259,7 +222,6 @@ const TableSanPham = () => {
         ]);
       }
 
-      // Hiển thị thông báo thành công và thực hiện các thao tác khác
       toast.success(response.data.message);
       loadListProduct();
       setIsOpenModalSP(false);
@@ -271,51 +233,6 @@ const TableSanPham = () => {
       toast.error(error.response?.data?.message || "Đã xảy ra lỗi!");
     }
   };
-
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (isSubmitting) return;
-
-  //   if (!dataProduct.imageProducts || dataProduct.imageProducts.length === 0) {
-  //     toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
-  //     return;
-  //   }
-  //   setIsSubmitting(true); // Bật trạng thái chờ
-
-  //   try {
-  //     let response;
-  //     const formData = new FormData();
-
-  //     // Thêm hình ảnh vào formData
-  //     dataProduct.imageProducts.forEach((file) => {
-  //       formData.append("imageProducts", file);
-  //     });
-
-  //     console.log("DATAAAAAA PRODUCT", dataProduct);
-
-  //     // Gửi dữ liệu đến API tùy theo trạng thái
-  //     if (!isStatus) {
-  //       response = await SanPhamService.create(dataProduct);
-  //       await SanPhamService.createSaveImg(idProduct, formData);
-  //     } else {
-  //       response = await SanPhamService.update(dataProduct);
-  //       await SanPhamService.updateSaveImg(idProduct, formData);
-  //     }
-
-  //     // Hiển thị thông báo thành công và thực hiện các thao tác khác
-  //     toast.success(response.data.message);
-  //     loadListProduct();
-  //     setIsOpenModalSP(false);
-  //     setStatusButton(false);
-  //     setIsSubmitting(false);
-  //   } catch (error) {
-  //     setStatusButton(false);
-  //     setIsSubmitting(false);
-  //     toast.error(error.response?.data?.message || "An error occurred");
-  //   }
-  // };
 
   const deleteProduct = async () => {
     try {
@@ -354,24 +271,6 @@ const TableSanPham = () => {
       [name]: value
     }));
   };
-
-  // const addImageFromFirebase = async (imagePath) => {
-  //   const imageRef = ref(storage, imagePath); // Đường dẫn tới ảnh trong Firebase Storage
-  //   try {
-  //     const url = await getDownloadURL(imageRef);
-  //     const response = await fetch(url);
-
-  //     // Kiểm tra dữ liệu trả về
-  //     const blob = await response.blob();
-
-  //     setDataProduct((prevData) => ({
-  //       ...prevData,
-  //       imageProducts: [...prevData.imageProducts, blob]
-  //     }));
-  //   } catch (error) {
-  //     console.error("Error fetching image from Firebase:", error);
-  //   }
-  // };
 
   const addImageFromFirebase = async (imagePath) => {
     const imageRef = ref(storage, imagePath); // Đường dẫn tới ảnh trong Firebase Storage
@@ -468,7 +367,10 @@ const TableSanPham = () => {
           </button>
         </div>
       </div>
+      <div>
 
+        {/* <button onClick={logContent}>Log Content</button> */}
+      </div>
       <table className="w-full border-collapse border border-stroke dark:border-strokedark">
         <thead>
           <tr className="border-t border-stroke dark:border-strokedark">
@@ -481,8 +383,8 @@ const TableSanPham = () => {
               }}>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Tên</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
 
@@ -494,8 +396,8 @@ const TableSanPham = () => {
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Giá</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
@@ -505,8 +407,8 @@ const TableSanPham = () => {
               }}>
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
@@ -516,8 +418,8 @@ const TableSanPham = () => {
               }}>
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trạng Thái</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -565,7 +467,7 @@ const TableSanPham = () => {
                       {item.quantity}
                     </div>
                   </td>
-                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
+                  <td className="py-4.5 px-4 ">
                     <div className="flex items-center gap-1 hidden lg:flex">
                       <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${item.isActive ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
                         {item.isActive ? 'Đã Duyệt' : 'Chưa Duyệt'}
@@ -659,23 +561,23 @@ const TableSanPham = () => {
         iconBgColor={'bg-red-100'}
         buttonBgColor={'bg-red-600'}
       />
+
       {(statusButton) && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-99999">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600"></div>
         </div>
       )}
-      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-99999">
+
+      <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-999">
         {(isSubmitting) && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600"></div>
           </div>
         )}
-
         <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
               <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                 <h3 className="font-semibold text-xl text-black dark:text-white">
                   Sản Phẩm
@@ -684,7 +586,8 @@ const TableSanPham = () => {
               <form onSubmit={handleSubmit}>
                 <div className="p-6.5">
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                    <div className="w-full xl:w-1/2">
+
+                    <div className="w-full xl:w-1/3">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Tên Sản Phẩm
                       </label>
@@ -699,23 +602,7 @@ const TableSanPham = () => {
                       />
                     </div>
 
-                    <div className="w-full xl:w-1/2">
-                      <label className="mb-2.5 block text-black dark:text-white">
-                        Số Lượng
-                      </label>
-                      <input
-                        type="number"
-                        name="quantity"
-                        value={dataProduct.quantity}
-                        onChange={handDataProduct}
-                        placeholder="Số Lượng..."
-                        required
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                    <div className="w-full xl:w-1/2">
+                    <div className="w-full xl:w-1/3">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Tác Giả
                       </label>
@@ -730,7 +617,7 @@ const TableSanPham = () => {
                       />
                     </div>
 
-                    <div className="w-full xl:w-1/2">
+                    <div className="w-full xl:w-1/3">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Nhà Xuất Bản
                       </label>
@@ -745,17 +632,79 @@ const TableSanPham = () => {
                       />
                     </div>
                   </div>
+                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+
+                    <div className="w-full xl:w-1/4">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                        Giá
+                      </label>
+                      <input
+                        type="number"
+                        name="price"
+                        value={dataProduct.price}
+                        onChange={handDataProduct}
+                        placeholder="Điều kiện..."
+                        min={1000}
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      />
+                    </div>
+
+                    <div className="w-full xl:w-1/4">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                        Giảm Giá
+                      </label>
+                      <input
+                        type="number"
+                        name="sale"
+                        value={dataProduct.sale}
+                        onChange={handDataProduct}
+                        min={0}
+                        max={100}
+                        placeholder="Giám giá..."
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      />
+                    </div>
+
+                    <div className="w-full xl:w-1/4">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                        Khối Lượng
+                      </label>
+                      <input
+                        type="number"
+                        name="weight"
+                        value={dataProduct.weight}
+                        onChange={handDataProduct}
+                        placeholder="Khối lượng..."
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      />
+                    </div>
+                    <div className="w-full xl:w-1/4">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                        Số Lượng
+                      </label>
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={dataProduct.quantity}
+                        onChange={handDataProduct}
+                        placeholder="Số Lượng..."
+                        min={10}
+                        required
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      />
+                    </div>
+
+                  </div>
                   <div className="mb-6">
                     <label htmlFor="productImage" className="mb-2.5 block text-black dark:text-white">
                       Hình Ảnh Sản Phẩm
                       {errorMessage && <span style={{ color: "red" }}> {errorMessage}</span>}
                     </label>
 
-                    <div className="flex space-x-4">
-                      {/* Phần chọn ảnh */}
+                    <div className="flex space-x-8">
                       <div className="w-1/3 border border-gray-300 rounded-md p-4 bg-gray-50 flex flex-col items-center">
-                        <label htmlFor="productImage" className="cursor-pointer flex flex-col items-center">
-                          <ArrowUpTrayIcon className="h-10 w-10 mt-3 text-blue-400" />
+                        <label htmlFor="productImage" className="cursor-pointer flex flex-col items-center h-19">
+                          <ArrowUpTrayIcon className="h-10 w-10 mt-4 text-blue-400" />
                           <input
                             id="productImage"
                             type="file"
@@ -767,12 +716,10 @@ const TableSanPham = () => {
                         </label>
                       </div>
 
-                      {/* Phần hiển thị ảnh đã chọn */}
                       <div className="w-2/3 border border-gray-300 rounded-md p-2 flex justify-center items-center bg-white">
                         {dataProduct.imageProducts.length > 0 ? (
                           <div className="grid grid-cols-4 gap-2">
                             {dataProduct.imageProducts.map((file, index) => (
-
                               <div key={index} className="relative w-full h-20">
                                 <img
                                   key={index}
@@ -780,7 +727,10 @@ const TableSanPham = () => {
                                   className="w-full h-full object-cover rounded-md"
                                 />
                                 <button
-                                  onClick={() => handleRemoveFile(index)}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleRemoveFile(index)
+                                  }}
                                   className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
                                 >
                                   <XMarkIcon className="h-2 w-2" />
@@ -882,60 +832,53 @@ const TableSanPham = () => {
                     </div>
                   </div>
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                    <div className="w-full xl:w-1/3">
-                      <label className="mb-2.5 block text-black dark:text-white">
-                        Giá
-                      </label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={dataProduct.price}
-                        onChange={handDataProduct}
-                        placeholder="Điều kiện..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
-                    </div>
 
-                    <div className="w-full xl:w-1/3">
-                      <label className="mb-2.5 block text-black dark:text-white">
-                        Giảm Giá
-                      </label>
-                      <input
-                        type="number"
-                        name="sale"
-                        value={dataProduct.sale}
-                        onChange={handDataProduct}
-                        placeholder="Giám giá..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
-                    </div>
-
-                    <div className="w-full xl:w-1/3">
-                      <label className="mb-2.5 block text-black dark:text-white">
-                        Khối Lượng
-                      </label>
-                      <input
-                        type="number"
-                        name="weight"
-                        value={dataProduct.weight}
-                        onChange={handDataProduct}
-                        placeholder="Khối lượng..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
-                    </div>
                   </div>
-                  <div className="mb-6">
+                  <div className="mb-6 z-99999999">
                     <label className="mb-2.5 block text-black dark:text-white">
                       Mô tả
                     </label>
-                    <textarea
+                    {/* <textarea
                       rows={4}
                       name='introduce'
                       value={dataProduct.introduce}
                       onChange={handDataProduct}
                       placeholder="Mô tả..."
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    ></textarea>
+                    ></textarea> */}
+                    <Editor
+                      apiKey='4wv4bl38ddxgu8et456s2co6syryav9f2t31hkjbnsfoyd6w'
+                      init={{
+                        plugins: [
+                          'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                          'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
+                          'importword', 'exportword', 'exportpdf'
+                        ],
+                        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                        tinycomments_mode: 'embedded',
+                        tinycomments_author: 'Author name',
+                        mergetags_list: [
+                          { value: 'First.Name', title: 'First Name' },
+                          { value: 'Email', title: 'Email' },
+                        ],
+                        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+                        exportpdf_converter_options: { 'format': 'Letter', 'margin_top': '1in', 'margin_right': '1in', 'margin_bottom': '1in', 'margin_left': '1in', },
+                        exportword_converter_options: { 'document': { 'size': 'Letter' } },
+                        importword_converter_options: { 'formatting': { 'styles': 'inline', 'resets': 'inline', 'defaults': 'inline', } },
+                      }}
+                      initialValue={dataProduct.introduce}
+                      // onInit={(evt, editor) => (editorRef.current = editor)}
+
+                      onChange={(evt, editor) => {
+                        (editorRef.current = editor)
+                        if (editorRef.current) {
+                          setDataProduct((prev) => ({
+                            ...prev,
+                            introduce: editorRef.current.getContent(),
+                          }));
+                        }
+                      }}
+                    />
                   </div>
                 </div>
 
@@ -956,12 +899,14 @@ const TableSanPham = () => {
                   >
                     Hủy
                   </button>
+
                 </div>
               </form>
             </DialogPanel>
           </div>
         </div>
       </Dialog>
+
     </div>
   );
 };

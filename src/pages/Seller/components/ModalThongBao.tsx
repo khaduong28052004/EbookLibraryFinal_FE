@@ -107,7 +107,7 @@ const Modal: React.FC<ModalProps> = ({
                                             </label>
                                             <textarea
                                                 rows={4}
-                                                placeholder="Lý do... (Phải từ 50 ký tự trở lên)"
+                                                placeholder="Lý do... (Phải từ 20 ký tự trở lên)"
                                                 value={content}
                                                 onChange={(e) => { setContent(e.target.value) }}
                                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -122,8 +122,8 @@ const Modal: React.FC<ModalProps> = ({
                                                 onConfirm && onConfirm();
                                                 setOpen(false);
                                             }}
-                                            disabled={content.length < 50}
-                                            className={`inline-flex w-full justify-center rounded-md ${content.length > 50 ? (buttonBgColor) : ('bg-gray-400')} px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
+                                            disabled={content.length < 20}
+                                            className={`inline-flex w-full justify-center rounded-md ${content.length >= 20 ? (buttonBgColor) : ('bg-gray-400')} px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
                                         >
                                             {confirmText}
                                         </button>

@@ -5,7 +5,7 @@ import Modal from "./ModalThongBao";
 import BillService from "../../../service/Seller/billSevice";
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './pagination';
-import {ExportExcel} from "./ExportExcel"
+import { ExportExcel } from "./ExportExcel"
 
 const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -76,6 +76,7 @@ const TableTwo = () => {
       const response = await BillService.huy(dataBill, content);
       toast.success(response.data.message);
       loadListBill();
+      setContent("");
     } catch (error) {
       console.log(error);
     }
@@ -132,7 +133,7 @@ const TableTwo = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
-          onClick={handleExport}
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
@@ -260,7 +261,8 @@ const TableTwo = () => {
                       {item.orderStatus.id < 4 && (
                         <ArrowPathIcon
                           className="w-5 h-5 text-black hover:text-green-600 dark:text-white"
-                          onClick={() => {
+                          onClick={(event) => {
+                            event.stopPropagation();
                             setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
                             setOrderStatusId(true);
                             setIsOpen(true);
@@ -272,7 +274,8 @@ const TableTwo = () => {
                       {item.orderStatus.id <= 2 && (
                         <TrashIcon
                           className="w-5 h-5 text-black hover:text-red-600 dark:text-white"
-                          onClick={() => {
+                          onClick={(event) => {
+                            event.stopPropagation();
                             setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
                             setOrderStatusId(false);
                             setIsOpen(true);

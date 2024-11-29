@@ -9,7 +9,7 @@ const ThongKeSanPham = () => {
   const [pageNumber, setPageNumber] = useState(0);
   const [pageSize, setPageSize] = useState(5)
   const [sortBy, setSortBy] = useState(true);
-  const [sortColumn, setSortColumn] = useState("");
+  const [sortColumn, setSortColumn] = useState("luotBan");
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [totalElements, setTotalElements] = useState(0);

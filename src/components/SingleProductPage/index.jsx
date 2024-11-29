@@ -130,8 +130,8 @@ export default function SingleProductPage() {
               <div className="container-x mx-auto">
                 <BreadcrumbCom
                   paths={[
-                    { name: "home", path: "/" },
-                    { name: "single product", path: "/single-product" },
+                    { name: "Trang chủ", path: "/" },
+                    { name: "Chi tiết sản phẩm", path: "/single-product" },
                   ]}
                 />
               </div>

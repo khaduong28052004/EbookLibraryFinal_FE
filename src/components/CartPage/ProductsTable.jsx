@@ -1,5 +1,6 @@
 import { GiftIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import InputQuantityCom from "../Helpers/InputQuantityCom";
 import { useRequest } from '../Request/RequestProvicer';
@@ -27,8 +28,8 @@ const sellers = {
   ],
 };
 
-
 export default function ProductsTable({ datas, handleSaveProduct, removeCart, handleQuantityCartIndex }) {
+  const navigate = useNavigate();
 
   const [idProduct, setIdProduct] = useState();
 
@@ -44,6 +45,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
 
   const { startRequest, endRequest } = useRequest();
 
+  // const[maxQuantity, setMaxQuantity] = useState();
 
 
   const [selectedVoucher, setSelectedVoucher] = useState([
@@ -195,26 +197,26 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
     setTotalOrderSeller(total);
   };
 
-  useEffect(() => {
-    if (datas) {
-      saveIdProduct();
-    }
-  }, [selectedVoucher, idProduct, datas]);
+
   const autoActiveVoucher = () => {
-    var total = 0;
-    filteredSellers()?.forEach(sellerItem => {
-      sellerItem?.cart.forEach(cart => {
-        total += cart.quantity * (cart.product.price - ((cart.product.price * cart.product.sale) / 100));
-      });
-    });
-    // if (!selectedVoucher) {
     const filteredSeller2 = datas.map(seller => {
+      var total = 0;
+      filteredSellers()?.forEach(sellerItem => {
+        sellerItem?.cart.forEach(cart => {
+          if (sellerItem?.id == seller?.id) {
+            total += cart.quantity * (cart.product.price - ((cart.product.price * cart.product.sale) / 100));
+          }
+        });
+      });
       let saleMax = 0;
       let voucherNew = {};
-      seller.vouchers.forEach(voucher => {
-        if (voucher.sale > saleMax && voucher.totalPriceOrder < total) {
+
+      seller?.vouchers?.forEach(voucher => {
+        if (voucher.sale > saleMax ) {
           saleMax = voucher.sale;
-          voucherNew = voucher;
+          if (voucher?.minOrder < total) {
+            voucherNew = voucher;
+          }
         }
       });
       return {
@@ -225,6 +227,11 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
     setSelectedVoucher(filteredSeller2);
     // }
   }
+  useEffect(() => {
+    if (datas) {
+      saveIdProduct();
+    }
+  }, [selectedVoucher, idProduct]);
   const handleSelectVoucher = (voucher) => {
     const filterSellerVoucher = selectedVoucher.map(seller => {
       if (seller.id == voucher.id) {
@@ -243,8 +250,9 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       var total = 0;
       saveProductOfSeller.forEach(sellerItem => {
         if (sellerItem.id == seller.id) {
-          seller?.cart.forEach(cart => {
+          sellerItem?.cart.forEach(cart => {
             total += cart.quantity * (cart.product.price - ((cart.product.price * cart.product.sale) / 100));
+
           });
         }
       });
@@ -255,6 +263,11 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       toast.warn("Vui lòng chọn sản phẩm của shop");
     }
   }
+  useEffect(() => {
+    if (datas) {
+      autoActiveVoucher();
+    }
+  }, [datas]);
 
   const checkedAll = () => {
     const inputCheckBoxProducts = document.querySelectorAll('.checkBoxProduct');
@@ -290,9 +303,6 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       idProduct[checkbox.value] = event.target.checked;
     });
     autoActiveVoucher();
-    // setProductState(true);
-    // saveIdProduct();
-
   }
 
   const handleShop = (event, id_Shop) => {
@@ -302,7 +312,6 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       idProduct[checkbox.value] = event.target.checked;
     });
     checkedAll();
-    // saveIdProduct();
     autoActiveVoucher();
   };
 
@@ -310,7 +319,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
     idProduct[event.target.value] = event.target.checked;
     setIdProduct(prevState => ({
       ...prevState, // Giữ lại các giá trị cũ
-      [event.target.value]: event.target.checked // Cập nhật hoặc thêm thuộc tính mới
+      [event.target.value]: event.target.checked
     }));
 
     checkShop(id_Shop);
@@ -368,7 +377,6 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
                     <span className="whitespace- flex items-center px-2">{seller.shopName}</span>
                   </div>              </td>
               </tr>
-
               {seller?.cart.map(cart => (
                 <tr className="bg-white border-b hover:bg-gray-50">
                   <td className="pl-5  py-4  w-[380px]">
@@ -385,8 +393,8 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
                           />
                         </div>
                         <div className="flex-1 flex flex-col">
-                          <p className="font-medium text-[15px] text-qblack">
-                            {cart.product.name}
+                          <p className="font-medium text-[15px] text-qblack " >
+                            <span className='cursor-pointer hover:text-blue-600' onClick={() => navigate("/productdetail?idProduct=" + cart?.product?.id)}> {cart?.product?.name}</span>
                             <span className="font-light text-[13px] block"> Tác giả: {cart.product.writerName}</span>
                             <span className="font-light text-[13px] block"> Nhà xuất bản: {cart.product.publishingCompany}</span>
                           </p>
@@ -403,7 +411,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
                           minute: "2-digit",
                           second: "2-digit",
                           hour12: false, // Dùng định dạng 24 giờ
-                        }).format(new Date(cart.product.flashSaleDetail.flashSale.dateEnd))
+                        }).format(new Date(cart?.product?.flashSaleDetail?.flashSale?.dateEnd))
                         } hôm nay</span>
                       </div>
                     ) : (<></>)}
@@ -433,7 +441,8 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
                   </td>
                   <td className=" py-4  w-[150px]">
                     <div className="flex justify-center items-center">
-                      <InputQuantityCom quantityCart={cart?.quantity} idCart={cart?.id} handleQuantity={() => { console.log("") }} handleQuantityCart={handleQuantityCart} />
+                      {cart?.product.flashSaleDetail?.id > 0 ? (<InputQuantityCom quantityCart={cart?.quantity} idCart={cart?.id} handleQuantityCart={handleQuantityCart} maxQuantity={cart?.product?.flashSaleDetail?.quantity} />)
+                        : (<InputQuantityCom quantityCart={cart?.quantity} idCart={cart?.id} handleQuantityCart={handleQuantityCart} maxQuantity={cart?.product?.quantity} />)}
                     </div>
                   </td>
 
