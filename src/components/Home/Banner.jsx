@@ -1,50 +1,151 @@
+
+import React, { useEffect, useState, useRef } from 'react';
+import Voucher from '../Home/Banner/voucher';
+
+
+const vouchers = [
+  {
+    "id": 2,
+    "name": "Voucher Giảm Giá 20%",
+    "note": "Giảm 20% cho đơn hàng trên 300k",
+    "totalPriceOrder": 300000,
+    "sale": 20,
+    "quantity": 30,
+    "minOrder": 0,
+    "dateStart": "2024-10-15",
+    "dateEnd": "2025-11-15",
+    "typeVoucher": {
+      "id": 2,
+      "name": "Voucher combo"
+    },
+    "account": {},
+    "delete": false
+  },
+  {
+    "id": 2,
+    "name": "Voucher Giảm Giá 20%",
+    "note": "Giảm 20% cho đơn hàng trên 300k",
+    "totalPriceOrder": 300000,
+    "sale": 20,
+    "quantity": 30,
+    "minOrder": 0,
+    "dateStart": "2024-10-15",
+    "dateEnd": "2025-11-15",
+    "typeVoucher": {
+      "id": 2,
+      "name": "Voucher combo"
+    },
+    "account": {},
+    "delete": false
+  },
+  {
+    "id": 2,
+    "name": "Voucher Giảm Giá 20%",
+    "note": "Giảm 20% cho đơn hàng trên 300k",
+    "totalPriceOrder": 300000,
+    "sale": 20,
+    "quantity": 30,
+    "minOrder": 0,
+    "dateStart": "2024-10-15",
+    "dateEnd": "2025-11-15",
+    "typeVoucher": {
+      "id": 2,
+      "name": "Voucher combo"
+    },
+    "account": {},
+    "delete": false
+  },
+  {
+    "id": 1,
+    "name": "Voucher Giảm Giá 10%",
+    "note": "Giảm 10% cho đơn hàng trên 200k",
+    "totalPriceOrder": 200000,
+    "sale": 10,
+    "quantity": 50,
+    "minOrder": 0,
+    "dateStart": "2024-10-01",
+    "dateEnd": "2024-11-31",
+    "typeVoucher": {
+      "id": 1,
+      "name": "Voucher miễn phí vận chuyển"
+    },
+    "account": {},
+    "delete": false
+  }
+]
+
+
 export default function Banner({ className }) {
+
+
+  const fetchVoucherShopHome = async () => {
+    try {
+      setLoading(true);
+      const idSeller = 8;
+      const response = await homeShopService.fetchVoucherShopHome({ idSeller });
+
+      if (response.data.result) {
+        const data = response.data.result.Voucher;
+        setVouchers(data);
+        setLoading(true);
+      } else {
+        throw new Error('Không có dữ liệu');
+      }
+    } catch (error) {
+      toast.warn('Lỗi truyền tải dữ liệu');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  useEffect(() => {
+    fetchVoucherShopHome();
+  }, [])
+
   return (
     <>
       <div className={`w-full ${className || ""}`}>
         <div className="container-x mx-auto">
           <div className="main-wrapper w-full">
-            <div className="banner-card xl:flex xl:space-x-[30px] xl:h-[360px]  mb-[30px]">
-              {/* <div data-aos="fade-right" className="xl:w-[740px] w-full h-full">
-                <a href="/single-product"> */}
-                  {/* <picture className="h-[600px]">
+            <div className="banner-card xl:flex xl:space-x-[30px] xl:h-[360px] ">
+              <div data-aos="fade-right" className="xl:w-full w-full xl:h-[108%] h-auto">
+                <a href="/single-product">
+                  <picture className="xl:h-full h-[600px]">
                     <source
                       media="(min-width:1025px)"
-                      srcSet={`https://vietlib-hcm.sgp1.digitaloceanspaces.com/Uploads/THU_VIEN/shcm/2/2552/UserImages/056-5820323d-1f82-44d7-adae-2d76e0035b0e.jpg`}
+                      srcSet={`https://www.nxbgd.vn/Attachments/images/Sach%20moi/CMLBT_BANNER-WEB-BOOKIZ.png`}
                     />
                     <img
                       src={`https://www.nxbtre.com.vn/Images/News/nxbtre_full_19482018_084815.jpg`}
                       alt=""
-                      className="w-full max-w-full h-auto object-cover"
+                      className="w-full h-full object-cover"
                     />
-                  </picture> */}
-                  <img src="https://www.nxbgd.vn/Attachments/images/Sach%20moi/CMLBT_BANNER-WEB-BOOKIZ.png" alt="" />
-                {/* </a>
-              </div> */}
-              {/* <div
+                  </picture>
+                </a>
+              </div>
+              <div
                 data-aos="fade-left"
-                className="flex-1 flex xl:flex-col flex-row  xl:space-y-[30px] h-full"
+                className="flex-1 flex xl:flex-col flex-row xl:space-y-[30px] xl:h-full h-auto"
               >
-                <div className="w-full xl:h-1/2">
+                <div className="w-[20rem]  xl:h-1/2 h-auto">
                   <a href="/single-product">
                     <img
                       src={`https://lh3.googleusercontent.com/proxy/H0E4akjqVwierIB4KX5lqRMn6Zbf2dkskwjByzzJ5EMOFhZwnXOIWvDMUkZfQ4neNnCp3h4Wt5-qFa-3L-OO2WrkNsi-JjaIQQgIp9C5hRjlyIW7z59zq3O2y-wi9G6ZsXNblD3BzuoWT_KhzqsRw85nHFanTgUD_frhGaqSzQ`}
                       alt=""
-                      className="w-full h-full"
+                      className="w-full h-full object-cover"
                     />
                   </a>
                 </div>
-                <div className="w-full xl:h-1/2">
-                  <a href="/single-product">
-                    <img
-                      src={`https://bizweb.dktcdn.net/100/197/269/products/na-ng-ta-m-a-nh-hu-o-ng-bi-a-1.jpg?v=1723376509993`}
-                      alt=""
-                      className="w-full h-full"
-                    />
-                  </a>
+                <div className="w-[20rem] xl:h-1/2 h-auto">
+                  {vouchers.length > 0 ? (
+                    <Voucher vouchers={vouchers} />
+                  ) : null}
                 </div>
-              </div> */}
+              </div>
+
             </div>
+            
             <div
               data-aos="fade-up"
               className="best-services w-full bg-white flex flex-col space-y-10 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center lg:h-[110px] px-10 lg:py-0 py-10"
@@ -248,7 +349,7 @@ export default function Banner({ className }) {
               </div>
             </div>
           </div>
-        </div>
+      </div>
       </div>
     </>
   );
