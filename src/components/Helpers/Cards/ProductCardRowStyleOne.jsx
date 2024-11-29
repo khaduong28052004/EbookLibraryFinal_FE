@@ -53,7 +53,7 @@ export default function ProductCardRowStyleTwo({ className, datas, type }) {
               </span>
             </p>
             <button type="button" className="w-[110px] h-[30px]">
-              <span className={type === 3 ? "blue-btn" : "flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none"}>
+              <span className={type === 3 ? "blue-btn" : "flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none"}>
                 {" "}
                 Add To Cart
               </span>

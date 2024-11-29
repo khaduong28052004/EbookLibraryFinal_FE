@@ -71,7 +71,7 @@ export default function CampaignCountDown({ className, lastDate }) {
                     </p>
                   </div>
                   <div className="  w-[119px] h-10">
-                    <div className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none inline-flex space-x-2 items-center">
+                    <div className="flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none inline-flex space-x-2 items-center">
                       <span className="text-sm font-600 tracking-wide leading-7">
                         Shop Now
                       </span>

@@ -147,7 +147,7 @@ export default function Voucher({ vouchers }) {
                     <button
                       className={`${voucher.isSaved
                         ? 'border border-sky-500 text-sky-500'
-                        : 'bg-sky-500 text-white'
+                        : 'bg-[#003EA1] text-white'
                         } px-5 py-1 rounded-sm text-[15px] w-full hover:cursor-pointer`}
                     >
                       {voucher.isSaved ? 'Đã lưu' : 'Lưu'}

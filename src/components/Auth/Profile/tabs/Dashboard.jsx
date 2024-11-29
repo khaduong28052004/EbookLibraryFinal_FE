@@ -52,7 +52,7 @@ export default function Dashboard() {
       </div>
       <div className="quick-view-grid w-full flex justify-between items-center mt-3 ">
         <Link to="/profile#order">
-          <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
+          <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-[#003EA1] transition-all duration-300 ease-in-out p-6">
             <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
               <span>
                 <svg
@@ -77,16 +77,16 @@ export default function Dashboard() {
                 </svg>
               </span>
             </div>
-            <p className="text-xl text-white group-hover:text-qblacktext mt-5">
+            <p className="text-xl text-white group-hover:text-white mt-5">
               Đang giao
             </p>
-            <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">
+            <span className="text-[40px] text-white group-hover:text-white font-bold leading-none mt-1 block">
               {index1}
             </span>
           </div>
         </Link>
         <Link to="/profile#order">
-        <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
+        <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-[#003EA1] transition-all duration-300 ease-in-out p-6">
           <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
             <span>
               <svg
@@ -103,16 +103,16 @@ export default function Dashboard() {
               </svg>
             </span>
           </div>
-          <p className="text-xl text-white group-hover:text-qblacktext mt-5">
+          <p className="text-xl text-white group-hover:text-white mt-5">
             Đã mua
           </p>
-          <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">
+          <span className="text-[40px] text-white group-hover:text-white font-bold leading-none mt-1 block">
             {index3}
           </span>
         </div>
         </Link>
         <Link to="/profile#order">
-        <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-qyellow transition-all duration-300 ease-in-out p-6">
+        <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-[#003EA1] transition-all duration-300 ease-in-out p-6">
           <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
             <span>
               <svg
@@ -137,10 +137,10 @@ export default function Dashboard() {
               </svg>
             </span>
           </div>
-          <p className="text-xl text-white group-hover:text-qblacktext mt-5">
+          <p className="text-xl text-white group-hover:text-white mt-5">
             Đang chờ xử lý
           </p>
-          <span className="text-[40px] text-white group-hover:text-qblacktext font-bold leading-none mt-1 block">
+          <span className="text-[40px] text-white group-hover:text-white font-bold leading-none mt-1 block">
             {index2}
           </span>
         </div>
