@@ -174,16 +174,16 @@ export default function Login() {
                   )}
                   <div className="forgot-password-area flex justify-between items-center mb-7">
                     <div className="remember-checkbox flex items-center space-x-2.5">
-                      <button onClick={rememberMe} type="button" className="w-5 h-5 text-qblack flex justify-center items-center border border-light-gray">
+                      <button onClick={rememberMe} type="button" className="rounded-full w-4 h-4 text-qblack flex justify-center items-center border border-gray-300 hover:shadow-white shadow">
                         {checked && (
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         )}
                       </button>
-                      <span onClick={rememberMe} className="text-base text-black">Nhớ mật khẩu!</span>
+                      <span onClick={rememberMe} className="text-sm text-black">Nhớ mật khẩu</span>
                     </div>
-                    <Link to="/forgot-password" className="text-base text-qyellow">Quên mật khẩu!</Link>
+                    <Link to="/forgot-password" className="text-sm text-[#003EA1]">Quên mật khẩu?</Link>
                   </div>
                   <div className="mb-5">
                     <Turnstile
@@ -200,26 +200,25 @@ export default function Login() {
                     Đăng nhập
                   </button>
                 </form>
-                <div className="social-login-buttons flex space-x-4 mt-6">
-                  <button className="w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
+                <div className="social-login-buttons flex space-x-4 mt-6 text-[10px]">
+                  <button >
                     <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENTID_GG}>
                       <LoginGG />
                     </GoogleOAuthProvider>
                   </button>
-                  <h1>||</h1>
-                  <button className="w-full flex justify-center items-center text-bg-[#3b5998] font-medium rounded-md">
+                  {/* <button> */}
                     <FaceBookSingIn />
-                  </button>
+                  {/* </button> */}
                 </div>
-                <div className="social-login-buttons flex space-x-4 mt-6">
-                  <Link to="/signup" className="text-base text-qyellow">Đăng ký tài khoản!</Link>
+                <div className="social-login-buttons flex space-x-1 mt-6 text-sm">
+                  <span className='text-gray-600'>Chưa có tài khoản?</span><Link to="/signup" className="text-[#003EA1]">Tạo tài khoản</Link>
                 </div>
               </div>
             </div>
             <Thumbnail />
           </div>
         </div>
-      </div>
-    </Layout>
+      </div >
+    </Layout >
   );
 }
