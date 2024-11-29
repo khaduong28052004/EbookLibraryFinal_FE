@@ -108,8 +108,8 @@ export default function Banner({ className }) {
       <div className={`w-full ${className || ""}`}>
         <div className="container-x mx-auto">
           <div className="main-wrapper w-full">
-            <div className="banner-card xl:flex xl:space-x-[30px] xl:h-[360px] ">
-              <div data-aos="fade-right" className="xl:w-full w-full xl:h-[108%] h-auto">
+            <div className="banner-card xl:flex xl:space-x-[30px] xl:h-[360px] mb-6 ">
+              <div data-aos="fade-right" className="xl:w-full w-full xl:h-[100%] h-full rounded-sm">
                 <a href="/single-product">
                   <picture className="xl:h-full h-[600px]">
                     <source
@@ -119,25 +119,19 @@ export default function Banner({ className }) {
                     <img
                       src={`https://www.nxbtre.com.vn/Images/News/nxbtre_full_19482018_084815.jpg`}
                       alt=""
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-sm"
                     />
                   </picture>
                 </a>
               </div>
               <div
                 data-aos="fade-left"
-                className="flex-1 flex xl:flex-col flex-row xl:space-y-[30px] xl:h-full h-auto"
+                className="flex-1 flex justify-around xl:flex-col flex-row xl:space-y-[30px] xl:h-full h-auto"
               >
-                <div className="w-[20rem]  xl:h-1/2 h-auto">
-                  <a href="/single-product">
-                    <img
-                      src={`https://lh3.googleusercontent.com/proxy/H0E4akjqVwierIB4KX5lqRMn6Zbf2dkskwjByzzJ5EMOFhZwnXOIWvDMUkZfQ4neNnCp3h4Wt5-qFa-3L-OO2WrkNsi-JjaIQQgIp9C5hRjlyIW7z59zq3O2y-wi9G6ZsXNblD3BzuoWT_KhzqsRw85nHFanTgUD_frhGaqSzQ`}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  </a>
+                <div className="w-[20rem] border  border-2 h-full rounded-sm">
+                 
                 </div>
-                <div className="w-[20rem] xl:h-1/2 h-auto">
+                <div className="w-[20rem] h-full">
                   {vouchers.length > 0 ? (
                     <Voucher vouchers={vouchers} />
                   ) : null}
@@ -145,10 +139,10 @@ export default function Banner({ className }) {
               </div>
 
             </div>
-            
+
             <div
               data-aos="fade-up"
-              className="best-services w-full bg-white flex flex-col space-y-10 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center lg:h-[110px] px-10 lg:py-0 py-10"
+              className="best-services w-full bg-white flex flex-col space-y-10 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center lg:h-[110px] px-10 lg:py-0 py-10  "
             >
               <div className="item">
                 <div className="flex space-x-5 items-center">
@@ -349,7 +343,7 @@ export default function Banner({ className }) {
               </div>
             </div>
           </div>
-      </div>
+        </div>
       </div>
     </>
   );

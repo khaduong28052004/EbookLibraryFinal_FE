@@ -96,14 +96,11 @@ export default function Voucher({ vouchers }) {
   }
 
   return (
-    <div className=" container-x mx-auto gap-5 bg-white py-4">
-      <div className="mb-3">
-        <h3 className="text-gray-700">VOUCHER</h3>
-      </div>
-      <div className="wrapper relative  max-w-full overflow-x-hidden bg-white">
+    <div className=" container-x h-full relative p-2 mx-auto gap-5 bg-white py-4 rounded-sm flex items-center ">
+      <div className="wrapper  max-w-full overflow-x-hidden bg-white">
         {isLeftArrowVisible && (
-          <div className="icon cursor-pointer absolute top-0 left-0 h-[100%] w-[120px] flex items-center ">
-            <div className="border rounded-full p-2  bg-white  hover:bg-whiter">
+          <div className="icon cursor-pointer absolute top-0 left-[-1rem] h-[100%] w-[120px] flex items-center  ">
+            <div className="rounded-full p-1 bg-white  shadow hover:bg-whiter ">
               <svg
                 ref={(el) => (arrowRef.current[0] = el)}
                 id="left"
@@ -117,7 +114,7 @@ export default function Voucher({ vouchers }) {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke-width=""
-                stroke="currentColor"
+                stroke="gray"
                 class="size-6"
               >
                 <path
@@ -136,8 +133,8 @@ export default function Voucher({ vouchers }) {
         >
           {vouchers.map((voucher) => (
             (new Date(voucher.dateEnd) < new Date() || voucher.delete == true) ? null : (
-              <li key={voucher.id} className="tab rounded-lg">
-                <div className="border border-sky-500 bg-sky-100 w-[250px] h-[100px] p-2 flex items-center select-none">
+              <li key={voucher.id} className="tab">
+                <div className="border  rounded-sm border-sky-500 bg-sky-100 w-[250px] h-[100px] p-2 flex items-center select-none">
                   <div className="flex-row w-8/12 text-[7px] text-gray-600 justify-center">
                     <p>{voucher.name}</p>
                     <p>Đơn tối thiểu {voucher.totalPriceOrder}</p>
@@ -160,8 +157,8 @@ export default function Voucher({ vouchers }) {
         </ul>
 
         {isRightArrowVisible && (
-          <div className="icon  cursor-pointer justify-end absolute top-0 right-0 h-[100%] w-[120px] flex items-center  ">
-            <div className="border rounded-full p-2  bg-white  hover:bg-whiter">
+          <div className="icon  cursor-pointer justify-end absolute top-0  right-[-1rem]  h-[100%] w-[120px] flex items-center  ">
+            <div className="rounded-full p-1 bg-white shadow hover:bg-whiter ">
               <svg
                 ref={(el) => (arrowRef.current[1] = el)}
                 id="right"
@@ -173,7 +170,7 @@ export default function Voucher({ vouchers }) {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke-width=""
-                stroke="currentColor"
+                stroke="gray"
                 class="size-6"
               >
                 <path

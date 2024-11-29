@@ -137,7 +137,7 @@ export default function Voucher({ vouchers }) {
           {vouchers.map((voucher) => (
             (new Date(voucher.dateEnd) < new Date() || voucher.delete == true) ? null : (
               <li key={voucher.id} className="tab rounded-lg">
-                <div className="border border-sky-500 bg-sky-100 w-[350px] h-[100px] p-2 flex items-center select-none">
+                <div className="border border-sky-500 bg-sky-100 w-[250px] h-[100px] p-2 flex items-center select-none">
                   <div className="flex-row w-8/12 text-[7px] text-gray-600 justify-center">
                     <p>{voucher.name}</p>
                     <p>Đơn tối thiểu {voucher.totalPriceOrder}</p>
