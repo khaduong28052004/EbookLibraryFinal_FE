@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
+import Modal from "./Modal_ThongBao_NotMail";
 import Table_NotPermisson from './Table_NotPermisson';
 import permission from '../../../service/admin/Permission';
 import rolePermission from '../../../service/admin/PermissionDetails';
 import { toast, ToastContainer } from 'react-toastify';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const TableTwo = () => {
+    const location = useLocation();  // Dùng useLocation để lấy thông tin URL hiện tại
+    const navigate = useNavigate();
     const [data, setData] = useState([]);
-    const [option, setOption] = useState('ADMINV1');
+    // const [option, setOption] = useState('ADMINV1');
     const [searchItem, setSearchItem] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
@@ -23,9 +26,18 @@ const TableTwo = () => {
     const [isOpen, setIsOpen] = useState(false);
 
 
+
+    // Lấy voucher_id từ query parameters
+    const searchParams = new URLSearchParams(location.search);
+    const role = searchParams.get('role');
+
+    const handleGoBack = () => {
+        navigate(-1);  // "-1" để quay lại trang trước đó
+    };
+
     const findAllPermission = async () => {
         try {
-            const response = await permission.findAllByRole({ page: currentPage, size: 10, role: option, searchItem, sortColumn, sortBy });
+            const response = await permission.findAllByRole({ page: currentPage, size: 10, role, searchItem, sortColumn, sortBy });
             console.log("content: " + response.data.result.content);
             setData(response.data.result);
         } catch (error) {
@@ -68,13 +80,13 @@ const TableTwo = () => {
 
     useEffect(() => {
         findAllPermission();
-    }, [searchItem, option, currentPage, sortBy, sortColumn, status]);
+    }, [searchItem, role, currentPage, sortBy, sortColumn, status]);
 
     const handleExport = async () => {
         const sheetNames = ['Danh Sách Quyền'];
         try {
             console.log("totalElements: " + data.totalElements);
-            const response = await permission.findAllByRole({ page: currentPage, size: data.totalElements, role: option, searchItem, sortColumn, sortBy });
+            const response = await permission.findAllByRole({ page: currentPage, size: data.totalElements, role, searchItem, sortColumn, sortBy });
             return ExportExcel("Danh Sách Quyền.xlsx", sheetNames, [response.data.result.content]);
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -102,20 +114,7 @@ const TableTwo = () => {
                             type="text"
                             placeholder="Tìm kiếm..."
                             className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-50" />
-                        {/* Dropdown Option */}
-                        <select
-                            value={option}
-                            onChange={(e) => {
-                                setOption(e.target.value);
-                                setCurrentPage(0);
-                            }}
-                            className="w-70 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-                        >
-                            <option value="" disabled>Chọn quyền</option>
-                            <option value="ADMINV1">Nhân viên sàn</option>
-                            <option value="SELLER">Người bán</option>
-                            <option value="USER">Khách hàng</option>
-                        </select>
+
                     </div>
                 </form>
                 <form onSubmit={handleSubmit}
@@ -129,12 +128,16 @@ const TableTwo = () => {
                     </button>
                     <button
                         onClick={() => {
-                            console.log(option);
                             setIsOpenModalSP(true);
                         }}
                         className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
                     >
                         Thêm
+                    </button>
+                    <button onClick={handleGoBack}
+                        className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+                    >
+                        Quay Lại
                     </button>
                 </form>
 
@@ -248,10 +251,10 @@ const TableTwo = () => {
             <Table_NotPermisson
                 status={status}
                 setStatus={setStatus}
-                optionRole={option}
+                optionRole={role}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
-                title="Thêm Quyền Mới"
+                title="Thêm Danh Sách Quyền Mới"
             />
         </div>
     );
