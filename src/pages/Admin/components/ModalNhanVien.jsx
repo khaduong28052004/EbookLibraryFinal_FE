@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
+import { LinkIcon } from '@heroicons/react/24/solid';
 import accountService from '../../../service/admin/Account';
-import { formToJSON } from 'axios';
+import { Link } from 'react-router-dom';
+import roleService from '../../../service/admin/Role';
 
 const ModalSanPham = ({
     status,
@@ -20,8 +22,10 @@ const ModalSanPham = ({
         gender: '',
         email: '',
         phone: '',
+        role: ''
     };
     const [formData, setFormData] = useState(initialFormData);
+    const [data, setData] = useState([]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,6 +33,17 @@ const ModalSanPham = ({
             ...prev,
             [name]: name === "gender" ? value === "true" : value,
         }));
+    };
+
+
+    const findAllRoleNotNhanVien = async () => {
+        try {
+            const response = await roleService.findAllRoleNotNhanVien();
+            console.log("content: " + response.data.result);
+            setData(response.data.result);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
     };
 
     const postNhanVien = async () => {
@@ -48,6 +63,11 @@ const ModalSanPham = ({
         e.preventDefault();
         postNhanVien(formData);
     };
+
+    useEffect(() => {
+        findAllRoleNotNhanVien();
+    }, []);
+
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
@@ -136,37 +156,65 @@ const ModalSanPham = ({
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
-
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
-                                            Giới tính
+                                            Chọn quyền:
                                         </label>
-                                        <label className="flex items-center">
-                                            <input
-                                                name="gender"
-                                                value="false"
-                                                checked={formData.gender === false}
+                                        {data && data.length > 0 ? (
+                                            <select
+                                                name="role"
+                                                value={formData.role}
                                                 onChange={handleChange}
-                                                type="radio"
-                                                className="mr-2"
-                                            />
-                                            Nữ
-                                        </label>
+                                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            >
+                                                <option value="" disabled>Chọn quyền</option>
+                                                {data.map((entity, index) => (
+                                                    <option key={index} value={entity.id}>{entity.name}</option>
+                                                ))}
 
-                                        <label className="flex items-center">
-                                            <input
-                                                name="gender"
-                                                value="true"
-                                                checked={formData.gender === true}
-                                                onChange={handleChange}
-                                                type="radio"
-                                                className="mr-2"
-                                            />
-                                            Nam
-                                        </label>
+                                            </select>
+                                        ) : (
+                                            <span className='flex'>
+                                                <p className="text-gray-500 pr-19">Chưa có quyền</p>
+                                                <button >
+                                                    <Link to={`/admin/quanLy/phanquyen`}>
+                                                        <LinkIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' />
+                                                    </Link>
+                                                </button>
+                                            </span>
+
+                                        )}
                                     </div>
                                 </div>
 
+                                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                                    <label className=" mr-2  block text-black dark:text-white">
+                                        Giới tính:
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            name="gender"
+                                            value="false"
+                                            checked={formData.gender === false}
+                                            onChange={handleChange}
+                                            type="radio"
+                                            className="mr-2"
+                                        />
+                                        Nữ
+                                    </label>
+
+                                    <label className="flex items-center">
+                                        <input
+                                            name="gender"
+                                            value="true"
+                                            checked={formData.gender === true}
+                                            onChange={handleChange}
+                                            type="radio"
+                                            className="mr-2"
+                                        />
+                                        Nam
+                                    </label>
+                                </div>
 
                             </div>
 

@@ -21,6 +21,7 @@ import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
 import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
 import ChatBot from "./pages/Seller/ChatBot"
 import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
+import RoleAdmin from './pages/Admin/RoleAdmin'
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
 export default function RouterAdmins() {
   return (
@@ -113,6 +114,15 @@ path="/quanLy/shop"
           element={
             <>
               <PageTitle title="Phân Quyền" />
+              <RoleAdmin />
+            </>
+          }
+        />
+         <Route
+          path="/quanLy/quyenchitiet"
+          element={
+            <>
+              <PageTitle title="Chi Tiết Quyền" />
               <PhanQuyenAdmin />
             </>
           }
