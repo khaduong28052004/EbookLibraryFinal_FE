@@ -5,7 +5,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import flashSale from '../../../service/admin/FlashSale';
 import flashSaleDetails from '../../../service/admin/FlashSaleDetails';
 import ModalFlashSaleDetails from "./Model_FlashSaleCTInsert";
-import Modal from "./ModalThongBao";
+import Modal from "./Modal_ThongBao_NotMail";
 import Pagination from './Pagination';
 import { toast, ToastContainer } from 'react-toastify';
 

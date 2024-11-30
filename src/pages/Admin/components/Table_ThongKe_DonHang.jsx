@@ -289,24 +289,90 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             </td> */}
 
                             </tr>
+
                             {expandedRowId === entity.id && (
-                                <tr>
-                                    <td colSpan="9">
-                                        <div className="p-5 border border-gray-100 hover:bg-slate-100">
-                                            <p><strong>Thông tin chi tiết:</strong></p>
-                                            <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
-                                                <p>Họ tên: {entity.account.fullname}</p>
-                                                <p>Email: {entity.account.email}</p>
-                                                <p>Số điện thoại: {entity.account.phone}</p>
-                                                <p>Phương thức thanh toán: {entity.paymentMethod.name}</p>
-                                                <p>Ngày tạo: {entity.createAt}</p>
-                                                <p>Ngày hoàn thành: {entity.finishAt}</p>
-                                            </div>
+                                <tr className="border-t border-stroke dark:border-strokedark bg-gray-50 dark:bg-gray-800">
+                                    <td colSpan={8} className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                                            <p><strong>Mã Đơn Hàng: </strong> {entity.id || "Không có thông tin"}</p>
+                                            <p>
+                                                <strong>Số Điện Thoại: </strong>
+                                                {entity.address && entity.address.phone ? entity.address.phone : " Không có số điện thoại"}
+                                            </p>
+
+                                            <p>
+                                                <strong>Phương Thức Thanh Toán: </strong>
+                                                {entity.paymentMethod && entity.paymentMethod.name ? entity.paymentMethod.name : " Không xác định"}
+                                            </p>
+
+                                            <p>
+                                                <strong>Phí Vận Chuyển: </strong>
+                                                {
+                                                    entity.voucherDetails.length > 0 ?
+                                                        (<span> {entity.voucherDetails.map((voucherDetails) => {
+                                                            if (voucherDetails.voucher.typeVoucher.id === 2) {
+                                                                const finalPrice = entity.priceShipping - (entity.priceShipping * (voucherDetails.voucher.sale / 100));
+                                                                return (
+                                                                    <span key={voucherDetails.id}>
+                                                                        {finalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                                                        <span style={{ textDecoration: "line-through", marginLeft: "8px", color: "gray" }}>
+                                                                            {entity.priceShipping.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                                                        </span>
+                                                                        <span style={{ marginLeft: "4px" }}>
+                                                                            (Giảm {voucherDetails.voucher.sale}%)
+                                                                        </span>
+                                                                    </span>
+                                                                );
+                                                            }
+                                                        }) || (
+                                                                <span>
+                                                                    {entity.priceShipping
+                                                                        ? entity.priceShipping.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+                                                                        : "Không Có"}
+                                                                </span>
+                                                            )}</span>) :
+                                                        (<span>{entity.priceShipping.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</span>)
+                                                }
+
+                                            </p>
+                                            <p>
+                                                <strong>Voucher shop: </strong>
+                                                {entity.voucherDetails && entity.voucherDetails.length > 0 ? (
+                                                    entity.voucherDetails.map((voucherDetails) => {
+                                                        if (voucherDetails.voucher.typeVoucher.id === 1) {
+                                                            return (<span key={voucherDetails.id}>Giảm {voucherDetails.voucher.sale}%</span>
+                                                            )
+                                                        }
+                                                        return null;
+                                                    })
+                                                ) : (
+                                                    <span>Không có voucher</span>
+                                                )
+                                                }
+
+                                            </p>
+                                            <p>
+                                                <strong>Ngày Hoàn Thành: </strong>
+                                                {entity.finishAt
+                                                    ? entity.finishAt
+                                                    : "Chưa Hoàn Thành"}
+                                            </p>
+
+                                            <p>
+                                                <strong>Sản Phẩm: </strong>
+                                                {entity.billDetails && entity.billDetails.length > 0
+                                                    ? entity.billDetails.map((detail) => detail.product && detail.product.name ? detail.product.name : " Sản phẩm không xác định").join(', ')
+                                                    : " Không có sản phẩm"}
+                                            </p>
+
+                                            <p>
+                                                <strong>Địa Chỉ: </strong>
+                                                {entity.address && entity.address.fullNameAddress ? entity.address.fullNameAddress : " Không có địa chỉ"}
+                                            </p>
                                         </div>
                                     </td>
                                 </tr>
                             )}
-
                         </>
                     ))}
                 </tbody>

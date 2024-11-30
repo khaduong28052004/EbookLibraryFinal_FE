@@ -144,7 +144,7 @@ export default function BecomeSaller() {
       if (response.data.liveness.is_live === 'false') {
         // Kiểm tra nếu không phải là "live"
         toast.error(`Xác thực không thành công! ${response.data.liveness.message}`);
-      } else if (response.data.face_match.similarity < 70) {
+      } else if (response.data.face_match.similarity < 60) {
         // Kiểm tra nếu độ tương đồng giữa khuôn mặt thấp
         toast.error("Xác thực không thành công. Độ tương đồng khuôn mặt quá thấp.");
       } else {

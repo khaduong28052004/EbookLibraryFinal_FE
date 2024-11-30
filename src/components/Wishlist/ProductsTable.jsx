@@ -58,8 +58,21 @@ export default function ProductsTable({ className, datas, handleDelete }) {
                     <p className="font-medium text-[15px] text-qblack cursor-pointer hover:text-blue-600" onClick={() => navigate("/productdetail?idProduct=" + favorite?.product?.id)}>
                       {favorite?.product?.name}
                     </p>
+                    <div></div>
                   </div>
                 </div>
+                {favorite?.product?.flashSaleDetail ? (
+                  <div className='text-red-500 uppercase text-[12px] font-semibold'>
+                    <span className="ml-7">FlashSale kết thúc sau </span>
+                    <span>{new Intl.DateTimeFormat("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: false, // Dùng định dạng 24 giờ
+                    }).format(new Date(favorite?.product?.flashSaleDetail?.flashSale?.dateEnd))
+                    } hôm nay</span>
+                  </div>
+                ) : (<></>)}
               </td>
               <td className="text-center py-4 px-2">
                 <div className="flex space-x-1 items-center justify-center">

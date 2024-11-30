@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
+import Modal from "./Modal_ThongBao_NotMail";
 import VoucherService from "../../../service/Seller/voucherService"
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { format, parse } from 'date-fns';
@@ -163,7 +163,7 @@ const TableVoucher = () => {
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <ToastContainer className={'z-999999'}/>
+      <ToastContainer className={'z-999999'} />
       <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
         <form action="https://formbold.com/s/unique_form_id" method="POST">
           <div className="relative pt-3">
@@ -345,23 +345,27 @@ const TableVoucher = () => {
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                     <div className="flex space-x-3.5">
                       <button>
-                        <Link to={`/seller/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
+                        <Link to={`/admin/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
                       </button>
-                      <button onClick={(event) => {
-                        event.stopPropagation();
-                        setIsOpen(true);
-                        setVoucherId(voucher.id);
-                        setStatusVoucher(voucher.delete)
-                      }}>
-                        {!voucher.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600 dark:text-white' />)}
-                      </button>
-                      <button onClick={(event) => {
-                        event.stopPropagation();
-                        editVoucher(voucher.id);
-                        setIsStatus(true)
-                      }}>
-                        <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
-                      </button>
+                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() ? (
+                        <>
+                          <button onClick={(event) => {
+                            event.stopPropagation();
+                            setIsOpen(true);
+                            setVoucherId(voucher.id);
+                            setStatusVoucher(voucher.delete)
+                          }}>
+                            <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
+                          </button>
+                          <button onClick={(event) => {
+                            event.stopPropagation();
+                            editVoucher(voucher.id);
+                            setIsStatus(true)
+                          }}>
+                            <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
+                          </button>
+                        </>
+                      ) : (<></>)}
                     </div>
                   </td>
                 </tr>
@@ -406,8 +410,8 @@ const TableVoucher = () => {
         open={isOpen}
         setOpen={setIsOpen}
         title={
-          !statusVoucher ? "Khôi Phục Hoạt Động" :
-            'Ngừng Hoạt Động'
+          !statusVoucher ? "Ngừng Hoạt Động" :
+            'Khôi Phục Hoạt Động'
         }
         message={!statusVoucher ? 'Bạn chắc chắn muốn ngừng hoạt động voucher này không?' : 'Bạn chắc chắn muốn khôi phục hoạt động voucher này không?'}
         onConfirm={deleteVoucher}
@@ -416,13 +420,13 @@ const TableVoucher = () => {
         }
         cancelText="Thoát"
         icon={
-          statusVoucher ?
+          !statusVoucher ?
             <TrashIcon className="h-6 w-6 text-red-600" />
             :
             <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
         }
-        iconBgColor={!statusVoucher ? 'bg-green-100' : 'bg-red-100'}
-        buttonBgColor={!statusVoucher ? 'bg-green-600' : 'bg-red-600'}
+        iconBgColor={!statusVoucher ? 'bg-red-100':'bg-green-100' }
+        buttonBgColor={!statusVoucher ? 'bg-red-600':'bg-green-600'}
       />
 
       <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-9999">

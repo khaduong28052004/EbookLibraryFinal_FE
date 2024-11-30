@@ -383,8 +383,8 @@ const TableSanPham = () => {
               }}>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Tên</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
 
@@ -396,8 +396,8 @@ const TableSanPham = () => {
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Giá</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "price" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
@@ -407,8 +407,8 @@ const TableSanPham = () => {
               }}>
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
@@ -418,8 +418,8 @@ const TableSanPham = () => {
               }}>
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trạng Thái</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">

@@ -119,6 +119,8 @@ export default function Signup() {
             error: value !== formData.password,
             message: value !== formData.password ? "Mật khẩu không khớp!" : "",
           },
+      
+
         }));
         break;
       default:
@@ -209,6 +211,16 @@ export default function Signup() {
         error: formData.confirmPassword !== formData.password,
         message: formData.confirmPassword !== formData.password ? "Mật khẩu không khớp!" : "",
       },
+      fullname: {
+        error: formData.fullname.length  <= 0,
+        message: formData.fullname.length <= 0 ? "Tên tài khoản quá ngắn!" : "",
+      }, phone: {
+        error: formData.phone.length !== 10,
+        message:  formData.phone.length !== 10 ? "Số điện thoại phải chứa đúng 10 số!" : "",
+
+      },
+
+
     }));
     const handleInputChange = (event) => {
       const { name, value } = event.target;
@@ -231,7 +243,7 @@ export default function Signup() {
       },
     }));
 
-  }, [formData.password, formData.confirmPassword ,formData.phone,formData.email ]);
+  }, [formData.password, formData.confirmPassword, formData.phone, formData.email,formData.fullname,formData.username]);
 
   const handleSelectChange = () => {
     let selectedPassword = generatePassword();
@@ -251,11 +263,9 @@ export default function Signup() {
       },
     }));
 
-
-    
     validateInput({ name: "password", value: selectedPassword });
     validateInput({ name: "confirmPassword", value: selectedPassword });
- 
+
 
   };
 
@@ -368,9 +378,9 @@ export default function Signup() {
                         value={formData.password}
                         type={showPassword ? "text" : "password"}
                         inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.password?.strength === "weak" ? "bg-red-100 ring-red-500" :
-                            error.password?.strength === "medium" ? "ring-yellow-500" :
-                              error.password?.strength === "strong" ? "ring-green-500" :
-                                ""
+                          error.password?.strength === "medium" ? "ring-yellow-500" :
+                            error.password?.strength === "strong" ? "ring-green-500" :
+                              ""
                           }`}
                         inputHandler={handleInputChange}
                       >
