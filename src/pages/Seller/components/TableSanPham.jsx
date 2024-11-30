@@ -213,8 +213,11 @@ const TableSanPham = () => {
       if (!isStatus) {
         [response] = await Promise.all([
           SanPhamService.create(dataProduct),
-          SanPhamService.createSaveImg(idProduct, formData),
         ]);
+        const idProduct = response.data.result.id;
+
+        await SanPhamService.createSaveImg(idProduct, formData);
+
       } else {
         [response] = await Promise.all([
           SanPhamService.update(dataProduct),
