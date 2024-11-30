@@ -10,7 +10,7 @@ export default function FlashSale({ products, lastDate, totalProducts }) {
     const [loading, setLoading] = useState(true);
     return (
 
-        <div className={`w-full lg:h-auto mb-2`}>
+        <div className={`w-full lg:h-auto mb-6`}>
             <div className="container-x mx-auto h-full">
                 {/* <div className="lg:flex xl:space-x-[30px] lg:space-x-5 items-center h-full"> */}
                 <div className="bg-white py-8 p-10">

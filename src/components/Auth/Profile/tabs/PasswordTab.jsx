@@ -198,12 +198,12 @@ export default function PasswordTab() {
               className="input-label text-qgray text-sm block mb-2.5"
               htmlFor="old_password"
             >
-              Old Password*
+             Mật khẩu cũ
             </label>
             <div className="">
               <input
                 placeholder="● ● ● ● ● ●"
-                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300" // Error state
+                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "boder border-green-300 " : "boder border-red-300 " // Error state
                   // : errorFrom.usernameF === 2
                   //   ? "border-green-500 bg-red-400" // Success state
                   //   : ""
@@ -274,12 +274,12 @@ export default function PasswordTab() {
               className="input-label text-qgray text-sm block mb-2.5"
               htmlFor="old_password"
             >
-              Password*
+              Mật khẩu mới
             </label>
             <div className="">
               <input
                 placeholder="● ● ● ● ● ●"
-                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300"
+                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "boder border-green-300 " : "boder border-red-300 "
                   // errorFrom.usernameF === 1
                   // ? "border-red-500 bg-red-400" // Error state
                   // : errorFrom.usernameF === 2
@@ -352,12 +352,12 @@ export default function PasswordTab() {
               className="input-label text-qgray text-sm block mb-2.5"
               htmlFor="old_password"
             >
-              Re-enter Password*
+             Xác nhận mật khẩu
             </label>
             <div className="">
               <input
                 placeholder="● ● ● ● ● ●"
-                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300"
+                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "boder border-green-300 " :  "boder border-red-300 "
                   // errorFrom.usernameF === 1
                   // ? "border-red-500 bg-red-400" // Error state
                   // : errorFrom.usernameF === 2
@@ -425,20 +425,16 @@ export default function PasswordTab() {
               </div>
             </div>
           </div>
-          <div className="w-full mt-[30px] flex justify-start">
-            <div className="sm:flex sm:space-x-[30px] items-center">
-              <div className="w-[180px] h-[50px]">
-                <button type="button" onClick={handleClick} className="yellow-btn">
+          <div className="w-full mt-[30px] flex justify-end">
+            <div className=" sm:space-x-[30px] items-end">
+              <div className="w-[100px] h-[40px]">
+                <button type="button" onClick={handleClick}  className="flex items-center justify-center w-full] h-full rounded text-white text-[15px]  
+                px-2 py-0 border bg-[#003EA1] transition-all duration-500 ease-in-out hover:opacity-90 ">
                   <div className="w-full text-sm font-semibold">
-                    Upldate Password
+                    Cập nhật
                   </div>
                 </button>
               </div>
-              <button type="button">
-                <div className="w-full text-sm font-semibold text-qblack mb-5 sm:mb-0">
-                  Cancel
-                </div>
-              </button>
             </div>
           </div>
         </div>
