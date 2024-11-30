@@ -136,14 +136,15 @@ export default function Middlebar({ className, type }) {
   }, []);
 
   const searchImage = async (data) => {
-    setIsOpenModelImage(false);
     setIsOpenEvent(true);
     try {
       const response = await SearchService.searchImage(data);
       console.log(response);
       navigate(`/search?idProduct=${response.data.similar_product_ids}`);
+      setIsOpenModelImage(false);
       setIsOpenEvent(false);
     } catch (error) {
+      setIsOpenEvent(false);
       console.error(error)
     }
   }

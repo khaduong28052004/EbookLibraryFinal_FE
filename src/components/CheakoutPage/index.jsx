@@ -230,8 +230,9 @@ export default function CheakoutPage() {
 
                 <div className="w-full px-10 py-[30px] border border-[#EDEDED]">
                   <div className="sub-total mb-6">
+
                     <div className=" flex justify-between mb-5">
-                      <p className="text-[20px] font-medium text-qblack uppercase">
+                      <p className="text-[20px] font-normal text-qblack uppercase">
                         SẢN PHẨM
                       </p>
                       <p className="text-[20px] font-medium text-qblack uppercase">
@@ -248,7 +249,13 @@ export default function CheakoutPage() {
                           seller.cart && Array.isArray(seller.cart) && seller.cart.length > 0 ? (
                             seller.cart.map((cartItem, index) => (
                               <li key={index}>
+                                <div className='flex space-x-1'>
+                                  {cartItem?.product?.imageProducts?.map(image => (
+                                    <img src={image?.name} className="w-[60px]" alt="" />
+                                  ))}
+                                </div>
                                 <div className="flex justify-between items-center">
+
                                   <div>
                                     <h4 className="text-[20px] font-semibold text-qblack mb-2.5">
                                       {cartItem.product?.name || 'Unnamed Product'}
@@ -275,6 +282,7 @@ export default function CheakoutPage() {
                                     </span>
                                   </div>
                                 </div>
+                                <hr />
                               </li>
                             ))
                           ) : (
@@ -317,7 +325,7 @@ export default function CheakoutPage() {
                           </span>
                         </div>
                         <p className="text-[15px] font-medium text-qblack">
-                          {Intl.NumberFormat().format(saleServiceFee)} VND
+                          -{Intl.NumberFormat().format(saleServiceFee)} VND
                         </p>
                       </div>) : (<></>)}
                       <div className="w-full h-[1px] bg-[#EDEDED]"></div>

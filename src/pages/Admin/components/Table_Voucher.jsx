@@ -217,7 +217,7 @@ const TableVoucher = () => {
                 quantity: null,
                 dateStart: '',
                 dateEnd: '',
-                typeVoucher: 1,
+                typeVoucher: 2,
                 account: sessionStorage.getItem("id_account")
               });
               setIsOpenModalSP(true);

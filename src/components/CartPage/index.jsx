@@ -190,7 +190,6 @@ export default function CardPage({ cart = true }) {
       return {
         ...seller,
         saleSeller: ((seller?.voucher?.sale * totalPriceSeller) / 100) > seller?.voucher?.totalPriceOrder ? seller?.voucher?.totalPriceOrder : (seller?.voucher?.sale * totalPriceSeller) / 100
-
       }
     });
     setTotalSale(sale);

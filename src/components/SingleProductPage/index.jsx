@@ -121,6 +121,14 @@ export default function SingleProductPage() {
     fetchRelated();
     fetchProductSeller();
   }, [product, seller]);
+  const Content = ({ htmlString }) => {
+    return (
+      <div
+        dangerouslySetInnerHTML={{ __html: htmlString }}
+      ></div>
+    );
+  };
+
   return (
     <>
       <Layout childrenClasses="pt-0 pb-0">
@@ -194,7 +202,8 @@ export default function SingleProductPage() {
                       Giới thiệu
                     </h6>
                     <p className="text-[15px] text-qgray text-normal mb-10">
-                      {product?.introduce}
+                      <Content htmlString={product?.introduce} />
+
                     </p>
                     <div>
                       <h6 className="text-[18px] text-medium mb-4">
