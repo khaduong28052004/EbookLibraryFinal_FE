@@ -53,7 +53,9 @@ export default function ProductView({ className, reportHandler, product }) {
   };
   const [quantity, setQuantity] = useState(1);
   const increment = () => {
-    setQuantity((prev) => prev + 1);
+    if (quantity <= product.quantity) {
+      setQuantity((prev) => prev + 1);
+    }
   };
   const decrement = () => {
     if (quantity > 1) {
@@ -62,16 +64,15 @@ export default function ProductView({ className, reportHandler, product }) {
   };
 
 
-  // useEffect(() => {
-  //   if (showHour<1) {
-  //     window.location.reload();
-  //   }
-  // }, []);
+  useEffect(() => {
+    setSrc(product?.imageProducts[0]?.name);
+  }, [product]);
 
   const handleCreateCart = () => {
     startRequest();
     const id_user = sessionStorage.getItem("id_account");
-    if (id_user) {
+    const token = sessionStorage.getItem("token");
+    if (token) {
       axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${product.id}&quantity=${quantity}`).then(response => {
         if (response.data.code = 1000) {
           toast.success("Thêm thành công");
@@ -110,7 +111,7 @@ export default function ProductView({ className, reportHandler, product }) {
         <div className="w-full">
           <div className="w-full h-[450px] border border-qgray-border flex justify-center items-center overflow-hidden relative mb-3">
             <img
-              src={product?.imageProducts[0]?.name}
+              src={src}
               alt=""
               className="object-contain"
             />

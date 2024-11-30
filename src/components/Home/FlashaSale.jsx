@@ -1,14 +1,16 @@
+import { useState } from "react";
+import LazyLoad from "react-lazyload";
 import { Link } from "react-router-dom";
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import CountDown from "../Helpers/CountDown";
 import DataIteration from "../Helpers/DataIteration";
 
-export default function FlashSale({ products, lastDate,totalProducts }) {
+export default function FlashSale({ products, lastDate, totalProducts }) {
     const { showHour, showMinute, showSecound } = CountDown(lastDate);
-
+    const [loading, setLoading] = useState(true);
     return (
 
-        <div className={`w-full lg:h-[1060px] mb-2`}>
+        <div className={`w-full lg:h-auto mb-6`}>
             <div className="container-x mx-auto h-full">
                 {/* <div className="lg:flex xl:space-x-[30px] lg:space-x-5 items-center h-full"> */}
                 <div className="bg-white py-8 p-10">
@@ -32,7 +34,7 @@ export default function FlashSale({ products, lastDate,totalProducts }) {
                                     </div>
                                 </div>
                                 <Link to="/flash-sale" className="text-sm text-red-500 underline">
-                            Xem tất cả
+                                    Xem tất cả
                                 </Link>
                             </div>
                         </div>
@@ -81,7 +83,32 @@ export default function FlashSale({ products, lastDate,totalProducts }) {
                         <DataIteration datas={products} startLength={0} endLength={products?.length}>
                             {({ datas }) => (
                                 <div data-aos="fade-up" key={datas.id} className="item">
-                                    <ProductCardStyleOne datas={datas.product} />
+                                    <LazyLoad
+                                        // once={true}
+                                        key={datas?.product?.id}
+                                        height={100}
+                                        offset={[-100, 100]}
+                                        placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                                            <div class="animate-pulse flex space-x-4">
+                                                <div class="flex-1 space-y-3 py-1">
+                                                    <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
+                                                    <div class="h-5 bg-slate-700 rounded"></div>
+                                                    <div class="h-5 bg-slate-700 rounded"></div>
+                                                    <div class="space-y-3">
+                                                        <div class="grid grid-cols-4 gap-4">
+                                                            <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                                                            <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                                                        </div>
+                                                        {/* <div class="h-2 bg-slate-700 rounded"></div> */}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>}
+                                    >
+                                        <div>
+                                            <ProductCardStyleOne datas={datas.product} />
+                                        </div>
+                                    </LazyLoad>
                                 </div>
                             )}
                         </DataIteration>

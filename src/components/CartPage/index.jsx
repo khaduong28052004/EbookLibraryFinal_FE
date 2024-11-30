@@ -2,14 +2,15 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import AuthService from "../../service/authService";
 import BreadcrumbCom from "../BreadcrumbCom";
 import EmptyCardError from "../EmptyCardError";
 import PageTitle from "../Helpers/PageTitle";
 import Layout from "../Partials/Layout";
 import { useRequest } from "../Request/RequestProvicer";
-import Service_Fee from "../service/Service_Fee";
+import Service_Fee, { service } from "../service/Service_Fee";
 import ProductsTable from "./ProductsTable";
-import AuthService from "../../service/authService";
+
 
 export default function CardPage({ cart = true }) {
   const navigate = useNavigate(); // Đưa useNavigate ra ngoài useEffect
@@ -23,7 +24,6 @@ export default function CardPage({ cart = true }) {
   const localtion = useLocation();
   const [feeSeller, setFeeSeller] = useState({});
 
-  const { isRequest } = useRequest();
 
   // token
   function isTokenExpired(token) {
@@ -63,7 +63,11 @@ export default function CardPage({ cart = true }) {
     retoken(token);
     if (token) {
       const id_account = sessionStorage.getItem("id_account");
-      axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
+      axios.get('http://localhost:8080/api/v1/user/cart/' + id_account, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      }).then(response => {
         setData(response.data.result);
         setUser(response.data.result.user);
       }).catch(error => console.error("fetch cart error " + error));
@@ -74,10 +78,23 @@ export default function CardPage({ cart = true }) {
     }
   }, [localtion]);
 
-  const getServiceFee = async (idSeller, weight, quantity, addressFrom, addressTo) => {
+  // const getServiceFee = async (idSeller, weight, quantity, addressFrom, addressTo) => {
+  //   try {
+  //     const { service_fee } = await Service_Fee(serviceId,weight, quantity, addressFrom, addressTo);
+  //     setServiceFee(fee => fee + service_fee);
+  //     setFeeSeller(seller => ({
+  //       ...seller,
+  //       [idSeller]: service_fee
+  //     }))
+  //   } catch (error) {
+  //     console.error("Error in fetching service fee:", error);
+  //   }
+  // };
+
+  const getServiceFee = async (serviceId, idSeller, weight, quantity, addressFrom, addressTo) => {
     try {
-      const { service_fee } = await Service_Fee(weight, quantity, addressFrom, addressTo);
-      setServiceFee(fee => fee + service_fee);
+      const { service_fee } = await Service_Fee(serviceId, weight, quantity, addressFrom, addressTo);
+      setServiceFee(serviceFee + service_fee);
       setFeeSeller(seller => ({
         ...seller,
         [idSeller]: service_fee
@@ -86,6 +103,17 @@ export default function CardPage({ cart = true }) {
       console.error("Error in fetching service fee:", error);
     }
   };
+
+  const setService = async (idSeller, weight, quantity, fromAddress, toAddress) => {
+    try {
+      const { service_id } = await service(fromAddress, toAddress);
+      getServiceFee(service_id, idSeller, weight, quantity, fromAddress, toAddress);
+      // console.log()
+    } catch (error) {
+      console.error("Error in fetching serviceId:", error);
+    }
+  }
+
 
   const handleSaveProduct = (value) => {
     var fromAddress = {};
@@ -98,7 +126,7 @@ export default function CardPage({ cart = true }) {
         // console.log("toaddress    " + toAddress);
       }
     }
-
+    // console.log("voucher " + value[0]?.voucher?.length);
     setServiceFee(0);
     value?.forEach(seller => {
       for (let address of seller?.addresses) {
@@ -108,7 +136,6 @@ export default function CardPage({ cart = true }) {
       }
       var totalSeller = 0;
       seller?.cart.map(cartItem => {
-
         if (cartItem?.product?.flashSaleDetail) {
           if (cartItem?.quantity <= cartItem?.product?.flashSaleDetail?.quantity) {
             total += (
@@ -127,8 +154,8 @@ export default function CardPage({ cart = true }) {
           total += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
           totalSeller += (cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity;
         }
-
-        getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, toAddress)
+        setService(seller?.id, 100, 2, fromAddress, toAddress);
+        // getServiceFee(seller?.id, 200, cartItem.quantity, fromAddress, toAddress);
       });
       if (seller?.voucher?.id > 0) {
         if (((seller?.voucher?.sale * totalSeller) / 100) > seller?.voucher?.totalPriceOrder) {
@@ -154,7 +181,7 @@ export default function CardPage({ cart = true }) {
     }
   }, [feeSeller]);
   const handSubmitPay = () => {
-    if (dataSubmit) {
+    if (dataSubmit.length > 0) {
       const data = {
         datas: dataSubmit,
         user: user,

@@ -20,27 +20,38 @@ import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
 import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
 import ChatBot from "./pages/Seller/ChatBot"
+import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
+import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
 export default function RouterAdmins() {
   return (
     <DefaultLayout>
-      <ChatBot/>
+      <ChatBot />
       <Routes>
         <Route
           path="/home"
           element={
-            <>
-              <PageTitle title="Trang Chủ" />
-              <TrangChuAdmin />
-            </>
+            <ProtectedRoute
+              element={
+                <>
+                  <PageTitle title="Trang Chủ" />
+                  <TrangChuAdmin />
+                </>
+              }
+            />
           }
         />
         <Route
           path="/quanLy/nhanVien"
           element={
-            <>
-              <PageTitle title="Nhân Viên" />
-              <NhanVienAdmin />
-            </>
+            <ProtectedRoute
+              element={
+                <>
+                  <PageTitle title="Nhân Viên" />
+                  <NhanVienAdmin />
+                </>
+              }
+            />
+
           }
         />
         <Route
@@ -80,7 +91,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-          path="/quanLy/shop"
+path="/quanLy/shop"
           element={
             <>
               <PageTitle title="Shop" />
@@ -112,6 +123,15 @@ export default function RouterAdmins() {
             <>
               <PageTitle title="Danh Mục" />
               <DanhMucAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/quanLy/chietkhau"
+          element={
+            <>
+              <PageTitle title="Chiết khấu" />
+              <DiscountRateAdmin />
             </>
           }
         />

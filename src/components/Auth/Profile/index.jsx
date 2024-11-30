@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import datas from "../../../data/products.json";
 import AuthService from "../../../service/authService";
 import BreadcrumbCom from "../../BreadcrumbCom";
@@ -19,6 +19,7 @@ import ProfileTab from "./tabs/ProfileTab";
 import ReviewTab from "./tabs/ReviewTab";
 import SupportTab from "./tabs/SupportTab";
 import WishlistTab from "./tabs/WishlistTab";
+import { toast } from "react-toastify";
 
 export default function Profile() {
   const [switchDashboard, setSwitchDashboard] = useState(false);
@@ -26,38 +27,46 @@ export default function Profile() {
   const getHashContent = location.hash.split("#");
   const [active, setActive] = useState("dashboard");
   const [isToken, setIsToken] = useState(false);
+
+
+  const navigate = useNavigate();
   function isTokenExpired(token) {
     const [, payloadBase64] = token.split('.');
     const payload = JSON.parse(atob(payloadBase64));
-
     const expirationTime = payload.exp * 1000; // Chuyển đổi giây thành milliseconds
     const currentTimestamp = Date.now();
-
     return expirationTime < currentTimestamp;
   }
+
   //giai han
   const retoken = async (token) => {
     if (isTokenExpired(token)) {
       sessionStorage.removeItem("token");
       console.log("token het han")
+      return false;
     } else {
       console.log("Token còn hạn.");
-      try {
-        const response = await AuthService.tokenrenewal(token);
-        AuthService.setItem(response.data);
-      } catch (error) {
-        console.log("gia hạn lỗi");
-        console.error(error);
-      }
+      // try {
+      //   const response = await AuthService.tokenrenewal(token);
+      //   AuthService.setItem(response.data);
+      // } catch (error) {
+      //   console.log("gia hạn lỗi");
+      //   console.error(error);
+      // }
+      return true;
 
     }
   }
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    retoken(token);
-    if (token) {
-      setIsToken(true);
+    if (token == null) {
+      toast.warn("Vui lòng đăng nhập!");
+      setTimeout(() => {
+        navigate('/login')
+      }, 400);
+    } else {
+      retoken(token);
     }
     setActive(
       getHashContent && getHashContent.length > 1

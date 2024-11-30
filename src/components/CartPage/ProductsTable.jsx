@@ -207,6 +207,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
         total += cart.quantity * (cart.product.price - ((cart.product.price * cart.product.sale) / 100));
       });
     });
+    // alert("voucher " + total);
     // if (!selectedVoucher) {
     const filteredSeller2 = datas.map(seller => {
       let saleMax = 0;
@@ -214,7 +215,9 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       seller.vouchers.forEach(voucher => {
         if (voucher.sale > saleMax && voucher.totalPriceOrder < total) {
           saleMax = voucher.sale;
-          voucherNew = voucher;
+          if (voucher?.minOrder < total) {
+            voucherNew = voucher;
+          }
         }
       });
       return {
@@ -239,12 +242,14 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
   };
 
   const handleVoucher = (seller) => {
+
     if (saveProductOfSeller?.length > 0) {
       var total = 0;
       saveProductOfSeller.forEach(sellerItem => {
         if (sellerItem.id == seller.id) {
-          seller?.cart.forEach(cart => {
+          sellerItem?.cart.forEach(cart => {
             total += cart.quantity * (cart.product.price - ((cart.product.price * cart.product.sale) / 100));
+
           });
         }
       });
@@ -290,9 +295,6 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       idProduct[checkbox.value] = event.target.checked;
     });
     autoActiveVoucher();
-    // setProductState(true);
-    // saveIdProduct();
-
   }
 
   const handleShop = (event, id_Shop) => {
@@ -302,7 +304,6 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       idProduct[checkbox.value] = event.target.checked;
     });
     checkedAll();
-    // saveIdProduct();
     autoActiveVoucher();
   };
 
@@ -310,7 +311,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
     idProduct[event.target.value] = event.target.checked;
     setIdProduct(prevState => ({
       ...prevState, // Giữ lại các giá trị cũ
-      [event.target.value]: event.target.checked // Cập nhật hoặc thêm thuộc tính mới
+      [event.target.value]: event.target.checked
     }));
 
     checkShop(id_Shop);
@@ -318,7 +319,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
     // saveIdProduct();
     autoActiveVoucher();
   }
-  // const handle 
+
 
   const handleQuantityCart = (quantity, idCart) => {
     handleQuantityCartIndex(quantity, idCart);
