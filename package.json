@@ -31,6 +31,11 @@
     "firebase": "^11.0.1",
     "flatpickr": "^4.6.13",
     "headlessui": "^0.0.0",
+<<<<<<< Updated upstream
+=======
+    "i": "^0.3.7",
+    "js-cookie": "^3.0.5",
+>>>>>>> Stashed changes
     "jsvectormap": "^1.6.0",
     "jwt-decode": "^4.0.0",
     "match-sorter": "^6.3.1",

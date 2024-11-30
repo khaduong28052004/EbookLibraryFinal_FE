@@ -49,7 +49,7 @@ export default function ProductsTable({ className, datas, handleDelete }) {
                 <div className="flex space-x-6 items-center">
                   <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
                     <img
-                      src={`/assets/images/product-img-1.jpg`}
+                      src={favorite?.product?.imageProducts[0]?.name}
                       alt="product"
                       className="w-full h-full object-contain"
                     />
