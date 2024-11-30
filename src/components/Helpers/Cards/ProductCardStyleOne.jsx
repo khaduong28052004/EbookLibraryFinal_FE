@@ -75,7 +75,7 @@ export default function ProductCardStyleOne({ datas, type }) {
         }} className="absolute w-full h-10 px-[30px] left-0 top-40 group-hover:top-[80px] transition-all duration-300 ease-in-out z-50">
           <button
             type="button"
-            className={type === 3 ? "blue-btn" : "yellow-btn"}
+            className={type === 3 ? "flex items-center justify-center h-full w-full bg-[#FFBB38] text-[13px] font-semibold text-[#1d1d1d] leading-none" : "flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none"}
           >
             <div className="flex items-center space-x-3 " >
               <span>

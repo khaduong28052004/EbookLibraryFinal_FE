@@ -44,8 +44,7 @@ export default function Home() {
     <>
       <Layout>
         {/* {ads && <Ads handler={adsHandle} />} */}
-        <div className="btn w-5 h-5"></div>
-        <Banner className="banner-wrapper mb-[60px]" />
+        <Banner className="banner-wrapper mb-6" />
         {/* <>{data_FlashSale[0]?.product.name}</> */}
 
 
