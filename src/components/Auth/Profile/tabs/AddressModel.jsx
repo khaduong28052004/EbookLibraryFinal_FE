@@ -66,28 +66,28 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         fetchAddresses();
     }, []);
     // SỬA AND CẬP NHẬT
-    const fetchEdit = async (event) => {
-        event.preventDefault();
-        try {
-            const id = event.target.getAttribute("data-id");
-            console.log("Id address: " + id);
-            const data = await getOneAddress(id);
-            console.log(data);
-            setAddressData(data);
-            setSelectedProvince(data.province);
-            console.log("ID Province: " + data.province);
-            const districtsData = await loadDistricts(parseInt(data.province, 10));
-            setDistricts(districtsData);
-            setSelectedDistrict(data.district);
-            const wardsData = await loadWards(parseInt(data.district, 10));
-            setWards(wardsData);
-            setSelectedWard(data.wardCode);
-            toast.success("Tải dữ liệu chỉnh sửa thành công");
-        } catch (error) {
-            console.log("Error editing address: ", error);
-            toast.error("Lỗi khi tải dữ liệu chỉnh sửa");
-        }
-    };
+    // const fetchEdit = async (event) => {
+    //     event.preventDefault();
+    //     try {
+    //         const id = event.target.getAttribute("data-id");
+    //         console.log("Id address: " + id);
+    //         const data = await getOneAddress(id);
+    //         console.log(data);
+    //         setAddressData(data);
+    //         setSelectedProvince(data.province);
+    //         console.log("ID Province: " + data.province);
+    //         const districtsData = await loadDistricts(parseInt(data.province, 10));
+    //         setDistricts(districtsData);
+    //         setSelectedDistrict(data.district);
+    //         const wardsData = await loadWards(parseInt(data.district, 10));
+    //         setWards(wardsData);
+    //         setSelectedWard(data.wardCode);
+    //         toast.success("Tải dữ liệu chỉnh sửa thành công");
+    //     } catch (error) {
+    //         console.log("Error editing address: ", error);
+    //         toast.error("Lỗi khi tải dữ liệu chỉnh sửa");
+    //     }
+    // };
     useEffect(() => {
         const fetchProvinces = async () => {
             setLoading(true);
@@ -161,7 +161,26 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         selectedWard,
     ]);
     const handleSave = async (event) => {
+        if (!addressData.phone || addressData.phone.trim() === "") {
+            toast.error("Vui lòng nhập số điện thoại!");
+            return;
+          }
+          if (!addressData.province || addressData.province === "default") {
+            toast.error("Vui lòng chọn Tỉnh/Thành Phố!");
+            return;
+        }
+        
+        if (!addressData.district || addressData.district === "default") {
+            toast.error("Vui lòng chọn Quận/Huyện!");
+            return;
+        }
+        
+        if (!addressData.wardCode || addressData.wardCode === "default") {
+            toast.error("Vui lòng chọn Xã/Phường!");
+            return;
+        }
         event.preventDefault();
+        
         const id = sessionStorage.getItem("id_account") || 1;
         try {
             let data;
@@ -250,10 +269,13 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
 
 
     const handleChange = (e) => {
+
+        
         const { id, value } = e.target;
         setAddressData((prevData) => ({
             ...prevData,
             [id]: value,
+            
         }));
     };
     const handleProvinceChange = (e) => {
@@ -308,6 +330,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     value={addressData.phone}
                                     onChange={handleChange}
                                     required
+                                    
                                 />
                             </div>
                             <div className="col-span-6">

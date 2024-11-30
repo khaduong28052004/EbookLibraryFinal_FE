@@ -73,7 +73,7 @@ export default function ForgotPassword() {
                                 name="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
+                                placeholder="email"
                                 // className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
                                 className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${
                                     // errorFrom.usernameF === 1
@@ -90,11 +90,11 @@ export default function ForgotPassword() {
                             className={`w-full h-[50px] font-semibold bg-black text-white rounded-md ${loading ? 'bg-gray-400' : 'bg-purple'}`}
                             disabled={loading}
                         >
-                            {loading ? 'Sending...' : 'Send Reset Link'}
+                            {loading ? 'đang Gửi...' : 'Gửi'}
                         </button>
                     </form>
                     <div className="text-center mt-6">
-                        <span className="text-base text-qyellow">Remembered your password? <Link to="/login" className="text-blue-500">Login</Link></span>
+                        <span className="text-base text-qyellow">Bạn nhớ mật khẩu chưa Gửi? <Link to="/login" className="text-blue-500">Đăng nhập</Link></span>
                     </div>
                 </div>
             </div>

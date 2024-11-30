@@ -94,7 +94,7 @@ const SanPhamSeller = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Chiết Khấu" total={`${data.chietKhau}%`} >
+        <CardDataStats title="Chiết Khấu Của Sàn Hiện Tại" total={`${data.chietKhau}%`} >
           <svg
             className="fill-primary dark:fill-white"
             width="22"

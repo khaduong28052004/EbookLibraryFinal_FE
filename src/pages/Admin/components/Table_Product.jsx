@@ -27,7 +27,7 @@ const TableTwo = () => {
 
     const findAllProduct = async () => {
         try {
-            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 2, sortColumn, sortBy });
+            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 10, sortColumn, sortBy });
             setData(response.data.result);
         } catch (error) {
             console.log("Error: " + error);
@@ -190,8 +190,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
                                 <span className="text-sm text-black dark:text-white">Sản phẩm</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -203,8 +203,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white">Giá</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "price" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "price" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -216,8 +216,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Nhà xuất bản</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "publishingCompany" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "publishingCompany" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -229,8 +229,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Tác giả</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "writerName" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "writerName" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
                         <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -261,7 +261,7 @@ const TableTwo = () => {
                                     {data.pageable.pageNumber * data.size + index + 1}
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                    <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0]} alt="entity" />
+                                    <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0].name} alt="entity" />
                                     <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
@@ -296,7 +296,8 @@ const TableTwo = () => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
-                                        <button onClick={() => {
+                                        <button onClick={(event) => {
+                                            event.stopPropagation();
                                             setEntityProduct(entity);
                                             setIsOpen(true);
                                             setStatusentity(!entity.delete);

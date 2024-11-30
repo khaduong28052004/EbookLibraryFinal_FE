@@ -18,8 +18,9 @@ export default function Home() {
   const location = useLocation();
 
   const fetchDataFlashSale = async () => {
+    const id_account = sessionStorage.getItem("id_account") || 0;
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/user/home/flashsale");
+      const response = await axios.get("http://localhost:8080/api/v1/user/home/flashsale?id_Shop=" + id_account);
       const data = response.data.result;
       setData_FlashSale(data);
     } catch (error) {
@@ -28,7 +29,8 @@ export default function Home() {
   };
 
   const fetchDataSelectAll = async () => {
-    await axios.get("http://localhost:8080/api/v1/user/home/selectall").then(response => {
+    const id_account = sessionStorage.getItem("id_account") || 0;
+    await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account).then(response => {
       setData_ProducAll(response.data.result);
     }).catch(error => {
       console.log("fetch selectall error " + error);

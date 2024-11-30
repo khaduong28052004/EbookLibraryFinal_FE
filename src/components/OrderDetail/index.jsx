@@ -33,7 +33,6 @@ export default function OrderDetail({ orderId, clearOrderId }) {
 
             if (response && response.data && response.data.data) {
                 const data = response.data.data;
-
                 setOrder(Array.isArray(data) ? data : []);
             } else {
                 throw new Error('Không có dữ liệu');

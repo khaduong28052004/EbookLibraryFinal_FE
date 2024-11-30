@@ -58,7 +58,7 @@ const TableTwo = () => {
 
   const findAllAccount = async () => {
     try {
-      const response = await accountService.findAllNhanVien({ page: currentPage, size: 10, searchItem, sortColumn, sortBy });
+      const response = await accountService.findAllAccount({ page: currentPage, size: 10, role: "ADMINV1", searchItem, sortColumn, sortBy });
       console.log("content: " + response.data.result.content);
       setData(response.data.result);
     } catch (error) {
@@ -74,7 +74,7 @@ const TableTwo = () => {
     const sheetNames = ['Danh Sách nhân viên'];
     try {
       console.log("data.totalElements: " + data.totalElements);
-      const response = await accountService.findAllNhanVien({ page: 0, size: data.totalElements, searchItem, sortColumn, sortBy });
+      const response = await accountService.findAllAccount({ page: 0, size: data.totalElements, role: "ADMINV1", searchItem, sortColumn, sortBy });
       return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -302,7 +302,7 @@ const TableTwo = () => {
         setStatus={setStatus}
         open={isOpenModalSP}
         setOpen={setIsOpenModalSP}
-        title="Thêm Sản Phẩm Mới"
+        title="Thêm Quyền Mới"
         confirmText="Lưu"
         cancelText="Hủy" />
     </div>

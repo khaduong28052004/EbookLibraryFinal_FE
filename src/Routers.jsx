@@ -36,6 +36,8 @@ import ChatBot from "./pages/Seller/ChatBot2.jsx";
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx";
 import { toast ,ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Signupv2 from "./components/Auth/Signup/indexV2.jsx";
+import LinkFrom from "./components/Auth/Signup/LinkFrom.jsx";
 export default function Routers() {
   const location = useLocation();
   // function isTokenExpired(token) {
@@ -75,9 +77,9 @@ export default function Routers() {
         <ChatBot />
         <Routes location={location} key={location.pathname} >
           <Route exact path="/" element={
-            // <Suspense fallback={<Loader />}>
-            <Home />
-            // </Suspense>
+            <Suspense fallback={<Loader />}>
+              <Home />
+            </Suspense>
 
           }
           />
@@ -119,6 +121,8 @@ export default function Routers() {
           <Route exact path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route exact path="/terms-condition" element={<TermsCondition />} />
           <Route exact path="*" element={<FourZeroFour />} />
+          <Route exact path="/singupLinkFrom" element={<LinkFrom/>}/>
+          <Route exact path="/singup2/*" element={<Signupv2/>}/>
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route exact path="/change-password/*" element={<UpdatePassword />} />
           <Route exact path="/home-shop/*" element={<HomeShop/>} />
