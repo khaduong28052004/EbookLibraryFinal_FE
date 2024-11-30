@@ -727,7 +727,7 @@ const TableSanPham = () => {
                                   src={file.blob ? URL.createObjectURL(file.blob) : URL.createObjectURL(file)} alt={`Product ${index}`}
                                   className="w-full h-full object-cover rounded-md"
                                 />
-                                <button
+                                <button type='button'
                                   onClick={(event) => {
                                     event.stopPropagation();
                                     handleRemoveFile(index)
