@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_CHECK_CARDID = 'https://api.fpt.ai/vision/idr/vnm';
 const API_Java = 'http://localhost:8080/api/v1/user/registerSeller';
-const API_KEY = 'fuQcjc2PpqcvT7N1QNLo0mcOkoB1MMoX';
+const API_KEY = 'aOL8KstO8whE27tr8Wv1SLqTPMfHXVpB';
 export const fetchCheckImgCard = async (image) => { // để gọi API
   try {
     const response = await axios.post(API_CHECK_CARDID, image, { // Gửi yc post image lên api
@@ -91,7 +91,7 @@ export const checkFaceAi = async (formData) => {
       formData,
       {
         headers: {
-          'api-key': 'aOL8KstO8whE27tr8Wv1SLqTPMfHXVpB',
+          'api-key': 'Bph3Le2zhfTBPxOf2lAaDFBruXB0CmIB',
           'Content-Type': 'multipart/form-data',
         },
       },
