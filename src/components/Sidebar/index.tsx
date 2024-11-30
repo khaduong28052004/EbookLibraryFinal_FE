@@ -8,7 +8,29 @@ interface SidebarProps {
   setSidebarOpen: (arg: boolean) => void;
 }
 
+interface Permission {
+  id: number;
+  description: string;
+  cotSlug: string;
+}
+
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+ // Retrieve permissions from sessionStorage and parse it
+   const [permissions, setPermissions] = useState<Permission[]>([]);
+
+   useEffect(() => {
+     const storedPermissions = sessionStorage.getItem("permissions");
+     if (storedPermissions) {
+       const parsedPermissions: Permission[] = JSON.parse(storedPermissions);  // Ensure the correct type
+       setPermissions(parsedPermissions);
+     }
+   }, []); // Empty dependency array to run only once when the component mounts
+ 
+   const hasPermission = (cotSlug: string) => {
+     return permissions.some(permission => permission.cotSlug === cotSlug);
+   };
+
+
   const location = useLocation();
   const { pathname } = location;
 
@@ -22,6 +44,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   // close on click outside
   useEffect(() => {
+
+    
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
       if (
@@ -205,6 +229,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       >
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
+                          {!hasPermission('READ_PRODUCT')?
                             <NavLink
                               to="/admin/quanLy/nhanVien"
                               className={({ isActive }) =>
@@ -213,7 +238,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               }
                             >
                               Nhân Viên
-                            </NavLink>
+                            </NavLink>:<></>}
                           </li>
                           <li>
                             <NavLink
@@ -301,6 +326,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               }
                             >
                               Danh Mục
+                            </NavLink>
+                          </li>
+                          <li>
+                            <NavLink
+                              to="/admin/quanLy/chietkhau"
+                              className={({ isActive }) =>
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                (isActive && '!text-white')
+                              }
+                            >
+                              Chiết Khấu
                             </NavLink>
                           </li>
                         </ul>

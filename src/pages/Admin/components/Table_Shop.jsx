@@ -18,6 +18,8 @@ const TableTwo = ({ status }) => {
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
+    const [contents, setContents] = useState("");
+
     const handleConfirm = () => {
         setIsOpen(false);
         putStatus();
@@ -39,7 +41,7 @@ const TableTwo = ({ status }) => {
 
     const findAllAccount = async () => {
         try {
-            const response = await accountService.findAllAccount({ currentPage, size: 2, role: "SELLER", searchItem, sortColumn, sortBy });
+            const response = await accountService.findAllAccount({ currentPage, size: 10, role: "SELLER", searchItem, sortColumn, sortBy });
             setData(response.data.result);
             console.log(data);
         } catch (error) {
@@ -50,14 +52,15 @@ const TableTwo = ({ status }) => {
 
     const putStatus = async () => {
         try {
-            const response = await accountService.putStatus({ id });
+            const response = await accountService.putStatus({ id, contents });
             console.log("Mã Code status: " + response.data.code);
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
             }
+            setContents("");
             findAllAccount();
         } catch (error) {
-            toast.error("Lỗi hệ thống");
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     }
@@ -153,8 +156,8 @@ const TableTwo = ({ status }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
                                 <span className="text-sm text-black dark:text-white">Tên shop</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "shopName" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "shopName" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -166,8 +169,8 @@ const TableTwo = ({ status }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white">Sản phẩm</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "sumProduct" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "sumProduct" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -179,8 +182,8 @@ const TableTwo = ({ status }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Theo dõi</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "sumFollower" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "sumFollower" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -192,8 +195,8 @@ const TableTwo = ({ status }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Đánh giá</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "avgStar" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "createAt" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
                         <th
@@ -204,8 +207,8 @@ const TableTwo = ({ status }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Báo cáo</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "sumReport" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "sumReport" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
                         <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -279,7 +282,8 @@ const TableTwo = ({ status }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
-                                        <button onClick={() => {
+                                        <button onClick={(event) => {
+                                            event.stopPropagation();
                                             setId(entity.id);
                                             setIsOpen(true);
                                             setStatusentity(entity.status);
@@ -321,14 +325,16 @@ const TableTwo = ({ status }) => {
 
 
             <Modal
+                content={contents}
+                setContent={setContents}
                 open={isOpen}
                 setOpen={setIsOpen}
                 title={statusentity
                     ? 'Ngừng Hoạt Động'
                     : 'Khôi Phục'}
                 message={statusentity
-                    ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                    : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+                    ? 'Bạn chắc chắn muốn ngừng hoạt động shop này không?'
+                    : 'Bạn có chắc muốn khôi phục shop này không?'}
                 onConfirm={handleConfirm}
                 confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
                 cancelText="Thoát"

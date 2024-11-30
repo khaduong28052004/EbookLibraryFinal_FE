@@ -170,25 +170,17 @@ export default function CardPage({ cart = true }) {
     const fillterValueSetSale = value.map(seller => {
       var totalPriceSeller = 0;
       seller?.cart?.forEach(cartItem => {
-<<<<<<< Updated upstream
-        if (cartItem?.product?.flashSaleDetail) {
-=======
         if (cartItem?.product?.flashSaleDetail?.id > 0) {
->>>>>>> Stashed changes
+        if (cartItem?.product?.flashSaleDetail?.id>0) {
           if (cartItem?.quantity <= cartItem?.product?.flashSaleDetail?.quantity) {
             totalPriceSeller += (
               cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))
             ) * cartItem.quantity
           } else {
-<<<<<<< Updated upstream
-            var quantityFlashSale = cart?.product?.flashSaleDetail?.quantity;
-            var priceSale = totalPrice = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100));
-=======
-            // alert("vao nha")
             var quantityFlashSale = cart?.product?.flashSaleDetail?.quantity;
             var priceFinishSale = cart?.product?.price - ((cart?.product?.price * cart?.product?.sale) / 100);
             var priceSale = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100));
->>>>>>> Stashed changes
+
             totalPriceSeller += (priceSale * quantityFlashSale) + (priceSale * (cart?.quantity - quantityFlashSale));
           }
         } else {

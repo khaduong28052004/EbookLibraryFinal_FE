@@ -79,7 +79,7 @@ export default function Wishlist({ wishlist = true }) {
                     </div> */}
                   </button>
                   {/* <div className="w-[180px] h-[50px]">
-                    <button type="button" className="yellow-btn">
+                    <button type="button" className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none">
                       <div className="w-full text-sm font-semibold">
                         Thêm tất cả
                       </div>

@@ -4,24 +4,30 @@ import { useNavigate, Link } from 'react-router-dom';
 import Layout from "../../Partials/Layout";
 import Thumbnail from "./Thumbnail";
 import AuthService from "../../../service/authService";
+// import   from "../config/configAxios";
 import { toast, ToastContainer } from "react-toastify";
 import axios, { Axios } from "axios";
 export default function Signup() {
+  // const [showPassword, setShowPassword] = useState(false);
   const [checked, setValue] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [formData, setFormData] = useState({
-    fullname: '',
-    phone: '',
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    phone: '',
+    fullname: ''
   });
-  const [error, setError] = useState({});
+  const [error, setError] = useState({}); // State for error messages
   const navigate = useNavigate(); // Hook for navigation
-  const handleInputChange = (event) => {
 
+  const rememberMe = () => {
+    setValue(!checked);
+  };
+  // Handle input changes 
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -32,108 +38,8 @@ export default function Signup() {
     validateInput(name, value);
   };
 
-  const rememberMe = () => {
-    setValue(!checked);
-  };
-
-  // const checkEmailTONTAI = async (email) => {
-  //   const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=ee1beb55bc8107ec2de384a942597e4e973330cb`);
-  //   console.log(response);
-  //   if (response?.data?.data?.status === "valid") {
-  //     console.log("oke");
-  //     return true;
-  //   } else {
-  //     toast.error("Email này không tồn tại!");
-  //     console.log("ko oke");
-  //     return false;
-  //   }
-  // }
-
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    const { username, email, password, confirmPassword, phone, fullname } = formData;
-    if (!fullname || !username || !email || !phone || !password || !confirmPassword) {
-      toast.error("Vui lòng điền đầy đủ thông tin!");
-      return;
-    }
-    if (password !== confirmPassword) {
-      toast.error("Xác nhận mật khẩu không khớp!");
-      return;
-    }
-
-    if (error?.username?.error) {
-      toast.warn(error?.username?.message);
-      return
-    }
-    if (error?.fullname?.error) {
-      toast.warn(error?.fullname?.message);
-      return
-    }
-    if (error?.email.error) {
-      toast.warn(error?.email?.message);
-      return
-    }
-    if (error?.phone?.error) {
-      toast.warn(error?.phone?.message);
-      return
-    }
-
-    if (!checked) {
-      toast.warn("Điều khoản tài khoản!");
-      return
-    }
-    // checkEmailTONTAI(formData.email)
-    const token = import.meta.env.VITE_TOKEN_HUNTER;
-    const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${formData.email}&api_key=${token}`);
-    console.log(response);
-    if (response?.data?.data?.status === "valid") {
-      try {
-        const response = await AuthService.register(formData);
-        if (response.status === 200) {
-          toast.success("Đăng ký thành công");
-          setTimeout(() => {
-            navigate('/login');
-          }, 2000);
-        } else {
-          toast.error("đăng ký thất bại,", response.data);
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error(error?.response?.data || "An error occurred during registration");
-      }
-      console.log("oke");
-    } else {
-      toast.error("(" + formData.email + ")" + " Email Không tồn tại!");
-      console.log("ko oke");
-
-    }
-    // try {
-    //   const response = await AuthService.register(formData);
-    //   if (response.status === 200) {
-    //     toast.success("Đăng ký thành công");
-    //     setTimeout(() => {
-    //       navigate('/login');
-    //     }, 2000);
-    //   } else {
-    //     toast.error("đăng ký thất bại,", response.data);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    //   toast.error(error?.response?.data || "An error occurred during registration");
-    // }
-  };
-
   const validateInput = (name, value) => {
     switch (name) {
-      // case "fullname":
-      //   setError((prev) => ({
-      //     ...prev,
-      //     fullname: {
-      //       error: value.length < 3,
-      //       message: value.length < 3 ? "Vui lòng kiểm tra họ và tên!" : "",
-      //     },
-      //   }));
-      //   break;
       case "username":
         setError((prev) => ({
           ...prev,
@@ -143,19 +49,27 @@ export default function Signup() {
           },
         }));
         break;
-      // case "phone":
-      //   const phoneF = /^\d{10}$/;  // Regex to match exactly 10 digits
-      //   setError((prev) => ({
-      //     ...prev,
-      //     phone: {
-      //       error: !phoneF.test(value),
-      //       message: !phoneF.test(value) ? "Số điện thoại phải là 10 chữ số!" : "",
-      //     },
-      //   }));
+      case "fullname":
+        setError((prev) => ({
+          ...prev,
+          fullname: {
+            error: value.length < 0,
+            message: value.length < 0 ? "Tên tài khoản quá ngắn!" : "",
+          },
+        }));
+        break;
+      case "phone":
+        setError((prev) => ({
+          ...prev,
+          phone: {
+            error: value.length !== 10,
+            message: value.length !== 10 ? "Số điện thoại phải chứa đúng 10 số!" : "",
 
-      // break;
+          },
+        }));
       case "email":
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]{2,}(\.[a-z]{2,})?$/i;
+
         setError((prev) => ({
           ...prev,
           email: {
@@ -191,7 +105,7 @@ export default function Signup() {
         setError((prev) => ({
           ...prev,
           password: {
-            error: !isLongEnough,
+            error: !isLongEnough, // true if password is less than 8 characters
             strength: strength,
             message: passwordMessage,
           },
@@ -205,6 +119,8 @@ export default function Signup() {
             error: value !== formData.password,
             message: value !== formData.password ? "Mật khẩu không khớp!" : "",
           },
+      
+
         }));
         break;
       default:
@@ -212,10 +128,159 @@ export default function Signup() {
     }
   };
 
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    // const { username, email, password, confirmPassword, phone, fullname } = formData;
+    if (!formData.fullname || !formData.username || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+      toast.error("Vui lòng điền đầy đủ thông tin!");
+      return;
+    }
+    if (!checked) {
+      toast.warn("Điều khoản tài khoản!");
+      return
+    }
+    // Ensure all fields are valid
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (Object.values(error).some((field) => field.error)) {
+      toast.error("Vui lòng điền đầy đủ thông tin!.");
+      return;
+    }
+    const charset = /^[a-zA-Z0-9!@#$%^&*]*$/;
+    if (!charset.test(formData.username)) {
+      setError((prev) => ({
+        ...prev,
+        username: {
+          error: true,
+          message: true ? "Tên tài khoản quá ngắn!" : "",
+        },
+      }));
+      toast.error("Tên tài khoản không được chứa ký tự bỏ dấu hoặc không hợp lệ!");
+
+      return;
+    }
+
+    console.log(formData);
+
+    // checkEmailTONTAI(formData.email)
+    const token = import.meta.env.VITE_TOKEN_HUNTER;
+    const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${formData.email}&api_key=${token}`);
+    console.log(response);
+    if (response?.data?.data?.status === "valid") {
+      try {
+        const response = await AuthService.register(formData);
+        if (response.status === 200) {
+          toast.success("Đăng ký thành công");
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
+        } else {
+          toast.error("đăng ký thất bại,", response.data);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error?.response?.data || " Lỗi!");
+      }
+      console.log("oke");
+    } else {
+      toast.error("(" + formData.email + ")" + " Email Không tồn tại!");
+      console.log("ko oke");
+
+    }
+  };
+
+  const generatePassword = () => {
+    const length = 16; // Adjusted length for the password
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let password = "@";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
+    }
+
+    return password;
+  };
   useEffect(() => {
-    validateInput("password", formData.password);
-    validateInput("confirmPassword", formData.confirmPassword);
-  }, [formData.password, formData.confirmPassword]);
+    setError((prev) => ({
+      ...prev,
+      confirmPassword: {
+        error: formData.confirmPassword !== formData.password,
+        message: formData.confirmPassword !== formData.password ? "Mật khẩu không khớp!" : "",
+      },
+      fullname: {
+        error: formData.fullname.length  <= 0,
+        message: formData.fullname.length <= 0 ? "Tên tài khoản quá ngắn!" : "",
+      }, phone: {
+        error: formData.phone.length !== 10,
+        message:  formData.phone.length !== 10 ? "Số điện thoại phải chứa đúng 10 số!" : "",
+
+      },
+
+
+    }));
+    const handleInputChange = (event) => {
+      const { name, value } = event.target;
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value
+      }));
+
+      // Validate input
+      validateInput(name, value);
+    };
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]{2,}(\.[a-z]{2,})?$/i;
+
+    setError((prev) => ({
+      ...prev,
+      email: {
+        error: !emailPattern.test(formData.email),
+        message: !emailPattern.test(formData.email) ? "Email không hợp lệ!" : "",
+      },
+    }));
+
+  }, [formData.password, formData.confirmPassword, formData.phone, formData.email,formData.fullname,formData.username]);
+
+  const handleSelectChange = () => {
+    let selectedPassword = generatePassword();
+    console.log("Selected Password:", selectedPassword);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      password: selectedPassword,
+      confirmPassword: selectedPassword,
+    }));
+
+    setError((prev) => ({
+      ...prev,
+      password: {
+        error: false, // true if password is less than 8 characters
+        strength: "strong",
+        message: "Mật khâu mạnh!",
+      },
+    }));
+
+    validateInput({ name: "password", value: selectedPassword });
+    validateInput({ name: "confirmPassword", value: selectedPassword });
+
+
+  };
+
+  const getPasswordStrengthClass = (strength) => {
+    switch (strength) {
+      case "weak":
+        return "bg-red-100 ring-red-500";
+      case "medium":
+        return "bg-yellow-100";
+      case "strong":
+        return "bg-green-100";
+      default:
+        return "";
+    }
+  };
 
   return (
     <Layout childrenClasses="pt-0 pb-0">
@@ -258,7 +323,7 @@ export default function Signup() {
                   </div>
                 </div>
                 <div className="input-area">
-                  <form onSubmit={handleLogin}>
+                  <form onSubmit={handleRegister}>
                     <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
                       <InputCom
                         placeholder="Họ và tên"
@@ -266,18 +331,21 @@ export default function Signup() {
                         name="fullname"
                         type="text"
                         id="fullname"
-                        inputClasses="h-[50px]"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.fullname?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
+
                       <InputCom
-                        placeholder="Demo@gmail.com"
-                        label="Email :"
-                        name="email"
-                        type="email"
-                        id="email"
-                        inputClasses="h-[50px]"
+                        placeholder="09039 *********"
+                        label="Số điện thoại :"
+                        name="phone"
+                        type="text"
+                        id="phone"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 
+                          ${error.phone?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
+
                     </div>
                     <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
                       <InputCom
@@ -286,18 +354,20 @@ export default function Signup() {
                         name="username"
                         type="text"
                         id="username"
-                        inputClasses="h-[50px]"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.username?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
                       <InputCom
-                        placeholder="09039 *********"
-                        label="Số điện thoại :"
-                        name="phone"
-                        type="text"
-                        id="phone"
-                        inputClasses="h-[50px]"
+                        placeholder="Demo@gmail.com"
+                        label="Email :"
+                        name="email"
+                        type="email"
+                        id="email"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6
+                           ${error?.email?.error ? 'bg-red-100 ring-red-500' : ''}`}
                         inputHandler={handleInputChange}
                       />
+
                     </div>
                     <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
                       <InputCom
@@ -305,8 +375,13 @@ export default function Signup() {
                         label="Mật khẩu :"
                         name="password"
                         id="password"
+                        value={formData.password}
                         type={showPassword ? "text" : "password"}
-                        inputClasses="h-[50px]"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.password?.strength === "weak" ? "bg-red-100 ring-red-500" :
+                          error.password?.strength === "medium" ? "ring-yellow-500" :
+                            error.password?.strength === "strong" ? "ring-green-500" :
+                              ""
+                          }`}
                         inputHandler={handleInputChange}
                       >
                         <button
@@ -328,8 +403,10 @@ export default function Signup() {
                         label="Xác nhận mật khẩu :"
                         name="confirmPassword"
                         id="confirmPassword"
+                        value={formData.confirmPassword}
                         type={showRePassword ? "text" : "password"}
-                        inputClasses="h-[50px]"
+                        inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.confirmPassword?.error ? 'bg-red-100 ring-red-500' : 'bg-green-100 ring-green-500'}`}
+
                         inputHandler={handleInputChange}
                       >
                         <button
@@ -337,7 +414,7 @@ export default function Signup() {
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                           onClick={() => setShowRePassword(!showRePassword)}
                         >
-                          {showPassword ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                          {showRePassword ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                           </svg>
                             : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -347,6 +424,14 @@ export default function Signup() {
                           }
                         </button>
                       </InputCom>
+                    </div>
+                    <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
+                      {error.password?.message && <span className={`ml-2 ${error.password.strength === "weak" ? "text-red-500" : error.password.strength === "medium" ? "text-yellow-500" : error.password.strength === "strong" ? "text-green-500" : ""}`}>{error.password.message}</span>}
+                      {(error.password?.strength === "weak" || error.password?.strength === "medium") && (
+                        <>
+                          <button className="mr-0 p-[2px] bg-blue-200 text-white rounded" type="button" onClick={handleSelectChange} > gợi ý</button>
+                        </>
+                      )}
                     </div>
                     <div className="forgot-password-area mb-7">
                       <div className="remember-checkbox flex items-center space-x-2.5">

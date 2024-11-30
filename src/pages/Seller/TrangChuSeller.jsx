@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import CardDataStats from '../../components/CardDataStats';
 import ChartOne from './components/ChartOne';
-import ChartThree from '../../components/Charts/ChartThree';
 import HomeService from "../../service/Seller/homeService";
 
 const TrangChuSeller = () => {

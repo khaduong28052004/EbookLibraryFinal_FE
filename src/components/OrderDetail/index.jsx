@@ -33,7 +33,6 @@ export default function OrderDetail({ orderId, clearOrderId }) {
 
             if (response && response.data && response.data.data) {
                 const data = response.data.data;
-
                 setOrder(Array.isArray(data) ? data : []);
             } else {
                 throw new Error('Không có dữ liệu');
@@ -183,7 +182,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                                         </div>
                                         <div className="orderInfo-1-item h-100px w-[30%] ">
                                             <div className="orderStatus-container flex justify-end px-5">
-                                                <div className=" bg-[#C6E7FF] rounded-full text-cyan-800  text-sm font-bold text-center px-4 py-1 ">
+                                                <div className=" bg-[#C6E7FF] rounded-full text-[#003EA1]   text-sm font-bold text-center px-4 py-1 ">
                                                     <p>{bill.billOrderStatus}</p>
                                                 </div>
                                             </div>
@@ -260,8 +259,8 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                                                                                 <button onClick={(event) => {
                                                                                     event.preventDefault(); // Ngăn điều hướng khi bấm nút
                                                                                     setValue(product.billDetailId, product.productId);
-                                                                                }} className="w-[100px] h-[35px] rounded text-[#608BC1] text-[15px]  
-                                                                                px-2 py-0 border border-[#608BC1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">Đánh giá</button>
+                                                                                }} className="w-[100px] h-[35px] rounded text-[#003EA1] text-[15px]  
+                                                                                px-2 py-0 border border-[#003EA1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">Đánh giá</button>
                                                                             </div>
                                                                         </div>
                                                                     )
@@ -326,18 +325,18 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                                         <div className="orderInfo-1-item h-100px  ">
                                             <div className="orderStatus-container flex justify-end">
                                                 {((bill.billOrderStatus === "Hủy") || (bill.billOrderStatus === "Hoàn thành")) ? (
-                                                    <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
+                                                    <div className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1 hover:opacity-95 ">
                                                         <button onClick={() => reOrder(bill.billID)}>Mua lại</button>
                                                     </div>
                                                 ) : <></>}
                                                 {bill.billOrderStatus === "Chờ duyệt" ? (
-                                                    <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
+                                                    <div className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1 hover:opacity-95 ">
                                                         <button onClick={() => cancelOrder(bill.billID)}>Hủy đơn</button>
                                                     </div>
                                                 ) : <></>}
 
                                                 {bill.billOrderStatus === "Đã giao" && (
-                                                    <div className=" bg-cyan-800 rounded text-white  text-sm font-bold text-center px-6 py-1 ">
+                                                    <div className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1 hover:opacity-95 ">
                                                         <button onClick={() => confirmOrder(bill.billID)}>Xác nhận đã nhận hàng</button>
                                                     </div>
                                                 )}

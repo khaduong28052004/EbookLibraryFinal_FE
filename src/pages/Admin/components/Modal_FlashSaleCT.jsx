@@ -4,8 +4,8 @@ import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import flashSale from '../../../service/admin/FlashSale';
 import flashSaleDetails from '../../../service/admin/FlashSaleDetails';
-import ModalFlashSale from "./Model_FlashSaleCTInsert";
-import Modal from "./ModalThongBao";
+import ModalFlashSaleDetails from "./Model_FlashSaleCTInsert";
+import Modal from "./Modal_ThongBao_NotMail";
 import Pagination from './Pagination';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -18,13 +18,14 @@ const Modal_FlashSaleCT = ({
     title
 }) => {
     const initialFormData = {
-        id: '',
-        dateStart: '',
-        dateEnd: '',
-        account: '',
+        dateStart: entityFlashSale.dateStart || '',
+        dateEnd: entityFlashSale.dateEnd || '',
+        id: entityFlashSale.id || '',
+        account: sessionStorage.getItem("id_account")
     };
     const [formData, setFormData] = useState(initialFormData);
     const [Product, setProduct] = useState([]);
+    const [entityFlashSaleDetails, setEntityFlashSaleDetailst] = useState([]);
     const [dataProduct, setdataProduct] = useState([]);
     const [sortColumnProduct, setSortColumnProduct] = useState('');
     const [sortByProduct, setSortByProduct] = useState(true);
@@ -36,9 +37,9 @@ const Modal_FlashSaleCT = ({
     const [sortByNotProduct, setSortByNotProduct] = useState(true);
     const [currentPageNotProduct, setCurrentPageNotProduct] = useState(0);
 
+    const [post, setPost] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDelete, setIsOpenDelete] = useState(false);
-    const [statusentity, setStatusentity] = useState(false);
     const [status, setStatus] = useState(true);
 
     const handleChange = (e) => {
@@ -46,8 +47,8 @@ const Modal_FlashSaleCT = ({
         setFormData((prev) => ({
             ...prev,
             [name]: value,
-            id: entityFlashSale.id,
-            account: sessionStorage.getItem("id_account"),
+            id: entityFlashSale.id || '',
+            account: sessionStorage.getItem("id_account")
         }));
     };
 
@@ -121,7 +122,6 @@ const Modal_FlashSaleCT = ({
             const response = await flashSale.put({ data: formData });
             setStatusFillAll(!statusFillAll);
             toast.success(response.data.message);
-            setFormData(initialFormData);
             setOpen(false);
         } catch (error) {
             toast.error(error.response.data.message);
@@ -145,7 +145,7 @@ const Modal_FlashSaleCT = ({
     useEffect(() => {
         findListNotFalshSale();
         findListByFlashSale();
-    }, [entityFlashSale, currentPageProduct, currentPageNotProduct, formData.dateStart, sortByProduct, sortColumnProduct, sortByNotProduct, sortColumnNotProduct, formData.dateEnd, status]);
+    }, [entityFlashSale, currentPageProduct, currentPageNotProduct, sortByProduct, sortColumnProduct, sortByNotProduct, sortColumnNotProduct, status]);
 
     const formatToDateTimeLocal = (dateString) => {
         if (!dateString) return "";
@@ -163,7 +163,8 @@ const Modal_FlashSaleCT = ({
         setFormData({
             dateStart: formatToDateTimeLocal(entityFlashSale.dateStart),
             dateEnd: formatToDateTimeLocal(entityFlashSale.dateEnd),
-            account: entityFlashSale.id || "",
+            id: entityFlashSale.id || '',
+            account: sessionStorage.getItem("id_account")
         });
     }, [entityFlashSale]);
 
@@ -309,7 +310,7 @@ const Modal_FlashSaleCT = ({
                                                 <button onClick={() => {
                                                     setProductNotProduct(entity);
                                                     setIsOpen(true);
-                                                    setStatusentity(!entity.delete);
+                                                    setPost(true);
                                                 }}>
                                                     <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
                                                 </button>
@@ -384,7 +385,7 @@ const Modal_FlashSaleCT = ({
                                         </div>
                                     </th>
                                     <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                                        <span className="text-sm text-black dark:text-white truncate w-24">Actions</span>
+                                        <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
                                     </th>
                                 </tr>
                             </thead>
@@ -400,7 +401,7 @@ const Modal_FlashSaleCT = ({
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                             <div className="flex items-center gap-1 hidden xl:flex">
-                                                {(entity.product.price - entity.product.sale).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                                                {(entity.product.price - (entity.product.price * entity.product.sale / 100)).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                                             </div>
                                         </td>
                                         <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -422,7 +423,13 @@ const Modal_FlashSaleCT = ({
                                                 }}>
                                                     {!entity.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                                 </button>
-
+                                                <button onClick={() => {
+                                                    setEntityFlashSaleDetailst(entity);
+                                                    setIsOpen(true);
+                                                    setPost(false);
+                                                }}>
+                                                    <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -438,13 +445,14 @@ const Modal_FlashSaleCT = ({
                             setPageNumber={setCurrentPageProduct}
                             size={dataProduct.size}></Pagination>
 
-                        <ModalFlashSale
+                        <ModalFlashSaleDetails
                             product={ProductNotProduct}
                             flashSaleId={entityFlashSale.id}
+                            entity={post ? null : entityFlashSaleDetails}
                             open={isOpen}
                             setOpen={setIsOpen}
-                            title={'Thêm sản phẩm'}
-                            message={'Bạn chắc chắn muốn thêm sản phẩm này không?'}
+                            title={post ? 'Thêm sản phẩm' : 'Cập nhật sản phẩm'}
+                            message={post ? 'Bạn chắc chắn muốn thêm sản phẩm này không?' : 'Bạn chắc chắn muốn cập nhật sản phẩm này không?'}
                             confirmText={'Xác Nhận'}
                             cancelText="Thoát"
                             status={status}
@@ -453,7 +461,7 @@ const Modal_FlashSaleCT = ({
                             open={isOpenDelete}
                             setOpen={setIsOpenDelete}
                             title={'Xóa Sản Phẩm'}
-                            message={'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'}
+                            message={'Bạn chắc chắn xóa sản phẩm này không?'}
                             onConfirm={handleConfirm}
                             confirmText={'Xác Nhận'}
                             cancelText="Thoát"

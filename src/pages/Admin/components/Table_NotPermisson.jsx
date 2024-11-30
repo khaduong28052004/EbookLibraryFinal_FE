@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLongDownIcon, TrashIcon, ArrowPathIcon, ArrowLongUpIcon, PlusCircleIcon} from '@heroicons/react/24/solid'
+import { ArrowLongDownIcon, TrashIcon, ArrowPathIcon, ArrowLongUpIcon, PlusIcon } from '@heroicons/react/24/solid'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import permission from '../../../service/admin/Permission';
 import rolePermission from '../../../service/admin/PermissionDetails';
-import Modal from "./ModalThongBao";
+import Modal from "./Modal_ThongBao_NotMail";
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './Pagination';
 
@@ -25,7 +25,7 @@ const Table_NotPermission = ({
 
     const findlAllNotRole = async () => {
         try {
-            const response = await permission.findlAllNotRole({ page: currentPage, size: 2, role: optionRole, sortColumn, sortBy });
+            const response = await permission.findlAllNotRole({ page: currentPage, size: 5, role: optionRole, sortColumn, sortBy });
             console.log("content: " + response.data.result.content);
             setData(response.data.result);
         } catch (error) {
@@ -59,7 +59,7 @@ const Table_NotPermission = ({
             const response = await rolePermission.create({ data: form });
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
-            } 
+            }
             findlAllNotRole();
             setStatus(!status);
         } catch (error) {
@@ -101,8 +101,8 @@ const Table_NotPermission = ({
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1">
                                             <span className="text-sm text-black dark:text-white">Mã </span>
-                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "id" ? "text-black" : "text-gray-500"} text-black`} />
+                                            <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "id" ? "text-black" : "text-gray-500"} text-black`} />
                                         </div>
                                     </th>
 
@@ -114,8 +114,8 @@ const Table_NotPermission = ({
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1 hidden xl:flex">
                                             <span className="text-sm text-black dark:text-white ">Quyền</span>
-                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "cotSlug" ? "text-black" : "text-gray-500"} text-black`} />
+                                            <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "cotSlug" ? "text-black" : "text-gray-500"} text-black`} />
                                         </div>
                                     </th>
 
@@ -127,8 +127,8 @@ const Table_NotPermission = ({
                                         className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                                         <div className="flex items-center gap-1 hidden xl:flex">
                                             <span className="text-sm text-black dark:text-white">Mô tả</span>
-                                            <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                            <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                            <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "description" ? "text-black" : "text-gray-500"} text-black`} />
+                                            <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "description" ? "text-black" : "text-gray-500"} text-black`} />
                                         </div>
                                     </th>
                                     <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -163,7 +163,7 @@ const Table_NotPermission = ({
                                                     setEntityPermission(entity);
                                                     setIsOpen(true);
                                                 }}>
-                                                    <PlusCircleIcon className='w-5 h-5 text-black hover:text-success  dark:text-white' />
+                                                    <PlusIcon className='w-5 h-5 text-black hover:text-success  dark:text-white' />
                                                 </button>
                                             </div>
                                         </td>

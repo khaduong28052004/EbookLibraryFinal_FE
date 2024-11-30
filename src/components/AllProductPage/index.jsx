@@ -8,7 +8,7 @@ import DataIteration from "../Helpers/DataIteration";
 import Layout from "../Partials/Layout";
 import ProductsFilter from "./ProductsFilter";
 import LazyLoad from "react-lazyload";
-
+import SearchService from "../../service/user/search";
 export default function AllProductPage() {
 
   const [filters, setFilter] = useState({
@@ -63,7 +63,7 @@ export default function AllProductPage() {
 
   const [categories, setCategories] = useState();
 
-  const [datas, setDatas] = useState();
+  const [datas, setDatas] = useState([]);
 
 
   // Toggle the dropdown open/close
@@ -73,13 +73,46 @@ export default function AllProductPage() {
 
   useEffect(() => {
     const text = query.get("text");
+    const idProduct = query.get('idProduct');
 
-    axios.get("http://localhost:8080/api/v1/user/search?text=" + text).then(response => {
-      setDatas(response.data.result.datas);
-      setCategories(response.data.result.categories);
-      // console.log("text " + response.data.result.datas);
-    }).catch(error => console.error("fetch data search error " + error));
+    // Nếu có idProduct
+    if (idProduct) {
+      const idProducts = idProduct.split(',').map(Number);
+      // Kiểm tra nếu idProducts không rỗng và có giá trị hợp lệ
+      if (idProducts.length > 0) {
+        searchImage(idProducts);
+      } else {
+        setDatas([]);
+        console.error("ID product không hợp lệ");
+      }
+    }
+    // Nếu không có idProduct và có text
+    else if (text) {
+      axios.get("http://localhost:8080/api/v1/user/search?text=" + text)
+        .then(response => {
+          setDatas(response.data.result.datas);
+          setCategories(response.data.result.categories);
+          // console.log("text " + response.data.result.datas);
+        })
+        .catch(error => console.error("fetch data search error " + error));
+    }
+    // Nếu không có cả idProduct và text, có thể hiển thị thông báo lỗi hoặc chuyển về trạng thái khác
+    else {
+      setDatas([]);
+
+      console.error("Không có thông tin tìm kiếm hợp lệ");
+    }
   }, [location]);
+
+
+  const searchImage = async (idProducts) => {
+    try {
+      const response = await SearchService.searchByIds(idProducts);
+      setDatas(response.data.result.content);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleSelected = (value) => {
     // Tạo mảng validSelected chứa các key có giá trị true
@@ -157,53 +190,72 @@ export default function AllProductPage() {
 
                   </div>
                 </div> */}
-                <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1  xl:gap-[30px] gap-5 mb-[5px]">
-                  {/* <DataIteration datas={products} startLength={0} endLength={6}>
+                {/* <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1  xl:gap-[30px] gap-5 mb-[5px]"> */}
+                {/* <DataIteration datas={products} startLength={0} endLength={6}>
                     {({ datas }) => (
                       <div data-aos="fade-up" key={datas.id}>
                         <ProductCardStyleOne datas={datas} />
                       </div>
                     )}
                   </DataIteration> */}
-                </div>
-                <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1 xl:gap-[30px] gap-5 mb-[40px]">
-                  <DataIteration
-                    datas={datas}
-                    startLength={0}
-                    endLength={datas?.length}
-                  >
-                    {({ datas }) => (
-                      <div data-aos="fade-up" key={datas.id}>
-                        <LazyLoad
-                          // once={true}
-                          key={datas?.id}
-                          height={100}
-                          offset={[-100, 100]}
-                          placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-                            <div class="animate-pulse flex space-x-4">
-                              <div class="flex-1 space-y-3 py-1">
-                                <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
-                                <div class="h-5 bg-slate-700 rounded"></div>
-                                <div class="h-5 bg-slate-700 rounded"></div>
-                                <div class="space-y-3">
-                                  <div class="grid grid-cols-4 gap-4">
-                                    <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                                    <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                {/* </div> */}
+                {datas.length > 0 ? (
+                  <div className="grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1 xl:gap-[30px] gap-5 mb-[40px]">
+
+                    <DataIteration
+                      datas={datas}
+                      startLength={0}
+                      endLength={datas?.length}
+                    >
+
+                      {({ datas }) => (
+                        <div data-aos="fade-up" key={datas.id}>
+                          <LazyLoad
+                            // once={true}
+                            key={datas?.id}
+                            height={100}
+                            offset={[-100, 100]}
+                            placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                              <div class="animate-pulse flex space-x-4">
+                                <div class="flex-1 space-y-3 py-1">
+                                  <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
+                                  <div class="h-5 bg-slate-700 rounded"></div>
+                                  <div class="h-5 bg-slate-700 rounded"></div>
+                                  <div class="space-y-3">
+                                    <div class="grid grid-cols-4 gap-4">
+                                      <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                                      <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                                    </div>
+                                    {/* <div class="h-2 bg-slate-700 rounded"></div> */}
                                   </div>
-                                  {/* <div class="h-2 bg-slate-700 rounded"></div> */}
                                 </div>
                               </div>
+                            </div>}
+                          >
+                            <div>
+                              <ProductCardStyleOne datas={datas} />
                             </div>
-                          </div>}
-                        >
-                          <div>
-                            <ProductCardStyleOne datas={datas} />
-                          </div>
-                        </LazyLoad>
-                      </div>
-                    )}
-                  </DataIteration>
-                </div>
+                          </LazyLoad>
+                        </div>
+                      )}
+                    </DataIteration>
+
+                  </div>
+                ) : (
+                  <div className="flex justify-center items-center min-h-screen bg-white  ">
+                    <div className="text-center">
+                      <img
+                        width="70"
+                        height="70"
+                        src="https://img.icons8.com/glassmorphism/48/book.png"
+                        alt="book"
+                        className="mx-auto mb-4"
+                      />
+                      <p className="text-gray-500 text-lg font-semibold">Không tìm thấy sản phẩm</p>
+                    </div>
+                  </div>
+
+                )}
               </div>
             </div>
           </div>

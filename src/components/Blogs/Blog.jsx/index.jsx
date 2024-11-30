@@ -741,7 +741,7 @@ export default function Blog() {
                       </div>
                       <button type="button" className="w-full h-[60px]">
                         <span
-                          className="yellow-btn w-full h-full"
+                          className="flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none w-full h-full"
                           style={{ fontSize: "18px" }}
                         >
                           Subscribe

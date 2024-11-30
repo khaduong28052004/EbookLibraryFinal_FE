@@ -2,6 +2,8 @@ import React, { Dispatch, SetStateAction, ReactNode } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 
 interface ModalProps {
+    content: string;
+    setContent: Dispatch<SetStateAction<string>>; // Updated to a setter function type
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
     title: string;
@@ -9,12 +11,14 @@ interface ModalProps {
     onConfirm?: () => void;
     confirmText?: string;
     cancelText?: string;
-    icon?: ReactNode; 
-    iconBgColor?: string; 
+    icon?: ReactNode;
+    iconBgColor?: string;
     buttonBgColor?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
+    content,
+    setContent,
     open,
     setOpen,
     title,
@@ -47,7 +51,19 @@ const Modal: React.FC<ModalProps> = ({
                                     <div className="mt-2">
                                         <p className="text-sm text-gray-500">{message}</p>
                                     </div>
+                                    <div>
+                                        <label className="my-2.5 block text-black dark:text-white">
+                                            Lí do:
+                                        </label>
+                                        <textarea cols={5} rows={5}
+                                            value={content}
+                                            placeholder="Lí do..."
+                                            onChange={(e) => { setContent(e.target.value) }}
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            name="" id=""></textarea>
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
                         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
@@ -57,7 +73,10 @@ const Modal: React.FC<ModalProps> = ({
                                     onConfirm && onConfirm();
                                     setOpen(false);
                                 }}
+                                // disabled={content.length < 20}
+                                // className={`inline-flex w-full justify-center rounded-md ${content.length > 20 ? (buttonBgColor) : ('bg-gray-400')}  px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
                                 className={`inline-flex w-full justify-center rounded-md ${buttonBgColor} px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
+
                             >
                                 {confirmText}
                             </button>

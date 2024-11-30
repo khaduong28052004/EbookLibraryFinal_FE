@@ -20,6 +20,8 @@ const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusentity, setStatusentity] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+  const [contents, setContents] = useState("");
+
   const handleConfirm = () => {
     putStatusNhanVien(entityNhanVien.id);
     setIsOpen(false);
@@ -41,11 +43,12 @@ const TableTwo = () => {
 
   const putStatusNhanVien = async (id) => {
     try {
-      const response = await accountService.putStatus({ id });
+      const response = await accountService.putStatus({ id, contents });
       console.log("xóa: " + response.data.message);
       if (response.data.code === 1000) {
         toast.success(response.data.message);
       }
+      setContents("");
       findAllAccount();
     } catch (error) {
       toast.error("Cập nhật thất bại");
@@ -55,7 +58,7 @@ const TableTwo = () => {
 
   const findAllAccount = async () => {
     try {
-      const response = await accountService.findAllAccount({ page: currentPage, size: 2, role: "ADMINV1", searchItem, sortColumn, sortBy });
+      const response = await accountService.findAllNhanVien({ page: currentPage, size: 10, searchItem, sortColumn, sortBy });
       console.log("content: " + response.data.result.content);
       setData(response.data.result);
     } catch (error) {
@@ -71,7 +74,7 @@ const TableTwo = () => {
     const sheetNames = ['Danh Sách nhân viên'];
     try {
       console.log("data.totalElements: " + data.totalElements);
-      const response = await accountService.findAllAccount({ page: 0, size: data.totalElements, role: "ADMINV1", searchItem, sortColumn, sortBy });
+      const response = await accountService.findAllNhanVien({ page: 0, size: data.totalElements, searchItem, sortColumn, sortBy });
       return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -153,8 +156,8 @@ const TableTwo = () => {
               className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -166,8 +169,8 @@ const TableTwo = () => {
               className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Họ và tên</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -179,8 +182,8 @@ const TableTwo = () => {
               className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Giới tính</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "gender" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "gender" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -192,8 +195,8 @@ const TableTwo = () => {
               className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Email</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -205,8 +208,8 @@ const TableTwo = () => {
               className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số điện thoại</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -251,7 +254,10 @@ const TableTwo = () => {
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                 <div className="flex space-x-3.5">
-                  <button onClick={() => { setEntityNhanVien(entity); setIsOpen(true); setStatusentity(entity.status); }}>
+                  <button onClick={() => { 
+                    setEntityNhanVien(entity); 
+                    setIsOpen(true); 
+                    setStatusentity(entity.status); }}>
                     {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                   </button>
                 </div>
@@ -270,6 +276,8 @@ const TableTwo = () => {
         size={data.size}></Pagination>
 
       <Modal
+        content={contents}
+        setContent={setContents}
         open={isOpen}
         setOpen={setIsOpen}
         title={statusentity

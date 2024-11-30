@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import product from '../../../service/admin/Product';
 import Modal from "./ModalThongBao";
@@ -23,9 +23,11 @@ const TableTwo = () => {
     const [status, setStatus] = useState(null);
 
     const [active, setActive] = useState(null);
+    const [contents, setContents] = useState("");
+
     const findAllProduct = async () => {
         try {
-            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 2, sortColumn, sortBy });
+            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: 10, sortColumn, sortBy });
             setData(response.data.result);
         } catch (error) {
             console.log("Error: " + error);
@@ -44,9 +46,9 @@ const TableTwo = () => {
     //         console.log("Error: " + error);
     //     }
     // }
-    const putStatus = async (id) => {
+    const putStatus = async (id, contents) => {
         try {
-            const response = await product.putStatus({ id });
+            const response = await product.putStatus({ id, contents });
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
             }
@@ -58,7 +60,7 @@ const TableTwo = () => {
     }
 
     const handleConfirm = () => {
-        putStatus(entityProduct.id);
+        putStatus(entityProduct.id, contents);
         findAllProduct();
         setIsOpen(false);
     };
@@ -188,8 +190,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
                                 <span className="text-sm text-black dark:text-white">Sản phẩm</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -201,8 +203,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white">Giá</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "price" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "price" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -214,8 +216,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Nhà xuất bản</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "publishingCompany" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "publishingCompany" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -227,8 +229,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Tác giả</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "writerName" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "writerName" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
                         <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -259,7 +261,7 @@ const TableTwo = () => {
                                     {data.pageable.pageNumber * data.size + index + 1}
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                    <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0]} alt="entity" />
+                                    <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0].name} alt="entity" />
                                     <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
@@ -294,13 +296,15 @@ const TableTwo = () => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
-                                        <button onClick={() => {
+                                        <button onClick={(event) => {
+                                            event.stopPropagation();
                                             setEntityProduct(entity);
                                             setIsOpen(true);
                                             setStatusentity(!entity.delete);
                                             setActive(entity.active ? false : true)
                                         }}>
-                                            {entity.delete == false ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                            <ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />
+                                            {/* {entity.delete == false ? (<ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />) : (<></>)} */}
                                         </button>
                                     </div>
                                 </td>
@@ -334,10 +338,12 @@ const TableTwo = () => {
                 handlePrevious={handlePrevious}
                 handleNext={handleNext}
                 setPageNumber={setCurrentPage}
-                size={data.size}></Pagination>
+                size={data?.size}></Pagination>
 
             {!active ? (
                 <Modal
+                    content={contents}
+                    setContent={setContents}
                     open={isOpen}
                     setOpen={setIsOpen}
                     title={statusentity ? 'Ngừng Hoạt Động' : 'Khôi Phục'}
@@ -361,19 +367,17 @@ const TableTwo = () => {
                     setStatus={setStatus}
                     open={isOpen}
                     setOpen={setIsOpen}
-                    title={statusentity ? 'Hủy' : 'Duyệt'}
-                    message={statusentity
-                        ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
-                        : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
+                    title={'Duyệt Sản Phẩm'}
+                    message={'Bạn có chắc muốn duyệt sản phẩm này không?'}
                     confirmText={'Duyệt'}
                     cancelText={"Hủy"}
                     icon={statusentity ? (
-                        <TrashIcon className="h-6 w-6 text-red-600" />
+                        <ArrowPathIcon className="h-6 w-6 text-yellow-600" />
                     ) : (
                         <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
                     )}
-                    iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                    buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+                    iconBgColor={statusentity ? 'bg-yellow-100' : 'bg-yellow-100'}
+                    buttonBgColor={statusentity ? 'bg-blue-600' : 'bg-yellow-600'} />
             )}
         </div>
     );

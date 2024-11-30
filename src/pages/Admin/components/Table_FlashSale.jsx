@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
+import Modal from "./Modal_ThongBao_NotMail";
 import ModalFlashSale from './ModalFlaseSale';
 import ModalFlashSaleCT from './Modal_FlashSaleCT';
 import flashSale from '../../../service/admin/FlashSale';
@@ -125,8 +125,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
                                 <span className="text-sm text-black dark:text-white">Người tạo </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -138,8 +138,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white ">Ngày bắt đầu</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "dateStart" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "dateStart" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -151,8 +151,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white">Ngày kết thúc</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "dateEnd" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "dateEnd" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -228,22 +228,14 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
             <Modal
                 open={isOpen}
                 setOpen={setIsOpen}
-                title={statusentity
-                    ? 'Ngừng Hoạt Động'
-                    : 'Khôi Phục'}
-                message={statusentity
-                    ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                    : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+                title={'Xóa'}
+                message={'Bạn chắc chắn muốn xóa Flashsale này không?'}
                 onConfirm={handleConfirm}
-                confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
+                confirmText={'Xác Nhận'}
                 cancelText="Thoát"
-                icon={statusentity ? (
-                    <TrashIcon className="h-6 w-6 text-red-600" />
-                ) : (
-                    <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
-                )}
-                iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+                icon={<TrashIcon className="h-6 w-6 text-red-600" />}
+                iconBgColor={'bg-red-100'}
+                buttonBgColor={'bg-red-600'} />
             <ModalFlashSale
                 status={status}
                 setStatus={setStatus}

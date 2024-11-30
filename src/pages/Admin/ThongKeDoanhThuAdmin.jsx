@@ -16,7 +16,7 @@ const DoanhThuAdmin = () => {
 
   const findAllDoanhThu = async () => {
     try {
-      const response = await Thongke.doanhThu({ dateStart, dateEnd, currentPage, size: 4, searchItem, sortColumn, sortBy });
+      const response = await Thongke.doanhThu({ dateStart, dateEnd, currentPage, size: 10, searchItem, sortColumn, sortBy });
       setData(response.data.result.thongke);
       setHeader(response.data.result);
     } catch (error) {

@@ -28,57 +28,50 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId 
         return null;
     };
 
-const fetchEvaluate = async () => {
-    console.log("Calling createEvaluate");  // Check if this runs
+    const fetchEvaluate = async () => {
+        console.log("Calling createEvaluate");  // Check if this runs
 
-    try {
-        setLoading(true);
+        try {
+            setLoading(true);
 
-        const accountId = getIdAccountFromSession().id_account;
-        if (!star || star <= 0) {
-            toast.warn("Vui lòng đánh giá sao trước khi gửi");
+            const accountId = getIdAccountFromSession().id_account;
+            if (!star || star <= 0) {
+                toast.warn("Vui lòng đánh giá sao trước khi gửi");
+                setLoading(false);
+                return;
+            }
+            console.log('1');
+
+            console.log('star:', star);
+            console.log('content:', content);
+            console.log('billDetailId:', orderDetailId);
+            console.log('productId:', productId);
+            console.log('accountId:', accountId);
+            console.log('images:', images);
+
+            const response = await userEvaluateService.createEvaluate({
+                star,
+                content: content || "",
+                orderDetailId,
+                productId,
+                accountId: accountId,
+                images: images,
+            });
+
+            if (response.status !== 200) {
+                handleErrorResponse(response.data);
+                return;
+            }
+            toast.success("Gửi đánh giá thành công");
+            clearOrderDetailId();
+
+        } catch (error) {
+            console.log('Caught error:', error.message);
+            toast.error(error.message || "Đã xảy ra lỗi khi gửi đánh giá");
+        } finally {
             setLoading(false);
-            return;
         }
-        console.log('1');
-
-        console.log('star:', star);
-        console.log('content:', content);
-        console.log('billDetailId:', orderDetailId);
-        console.log('productId:', productId);
-        console.log('accountId:', accountId);
-        console.log('images:', images);
-
-        const response = await userEvaluateService.createEvaluate({
-            star,
-            content: content || "",
-            orderDetailId,
-            productId,
-            accountId:accountId,
-            images : images,
-        });
-        console.log('2');
-        console.log("Response:", response);
-
-        // In axios, a status outside of 2xx range triggers the catch block.
-        if (response.status !== 200 && response.status !== 201) {
-            console.error('Server error:', response.data);
-            const errorMessages = Object.values(response.data)
-                .filter(value => typeof value === 'string');
-            console.error('Lỗi từ server:', errorMessages.join(', '));
-            throw new Error(response.data.message || 'Đã xảy ra lỗi không xác định');
-        }
-
-        // Assuming response.data contains the response JSON.
-        toast.success("Gửi đánh giá thành công");
-        clearOrderDetailId();
-    } catch (error) {
-        console.log('Caught error:', error.message);
-        toast.error(error.message || "Đã xảy ra lỗi khi gửi đánh giá");
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
 
     const handleStarClick = (value) => {
@@ -87,17 +80,17 @@ const fetchEvaluate = async () => {
     };
 
     const handleImageChange = (event) => {
-        const maxSize = 5 * 1024 * 1024; 
+        const maxSize = 5 * 1024 * 1024;
         const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-        const uploadImages = Array.from(event.target.files); 
+        const uploadImages = Array.from(event.target.files);
         const totalImages = images.length + uploadImages.length;
-    
+
         if (totalImages > 4) {
             setMessage("Chỉ có thể tải tối đa 4 ảnh. Vui lòng chọn lại");
-            event.target.value = ""; 
+            event.target.value = "";
             return;
         }
-    
+
         const validImages = [];
         let hasError = false;
         uploadImages.forEach((image) => {
@@ -108,22 +101,22 @@ const fetchEvaluate = async () => {
                 setMessage("Chỉ chấp nhận file ảnh có định dạng PNG, JPEG hoặc JPG");
                 hasError = true;
             } else {
-                validImages.push(image); 
+                validImages.push(image);
             }
         });
-    
+
         if (hasError) {
-            event.target.value = ""; 
+            event.target.value = "";
             return;
         }
-    
+
         // Cập nhật images với các ảnh hợp lệ
         setImages((prevImages) => [...prevImages, ...validImages]);
-        refresh(); 
+        refresh();
         event.target.value = "";
     };
-    
-    
+
+
 
 
     const removeImage = (index) => {

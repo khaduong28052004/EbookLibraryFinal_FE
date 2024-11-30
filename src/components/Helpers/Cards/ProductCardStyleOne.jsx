@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import LazyLoad from "react-lazyload";
 import { useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
+import { toast } from "react-toastify";
 import { useRequest } from "../../Request/RequestProvicer";
 import Compair from "../icons/Compair";
 import QuickViewIco from "../icons/QuickViewIco";
@@ -31,6 +32,22 @@ export default function ProductCardStyleOne({ datas, type }) {
       }).catch(error => console.error("create favorite error " + error));
     }
   }
+  const handleCreateCart = () => {
+    startRequest();
+    const id_user = sessionStorage.getItem("id_account");
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${datas.id}&quantity=${1}`).then(response => {
+        if (response.data.code = 1000) {
+          toast.success("Thêm thành công");
+          endRequest();
+        }
+      }).catch(error => console.error("create cart error " + error));
+    } else {
+      toast.warn("Vui lòng đăng nhập");
+    }
+  }
+
   return (
     <div
       className="product-card-one w-full h-full bg-white relative group overflow-hidden"
@@ -46,7 +63,6 @@ export default function ProductCardStyleOne({ datas, type }) {
             <ClipLoader size={50} color={"#3498db"} loading={true} />
           </div>}
         >
-
           <img src={datas.imageProducts[0]?.name} alt="" className="h-[100%] w-full p-7" />
 
         </LazyLoad>
@@ -54,10 +70,12 @@ export default function ProductCardStyleOne({ datas, type }) {
       </div>
       <div className="product-card-details px-[30px] pb-[15px] relative">
         {/* add to card button */}
-        <div onClick={() => { navigate("/productdetail?idProduct=" + datas.id); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="absolute w-full h-10 px-[30px] left-0 top-40 group-hover:top-[80px] transition-all duration-300 ease-in-out z-50">
+        <div onClick={() => {
+          handleCreateCart();
+        }} className="absolute w-full h-10 px-[30px] left-0 top-40 group-hover:top-[80px] transition-all duration-300 ease-in-out z-50">
           <button
             type="button"
-            className={type === 3 ? "blue-btn" : "yellow-btn"}
+            className={type === 3 ? "flex items-center justify-center h-full w-full bg-[#FFBB38] text-[13px] font-semibold text-[#1d1d1d] leading-none" : "flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none"}
           >
             <div className="flex items-center space-x-3 " >
               <span>
@@ -87,7 +105,7 @@ export default function ProductCardStyleOne({ datas, type }) {
           {/* <sup className="text-qred font-semibold ml-2 bg-yellow-300 text-[12px]"><FontAwesomeIcon icon={faBolt} className='text-[15px]' />-{datas.flashSaleDetail?.sale}%</sup> */}
 
         </div>
-        <a href={"/productdetail?idProduct=" + datas.id}>
+        <a className="cursor-pointer hover:text-blue-500" onClick={() => { navigate("/productdetail?idProduct=" + datas.id); window.scrollTo({ top: 0, behavior: "smooth" }) }}>
           <p className="title mb-2 text-[15px] font-600 text-qblack leading-[24px] line-clamp-2 hover:text-blue-600 h-[45px]">
             {datas?.name}
           </p>

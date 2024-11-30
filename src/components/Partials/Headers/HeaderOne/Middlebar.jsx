@@ -9,6 +9,9 @@ import ThinLove from "../../../Helpers/icons/ThinLove";
 import ThinPeople from "../../../Helpers/icons/ThinPeople";
 import SearchBox from "../../../Helpers/SearchBox";
 import { useRequest } from '../../../Request/RequestProvicer';
+import { MdOutlineImageSearch } from "react-icons/md";
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
+import SearchService from '../../../../service/user/search';
 
 export default function Middlebar({ className, type }) {
   const navigate = useNavigate();
@@ -17,7 +20,8 @@ export default function Middlebar({ className, type }) {
   const [listening, setListening] = useState(false);
   const { startRequest, endRequest } = useRequest();
   const { isRequesting } = useRequest();
-
+  const [isOpenModalImage, setIsOpenModelImage] = useState(false);
+  const [isOpenEvent, setIsOpenEvent] = useState(false);
   const changeCart = () => {
     if (token) {
       navigate("/cart");
@@ -100,9 +104,57 @@ export default function Middlebar({ className, type }) {
     }
   }, [isRequesting]);
 
+  useEffect(() => {
+    // Xử lý khi ảnh được kéo vào vùng trang
+    const handleDragEnter = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    
+      if (e.dataTransfer && e.dataTransfer.items[0]?.type.startsWith("image/")) {
+        setIsOpenModelImage(true);
+      } else if (e.dataTransfer && e.dataTransfer.items[0]?.kind === "string") {
+          setIsOpenModelImage(true)          
+      }
+    };
+    
+
+    // Xử lý khi thả ảnh
+    const handleDrop = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      setIsOpenModelImage(false); // Đóng modal khi ảnh được thả vào
+    };
+
+    window.addEventListener("dragenter", handleDragEnter);
+    window.addEventListener("drop", handleDrop);
+
+    return () => {
+      window.removeEventListener("dragenter", handleDragEnter);
+      window.removeEventListener("drop", handleDrop);
+    };
+  }, []);
+
+  const searchImage = async (data) => {
+    setIsOpenModelImage(false);
+    setIsOpenEvent(true);
+    try {
+      const response = await SearchService.searchImage(data);
+      console.log(response);
+      navigate(`/search?idProduct=${response.data.similar_product_ids}`);
+      setIsOpenEvent(false);
+    } catch (error) {
+      console.error(error)
+    }
+  }
   return (
     <div className={`w-full h-[86px] bg-white ${className}`}>
       <ToastContainer />
+      {(isOpenEvent) && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-99999">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-indigo-600"></div>
+        </div>
+      )}
       <div className="container-x mx-auto h-full">
         <div className="relative h-full">
           <div className="flex justify-between items-center h-full">
@@ -149,11 +201,81 @@ export default function Middlebar({ className, type }) {
                     onClick={() => setListening(false)}
                   >
                     <FaMicrophone size={20} color="white" />
+
                   </button>
                 </div>
               </div>) : (<></>)}
               {/* ---------------------------------------- */}
+              <div onClick={() => { setIsOpenModelImage(true) }} className="flex items-center justify-center   border rounded-full p-3 ml-2 cursor-pointer">            <MdOutlineImageSearch size={20} color="gray" />
+              </div>
             </div>
+
+            <Dialog open={isOpenModalImage} onClose={() => setIsOpenModelImage(false)} className="relative z-99999">
+              <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+              <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div className="flex min-h-screen items-center justify-center p-4 sm:p-0">
+                  <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:w-full sm:max-w-lg">
+
+                    {/* Nội dung chính */}
+                    <div className="p-6 text-center">
+                      {/* Khu vực kéo thả hoặc upload file */}
+                      <div
+                        className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg py-10 px-4 hover:border-blue-500 hover:bg-gray-100 transition"
+                        onDragOver={(e) => {
+                          e.preventDefault(); // Ngăn trình duyệt mở file
+                          e.currentTarget.classList.add("border-blue-500", "bg-gray-100");
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.currentTarget.classList.remove("border-blue-500", "bg-gray-100");
+
+                          const file = e.dataTransfer.files[0]; // Lấy file đầu tiên được kéo thả
+                          if (file && file.type.startsWith("image/")) {
+                            console.log("Dropped file:", file);
+                            // Thêm logic xử lý file ở đây
+                            // Gắn file vào input để tận dụng xử lý hiện tại
+                            const inputElement = document.getElementById("file-upload");
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            inputElement.files = dataTransfer.files;
+                          } else {
+                            alert("Vui lòng gửi tệp là hình ảnh.");
+                          }
+                          const formData = new FormData();
+                          formData.append("file", file);
+                          searchImage(formData);
+                        }}
+                      >
+                        <img width="70" height="70" src="https://img.icons8.com/?size=100&id=zqpSOVL88Ol1&format=png&color=000000" alt="image" />
+                        <p className="mb-2 text-gray-600">Kéo một hình ảnh vào đây hoặc</p>
+                        {/* Nút upload file */}
+                        <label
+                          htmlFor="file-upload"
+                          className="cursor-pointer text-blue-500 hover:underline"
+                        >
+                          tải lên một tệp
+                        </label>
+                        <input
+                          id="file-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const formData = new FormData();
+                              formData.append("file", file);
+                              searchImage(formData);
+                            }
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </DialogPanel>
+                </div>
+              </div>
+
+            </Dialog>
             <div className="flex space-x-6 items-center">
               {/* <div className="compaire relative">
                 <a href="/products-compaire">
@@ -162,7 +284,7 @@ export default function Middlebar({ className, type }) {
                   </span>
                 </a>
                 <span
-                  className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-qyellow"
+                  className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-[#003EA1"
                     }`}
                 >
                   2
@@ -175,7 +297,7 @@ export default function Middlebar({ className, type }) {
                   </span>
                 </a>
                 <span
-                  className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-qyellow"
+                  className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-[#003EA1] text-[#F5F5F5]"
                     }`}
                 >
                   {totalFavorite}
@@ -189,7 +311,7 @@ export default function Middlebar({ className, type }) {
                     </span>
                   </a>
                   <span
-                    className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-qyellow"
+                    className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-[#003EA1] text-[#F5F5F5]"
                       }`}
                   >
                     {totalCart}
@@ -208,6 +330,7 @@ export default function Middlebar({ className, type }) {
                     <ThinPeople />
                   </span>
                 </Link>
+                
               </div>
             </div>
           </div>
