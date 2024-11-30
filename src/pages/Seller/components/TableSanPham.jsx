@@ -207,8 +207,6 @@ const TableSanPham = () => {
         formData.append("imageProducts", file);
       });
 
-      console.log("DATAAAAAA PRODUCT", dataProduct);
-
       let response;
       if (!isStatus) {
         [response] = await Promise.all([
@@ -525,7 +523,7 @@ const TableSanPham = () => {
 
                         <p>
                           <strong>Giảm Giá: </strong>
-                          {item.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                          {item.sale} %
                         </p>
                       </div>
                     </td>
