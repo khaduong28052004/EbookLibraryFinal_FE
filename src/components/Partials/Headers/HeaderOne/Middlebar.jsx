@@ -1,6 +1,8 @@
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { FaMicrophone } from 'react-icons/fa';
+import { MdOutlineImageSearch } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import Cart from "../../../Cart";
@@ -9,9 +11,6 @@ import ThinLove from "../../../Helpers/icons/ThinLove";
 import ThinPeople from "../../../Helpers/icons/ThinPeople";
 import SearchBox from "../../../Helpers/SearchBox";
 import { useRequest } from '../../../Request/RequestProvicer';
-import { MdOutlineImageSearch } from "react-icons/md";
-import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
-import SearchService from '../../../../service/user/search';
 
 export default function Middlebar({ className, type }) {
   const navigate = useNavigate();
@@ -109,14 +108,14 @@ export default function Middlebar({ className, type }) {
     const handleDragEnter = (e) => {
       e.preventDefault();
       e.stopPropagation();
-    
+
       if (e.dataTransfer && e.dataTransfer.items[0]?.type.startsWith("image/")) {
         setIsOpenModelImage(true);
       } else if (e.dataTransfer && e.dataTransfer.items[0]?.kind === "string") {
-          setIsOpenModelImage(true)          
+        setIsOpenModelImage(true)
       }
     };
-    
+
 
     // Xử lý khi thả ảnh
     const handleDrop = (e) => {
@@ -138,13 +137,27 @@ export default function Middlebar({ className, type }) {
   const searchImage = async (data) => {
     setIsOpenModelImage(false);
     setIsOpenEvent(true);
+    // alert("name " + data?.filename)
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data', // or 'application/json' depending on the server
+      },
+    };
+    console.log("file " + typeof data)
     try {
-      const response = await SearchService.searchImage(data);
-      console.log(response);
-      navigate(`/search?idProduct=${response.data.similar_product_ids}`);
-      setIsOpenEvent(false);
+      const response = await axios.post("http://127.0.0.1:5000/upload", data,config);
+
+      if (response.data?.similar_images) {
+        const productList = response.data?.similar_images.map(item => item?.product?.name);
+        console.log("product"+productList)
+        // setIsOpenEvent(fasle);
+        navigate(`/search?text=${productList}`);
+      } else {
+        console.warn("No similar_images found in the response.");
+      }
+      setIsOpenEvent(false); // Close the event/modal
     } catch (error) {
-      console.error(error)
+      console.error("Error during file upload:", error.message || error);
     }
   }
   return (
@@ -330,7 +343,7 @@ export default function Middlebar({ className, type }) {
                     <ThinPeople />
                   </span>
                 </Link>
-                
+
               </div>
             </div>
           </div>
