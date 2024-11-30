@@ -38,6 +38,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         wardCode: "",
         background: "",
         avatar: "",
+        street:"",
     });
     const fetchAddresses = async () => {
         const id = sessionStorage.getItem("id_account") || 1;
@@ -65,29 +66,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
     useEffect(() => {
         fetchAddresses();
     }, []);
-    // SỬA AND CẬP NHẬT
-    // const fetchEdit = async (event) => {
-    //     event.preventDefault();
-    //     try {
-    //         const id = event.target.getAttribute("data-id");
-    //         console.log("Id address: " + id);
-    //         const data = await getOneAddress(id);
-    //         console.log(data);
-    //         setAddressData(data);
-    //         setSelectedProvince(data.province);
-    //         console.log("ID Province: " + data.province);
-    //         const districtsData = await loadDistricts(parseInt(data.province, 10));
-    //         setDistricts(districtsData);
-    //         setSelectedDistrict(data.district);
-    //         const wardsData = await loadWards(parseInt(data.district, 10));
-    //         setWards(wardsData);
-    //         setSelectedWard(data.wardCode);
-    //         toast.success("Tải dữ liệu chỉnh sửa thành công");
-    //     } catch (error) {
-    //         console.log("Error editing address: ", error);
-    //         toast.error("Lỗi khi tải dữ liệu chỉnh sửa");
-    //     }
-    // };
     useEffect(() => {
         const fetchProvinces = async () => {
             setLoading(true);
@@ -164,29 +142,33 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         if (!addressData.phone || addressData.phone.trim() === "") {
             toast.error("Vui lòng nhập số điện thoại!");
             return;
-          }
-          if (!addressData.province || addressData.province === "default") {
+        }
+        if (!addressData.province || addressData.province === "default") {
             toast.error("Vui lòng chọn Tỉnh/Thành Phố!");
             return;
         }
-        
         if (!addressData.district || addressData.district === "default") {
             toast.error("Vui lòng chọn Quận/Huyện!");
             return;
         }
-        
         if (!addressData.wardCode || addressData.wardCode === "default") {
             toast.error("Vui lòng chọn Xã/Phường!");
             return;
         }
         event.preventDefault();
-        
         const id = sessionStorage.getItem("id_account") || 1;
         try {
             let data;
             if (addressData.id) {
-                const fullNameAddress = `${addressData.fullNameAddress}`;
-                // Tạo một bản sao của addressData và cập nhật fullNameAddress
+                // const fullNameAddress = `${addressData.fullNameAddress}`;
+                const fullNameAddress = [
+                    data.street,
+                    selectedWard?.name,
+                    selectedDistrict?.name,
+                    selectedProvince?.name
+                ]
+                    .filter((part) => part && part.trim() !== '') // Loại bỏ các phần tử null/undefined/rỗng
+                    .join(', '); // Ghép lại thành chuỗi                // Tạo một bản sao của addressData và cập nhật fullNameAddress
                 const updatedAddressData = {
                     ...addressData,
                     fullNameAddress: fullNameAddress,  // Cập nhật fullNameAddress vào bản sao
@@ -200,7 +182,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                 }
             } else {
                 // Creating new address
-                const fullNameAddress = `${addressData.fullNameAddress},${selectedWard.name}, ${selectedDistrict.name}, ${selectedProvince.name}`;
+                const fullNameAddress = `${addressData.street},${selectedWard.name}, ${selectedDistrict.name}, ${selectedProvince.name}`;
                 // Tạo một bản sao của addressData và cập nhật fullNameAddress
                 const postAddressData = {
                     ...addressData,
@@ -210,7 +192,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                 try {
                     data = await postAddress(id, postAddressData);
                     toast.success("Lưu địa chỉ thành công");
-                    } catch (error) {
+                } catch (error) {
                     toast.error("Có lỗi xảy ra khi cập nhật địa chỉ");
                 }
             }
@@ -222,26 +204,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             toast.error("Lỗi khi xử lý địa chỉ");
         }
     };
-    // useEffect(() => {
-    //     const fetchAddressData = async () => {
-    //         if (editingAddressId) {
-    //             try {
-    //                 const data = await getOneAddress(editingAddressId);
-    //                 setAddressData(data);
-    //                 setSelectedProvince({ id: data.province, name: data.provinceName });
-    //                 setSelectedDistrict({ id: data.district, name: data.districtName });
-    //                 setSelectedWard({ id: data.wardCode, name: data.wardsName });
-    //                 //toast.success("Tải dữ liệu chỉnh sửa thành công");
-    //                 console.log("Tải dữ liệu chỉnh sửa thành công")
-    //             } catch (error) {
-    //                 console.log("Lỗi khi tải dữ liệu chỉnh sửa");
-    //             }
-    //         }
-    //     };
-    //     fetchAddressData();
-    // }, [editingAddressId]);
-
-
 
     useEffect(() => {
         const fetchAddressData = async () => {
@@ -263,19 +225,14 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         };
         fetchAddressData();
     }, [editingAddressId]);
-    
-
-
 
 
     const handleChange = (e) => {
-
-        
         const { id, value } = e.target;
         setAddressData((prevData) => ({
             ...prevData,
             [id]: value,
-            
+
         }));
     };
     const handleProvinceChange = (e) => {
@@ -299,7 +256,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             name: selectedOption.getAttribute("data-name"),
         });
     };
-    if (!isVisible) return null; 
+    if (!isVisible) return null;
     return (
         <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
             <div className="w-[600px] flex flex-col">
@@ -330,7 +287,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     value={addressData.phone}
                                     onChange={handleChange}
                                     required
-                                    
+
                                 />
                             </div>
                             <div className="col-span-6">
@@ -340,9 +297,9 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                 <input
                                     className="my-2 placeholder-gray-500 border border-gray-400 rounded-sm p-2 w-full"
                                     type="text"
-                                    id="fullNameAddress"
+                                    id="street"
                                     placeholder="Vui lòng nhập số nhà/đường"
-                                    value={addressData.fullNameAddress}
+                                    value={addressData.street}
                                     onChange={handleChange}
                                     required
                                 />
@@ -415,31 +372,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                         </option>
                                     ))}
                                 </select>
-                            </div>
-                            <div className="col-span-12">
-                                <label className=" items-center">
-                                    <input
-                                        type="checkbox" value={addressData.status}
-                                        checked={addressData.status}
-                                        id="flexCheckChecked"
-                                        // onChange={() =>
-                                        //     setAddressData({
-                                        //         ...addressData,
-                                        //         status: !addressData.status,
-                                        //     })
-                                        // }
-
-                                        onChange={() =>
-                                            setAddressData((prevData) => ({
-                                                ...prevData,
-                                                status: !prevData.status,
-                                            }))
-                                        }
-
-                                        className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
-                                    />
-                                    <span className="ml-3 text-gray-800">Đặt làm mặc định</span>
-                                </label>
                             </div>
                         </div>
                         <button

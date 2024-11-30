@@ -59,6 +59,42 @@ export const uploadImages1 = async (id, formData) => {
   }
 };
 
+export const uploadImageAvt = async (id, formData) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:8080/api/v1/user/uploadAvatar/${id}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading images:', error.response || error.message);
+    throw error;
+  }
+};
+
+export const uploadImageBR = async (id, formData) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:8080/api/v1/user/uploadBackground/${id}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading images:', error.response || error.message);
+    throw error;
+  }
+};
+
 export const getSeller = async (id) => {
   try {
     const response = await axios.get(`${API_Java}/${id}`, {});
