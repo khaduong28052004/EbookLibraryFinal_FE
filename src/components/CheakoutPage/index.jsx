@@ -276,7 +276,10 @@ export default function CheakoutPage() {
                                   <div>
                                     <span className="text-[15px] font-semibold text-qblack font-medium">
                                       {cartItem?.product?.flashSaleDetail?.id > 0 ?
-                                        Intl.NumberFormat().format((((cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem?.product?.flashSaleDetail?.sale) / 100) * cartItem.quantity) || 'N/A' :
+                                        Intl.NumberFormat().format(
+                                          cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))
+
+                                        ) || 'N/A' :
                                         Intl.NumberFormat().format((cartItem.product.price - ((cartItem.product.price * cartItem.product.sale) / 100)) * cartItem.quantity) || 'N/A'
                                       }<sup>đ</sup>
                                     </span>

@@ -49,6 +49,7 @@ export default function Middlebar({ className, type }) {
       setListening(false);
     };
 
+    
     recognition.onend = (event) => {
       console.log("Quá trình nhận diện giọng nói đã kết thúc");
       if (event.results && event.results[0] && event.results[0][0]) {
