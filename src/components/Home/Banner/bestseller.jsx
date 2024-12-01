@@ -12,13 +12,13 @@ import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
 
 const BestSeller = ({ products }) => {
   const swiperRef = useRef(null);
-  const [bgImage, setBgImage] = useState(products[0]?.imageProducts[0].name); // Lấy ảnh đầu tiên làm background mặc định
+  const [bgImage, setBgImage] = useState(products[0]?.imageProducts[0]?.name); // Lấy ảnh đầu tiên làm background mặc định
 
 
   // Hàm cập nhật ảnh nền khi slide thay đổi
   const handleSlideChange = () => {
     const activeIndex = swiperRef.current.swiper.realIndex;
-    const newBgImage = products[activeIndex]?.imageProducts;
+    const newBgImage = products[activeIndex]?.imageProducts[0].name;  
     setBgImage(newBgImage); // Cập nhật ảnh nền
   };
 
