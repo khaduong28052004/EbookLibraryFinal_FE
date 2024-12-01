@@ -84,7 +84,7 @@ const Modal = ({
                                     putActive(false);
                                     setOpen(false);
                                 }}
-                                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                className="mt-3 inline-flex min-w-16 justify-center rounded-md bg-red-600 text-white px-3 py-2 text-sm font-semibold shadow-sm red-1 ring-inset sm:mt-0 sm:w-auto"
                             >
                                 {cancelText}
                             </button>
