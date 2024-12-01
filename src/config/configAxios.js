@@ -87,9 +87,9 @@ const axiosAuthPython = (TOKEN, method, url, data) => {
       Authorization: `Bearer ${TOKEN}`,
     };
   } else {
-    if (url.includes('/check-text')) {
+    if (url.includes('check-text')) {
       headers = {
-        'Content-Type': 'application/json-data',
+        'Content-Type': 'application/json',
       };
     }else{
       headers = {
