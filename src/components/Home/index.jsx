@@ -58,7 +58,7 @@ export default function Home() {
           sectionHeight="sm:h-[295px] h-full"
           className="products-ads-section mb-[60px]"
         /> */}
-        <button onClick={ShareOptions}>ShareOptions</button>
+        {/* <button onClick={ShareOptions}>ShareOptions</button> */}
 
         <SectionStyleThree
           products={data_ProductAll}

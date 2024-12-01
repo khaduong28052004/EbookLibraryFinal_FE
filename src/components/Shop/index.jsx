@@ -190,10 +190,11 @@ const data_Products = {
 };
 
 
-export default function ShopHome({ shopId }) {
+export default function ShopHome() {
     const [shopInfo, setShopInfo] = useState({});
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
     const [loading, setLoading] = useState(false);
+
 
     // const getIdAccountFromSession = () => {
     //     const user = sessionStorage.getItem("user");
@@ -208,41 +209,43 @@ export default function ShopHome({ shopId }) {
 
     const fetchShopInfo = async () => {
         // setShopInfo(shopDataEX);
-        // try {
-        //     setLoading(true);
-        //     const idSeller = 8;
-        //     const response = await homeShopService.fetchShopInfo({ idSeller });
+        try {
+            setLoading(true);
+            const idSeller = 3;
+            const response = await homeShopService.fetchShopInfo({ idSeller });
 
-        //     if (response.data.result) {
-        //         const data = response.data.result;
-        //         setShopInfo(data);
-        //         setLoading(true);
-        //     } else {
-        //         toast.warn('Lỗi truyền tải dữ liệu');
-        //         throw new Error('Không có dữ liệu');
-        //     }
-        // } catch (error) {
-        //     toast.warn('Lỗi truyền tải dữ liệu');
-        // } finally {
-        //     setLoading(false);
-        // }
+            if (response.data.result) {
+                const data = response.data.result;
+                setShopInfo(data);
+                setLoading(true);
+            } else {
+                setShopInfo(shopDataEX);
+                toast.warn('Lỗi truyền tải dữ liệu');
+                throw new Error('Không có dữ liệu');
+            }
+        } catch (error) {
+            toast.warn('Lỗi truyền tải dữ liệu');
+        } finally {
+            setLoading(false);
+        }
     }
 
     const fetchVoucherShopHome = async () => {
         // setVouchers(vouchersdfEAsd);
         try {
             setLoading(true);
-            const idSeller = 1;
+            const idSeller = 3;
             const response = await homeShopService.fetchVoucherShopHome({ idSeller });
 
             if (response.data.result) {
-                const data = response.data.result.Voucher||vouchers;
+                const data = response.data.result.Voucher || vouchers;
                 setVouchers(data);
                 setLoading(true);
             } else {
                 throw new Error('Không có dữ liệu');
             }
         } catch (error) {
+            setVouchers(vouchersdfEAsd);
             toast.warn('Lỗi truyền tải dữ liệu');
         } finally {
             setLoading(false);

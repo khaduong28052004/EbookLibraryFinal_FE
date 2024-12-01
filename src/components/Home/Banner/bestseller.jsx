@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Link } from 'react-router-dom';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
@@ -11,13 +12,13 @@ import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
 
 const BestSeller = ({ products }) => {
   const swiperRef = useRef(null);
-  const [bgImage, setBgImage] = useState(products[0]?.image); // Lấy ảnh đầu tiên làm background mặc định
+  const [bgImage, setBgImage] = useState(products[0]?.imageProducts[0].name); // Lấy ảnh đầu tiên làm background mặc định
 
 
   // Hàm cập nhật ảnh nền khi slide thay đổi
   const handleSlideChange = () => {
     const activeIndex = swiperRef.current.swiper.realIndex;
-    const newBgImage = products[activeIndex]?.image;
+    const newBgImage = products[activeIndex]?.imageProducts;
     setBgImage(newBgImage); // Cập nhật ảnh nền
   };
 
@@ -25,7 +26,6 @@ const BestSeller = ({ products }) => {
 
     <div className="relative w-full h-auto group">
       {/* Background image with gradient overlay */}
-
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
@@ -70,14 +70,19 @@ const BestSeller = ({ products }) => {
         onSlideChange={handleSlideChange} // Gọi hàm khi slide thay đổi
       >
         {products.map((product, index) => (
+          // `${API_BASE_URL}/district`
+          // {/productdetail?idProduct=2}
+
           <SwiperSlide key={index} className="flex justify-center">
-            <div className=" relative rounded-lg flex flex-col items-center justify-center">
-              <img
-                src={product.image}
-                alt={product.title}
-                className=" w-[200px] h-auto  object-cover rounded-md"
-              />
-            </div>
+            <Link to={`productdetail?idProduct=${product.id}`}>
+              <div className=" relative rounded-lg flex flex-col items-center justify-center">
+                <img
+                  src={product.imageProducts[0].name}
+                  alt={product.title}
+                  className=" w-[200px] h-auto  object-cover rounded-md"
+                />
+              </div>
+            </Link>
             {/* <div className="absolute top-1 right-2">
               <img
                 src="https://png.pngtree.com/png-clipart/20221220/original/pngtree-hot-sale-vector-label-with-fire-icon-png-image_8786228.png"  // Thay thế với đường dẫn tới biểu tượng Sale của bạn
@@ -86,6 +91,7 @@ const BestSeller = ({ products }) => {
               />
             </div> */}
           </SwiperSlide>
+
         ))}
       </Swiper>
 
