@@ -162,7 +162,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             if (addressData.id) {
                 // const fullNameAddress = `${addressData.fullNameAddress}`;
                 const fullNameAddress = [
-                    data.street,
+                    addressData.street,
                     selectedWard?.name,
                     selectedDistrict?.name,
                     selectedProvince?.name
