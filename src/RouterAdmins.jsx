@@ -12,7 +12,6 @@ import VoucherAdmin from "./pages/Admin/VoucherAdmin"
 import ReportAdmin from "./pages/Admin/ReportAdmin"
 import PhanQuyenAdmin from "./pages/Admin/PhanQuyenAdmin"
 import ThongTinChungAdmin from "./pages/Admin/ThongTinChungAdmin"
-import SettingAdmin from "./pages/Admin/SettingAdmin"
 import ThongKeDoanhThuAdmin from "./pages/Admin/ThongKeDoanhThuAdmin"
 import ThongKeKhachHangAdmin from "./pages/Admin/ThongKeKhachHangAdmin"
 import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
@@ -22,6 +21,7 @@ import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
 import ChatBot from "./pages/Seller/ChatBot"
 import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
 import RoleAdmin from './pages/Admin/RoleAdmin'
+import NotPermissionAdmin from './pages/Admin/NotPermissonAdmin.jsx'
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
 import ProtectedRoutePermission from "./components/Auth/ProtectedRoutePERMISSION.jsx";
 import { useEffect, useState } from "react";
@@ -133,6 +133,17 @@ export default function RouterAdmins() {
           }
         />
         <Route
+
+          path="/quanLy/phanquyen/notpermission"
+          element={
+            <>
+              <PageTitle title="Thêm Chi Tiết Quyền" />
+              <NotPermissionAdmin />
+            </>
+          }
+        />
+        <Route
+
           path="/quanLy/quyenchitiet"
           element={
             <>
@@ -168,15 +179,7 @@ export default function RouterAdmins() {
             </>
           }
         />
-        <Route
-          path="/setting"
-          element={
-            <>
-              <PageTitle title="Cài Đặt" />
-              <SettingAdmin />
-            </>
-          }
-        />
+
         <Route
           path="/thongKe/doanhThu"
           element={

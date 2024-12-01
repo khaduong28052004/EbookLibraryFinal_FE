@@ -36,13 +36,22 @@ export default function Middlebar({ className, type }) {
       setListening(true);
     };
 
+    // recognition.onresult = (event) => {
+    //   const transcript = event.results[0][0].transcript;
+    //   console.log('Đã phát hiện giọng nói result: ', transcript);
+    //   // document.getElementById("inputSearch").value = transcript;
+    //   setTimeout(1000);
+    //   setListening(false);
+    //   navigate("/search?text=" + transcript);
+    // };
+
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       console.log('Đã phát hiện giọng nói result: ', transcript);
       // document.getElementById("inputSearch").value = transcript;
       setTimeout(1000);
       setListening(false);
-      navigate("/search?text=" + transcript);
+      navigate("/search?textAudio=" + transcript);
     };
 
     recognition.onerror = (event) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ArrowPathIcon, NoSymbolIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./Modal_ThongBao_NotMail";
 import VoucherService from "../../../service/Seller/voucherService"
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
@@ -347,7 +347,7 @@ const TableVoucher = () => {
                       <button>
                         <Link to={`/admin/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
                       </button>
-                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() ? (
+                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart) > new Date()? (
                         <>
                           <button onClick={(event) => {
                             event.stopPropagation();
@@ -355,7 +355,8 @@ const TableVoucher = () => {
                             setVoucherId(voucher.id);
                             setStatusVoucher(voucher.delete)
                           }}>
-                            <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
+                            {!voucher.delete ? (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />)
+                              : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />)}
                           </button>
                           <button onClick={(event) => {
                             event.stopPropagation();
@@ -421,12 +422,12 @@ const TableVoucher = () => {
         cancelText="Thoát"
         icon={
           !statusVoucher ?
-            <TrashIcon className="h-6 w-6 text-red-600" />
+            <NoSymbolIcon className="h-6 w-6 text-red-600" />
             :
             <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
         }
-        iconBgColor={!statusVoucher ? 'bg-red-100':'bg-green-100' }
-        buttonBgColor={!statusVoucher ? 'bg-red-600':'bg-green-600'}
+        iconBgColor={!statusVoucher ? 'bg-red-100' : 'bg-green-100'}
+        buttonBgColor={!statusVoucher ? 'bg-red-600' : 'bg-green-600'}
       />
 
       <Dialog open={isOpenModalSP} onClose={() => setIsOpenModalSP(false)} className="relative z-9999">
@@ -524,7 +525,7 @@ const TableVoucher = () => {
                         value={dataVoucher.minOrder}
                         onChange={handDataVoucher}
                         min={0}
-                        placeholder="Giám giá..."
+                        placeholder="Điều kiện..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
@@ -541,7 +542,7 @@ const TableVoucher = () => {
                         name="totalPriceOrder"
                         value={dataVoucher.totalPriceOrder}
                         onChange={handDataVoucher}
-                        placeholder="Điều kiện..."
+                        placeholder="Giá giảm tối đa..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>

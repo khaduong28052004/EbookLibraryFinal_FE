@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import product from '../../../service/admin/Product';
 import Modal from "./ModalThongBao";
@@ -303,8 +303,14 @@ const TableTwo = () => {
                                             setStatusentity(!entity.delete);
                                             setActive(entity.active ? false : true)
                                         }}>
-                                            <ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />
-                                            {/* {entity.delete == false ? (<ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />) : (<></>)} */}
+                                            {
+                                                !entity.active ? (<button
+                                                    className=" inline-flex items-center justify-center rounded-md bg-yellow-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+                                                >Duyệt</button>) : !entity.delete ? (
+                                                    <NoSymbolIcon className="w-5 h-5 text-black hover:text-red-500  dark:text-white" />
+                                                ) : (
+                                                    <ReceiptRefundIcon className="w-5 h-5 text-black hover:text-green-500  dark:text-white" />
+                                                )}
                                         </button>
                                     </div>
                                 </td>
@@ -354,12 +360,12 @@ const TableTwo = () => {
                     confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
                     cancelText="Thoát"
                     icon={statusentity ? (
-                        <TrashIcon className="h-6 w-6 text-red-600" />
+                        <NoSymbolIcon className="h-6 w-6 text-red-600" />
                     ) : (
-                        <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+                        <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
                     )}
-                    iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                    buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+                    iconBgColor={statusentity ? 'bg-red-100' : 'bg-green-100'}
+                    buttonBgColor={statusentity ? 'bg-red-600' : 'bg-green-600'} />
             ) : (
                 <ModalDuyet
                     id={entityProduct.id}
@@ -370,12 +376,9 @@ const TableTwo = () => {
                     title={'Duyệt Sản Phẩm'}
                     message={'Bạn có chắc muốn duyệt sản phẩm này không?'}
                     confirmText={'Duyệt'}
-                    cancelText={"Hủy"}
-                    icon={statusentity ? (
-                        <ArrowPathIcon className="h-6 w-6 text-yellow-600" />
-                    ) : (
-                        <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
-                    )}
+                    cancelText={"Không duyệt"}
+                    icon={<ArrowPathIcon className="h-6 w-6 text-yellow-600" />
+                    }
                     iconBgColor={statusentity ? 'bg-yellow-100' : 'bg-yellow-100'}
                     buttonBgColor={statusentity ? 'bg-blue-600' : 'bg-yellow-600'} />
             )}

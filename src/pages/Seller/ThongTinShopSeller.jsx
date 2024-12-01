@@ -23,6 +23,7 @@ import {
   putAddress,
   getOneAddress,
 } from '../../service/addressService';
+import { useLocation } from 'react-router-dom';
 const ShopSeller = () => {
   const [data, setData] = useState({
     id: null,
@@ -63,6 +64,7 @@ const ShopSeller = () => {
     avatar: false,
     background: false,
   });
+  const location = useLocation();
   useEffect(() => {
     const fetchProvinces = async () => {
       setLoading(true);
@@ -174,7 +176,7 @@ const ShopSeller = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [location]);
   const handleImageChange = (event, type) => {
     const file = event.target.files[0];
     if (file) {
