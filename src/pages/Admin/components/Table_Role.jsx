@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLongDownIcon, ArrowLongUpIcon, EyeIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
-import { TrashIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon } from '@heroicons/react/24/outline'
 import Modal from "./Modal_ThongBao_NotMail";
 import ModalQuyen from './ModalQuyen';
 import roleService from '../../../service/admin/Role';
@@ -235,7 +235,7 @@ const TableTwo = () => {
                                             setEntity(entity);
                                             setIsOpen(true);
                                         }}>
-                                            <TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />
+                                            <NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />
                                         </button>
                                         <button onClick={(event) => {
                                             event.stopPropagation();
@@ -274,7 +274,7 @@ const TableTwo = () => {
                 onConfirm={handleConfirm}
                 confirmText={'Xác Nhận'}
                 cancelText="Thoát"
-                icon={<TrashIcon className="h-6 w-6 text-red-600" />}
+                icon={<NoSymbolIcon className="h-6 w-6 text-red-600" />}
                 iconBgColor={'bg-red-100'}
                 buttonBgColor={'bg-red-600'} />
 
