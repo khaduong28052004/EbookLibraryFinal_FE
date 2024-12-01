@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import Logo from '../../images/logo/logo.svg';
+import LogoIcon from '../../images/logo/logo-icon.svg';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -15,20 +16,20 @@ interface Permission {
 }
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
- // Retrieve permissions from sessionStorage and parse it
-   const [permissions, setPermissions] = useState<Permission[]>([]);
+  // Retrieve permissions from sessionStorage and parse it
+  const [permissions, setPermissions] = useState<Permission[]>([]);
 
-   useEffect(() => {
-     const storedPermissions = sessionStorage.getItem("permissions");
-     if (storedPermissions) {
-       const parsedPermissions: Permission[] = JSON.parse(storedPermissions);  // Ensure the correct type
-       setPermissions(parsedPermissions);
-     }
-   }, []); // Empty dependency array to run only once when the component mounts
- 
-   const hasPermission = (cotSlug: string) => {
-     return permissions.some(permission => permission.cotSlug === cotSlug);
-   };
+  useEffect(() => {
+    const storedPermissions = sessionStorage.getItem("permissions");
+    if (storedPermissions) {
+      const parsedPermissions: Permission[] = JSON.parse(storedPermissions);  // Ensure the correct type
+      setPermissions(parsedPermissions);
+    }
+  }, []); // Empty dependency array to run only once when the component mounts
+
+  const hasPermission = (cotSlug: string) => {
+    return permissions.some(permission => permission.cotSlug === cotSlug);
+  };
 
 
   const location = useLocation();
@@ -45,7 +46,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   // close on click outside
   useEffect(() => {
 
-    
+
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
       if (
@@ -87,8 +88,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
-        <NavLink to="/">
-          <img src={Logo} alt="Logo" />
+        <NavLink to="/" className="flex">
+          <img src={LogoIcon} className='h-12' alt="Logo" />
+          <span className='text-white font-bold text-2xl pl-2 pt-2'>TOEL ADMIN</span>
         </NavLink>
 
         <button
@@ -229,16 +231,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       >
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
-                          {!hasPermission('READ_PRODUCT')?
-                            <NavLink
-                              to="/admin/quanLy/nhanVien"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Nhân Viên
-                            </NavLink>:<></>}
+                            {!hasPermission('READ_PRODUCT') ?
+                              <NavLink
+                                to="/admin/quanLy/nhanVien"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Nhân Viên
+                              </NavLink> : <></>}
                           </li>
                           <li>
                             <NavLink

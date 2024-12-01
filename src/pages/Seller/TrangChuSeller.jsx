@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import CardDataStats from '../../components/CardDataStats';
 import ChartOne from './components/ChartOne';
 import HomeService from "../../service/Seller/homeService";
-
+import { useLocation } from 'react-router-dom';
 const TrangChuSeller = () => {
   const [listYears, setListYears] = useState([]);
   const [datas, setDatas] = useState([]);
+  const location = useLocation()
   useEffect(() => {
     getYears();
-  }, []);
+  }, [location]);
   const getData = async (year) => {
     try {
       const response = await HomeService.getData(year);
