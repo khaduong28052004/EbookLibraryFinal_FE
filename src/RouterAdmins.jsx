@@ -23,7 +23,15 @@ import ChatBot from "./pages/Seller/ChatBot"
 import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
 import RoleAdmin from './pages/Admin/RoleAdmin'
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
+import ProtectedRoutePermission from "./components/Auth/ProtectedRoutePERMISSION.jsx";
+import { useEffect, useState } from "react";
 export default function RouterAdmins() {
+  // useEffect(() => {
+  //   const [permission, setPermission] = useState([]);
+  //   const getpermission = sessionStorage.getItem("permission");
+  //   console.warn(getpermission);
+
+  // },);
   return (
     <DefaultLayout>
       <ChatBot />
@@ -45,23 +53,25 @@ export default function RouterAdmins() {
           path="/quanLy/nhanVien"
           element={
             <ProtectedRoute
-              element={
+              element={<ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={
                 <>
                   <PageTitle title="Nhân Viên" />
                   <NhanVienAdmin />
                 </>
               }
+              />
+              }
             />
-
           }
         />
+        
         <Route
           path="/quanLy/voucher"
           element={
-            <>
+            <ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={<>
               <PageTitle title="Voucher" />
               <VoucherAdmin />
-            </>
+            </>} />
           }
         />
         <Route
@@ -92,7 +102,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-path="/quanLy/shop"
+          path="/quanLy/shop"
           element={
             <>
               <PageTitle title="Shop" />
@@ -112,13 +122,17 @@ path="/quanLy/shop"
         <Route
           path="/quanLy/phanQuyen"
           element={
-            <>
-              <PageTitle title="Phân Quyền" />
+            <ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={<>
+              <PageTitle title="Voucher" />
               <RoleAdmin />
-            </>
+            </>} />
+            // <>
+            //   <PageTitle title="Phân Quyền" />
+            //   <RoleAdmin />
+            // </>
           }
         />
-         <Route
+        <Route
           path="/quanLy/quyenchitiet"
           element={
             <>
