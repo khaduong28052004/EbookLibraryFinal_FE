@@ -11,7 +11,6 @@ import { storage, getDownloadURL, ref } from '../../../config/firebase';
 import { ExportExcel } from "./ExportExcel"
 import { Editor } from "@tinymce/tinymce-react";
 import { useLocation } from 'react-router-dom';
-import { predictTextModeration } from "../../../service/Seller/apiCheckText"
 const TableSanPham = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
