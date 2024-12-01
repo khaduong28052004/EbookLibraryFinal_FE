@@ -7,6 +7,7 @@ import Layout from "../Partials/Layout";
 import homeShopService from "../../service/Seller/homeShopService";
 import BeatLoader from "react-spinners/BeatLoader";
 import { toast, ToastContainer } from "react-toastify";
+import { useLocation } from 'react-router-dom';
 
 const shopDataEX = {
     "rating": {
@@ -194,7 +195,9 @@ export default function ShopHome() {
     const [shopInfo, setShopInfo] = useState({});
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
     const [loading, setLoading] = useState(false);
-
+    const local = useLocation();
+    const query = new URLSearchParams(local.search);
+    const shopID = query.get("shopID");
 
     // const getIdAccountFromSession = () => {
     //     const user = sessionStorage.getItem("user");
@@ -211,9 +214,9 @@ export default function ShopHome() {
         // setShopInfo(shopDataEX);
         try {
             setLoading(true);
-            const idSeller = 3;
-            const response = await homeShopService.fetchShopInfo({ idSeller });
-
+            const shopID = query.get("shopID");
+            // const shopID =3;
+            const response = await homeShopService.fetchShopInfo(shopID);
             if (response.data.result) {
                 const data = response.data.result;
                 setShopInfo(data);
@@ -234,11 +237,11 @@ export default function ShopHome() {
         // setVouchers(vouchersdfEAsd);
         try {
             setLoading(true);
-            const idSeller = 3;
-            const response = await homeShopService.fetchVoucherShopHome({ idSeller });
-
+            const shopID = query.get("shopID");
+            const response = await homeShopService.fetchVoucherShopHome(shopID);
+            console.log(response);
             if (response.data.result) {
-                const data = response.data.result.Voucher || vouchers;
+                const data = response.data.result.Voucher;
                 setVouchers(data);
                 setLoading(true);
             } else {

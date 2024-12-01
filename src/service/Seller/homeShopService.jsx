@@ -4,7 +4,7 @@ const token = sessionStorage.getItem("token")||"null";
 
 const homeShopService = {
 
-    fetchShopInfo: ({ idSeller }) => {
+    fetchShopInfo: ( idSeller ) => {
         console.log("idSeller", idSeller)
         
         const url = `http://localhost:8080/api/v1/user/informationSeller/${idSeller}`;
@@ -13,7 +13,7 @@ const homeShopService = {
     },
 
 
-    fetchVoucherShopHome: ({ idSeller }) => {
+    fetchVoucherShopHome: ( idSeller ) => {
         const url = `/api/v1/user/voucherAll/${idSeller}`;
         console.log(token);
         return axiosAuth("null", "get", url);
