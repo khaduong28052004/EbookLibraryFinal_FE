@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, NoSymbolIcon } from '@heroicons/react/24/solid'
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import VoucherService from "../../../service/Seller/voucherService"
@@ -9,6 +9,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import Pagination from '../../Seller/components/pagination';
 import { ExportExcel } from "../../../service/admin/ExportExcel"
+import { useLocation } from "react-router-dom";
+
 const TableVoucher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusVoucher, setStatusVoucher] = useState(false);
@@ -38,6 +40,7 @@ const TableVoucher = () => {
   const [sortColumn, setSortColumn] = useState("id");
   const [size, setSize] = useState(5);
   const [expandedRowId, setExpandedRowId] = useState(null);
+  const location = useLocation();
 
   const toggleRow = (id) => {
     if (expandedRowId === id) {
@@ -61,11 +64,11 @@ const TableVoucher = () => {
 
   useEffect(() => {
     loadListVoucher();
-  }, [search, pageNumber, sortBy, sortColumn]);
+  }, [location, search, pageNumber, sortBy, sortColumn]);
 
   const loadListVoucher = async () => {
     try {
-      const response = await VoucherService.getDataAdmin(search, pageNumber, sortBy, sortColumn, size);
+      const response = await VoucherService.getData(search, pageNumber, sortBy, sortColumn, size);
       setListVoucher(response.data.result);
       setTotalPages(response.data.result.totalPages);
       setTotalElements(response.data.result.totalElements);
@@ -99,7 +102,7 @@ const TableVoucher = () => {
         quantity: voucher.quantity,
         dateStart: voucher.dateStart,
         dateEnd: voucher.dateEnd,
-        typeVoucher: voucher.typeVoucher.id,
+        typeVoucher: 1,
         account: voucher.account.id
       })
       setIsOpenModalSP(true);
@@ -347,25 +350,33 @@ const TableVoucher = () => {
                       <button>
                         <Link to={`/seller/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
                       </button>
-                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() ? (
-                        <>
-                          <button onClick={(event) => {
-                            event.stopPropagation();
-                            setIsOpen(true);
-                            setVoucherId(voucher.id);
-                            setStatusVoucher(voucher.delete)
-                          }}>
-                            <TrashIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />
+                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart) > new Date()? (                        <>
+                          <button
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setIsOpen(true);
+                              setVoucherId(voucher.id);
+                              setStatusVoucher(voucher.delete);
+                            }}
+                          >
+                            {!voucher.delete ? (
+                              <NoSymbolIcon className="w-5 h-5 text-black hover:text-red-600 dark:text-white" />
+                            ) : (
+                              <ReceiptRefundIcon className="w-5 h-5 text-black hover:text-green-600 dark:text-white" />
+                            )}
                           </button>
-                          <button onClick={(event) => {
-                            event.stopPropagation();
-                            editVoucher(voucher.id);
-                            setIsStatus(true)
-                          }}>
-                            <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
+                          <button
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              editVoucher(voucher.id);
+                              setIsStatus(true);
+                            }}
+                          >
+                            <ArrowPathIcon className="w-5 h-5 text-black hover:text-green-600 dark:text-white" />
                           </button>
                         </>
-                      ) : (<></>)}
+                      ) : null}
+
                     </div>
                   </td>
                 </tr>
@@ -421,7 +432,7 @@ const TableVoucher = () => {
         cancelText="Thoát"
         icon={
           !statusVoucher ?
-            <TrashIcon className="h-6 w-6 text-red-600" />
+            <NoSymbolIcon className="h-6 w-6 text-red-600" />
             :
             <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
         }
