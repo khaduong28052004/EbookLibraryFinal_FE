@@ -12,7 +12,6 @@ import VoucherAdmin from "./pages/Admin/VoucherAdmin"
 import ReportAdmin from "./pages/Admin/ReportAdmin"
 import PhanQuyenAdmin from "./pages/Admin/PhanQuyenAdmin"
 import ThongTinChungAdmin from "./pages/Admin/ThongTinChungAdmin"
-import SettingAdmin from "./pages/Admin/SettingAdmin"
 import ThongKeDoanhThuAdmin from "./pages/Admin/ThongKeDoanhThuAdmin"
 import ThongKeKhachHangAdmin from "./pages/Admin/ThongKeKhachHangAdmin"
 import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
@@ -22,6 +21,7 @@ import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
 import ChatBot from "./pages/Seller/ChatBot"
 import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
 import RoleAdmin from './pages/Admin/RoleAdmin'
+import NotPermissionAdmin from './pages/Admin/NotPermissonAdmin.jsx'
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
 export default function RouterAdmins() {
   return (
@@ -92,7 +92,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-path="/quanLy/shop"
+          path="/quanLy/shop"
           element={
             <>
               <PageTitle title="Shop" />
@@ -113,12 +113,21 @@ path="/quanLy/shop"
           path="/quanLy/phanQuyen"
           element={
             <>
-              <PageTitle title="Phân Quyền" />
+              <PageTitle title="Phân Quyền Nhân Viên" />
               <RoleAdmin />
             </>
           }
         />
-         <Route
+        <Route
+          path="/quanLy/phanquyen/notpermission"
+          element={
+            <>
+              <PageTitle title="Thêm Chi Tiết Quyền" />
+              <NotPermissionAdmin />
+            </>
+          }
+        />
+        <Route
           path="/quanLy/quyenchitiet"
           element={
             <>
@@ -154,15 +163,7 @@ path="/quanLy/shop"
             </>
           }
         />
-        <Route
-          path="/setting"
-          element={
-            <>
-              <PageTitle title="Cài Đặt" />
-              <SettingAdmin />
-            </>
-          }
-        />
+
         <Route
           path="/thongKe/doanhThu"
           element={

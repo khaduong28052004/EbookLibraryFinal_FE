@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import Modal from "./Modal_ThongBao_NotMail";
-import Table_NotPermisson from './Table_NotPermisson';
 import permission from '../../../service/admin/Permission';
 import rolePermission from '../../../service/admin/PermissionDetails';
 import { toast, ToastContainer } from 'react-toastify';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const TableTwo = () => {
     const location = useLocation();  // Dùng useLocation để lấy thông tin URL hiện tại
@@ -19,15 +19,11 @@ const TableTwo = () => {
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
-    const [isOpenModalSP, setIsOpenModalSP] = useState(false);
     const [entityRolePermission, setentityRolePermission] = useState([]);
-
-    const [status, setStatus] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
 
 
 
-    // Lấy voucher_id từ query parameters
     const searchParams = new URLSearchParams(location.search);
     const role = searchParams.get('role');
 
@@ -37,9 +33,15 @@ const TableTwo = () => {
 
     const findAllPermission = async () => {
         try {
-            const response = await permission.findAllByRole({ page: currentPage, size: 10, role, searchItem, sortColumn, sortBy });
-            console.log("content: " + response.data.result.content);
-            setData(response.data.result);
+            if (role == "ADMIN" || role == "ADMINV1" || role == "SELLER" || role == "USER") {
+                toast.warn("Bạn hông có quyền này");
+                setData([]);
+                setCurrentPage(0);
+            } else {
+                const response = await permission.findAllByRole({ page: currentPage, size: 10, role, searchItem, sortColumn, sortBy });
+                console.log("content: " + response.data.result.content);
+                setData(response.data.result);
+            }
         } catch (error) {
             console.log("Error: " + error);
         }
@@ -80,7 +82,7 @@ const TableTwo = () => {
 
     useEffect(() => {
         findAllPermission();
-    }, [searchItem, role, currentPage, sortBy, sortColumn, status]);
+    }, [searchItem, role, currentPage, sortBy, sortColumn]);
 
     const handleExport = async () => {
         const sheetNames = ['Danh Sách Quyền'];
@@ -126,14 +128,13 @@ const TableTwo = () => {
                     >
                         Excel
                     </button>
-                    <button
-                        onClick={() => {
-                            setIsOpenModalSP(true);
-                        }}
-                        className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
-                    >
-                        Thêm
-                    </button>
+                    <Link to={`/admin/quanLy/phanquyen/notpermission?role=${role}`} >
+                        <button
+                            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+                        >
+                            Thêm
+                        </button>
+                    </Link>
                     <button onClick={handleGoBack}
                         className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
                     >
@@ -227,13 +228,13 @@ const TableTwo = () => {
                 </tbody>
             </table>
             <Pagination
-                pageNumber={currentPage}
-                totalPages={data?.totalPages}
-                totalElements={data?.totalElements}
+                pageNumber={currentPage || 0}
+                totalPages={data?.totalPages || 0}
+                totalElements={data?.totalElements || 0}
                 handlePrevious={handlePrevious}
                 handleNext={handleNext}
                 setPageNumber={setCurrentPage}
-                size={data.size}></Pagination>
+                size={data.size || 0}></Pagination>
 
             <Modal
                 open={isOpen}
@@ -248,15 +249,7 @@ const TableTwo = () => {
                 }
                 iconBgColor={'bg-red-100'}
                 buttonBgColor={'bg-red-600'} />
-            <Table_NotPermisson
-                status={status}
-                setStatus={setStatus}
-                optionRole={role}
-                open={isOpenModalSP}
-                setOpen={setIsOpenModalSP}
-                title="Thêm Danh Sách Quyền Mới"
-            />
-        </div>
+        </div >
     );
 };
 
