@@ -254,18 +254,21 @@ const ShopSeller = () => {
       console.error('Lỗi khi tải dữ liệu:', error);
     }
   };
-//   useEffect(() => {
-//     setData((prevData) => ({
-//         ...prevData,
-//         province: selectedProvince.id,
-//         district: selectedDistrict.id,
-//         wardCode: selectedWard.id,
-//     }));
-// }, [
-//     selectedProvince,
-//     selectedDistrict,
-//     selectedWard,
-// ]);
+  
+  useEffect(() => {
+    setData((prevData) => ({
+        ...prevData,
+        province: selectedProvince.id,
+        district: selectedDistrict.id,
+        wardCode: selectedWard.id,
+    }));
+}, [
+    selectedProvince,
+    selectedDistrict,
+    selectedWard,
+]);
+
+
   const handleWardChange = (e) => {
     const selectedOption = e.target.options[e.target.selectedIndex];
     setSelectedWard({
