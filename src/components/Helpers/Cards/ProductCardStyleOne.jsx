@@ -9,6 +9,7 @@ import Compair from "../icons/Compair";
 import QuickViewIco from "../icons/QuickViewIco";
 import Star from "../icons/Star";
 import ThinLove from "../icons/ThinLove";
+
 export default function ProductCardStyleOne({ datas, type }) {
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState();
@@ -47,6 +48,23 @@ export default function ProductCardStyleOne({ datas, type }) {
       toast.warn("Vui lòng đăng nhập");
     }
   }
+
+  const handleShare = () => {
+    const productUrl = `${window.location.origin}/productdetail?idProduct=${datas.id}`;
+    if (navigator.share) {
+      navigator.share({
+        title: datas.name,
+        text: `Check out this product: ${datas.name}`,
+        url: productUrl,
+      })
+        .then(() => toast.success("Đã chia sẻ thành công!"))
+        .catch(() => toast.error("Chia sẻ không thành công."));
+    } else {
+      navigator.clipboard.writeText(productUrl)
+        .then(() => toast.success("Liên kết đã được sao chép!"))
+        .catch(() => toast.error("Không thể sao chép liên kết."));
+    }
+  };
 
   return (
     <div
@@ -143,7 +161,9 @@ export default function ProductCardStyleOne({ datas, type }) {
         </a>
         <a href="#">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
-            <Compair />
+            <Compair createFavorite={handleShare} />
+            {/* chia sẻ */}
+            {/* <ShareModal datas={datas}/> */}
           </span>
         </a>
       </div>
