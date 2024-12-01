@@ -93,7 +93,7 @@ export default function About() {
 
                 <Link to="/contact">
                   <div className="w-[121px] h-10">
-                    <span className="yellow-btn">Contact Us</span>
+                    <span className="flex items-center justify-center h-full w-full bg-sky-500 text-[13px] font-semibold text-[#1d1d1d] leading-none">Contact Us</span>
                   </div>
                 </Link>
               </div>

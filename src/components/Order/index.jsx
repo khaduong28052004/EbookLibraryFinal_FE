@@ -238,9 +238,9 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
                                             </span>
                                         </td>
                                         <td className="text-center py-4 px-2">
-                                            <div className="text-cyan-800 text-[10px] font-bold text-center mx-1 min-w-[120px]">
+                                            <div className="text-[#003EA1] text-[10px] font-bold text-center mx-1 min-w-[120px]">
                                                 {order.billOrderStatus === "Hủy" || order.billOrderStatus === "Hoàn thành" ? (
-                                                    <button className="border border-cyan-800 shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
+                                                    <button className="border border-[#003EA1] shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             reOrder(order.billID);
@@ -250,7 +250,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
                                                     </button>
                                                 ) : null}
                                                 {order.billOrderStatus === "Chờ duyệt" ? (
-                                                    <button className="border border-cyan-800 shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
+                                                    <button className="border border-[#003EA1] shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             cancelOrder(order.billID);
@@ -259,7 +259,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
                                                     </button>
                                                 ) : null}
                                                 {order.billOrderStatus === "Đã giao" ? (
-                                                    <button className="border border-cyan-800 shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
+                                                    <button className="border border-[#003EA1] shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             confirmOrder(order.billID);

@@ -207,14 +207,15 @@ const TableSanPham = () => {
         formData.append("imageProducts", file);
       });
 
-      console.log("DATAAAAAA PRODUCT", dataProduct);
-
       let response;
       if (!isStatus) {
         [response] = await Promise.all([
           SanPhamService.create(dataProduct),
-          SanPhamService.createSaveImg(idProduct, formData),
         ]);
+        const idProduct = response.data.result.id;
+
+        await SanPhamService.createSaveImg(idProduct, formData);
+
       } else {
         [response] = await Promise.all([
           SanPhamService.update(dataProduct),
@@ -416,11 +417,11 @@ const TableSanPham = () => {
                 setSortBy(!sortBy);
                 setSortColumn("isActive");
               }}>
-              <div className="flex items-center gap-1 hidden lg:flex">
+              {/* <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trạng Thái</span>
                 <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "isActive" ? "text-black" : "text-gray-400"}`} />
-              </div>
+              </div> */}
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <span className="text-sm text-black dark:text-white truncate w-24"></span>
@@ -467,13 +468,13 @@ const TableSanPham = () => {
                       {item.quantity}
                     </div>
                   </td>
-                  <td className="py-4.5 px-4 ">
+                  {/* <td className="py-4.5 px-4 ">
                     <div className="flex items-center gap-1 hidden lg:flex">
                       <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${item.isActive ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                        {item.isActive ? 'Đã Duyệt' : 'Chưa Duyệt'}
+                        {item.active == true ? 'Đã Duyệt' : 'Chưa Duyệt'}
                       </span>
                     </div>
-                  </td>
+                  </td> */}
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                     <div className="flex space-x-3.5">
                       <button disabled={statusButton} onClick={(event) => {
@@ -522,7 +523,7 @@ const TableSanPham = () => {
 
                         <p>
                           <strong>Giảm Giá: </strong>
-                          {item.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                          {item.sale} %
                         </p>
                       </div>
                     </td>
@@ -643,7 +644,7 @@ const TableSanPham = () => {
                         name="price"
                         value={dataProduct.price}
                         onChange={handDataProduct}
-                        placeholder="Điều kiện..."
+                        placeholder="Giá..."
                         min={1000}
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
@@ -726,7 +727,7 @@ const TableSanPham = () => {
                                   src={file.blob ? URL.createObjectURL(file.blob) : URL.createObjectURL(file)} alt={`Product ${index}`}
                                   className="w-full h-full object-cover rounded-md"
                                 />
-                                <button
+                                <button type='button'
                                   onClick={(event) => {
                                     event.stopPropagation();
                                     handleRemoveFile(index)

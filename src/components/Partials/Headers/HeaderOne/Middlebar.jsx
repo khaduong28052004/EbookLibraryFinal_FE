@@ -136,14 +136,15 @@ export default function Middlebar({ className, type }) {
   }, []);
 
   const searchImage = async (data) => {
-    setIsOpenModelImage(false);
     setIsOpenEvent(true);
     try {
       const response = await SearchService.searchImage(data);
       console.log(response);
       navigate(`/search?idProduct=${response.data.similar_product_ids}`);
+      setIsOpenModelImage(false);
       setIsOpenEvent(false);
     } catch (error) {
+      setIsOpenEvent(false);
       console.error(error)
     }
   }
@@ -284,7 +285,7 @@ export default function Middlebar({ className, type }) {
                   </span>
                 </a>
                 <span
-                  className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-qyellow"
+                  className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-[#003EA1"
                     }`}
                 >
                   2
@@ -297,7 +298,7 @@ export default function Middlebar({ className, type }) {
                   </span>
                 </a>
                 <span
-                  className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-qyellow"
+                  className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-[#003EA1] text-[#F5F5F5]"
                     }`}
                 >
                   {totalFavorite}
@@ -311,7 +312,7 @@ export default function Middlebar({ className, type }) {
                     </span>
                   </a>
                   <span
-                    className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-qyellow"
+                    className={`w-[18px] h-[18px] rounded-full  absolute -top-2.5 -right-2.5 flex justify-center items-center text-[9px] ${type === 3 ? "bg-qh3-blue text-white" : "bg-[#003EA1] text-[#F5F5F5]"
                       }`}
                   >
                     {totalCart}
@@ -330,6 +331,7 @@ export default function Middlebar({ className, type }) {
                     <ThinPeople />
                   </span>
                 </Link>
+                
               </div>
             </div>
           </div>

@@ -24,7 +24,7 @@ const TableVoucher = () => {
     quantity: null,
     dateStart: '',
     dateEnd: '',
-    typeVoucher: 2,
+    typeVoucher: 1,
     account: sessionStorage.getItem("id_account")
   });
   const [search, setSearch] = useState('');
@@ -117,7 +117,7 @@ const TableVoucher = () => {
         ...dataVoucher,
         dateStart: formatDateForDisplay(dataVoucher.dateStart),
         dateEnd: formatDateForDisplay(dataVoucher.dateEnd),
-        typeVoucher: 2,
+        typeVoucher: 1,
       };
       if (!isStatus) {
         response = await VoucherService.create(formattedData);
@@ -510,7 +510,7 @@ const TableVoucher = () => {
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
 
                       >
-                        <option value="">Giảm phí vận chuyển</option>
+                        <option value="">Giảm theo tổng hóa đơn</option>
                       </select>
                     </div>
 
@@ -524,7 +524,7 @@ const TableVoucher = () => {
                         value={dataVoucher.minOrder}
                         onChange={handDataVoucher}
                         min={0}
-                        placeholder="Giám giá..."
+                        placeholder="Điều kiện..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
@@ -541,7 +541,7 @@ const TableVoucher = () => {
                         name="totalPriceOrder"
                         value={dataVoucher.totalPriceOrder}
                         onChange={handDataVoucher}
-                        placeholder="Điều kiện..."
+                        placeholder="Giá Tối Đa..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
