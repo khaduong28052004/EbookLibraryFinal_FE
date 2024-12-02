@@ -119,7 +119,7 @@ export default function Signup() {
             error: value !== formData.password,
             message: value !== formData.password ? "Mật khẩu không khớp!" : "",
           },
-      
+
 
         }));
         break;
@@ -212,11 +212,11 @@ export default function Signup() {
         message: formData.confirmPassword !== formData.password ? "Mật khẩu không khớp!" : "",
       },
       fullname: {
-        error: formData.fullname.length  <= 0,
+        error: formData.fullname.length <= 0,
         message: formData.fullname.length <= 0 ? "Tên tài khoản quá ngắn!" : "",
       }, phone: {
         error: formData.phone.length !== 10,
-        message:  formData.phone.length !== 10 ? "Số điện thoại phải chứa đúng 10 số!" : "",
+        message: formData.phone.length !== 10 ? "Số điện thoại phải chứa đúng 10 số!" : "",
 
       },
 
@@ -243,7 +243,7 @@ export default function Signup() {
       },
     }));
 
-  }, [formData.password, formData.confirmPassword, formData.phone, formData.email,formData.fullname,formData.username]);
+  }, [formData.password, formData.confirmPassword, formData.phone, formData.email, formData.fullname, formData.username]);
 
   const handleSelectChange = () => {
     let selectedPassword = generatePassword();
@@ -283,7 +283,8 @@ export default function Signup() {
   };
 
   return (
-    <Layout childrenClasses="pt-0 pb-0">
+    // <Layout childrenClasses="pt-0 pb-0">
+    <>
       {/* <ToastContainer
         position="bottom-center"
         autoClose={5000}
@@ -498,6 +499,8 @@ export default function Signup() {
           </div>
         </div>
       </div>
-    </Layout>
+
+      {/* </Layout> */}
+    </>
   );
 }

@@ -60,7 +60,7 @@ export default function LinkFrom() {
     };
 
     return (
-        <Layout>
+        <>
             {/* <ToastContainer
                 position="bottom-center"
                 autoClose={5000}
@@ -182,6 +182,6 @@ export default function LinkFrom() {
                     </div>
                 </div>
             </div>
-        </Layout>
+        </>
     );
 }
