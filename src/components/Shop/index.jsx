@@ -215,8 +215,9 @@ export default function ShopHome() {
         try {
             setLoading(true);
             const shopID = query.get("shopID");
+            const iduser = sessionStorage.getItem("id_account");
             // const shopID =3;
-            const response = await homeShopService.fetchShopInfo(shopID);
+            const response = await homeShopService.fetchShopInfo(shopID, iduser);
             if (response.data.result) {
                 const data = response.data.result;
                 setShopInfo(shopDataEX);

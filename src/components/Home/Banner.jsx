@@ -81,29 +81,29 @@ const defaultProducts = [
   {
     id: 1,
     imageProducts: [
-      {name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50059.jpg?v=1&w=350&h=510'}
+      { name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50059.jpg?v=1&w=350&h=510' }
     ],
-    title:"loe",
+    title: "loe",
   },
   {
     id: 2,
-    imageProducts: [{name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510'}],
-    title:"loe",
+    imageProducts: [{ name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510' }],
+    title: "loe",
   },
   {
     id: 3,
-    imageProducts: [{name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/46738.jpg?v=1&w=350&h=510'}],
-    title:"loe",
+    imageProducts: [{ name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/46738.jpg?v=1&w=350&h=510' }],
+    title: "loe",
   },
   {
     id: 4,
-    imageProducts: [{name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50179.jpg?v=1&w=350&h=510'}],
-    title:"loe",
+    imageProducts: [{ name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50179.jpg?v=1&w=350&h=510' }],
+    title: "loe",
   },
   {
     id: 5,
-    imageProducts:[{name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510'}],
-    title:"loe",
+    imageProducts: [{ name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510' }],
+    title: "loe",
   },
 ];
 
@@ -134,7 +134,9 @@ export default function Banner({ className }) {
 
   const topProducts = async () => {
     try {
-      const response = await AuthService.topProducts();
+      // const data = { sellerID:""}{sellerID:"1"}
+      const sellerID = "1";  
+      const response = await AuthService.topProducts(sellerID);
       console.log(response);
       // setProductData(defaultProducts);
       setProductData(response.data.result.listProduct);

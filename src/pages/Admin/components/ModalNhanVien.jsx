@@ -19,7 +19,7 @@ const ModalSanPham = ({
         username: '',
         password: '',
         fullname: '',
-        gender: '',
+        gender: true,
         email: '',
         phone: '',
         role: ''
