@@ -40,7 +40,7 @@ export default function ForgotPassword() {
     };
 
     return (
-        <Layout>
+        <>
             {/* <ToastContainer
                 position="bottom-center"
                 autoClose={5000}
@@ -98,6 +98,6 @@ export default function ForgotPassword() {
                     </div>
                 </div>
             </div>
-        </Layout>
+        </>
     );
 }

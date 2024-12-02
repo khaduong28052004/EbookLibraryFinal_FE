@@ -79,11 +79,12 @@ const AuthService = {
     //accessToken
     return axiosAuth("null", "post", url, accessToken);
   },
-  // /api/v1/user/topProducts
-  topProducts: () => {
-   const url = "/api/v1/user/topProducts";
-    return axiosAuth("null", "get", url);
-  },
+    // /api/v1/user/topProducts
+    topProducts: (data) => {
+      const sellerIDa = { sellerID: data, };
+      const url = "/api/v1/user/topProducts";
+      return axiosAuth("null", "post", url, sellerIDa);
+    },
 
   //CÂP NHẬT TK
   updateAccount: (id, data) => {

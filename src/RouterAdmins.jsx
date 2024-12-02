@@ -211,7 +211,7 @@ export default function RouterAdmins() {
           path="/thongKe/seller"
           element={
             <>
-              <PageTitle title="Thống Kê Người Bán" />
+              <PageTitle title="Thống Kê Shop" />
               <ThongKeNguoiBanAdmin />
             </>
           }

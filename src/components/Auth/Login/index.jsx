@@ -106,7 +106,8 @@ export default function Login() {
   };
 
   return (
-    <Layout childrenClasses="pt-0 pb-0">
+    <>
+      {/* // <Layout childrenClasses="pt-0 pb-0"> */}
       {/* <ToastContainer
         position="bottom-center"
         autoClose={5000}
@@ -250,6 +251,7 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </Layout>
+      {/* </Layout> */}
+    </>
   );
 }

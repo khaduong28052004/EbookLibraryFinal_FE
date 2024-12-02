@@ -38,7 +38,7 @@ const Modal: React.FC<ModalProps> = ({
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                         <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                            <div className="sm:flex sm:items-start">
+                            <div className="sm:flex sm:items-start w-full pr-0 mr-0">
                                 <div
                                     className={`mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full ${iconBgColor} sm:mx-0 sm:h-10 sm:w-10`}
                                 >
@@ -55,7 +55,7 @@ const Modal: React.FC<ModalProps> = ({
                                         <label className="my-2.5 block text-black dark:text-white">
                                             Lí do:
                                         </label>
-                                        <textarea cols={5} rows={5}
+                                        <textarea cols={40} rows={5}
                                             value={content}
                                             placeholder="Lí do..."
                                             onChange={(e) => { setContent(e.target.value) }}
