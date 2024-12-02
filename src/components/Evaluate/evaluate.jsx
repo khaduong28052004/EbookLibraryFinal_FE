@@ -44,7 +44,7 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId 
 
             console.log('star:', star);
             console.log('content:', content);
-            console.log('billDetailId:', orderDetailId);
+            console.log('orderDetailId:', orderDetailId);
             console.log('productId:', productId);
             console.log('accountId:', accountId);
             console.log('images:', images);

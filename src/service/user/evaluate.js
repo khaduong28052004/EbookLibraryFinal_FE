@@ -22,7 +22,13 @@ const userEvaluateService = {
             });
         }
 
-        return axiosAuth(token, "post", url, formData);
+        console.log("star", star)
+        console.log("content", content)
+        console.log("orderDetailId", orderDetailId)
+        console.log("productId", productId)
+        console.log("accountId", accountId)
+
+        return axiosAuth("null", "post", url, formData);
     }
 
 
