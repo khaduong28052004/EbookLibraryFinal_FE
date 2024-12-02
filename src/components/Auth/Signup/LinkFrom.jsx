@@ -33,7 +33,7 @@ export default function LinkFrom() {
                     toast.error('Lỗi!.');
                 }
             } catch (error) {
-                toast.error(error?.response?.data?.message || 'Email này không account này không tồn tại!.');
+                toast.error(error?.response?.data?.message || 'Email Đã đăng ký!.');
             }
             setLoading(false);
         } else {
