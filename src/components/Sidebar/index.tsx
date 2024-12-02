@@ -18,19 +18,21 @@ interface Permission {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   // Retrieve permissions from sessionStorage and parse it
   const [permissions, setPermissions] = useState<Permission[]>([]);
+  ;
 
   useEffect(() => {
-    const storedPermissions = sessionStorage.getItem("permissions");
+    const storedPermissions = sessionStorage.getItem("permission");
+    console.log(storedPermissions);
+
     if (storedPermissions) {
-      const parsedPermissions: Permission[] = JSON.parse(storedPermissions);  // Ensure the correct type
+      const parsedPermissions: Permission[] = JSON.parse(storedPermissions);
       setPermissions(parsedPermissions);
     }
-  }, []); // Empty dependency array to run only once when the component mounts
+  }, []); // Runs only once when the component mounts
 
   const hasPermission = (cotSlug: string) => {
-    return permissions.some(permission => permission.cotSlug === cotSlug);
+    return permissions.some((permission) => permission.cotSlug === cotSlug);
   };
-
 
   const location = useLocation();
   const { pathname } = location;
@@ -243,49 +245,54 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               </NavLink> : <></>}
                           </li>
                           <li>
-                            <NavLink
-                              to="/admin/quanLy/voucher"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Voucher
-                            </NavLink>
+                            {hasPermission('READ_VOUCHER') ? (
+                              <NavLink
+                                to="/admin/quanLy/voucher"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Voucher
+                              </NavLink>
+                            ) : null}
                           </li>
                           <li>
-                            <NavLink
-                              to="/admin/quanLy/product"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Sản Phẩm
-                            </NavLink>
+                            {hasPermission('READ_PRODUCT') ? (
+                              <NavLink
+                                to="/admin/quanLy/product"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Sản Phẩm
+                              </NavLink>) : null}
                           </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/flashSale"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Flash Sale
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/admin/quanLy/khachHang"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Khách Hàng
-                            </NavLink>
-                          </li>
+                          {hasPermission('READ_FLASHSALE') ? (
+                            <li>
+                              <NavLink
+                                to="/admin/quanLy/flashSale"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Flash Sale
+                              </NavLink>
+                            </li>) : null}
+                          {hasPermission('READ_FLASHSALE') ? (
+                            <li>
+                              <NavLink
+                                to="/admin/quanLy/khachHang"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                Khách Hàng
+                              </NavLink>
+                            </li>) : null}
                           <li>
                             <NavLink
                               to="/admin/quanLy/shop"
@@ -519,7 +526,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               <li>
                 <NavLink
-                  to="/logout"
+                  to="/login"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${pathname.includes('logout') &&
                     'bg-graydark dark:bg-meta-4'
                     }`}

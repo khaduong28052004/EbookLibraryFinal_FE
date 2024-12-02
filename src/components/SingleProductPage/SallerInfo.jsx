@@ -2,7 +2,7 @@ import { UserMinusIcon, UserPlusIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
-import { useLocation } from 'react-router-dom';
+import { useLocation,Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
@@ -39,49 +39,52 @@ export default function SallerInfo({ seller, datas }) {
   return (
     <div className="saller-info-wrapper w-full">
       <div className="saller-info sm:flex justify-between items-center pb-[30px] border-b border-[#E8E8E8]">
-        <div className="sm:flex sm:space-x-5 items-center sm:w-1.5/4">
-          <div className="saller w-[73px] h-[73px] rounded-full overflow-hidden">
-            <img
-              src={seller?.avatar}
-              alt="saller"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <h6 className="text-[18px] font-medium leading-[30px]">
-              {seller?.shopName}
-            </h6>
-            <p className="text-[13px] font-normal text-qgray leading-[30px]">
-              {Intl.DateTimeFormat('vi-VN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-              }).format(new Date(seller?.createAtSeller))}
-            </p>
-            <div className="flex items-center mt-0">
-              <div className="flex">
-                {Array.from({ length: Math.round(seller?.totalStar) }, (_, index) => (
-                  <Star key={index} w="15" h="15" />
-                ))}
-              </div>
-              {
-                seller?.totalStar > 0 ? (<span className="text-[13px] font-normal ml-1">({seller?.totalStar})</span>)
-                  :
-                  (<span className="text-[13px] font-normal">Chưa có đánh giá</span>)
-              }
-              {isFollower == true ? (<button onClick={() => handleFollower()} class="w-40 flex ml-5 px-4 py-2 text-sm bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 active:bg-blue-700">
-                <UserMinusIcon className="w-5 h-5  mr-2" />
-                Đang theo dõi {isFollower}
-              </button>) : (<button onClick={() => handleFollower()} class="w-35 flex ml-5 px-4 py-2 text-sm bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 active:bg-blue-700">
-                <UserPlusIcon className="w-5 h-5 mr-2" />
-                Theo dõi
-              </button>)}
+        <Link to={`/home-shop?shopID=${seller.id}`}>
+          <div className="sm:flex sm:space-x-5 items-center sm:w-1.5/4">
+            <div className="saller w-[73px] h-[73px] rounded-full overflow-hidden">
+              <img
+                src={seller?.avatar}
+                alt="saller"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <h6 className="text-[18px] font-medium leading-[30px]">
+                {seller?.shopName}
+              </h6>
+              <p className="text-[13px] font-normal text-qgray leading-[30px]">
+                {Intl.DateTimeFormat('vi-VN', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                }).format(new Date(seller?.createAtSeller))}
+              </p>
+              <div className="flex items-center mt-0">
+                <div className="flex">
+                  {Array.from({ length: Math.round(seller?.totalStar) }, (_, index) => (
+                    <Star key={index} w="15" h="15" />
+                  ))}
+                </div>
+                {
+                  seller?.totalStar > 0 ? (<span className="text-[13px] font-normal ml-1">({seller?.totalStar})</span>)
+                    :
+                    (<span className="text-[13px] font-normal">Chưa có đánh giá</span>)
+                }
+                {isFollower == true ? (<button onClick={() => handleFollower()} class="w-40 flex ml-5 px-4 py-2 text-sm bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 active:bg-blue-700">
+                  <UserMinusIcon className="w-5 h-5  mr-2" />
+                  Đang theo dõi {isFollower}
+                </button>) : (<button onClick={() => handleFollower()} class="w-35 flex ml-5 px-4 py-2 text-sm bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 active:bg-blue-700">
+                  <UserPlusIcon className="w-5 h-5 mr-2" />
+                  Theo dõi
+                </button>)}
 
+
+              </div>
 
             </div>
 
           </div>
-        </div>
+        </Link>
         <div className="flex-1 w-full sm:flex sm:space-x-5 justify-between sm:ml-[60px] mt-5 sm:mt-0">
           <div className="w-full mb-5 sm:mb-0">
             <ul>

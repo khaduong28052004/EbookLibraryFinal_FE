@@ -3,37 +3,22 @@ import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const permission = ({ element, ...rest }) => {
-  const token = sessionStorage.getItem("token");
-
-
-  // function isTokenValid(token) {
-  //   if (!token) return false;
-  //   const [, payloadBase64] = token.split(".");
-  //   const payload = JSON.parse(atob(payloadBase64));
-  //   const expirationTime = payload.exp * 1000;
-  //   return expirationTime > Date.now();
-  // }
-
-  // // Handle not logged in
-  // if (!token) {
-  //   toast.info("Vui lòng đăng nhập!.");
-  //   return <Navigate to="/login" />;
-  // }
-
-  // // Handle session expiration
-  // if (!isTokenValid(token)) {
-  //   toast.warn("Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại!");
-  //   sessionStorage.removeItem("token"); // Clear expired token
-  //   return <Navigate to="/login" />;
-  // }
-      
-
-  const permission = sessionStorage.getItem("permission");
-
-  // If valid token, allow access
+const ProtectedRoutePermission = ({  requiredPermission,element }) => {
+  // Fetch and parse permissions from sessionStorage
+  const permissions = JSON.parse(sessionStorage.getItem("permission")) || [];
+  console.log(permissions);
+  // Check if the required permission exists
+  const hasPermission = permissions.some(
+    (permission) => permission.cotSlug === requiredPermission
+  );
+  console.log(hasPermission);
+  if (!hasPermission) {
+    // Notify the user and redirect if permission is denied
+    toast.error("BẠN KHÔNG CÓ QUYỀN");
+    return <Navigate to="/login" />;
+  }
+  // Render the protected element if permission is granted
   return element;
 };
 
-
-export default permission;
+export default ProtectedRoutePermission;
