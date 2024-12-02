@@ -90,7 +90,7 @@ export default function LinkFrom() {
                         */}
 
                     <div className="text-center mb-7">
-                        <h1 className="text-2xl font-bold text-qblack">Quên mật khẩu</h1>
+                        <h1 className="text-2xl font-bold text-qblack">Đăng ký tài khoản với {style?"EMAIL":"SỐ ĐIỆN THOẠI"} </h1>
                         <div className="mt-2 mb-4">
                             <svg width="172" height="29" viewBox="0 0 172 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M1 5.08742C17.6667 19.0972 30.5 31.1305 62.5 27.2693C110.617 21.4634 150 -10.09 171 5.08727" stroke="#FFBB38" />
