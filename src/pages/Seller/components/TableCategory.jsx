@@ -8,7 +8,7 @@ import CategoryService from '../../../service/Seller/categoryService';
 import Pagination from './pagination';
 import { toast, ToastContainer } from 'react-toastify';
 import {ExportExcel} from "./ExportExcel"
-
+import { useLocation } from 'react-router-dom';
 const TableCategory = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
@@ -31,6 +31,8 @@ const TableCategory = () => {
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
   const [size, setSize] = useState(5);
+  const location = useLocation();
+
   const handleConfirm = () => {
     setIsOpen(false);
   };
@@ -48,7 +50,7 @@ const TableCategory = () => {
   };
   useEffect(() => {
     loadTable();
-  }, [search, pageNumber, sortBy, sortColumn])
+  }, [location, search, pageNumber, sortBy, sortColumn])
 
   const loadTable = async () => {
     try {

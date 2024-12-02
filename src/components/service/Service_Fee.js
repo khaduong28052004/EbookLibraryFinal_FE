@@ -50,7 +50,7 @@ async function Service_Fee(serviceId, weight, quantity, fromAddress, addressTo) 
             "from_ward_code": fromAddress.wardCode,
             "to_district_id": addressTo.district,
             "to_ward_code": addressTo.wardCode,
-            "weight": weight * quantity,
+            "weight": weight,
             "insurance_value": 0,
             "coupon": null,
             // "quantity":2000,

@@ -179,7 +179,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
           return {
             ...seller,
             cart: filteredCart,
-            voucher: voucher?.vouchers
+            // voucher: voucher?.vouchers
           };
         } else {
           return null;
@@ -208,7 +208,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
           }
         });
       });
-      let saleMax = 0;
+      let saleMax = 200;
       let voucherNew = {};
 
       seller?.vouchers?.forEach(voucher => {

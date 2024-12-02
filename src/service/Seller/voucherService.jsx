@@ -1,11 +1,9 @@
 import axiosConfig, { axiosAuth } from "../../config/configAxios";
 
-const account_id = sessionStorage.getItem('id_account');
-
 const createUrl = (path, params = '') => `/api/v1/seller/voucher/${path}${params}`;
 
 const VoucherService = {
-  getData: (search, page, sortBy, sortColumn, size) => axiosAuth('null', 'get', createUrl('getAll', `?account_id=${account_id}&search=${search}&page=${page}&sortBy=${sortBy}&sortColumn=${sortColumn}&size=${size}`)),
+  getData: (search, page, sortBy, sortColumn, size) => axiosAuth('null', 'get', createUrl('getAll', `?account_id=${sessionStorage.getItem('id_account')}&search=${search}&page=${page}&sortBy=${sortBy}&sortColumn=${sortColumn}&size=${size}`)),
   getDataAdmin: (search, page, sortBy, sortColumn, size) => axiosAuth('', 'get', createUrl('getAllAdmin', `?search=${search}&page=${page}&sortBy=${sortBy}&sortColumn=${sortColumn}&size=${size}`)),
   create: (data) => axiosAuth('null', 'post', createUrl('create'), data),
   update: (data) => axiosAuth('null', 'post', createUrl('update'), data),

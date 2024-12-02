@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Voucher from '../Home/Banner/voucher';
 import BestSeller from '../Home/Banner/bestseller';
+import AuthService from '../../service/authService';
 
 
 const vouchers = [
@@ -76,30 +77,40 @@ const vouchers = [
 ]
 
 
-const products = [
+const defaultProducts = [
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50059.jpg?v=1&w=350&h=510',
+    id: 1,
+    imageProducts: [
+      {name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50059.jpg?v=1&w=350&h=510'}
+    ],
+    title:"loe",
   },
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/0/31339.jpg?v=1&w=350&h=510',
+    id: 2,
+    imageProducts: [{name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510'}],
+    title:"loe",
   },
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510',
+    id: 3,
+    imageProducts: [{name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/46738.jpg?v=1&w=350&h=510'}],
+    title:"loe",
   },
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/46738.jpg?v=1&w=350&h=510',
+    id: 4,
+    imageProducts: [{name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50179.jpg?v=1&w=350&h=510'}],
+    title:"loe",
   },
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50179.jpg?v=1&w=350&h=510',
-  },
-  {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510',
+    id: 5,
+    imageProducts:[{name:'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510'}],
+    title:"loe",
   },
 ];
 
 
 export default function Banner({ className }) {
-
+  const [loading, setLoading] = useState(false);
+  const [productData, setProductData] = useState([]);
 
   const fetchVoucherShopHome = async () => {
     try {
@@ -121,9 +132,21 @@ export default function Banner({ className }) {
     }
   }
 
+  const topProducts = async () => {
+    try {
+      const response = await AuthService.topProducts();
+      console.log(response);
+      // setProductData(defaultProducts);
+      setProductData(response.data.result.listProduct);
+    } catch (error) {
+      setProductData(defaultProducts);
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-    fetchVoucherShopHome();
+    topProducts();
+    // fetchVoucherShopHome();
   }, [])
 
   return (
@@ -165,8 +188,8 @@ export default function Banner({ className }) {
                     {/* Nền mờ */}
                     <div className="inset-0 bg-white bg-opacity-50 backdrop-blur-lg"></div>
 
-                    {products.length > 0 ? (
-                      <BestSeller products={products} />
+                    {productData.length > 0 ? (
+                      <BestSeller products={productData} />
                     ) : null}
 
                     {/* <div className="w-[20rem] h-full">

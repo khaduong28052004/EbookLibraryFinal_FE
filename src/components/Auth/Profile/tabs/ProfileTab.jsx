@@ -5,7 +5,7 @@ import AuthService from "../../../../service/authService";
 import { PencilSquareIcon, PhotoIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import { uploadImages1 } from "../../../../service/dangKySellerService";
+import { uploadImageAvt,uploadImageBR } from "../../../../service/dangKySellerService";
 
 export default function ProfileTab() {
   const [formData, setFormData] = useState({
@@ -184,19 +184,30 @@ export default function ProfileTab() {
 
     try {
       const id = sessionStorage.getItem("id_account");
-      if (imgAvartar || imgBackgrourd) {
-        const formDataImages = new FormData();
-        if (imgAvartar) formDataImages.append('imgAvartar', imgAvartar);
-        if (imgBackgrourd) formDataImages.append('imgBackgrourd', imgBackgrourd);
-        await uploadImages1(id, formDataImages);
+    
+      // Upload avatar nếu có
+      if (imgAvartar) {
+        const formDataAvt = new FormData();
+        formDataAvt.append("imgAvatar", imgAvartar);
+        await uploadImageAvt(id, formDataAvt);
       }
+    
+      // Upload background nếu có
+      if (imgBackgrourd) {
+        const formDataBg = new FormData();
+        formDataBg.append("imgBackground", imgBackgrourd);
+        await uploadImageBR(id, formDataBg);
+      }
+    
+      // Cập nhật thông tin tài khoản
       const response = await AuthService.updateAccount(id, formData);
-      toast.success('Cập nhật tài khoản thành công!');
+      toast.success("Cập nhật tài khoản thành công!");
       fetchData();
     } catch (error) {
-      toast.error("Cập nhật thất bại vui lòng kiểm tra lại!");
-      console.error(error);
+      toast.error("Cập nhật thất bại, vui lòng kiểm tra lại!");
+      console.error("Error:", error);
     }
+    
   };
 
   return (

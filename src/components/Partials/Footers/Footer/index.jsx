@@ -41,7 +41,7 @@ export default function Footer({ type }) {
           <div className="flex-1 lg:flex">
             <div className="lg:w-1/3 w-full mb-10 lg:mb-0">
               <div className="mb-5">
-                <h6 className="text-[18] font-500 text-[#2F2F2F]">Tính năng</h6>
+                <h6 className="text-[18] font-500 text-[#2F2F2F]">Về chúng tôi</h6>
               </div>
               <div>
                 <ul className="flex flex-col space-y-4 ">
@@ -60,9 +60,9 @@ export default function Footer({ type }) {
                     </a>
                   </li>
                   <li>
-                    <a href="/all-products">
+                    <a href="/quyche-hoatdong">
                       <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
-                        Sản phẩm tốt nhất
+                        Quy chế hoạt động
                       </span>
                     </a>
                   </li>
@@ -73,7 +73,7 @@ export default function Footer({ type }) {
               <div>
                 <div className="mb-5">
                   <h6 className="text-[18] font-500 text-[#2F2F2F]">
-                    Liên kết chung
+                    Dành cho người mua 
                   </h6>
                 </div>
                 <div>
@@ -81,24 +81,25 @@ export default function Footer({ type }) {
                     <li>
                       <a href="/blogs">
                         <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
-                          Blog
+                          Hướng dẫn mua hàng
                         </span>
                       </a>
                     </li>
                     <li>
                       <a href="/tracking-order">
                         <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
-                          Theo dõi đơn hàng
+                          Chính sách đổi trả
                         </span>
                       </a>
                     </li>
                     <li>
-                      <a href="/become-saller">
+                      <a href="/contact">
                         <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
-                          Trở thành người bán
+                          Liên hệ
                         </span>
                       </a>
                     </li>
+                  
                   </ul>
                 </div>
               </div>
@@ -106,28 +107,28 @@ export default function Footer({ type }) {
             <div className="lg:w-1/3 lg:flex lg:flex-col items-center w-full mb-10 lg:mb-0">
               <div>
                 <div className="mb-5">
-                  <h6 className="text-[18] font-500 text-[#2F2F2F]">Hữu ích</h6>
+                  <h6 className="text-[18] font-500 text-[#2F2F2F]">Dành cho người bán</h6>
                 </div>
                 <div>
                   <ul className="flex flex-col space-y-4 ">
                     <li>
-                      <a href="/flash-sale">
+                      <a href="/ban-hang">
                         <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
-                          Khuyến mại chớp nhoáng
+                          Hướng dẫn bán hàng
                         </span>
                       </a>
                     </li>
                     <li>
-                      <a href="/faq">
+                      <a href="/chinh-sach">
                         <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
-                          Câu hỏi thường gặp
+                          Chính sách người bán
                         </span>
                       </a>
                     </li>
                     <li>
-                      <a href="/about">
+                      <a href="/become-saller">
                         <span className="text-[#9A9A9A] text-[15px] hover:text-qblack border-b border-transparent hover:border-qblack cursor-pointer capitalize">
-                          Hỗ trợ
+                          Trở thành người bán
                         </span>
                       </a>
                     </li>
@@ -146,7 +147,7 @@ export default function Footer({ type }) {
               <a href="#">
                 <Facebook className="fill-current text-qgray hover:text-qblack" />
               </a>
-              <a href="#">
+              <a href="https://www.facebook.com/share/1B1GPj2t3e/">
                 <Youtube className="fill-current text-qgray hover:text-qblack" />
               </a>
             </div>
