@@ -55,7 +55,7 @@ export default function Login() {
 
     if (password.trim() === "") {
       seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
-      toast.error("Vui lòng kiểm tra tên đăng nhập!");
+      toast.error("Vui lòng kiểm tra mật khẩu!");
       return;
     } else {
       seterrorFrom((prev) => ({ ...prev, passwordF: 0 }));
@@ -63,7 +63,7 @@ export default function Login() {
 
 
     if (!captchaToken) {
-      toast.error("Vui lòng điền capchat!");
+      toast.error("Vui lòng tích capchat!");
       return;
     }
 

@@ -135,6 +135,23 @@ export default function Signup() {
       toast.error("Vui lòng điền đầy đủ thông tin!");
       return;
     }
+    const phonePattern = /^(03|05|07|08|09)\d{8}$/; // Example: Vietnamese phone prefixes
+    if (!phonePattern.test(formData.phone)) {
+      toast.error("Số điện thoại không đúng định dạng!");
+    }
+    // case "phone":
+    // const phonePattern = /^(03|05|07|08|09)\d{8}$/; // Example: Vietnamese phone prefixes
+    // setError((prev) => ({
+    //     ...prev,
+    //     phone: {
+    //         error: !phonePattern.test(value),
+    //         message: !phonePattern.test(value)
+    //             ? "Số điện thoại phải chứa đúng 10 số và bắt đầu bằng 03, 05, 07, 08, hoặc 09!"
+    //             : "",
+    //     },
+    // }));
+    // break;
+
     if (!checked) {
       toast.warn("Điều khoản tài khoản!");
       return

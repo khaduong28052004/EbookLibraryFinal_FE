@@ -23,7 +23,7 @@ export default function ForgotPassword() {
 
             const response = await AuthService.Otp({ email });
             if (response.status) {
-                toast.success('Gửi mail thành công vui lòng kiểm tra email!');
+                toast.success('Gửi mail thành công vui lòng kiểm tra email để tiếp tục đăng ký!');
                 setError(true);
                 setTimeout(() => {
                     navigate('/login');
@@ -33,7 +33,7 @@ export default function ForgotPassword() {
                 toast.error('Lỗi!.');
             }
         } catch (error) {
-            toast.error(error?.response?.data?.message || 'Email này không account này không tồn tại!.');
+            toast.error(error?.response?.data?.message || 'Thông báo lỗi "Lỗi vui lòng kiểm tra email !.');
         }
 
         setLoading(false);
