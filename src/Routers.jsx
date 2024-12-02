@@ -80,7 +80,6 @@ export default function Routers() {
             <Suspense fallback={<Loader />}>
               <Home />
             </Suspense>
-
           }
           />
           <Route exact path="/search" element={<AllProductPage />} />
