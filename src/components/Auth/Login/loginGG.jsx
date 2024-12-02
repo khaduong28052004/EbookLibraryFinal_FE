@@ -39,7 +39,6 @@ const LoginGG = () => {
         } catch (error) {
             const redirectUrl = error.response.headers?.location || "signup";
             if (error.response.status = 302) {
-
                 // thoong bao khi chon toast
                 return navigate('/' + redirectUrl);
             }
