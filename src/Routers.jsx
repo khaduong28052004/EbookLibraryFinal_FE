@@ -25,6 +25,9 @@ import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
 import HomeShop from "./components/shop/index.jsx"
+import QuyCheHoatDong from "./components/QuyCheHoatDong";
+import HuongDanBanHang from "./components/HuongDanBanHang";
+import ChinhSachNguoiBan from "./components/ChinhSachNguoiBan";
 
 // const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));
@@ -107,6 +110,8 @@ export default function Routers() {
           <Route exact path="/sallers" element={<Sallers />} />
           <Route exact path="/about" element={<About />} />
           <Route exact path="/blogs" element={<Blogs />} />
+          <Route exact path="/ban-hang" element={<HuongDanBanHang />} />
+          <Route exact path="/chinh-sach" element={<ChinhSachNguoiBan />} />
           <Route exact path="/blogs/blog" element={<Blog />} />
           <Route exact path="/tracking-order" element={<TrackingOrder />} />
           <Route exact path="/contact" element={<Contact />} />
@@ -116,6 +121,7 @@ export default function Routers() {
           <Route exact path="/profile" element={
             <ProtectedRoute element={<Profile />} />
           } />
+          <Route exact path="/quyche-hoatdong" element={<QuyCheHoatDong />} />
 
           <Route exact path="/become-saller" element={<BecomeSaller />} />
           <Route exact path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -130,6 +136,6 @@ export default function Routers() {
       </RequestProvider>
     </>
 
- 
+
 );
 }
