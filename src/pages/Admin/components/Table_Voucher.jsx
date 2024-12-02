@@ -77,8 +77,12 @@ const TableVoucher = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Voucher'];
     try {
-      const response = await VoucherService.getDataAdmin(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Voucher.xlsx", sheetNames, [response.data.result.content]);
+      const response = await VoucherService.getDataAdmin(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Thống Kê Voucher.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -342,12 +346,12 @@ const TableVoucher = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 justify-start flex items-start">
                     <div className="flex space-x-3.5">
                       <button>
                         <Link to={`/admin/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
                       </button>
-                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart) > new Date()? (
+                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart) > new Date() ? (
                         <>
                           <button onClick={(event) => {
                             event.stopPropagation();
@@ -374,17 +378,17 @@ const TableVoucher = () => {
                   <tr className="border-t border-stroke dark:border-strokedark bg-gray-50 dark:bg-gray-800">
                     <td colSpan={8} className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                       <div className="grid grid-cols-3 gap-x-8 gap-y-2">
-                        <p><strong>Điều Kiện:</strong>
+                        <p><strong>Điều Kiện: </strong>
                           {(voucher.minOrder || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                         </p>
 
                         <p>
-                          <strong>Giá Giảm Tối Đa:</strong>
+                          <strong>Giá Giảm Tối Đa: </strong>
                           {(voucher.totalPriceOrder || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                         </p>
 
                         <p>
-                          <strong>Số Lượng:</strong>
+                          <strong>Số Lượng: </strong>
                           {voucher.quantity}
                         </p>
 
@@ -524,7 +528,6 @@ const TableVoucher = () => {
                         name="minOrder"
                         value={dataVoucher.minOrder}
                         onChange={handDataVoucher}
-                        min={0}
                         placeholder="Điều kiện..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
@@ -538,7 +541,6 @@ const TableVoucher = () => {
                       </label>
                       <input
                         type="number"
-                        min={0}
                         name="totalPriceOrder"
                         value={dataVoucher.totalPriceOrder}
                         onChange={handDataVoucher}
@@ -554,8 +556,6 @@ const TableVoucher = () => {
                       <input
                         type="number"
                         name="sale"
-                        min={0}
-                        max={100}
                         value={dataVoucher.sale}
                         onChange={handDataVoucher}
                         placeholder="Giám giá..."

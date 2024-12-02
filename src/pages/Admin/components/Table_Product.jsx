@@ -96,8 +96,12 @@ const TableTwo = () => {
         const sheetNames = ['Danh Sách Sản Phẩm'];
         try {
             console.log("totalElements: " + data.totalElements);
-            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: data.totalElements, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
+            const response = await product.findAllProduct({ searchItem, option, page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Sản phẩm.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -239,7 +243,7 @@ const TableTwo = () => {
                             </div>
                         </th>
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
+                            <span className="text-sm text-black dark:text-white">Hành động</span>
                         </th>
                     </tr>
                 </thead>
@@ -262,7 +266,7 @@ const TableTwo = () => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                     <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0].name} alt="entity" />
-                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
+                                    <p className="text-sm text-black dark:text-white truncate w-25">{entity.name}</p>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                     <div className="flex items-center gap-1 hidden xl:flex">
@@ -281,8 +285,8 @@ const TableTwo = () => {
                                     </div>
                                 </td>
 
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                                    <div className="flex items-center gap-1 hidden lg:flex">
+                                <td className="py-4.5 px-4 md:px-4 2xl:px-2 ">
+                                    <div className="flex items-center hidden lg:flex">
                                         {entity.active ? (
                                             <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.delete == false ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
                                                 {entity.delete == false ? 'Hoạt Động' : 'Đã Ngừng'}
@@ -322,9 +326,9 @@ const TableTwo = () => {
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
                                                 <p>Mã sản phẩm: {entity.id}</p>
+                                                <p>Tên sản phẩm: {entity.name}</p>
                                                 <p>Thể loại: {entity.category.name}</p>
                                                 <p>Shop: {entity.account.shopName}</p>
-                                                <p>Họ tên chủ shop: {entity.account.fullname}</p>
                                                 <p>Email: {entity.account.email}</p>
                                                 <p>Số điện thoại: {entity.account.phone}</p>
                                             </div>
