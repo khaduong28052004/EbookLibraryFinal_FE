@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import Modal from "./Modal_ThongBao_NotMail";
 import ModalFlashSale from './ModalFlaseSale';
 import ModalFlashSaleCT from './Modal_FlashSaleCT';
@@ -201,7 +201,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                                         setIsOpen(true);
                                         setStatusentity(!entity.delete);
                                     }}>
-                                        {!entity.delete ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                        {!entity.delete ? (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
                                     </button>
                                     <button onClick={() => {
                                         setEntityFlashSale(entity);
@@ -233,7 +233,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                 onConfirm={handleConfirm}
                 confirmText={'Xác Nhận'}
                 cancelText="Thoát"
-                icon={<TrashIcon className="h-6 w-6 text-red-600" />}
+                icon={<NoSymbolIcon className="h-6 w-6 text-red-600" />}
                 iconBgColor={'bg-red-100'}
                 buttonBgColor={'bg-red-600'} />
             <ModalFlashSale

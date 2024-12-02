@@ -9,6 +9,7 @@ import Layout from "../Partials/Layout";
 import ProductsFilter from "./ProductsFilter";
 import LazyLoad from "react-lazyload";
 import SearchService from "../../service/user/search";
+import Pagination from '../../pages/Seller/components/pagination';
 export default function AllProductPage() {
 
   const [filters, setFilter] = useState({
@@ -46,6 +47,8 @@ export default function AllProductPage() {
       [name]: !prevState[name],
     }));
   };
+  const [currentPage, setCurrentPage] = useState(0);
+
   const [volume, setVolume] = useState([200, 500]);
 
   const location = useLocation();
@@ -64,6 +67,7 @@ export default function AllProductPage() {
   const [categories, setCategories] = useState();
 
   const [datas, setDatas] = useState([]);
+  const [dataPagination, setDataPagination] = useState([]);
 
 
   // Toggle the dropdown open/close
@@ -74,6 +78,8 @@ export default function AllProductPage() {
   useEffect(() => {
     const text = query.get("text");
     const idProduct = query.get('idProduct');
+    const textAudio = query.get('textAudio');
+
 
     // Nếu có idProduct
     if (idProduct) {
@@ -85,30 +91,52 @@ export default function AllProductPage() {
         setDatas([]);
         console.error("ID product không hợp lệ");
       }
-    }
-    // Nếu không có idProduct và có text
-    else if (text) {
-      axios.get("http://localhost:8080/api/v1/user/search?text=" + text)
-        .then(response => {
-          setDatas(response.data.result.datas);
-          setCategories(response.data.result.categories);
-          // console.log("text " + response.data.result.datas);
-        })
-        .catch(error => console.error("fetch data search error " + error));
-    }
-    // Nếu không có cả idProduct và text, có thể hiển thị thông báo lỗi hoặc chuyển về trạng thái khác
-    else {
-      setDatas([]);
+    } else
+      if (textAudio) {
+        searchAudio(textAudio);
+      } else {
+        axios.get("http://localhost:8080/api/v1/user/search?text=" + text)
+          .then(response => {
+            setDatas(response.data.result.datas);
+            setCategories(response.data.result.categories);
+            setDataPagination([]);
+            // console.log("text " + response.data.result.datas);
+          })
+          .catch(error => console.error("fetch data search error " + error));
+      }
+  }, [location, currentPage]);
 
-      console.error("Không có thông tin tìm kiếm hợp lệ");
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < data.totalPages) {
+      setCurrentPage(newPage);
+      console.log("currentPage: " + newPage);
     }
-  }, [location]);
+  };
 
+  const handlePrevious = () => {
+    handlePageChange(currentPage - 1);
+  };
+
+  const handleNext = () => {
+    handlePageChange(currentPage + 1);
+  };
 
   const searchImage = async (idProducts) => {
     try {
-      const response = await SearchService.searchByIds(idProducts);
+      const response = await SearchService.searchByIds(idProducts, currentPage);
       setDatas(response.data.result.content);
+      setDataPagination(response.data.result);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const searchAudio = async (text) => {
+    try {
+      const response = await SearchService.searchAudio(text, currentPage);
+      setDatas(response.data.result.content);
+      setDataPagination(response.data.result);
+
     } catch (error) {
       console.log(error)
     }
@@ -240,7 +268,9 @@ export default function AllProductPage() {
                       )}
                     </DataIteration>
 
+
                   </div>
+
                 ) : (
                   <div className="flex justify-center items-center min-h-screen bg-white  ">
                     <div className="text-center">
@@ -256,6 +286,16 @@ export default function AllProductPage() {
                   </div>
 
                 )}
+                {dataPagination?.content?.length > 0 ? (
+                  <Pagination
+                    pageNumber={currentPage}
+                    totalPages={dataPagination?.totalPages}
+                    totalElements={dataPagination?.totalElements}
+                    handlePrevious={handlePrevious}
+                    handleNext={handleNext}
+                    setPageNumber={setCurrentPage}
+                    size={dataPagination?.size}></Pagination>
+                ) : (<></>)}
               </div>
             </div>
           </div>

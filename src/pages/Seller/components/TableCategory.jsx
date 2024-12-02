@@ -8,7 +8,7 @@ import CategoryService from '../../../service/Seller/categoryService';
 import Pagination from './pagination';
 import { toast, ToastContainer } from 'react-toastify';
 import {ExportExcel} from "./ExportExcel"
-
+import { useLocation } from 'react-router-dom';
 const TableCategory = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
@@ -31,6 +31,8 @@ const TableCategory = () => {
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
   const [size, setSize] = useState(5);
+  const location = useLocation();
+
   const handleConfirm = () => {
     setIsOpen(false);
   };
@@ -48,7 +50,7 @@ const TableCategory = () => {
   };
   useEffect(() => {
     loadTable();
-  }, [search, pageNumber, sortBy, sortColumn])
+  }, [location, search, pageNumber, sortBy, sortColumn])
 
   const loadTable = async () => {
     try {
@@ -320,7 +322,7 @@ const TableCategory = () => {
                           <select
                             onChange={handleCategory}
                             name='idParent'
-                            className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white`}
+                            className={`relative z-20 truncate w-52 appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white`}
                           >
                             <option value="" disabled className="text-body dark:text-bodydark">
                               {'Chọn doanh mục'}
