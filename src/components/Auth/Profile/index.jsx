@@ -14,11 +14,11 @@ import AddressesTab from "./tabs/AddressesTab";
 import Dashboard from "./tabs/Dashboard";
 import OrderTab from "./tabs/OrderTab";
 import PasswordTab from "./tabs/PasswordTab";
-import Report from "./tabs/Report";
 import ProfileTab from "./tabs/ProfileTab";
 import ReviewTab from "./tabs/ReviewTab";
-import SupportTab from "./tabs/SupportTab";
+import BecomSeller from "./tabs/BecomSeller";
 import WishlistTab from "./tabs/WishlistTab";
+
 // import IcoPayment from './path/to/IcoPayment';
 import { toast } from "react-toastify";
 import { FaFlag } from "react-icons/fa"; // Hoặc biểu tượng khác bạn cần.
@@ -28,7 +28,7 @@ import IcoPayment from './icons/IcoPayment'; // Đảm bảo đường dẫn ch�
 const IcoReport = () => <FaFlag className="text-lg text-qgray group-hover:text-qblack" />;
 
 export default function Profile() {
-  
+
   const [switchDashboard, setSwitchDashboard] = useState(false);
   const location = useLocation();
   const getHashContent = location.hash.split("#");
@@ -144,13 +144,13 @@ export default function Profile() {
                     </div>
 
                     <div className="item group">
-                      <Link to="/profile#report">
+                      <Link to="/profile#become-seller">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
                           <span>
                             <IcoPayment />
                           </span>
                           <span className=" font-normal text-base">
-                            Phương thức thanh toán
+                            Trở thành người bán
                           </span>
                         </div>
                       </Link>
@@ -215,7 +215,7 @@ export default function Profile() {
                         </div>
                       </Link>
                     </div>
-                    
+
                     {/* <div className="item group">
                       <Link to="/profile#support">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
@@ -229,16 +229,16 @@ export default function Profile() {
                       </Link>
                     </div> */}
 
-<div className="item group">
-  <Link to="/profile#report">
-    <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
-      <span>
-        <IcoReport /> {/* Thay bằng biểu tượng báo cáo hoặc icon khác */}
-      </span>
-      <span className="font-normal text-base">Báo cáo</span>
-    </div>
-  </Link>
-</div>
+                    <div className="item group">
+                      <Link to="/profile#report">
+                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
+                          <span>
+                            <IcoReport /> {/* Thay bằng biểu tượng báo cáo hoặc icon khác */}
+                          </span>
+                          <span className="font-normal text-base">Báo cáo</span>
+                        </div>
+                      </Link>
+                    </div>
                     {
                       isToken ? (<div className="item group">
                         <Link to="/login">
@@ -258,7 +258,7 @@ export default function Profile() {
                               <IcoLogout />
                             </span>
                             <span className=" font-normal text-base">
-                              Đăng nhập
+                              Đăng xuất
                             </span>
                           </div>
                         </Link>
@@ -275,9 +275,9 @@ export default function Profile() {
                       <>
                         <ProfileTab />
                       </>
-                    ) : active === "report" ? (
+                    ) : active === "become-seller" ? (
                       <>
-                        <Report />
+                        <BecomSeller />
                       </>
                     ) : active === "order" ? (
                       <>
@@ -303,8 +303,8 @@ export default function Profile() {
                       <>
                         <ReviewTab products={datas.products} />
                       </>
-                      ) : active === "report" ? ( // Logic hiển thị Báo cáo
-                        <ReportTab />
+                    ) : active === "report" ? ( // Logic hiển thị Báo cáo
+                      <ReportTab />
                     ) : (
                       ""
                     )}

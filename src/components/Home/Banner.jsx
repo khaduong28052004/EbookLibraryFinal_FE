@@ -156,7 +156,7 @@ export default function Banner({ className }) {
           <div className="main-wrapper w-full">
             <div className="banner-card xl:flex xl:space-x-[30px] xl:h-[250px]   mb-6 ">
               <div className="bg-white">
-                <div data-aos="fade-right" className="xl:w-full w-full xl:h-[100%] h-full rounded-sm">
+                <div data-aos="fade-right" className="xl:w-full w-full xl:h-full h-full rounded-sm">
                   <a href="/single-product">
                     <picture className="xl:h-full h-[600px]">
                       <source
@@ -174,9 +174,9 @@ export default function Banner({ className }) {
               </div>
               <div
                 data-aos="fade-left"
-                className="flex-1 flex justify-around xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto bg-gray-100 gap-2"
+                className="flex-1 flex justify-around w-full xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto gap-2"
               >
-                <div className="bg-white rounded px-2  bg-opacity-50 backdrop-blur-sm">
+                <div className="bg-white rounded   bg-opacity-50 backdrop-blur-sm">
                   <div
                     className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat"
                     style={{
