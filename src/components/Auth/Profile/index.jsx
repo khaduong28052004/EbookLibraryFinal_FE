@@ -16,8 +16,9 @@ import OrderTab from "./tabs/OrderTab";
 import PasswordTab from "./tabs/PasswordTab";
 import ProfileTab from "./tabs/ProfileTab";
 import ReviewTab from "./tabs/ReviewTab";
-import BecomSeller from "./tabs/BecomSeller";
+import BecomeSeller from "./tabs/BecomSeller";
 import WishlistTab from "./tabs/WishlistTab";
+import ReportTab from "./tabs/Report";
 
 // import IcoPayment from './path/to/IcoPayment';
 import { toast } from "react-toastify";
@@ -277,7 +278,7 @@ export default function Profile() {
                       </>
                     ) : active === "become-seller" ? (
                       <>
-                        <BecomSeller />
+                        <BecomeSeller />
                       </>
                     ) : active === "order" ? (
                       <>

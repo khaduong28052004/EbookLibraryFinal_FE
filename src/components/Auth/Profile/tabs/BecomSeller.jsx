@@ -90,7 +90,7 @@ export default function BecomeSaller() {
       mediaRecorderRef.current = new MediaRecorder(stream);
 
       mediaRecorderRef.current.ondataavailable = (e) => {
-        chunks.current.push(e.data); 
+        chunks.current.push(e.data);
       };
 
       mediaRecorderRef.current.onstop = () => {
@@ -342,24 +342,17 @@ export default function BecomeSaller() {
   };
 
   return (
-    <Layout childrenClasses="pt-0 pb-0">
+    <>
       <div className="become-saller-wrapper w-full">
         <div className="title mb-10">
-          <PageTitle
-            title="Ứng Dụng Của Người Bán"
-            breadcrumb={[
-              { name: "home", path: "/" },
-              { name: "Become Saller", path: "/become-saller" },
-            ]}
-          />
         </div>
         <div className="content-wrapper w-full mb-10">
-          <div className="container-x mx-auto">
+          <div className=" mx-auto">
             {currentStep === 1 && (
               <form onSubmit={fetchRegister}>
-                <div className="w-full bg-white sm:p-[30px] p-3">
+                <div className="w-full bg-white ">
                   <div className="flex xl:flex-row flex-col-reverse xl:space-x-11">
-                    <div className="xl:w-[824px]">
+                    <div className="xl:w-[500px]">
                       <div className="title w-full mb-4">
                         <h1 className="text-[22px] font-semibold text-qblack mb-1">
                           Thông tin cửa hàng
@@ -439,16 +432,6 @@ export default function BecomeSaller() {
                             </button>
                           </div>
                         </div>
-
-                        <div className="signup-area flex justify-center">
-                          <p className="text-sm text-qgraytwo font-normal">
-                            Bạn đã có tài khoản ?
-                            <a href="/login" className="ml-2 text-qblack">
-                              Đăng Nhập
-                            </a>
-                          </p>
-                        </div>
-
                       </div>
                     </div>
                     <div className="flex-1 mb-10 xl:mb-0">
@@ -459,35 +442,25 @@ export default function BecomeSaller() {
                           Ảnh chụp mặt trước của thẻ CCCD
                         </p>
                         <div className="flex justify-center">
-                          <div className="w-full relative">
+                          <div className="w-full relative border border-2">
                             <img
 
                               src={imgBefore}
                               alt="Mặt trước CCCD"
-                              className="w-full h-[120px] rounded-lg overflow-hidden object-cover"
+                              className="w-full h-[120px] rounded-lg overflow-hidden object-cover url"
                             />
                             <input ref={imgBeforeInput} name="imgBefore"
                               type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 1)} />
                             <div
                               onClick={browseimgBefore}
-                              className="w-[32px] h-[32px] absolute -bottom-4 right-4 bg-[#83bef2] hover:bg-[#0f4e81bb] rounded-full cursor-pointer"
+                              className="flex justify-center items-center w-[32px] h-[32px] absolute bottom-0 right-0 bg-[#83bef2] hover:bg-[#0f4e81bb] rounded-full cursor-pointer"
                             >
-                              <svg
-                                width="32"
-                                height="32"
-                                viewBox="0 0 32 32"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M16.5147 11.5C17.7284 12.7137 18.9234 13.9087 20.1296 15.115C19.9798 15.2611 19.8187 15.4109 19.6651 15.5683C17.4699 17.7635 15.271 19.9587 13.0758 22.1539C12.9334 22.2962 12.7948 22.4386 12.6524 22.5735C12.6187 22.6034 12.5663 22.6296 12.5213 22.6296C11.3788 22.6334 10.2362 22.6297 9.09365 22.6334C9.01498 22.6334 9 22.6034 9 22.536C9 21.4009 9 20.2621 9.00375 19.1271C9.00375 19.0746 9.02997 19.0109 9.06368 18.9772C10.4123 17.6249 11.7609 16.2763 13.1095 14.9277C14.2295 13.8076 15.3459 12.6913 16.466 11.5712C16.4884 11.5487 16.4997 11.5187 16.5147 11.5Z"
-                                  fill="white"
-                                />
-                                <path
-                                  d="M20.9499 14.2904C19.7436 13.0842 18.5449 11.8854 17.3499 10.6904C17.5634 10.4694 17.7844 10.2446 18.0054 10.0199C18.2639 9.76139 18.5261 9.50291 18.7884 9.24443C19.118 8.91852 19.5713 8.91852 19.8972 9.24443C20.7251 10.0611 21.5492 10.8815 22.3771 11.6981C22.6993 12.0165 22.7105 12.4698 22.3996 12.792C21.9238 13.2865 21.4443 13.7772 20.9686 14.2717C20.9648 14.2792 20.9536 14.2867 20.9499 14.2904Z"
-                                  fill="white"
-                                />
+
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="black" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
                               </svg>
+
                             </div>
                           </div>
                         </div>
@@ -500,7 +473,7 @@ export default function BecomeSaller() {
                           Ảnh chụp mặt sau của thẻ CCCD
                         </p>
                         <div className="flex justify-center">
-                          <div className="w-full relative">
+                          <div className="w-full relative border border-2">
                             <img
                               src={imgAfter}
                               alt="Mặt sau CCCD"
@@ -510,30 +483,19 @@ export default function BecomeSaller() {
                             <input ref={imgAfterInput} name="imgAfter" type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e, 2)} />
                             <div
                               onClick={browseimgAfter}
-                              className="w-[32px] h-[32px] absolute -bottom-4 right-4 bg-[#83bef2] hover:bg-[#44dbe6bb] rounded-full cursor-pointer"
+                              className="flex justify-center items-center w-[32px] h-[32px] absolute bottom-0 right-0 bg-[#83bef2] hover:bg-[#0f4e81bb] rounded-full cursor-pointer"
                             >
-                              <svg
-                                width="32"
-                                height="32"
-                                viewBox="0 0 32 32"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M16.5147 11.5C17.7284 12.7137 18.9234 13.9087 20.1296 15.115C19.9798 15.2611 19.8187 15.4109 19.6651 15.5683C17.4699 17.7635 15.271 19.9587 13.0758 22.1539C12.9334 22.2962 12.7948 22.4386 12.6524 22.5735C12.6187 22.6034 12.5663 22.6296 12.5213 22.6296C11.3788 22.6334 10.2362 22.6297 9.09365 22.6334C9.01498 22.6334 9 22.6034 9 22.536C9 21.4009 9 20.2621 9.00375 19.1271C9.00375 19.0746 9.02997 19.0109 9.06368 18.9772C10.4123 17.6249 11.7609 16.2763 13.1095 14.9277C14.2295 13.8076 15.3459 12.6913 16.466 11.5712C16.4884 11.5487 16.4997 11.5187 16.5147 11.5Z"
-                                  fill="white"
-                                />
-                                <path
-                                  d="M20.9499 14.2904C19.7436 13.0842 18.5449 11.8854 17.3499 10.6904C17.5634 10.4694 17.7844 10.2446 18.0054 10.0199C18.2639 9.76139 18.5261 9.50291 18.7884 9.24443C19.118 8.91852 19.5713 8.91852 19.8972 9.24443C20.7251 10.0611 21.5492 10.8815 22.3771 11.6981C22.6993 12.0165 22.7105 12.4698 22.3996 12.792C21.9238 13.2865 21.4443 13.7772 20.9686 14.2717C20.9648 14.2792 20.9536 14.2867 20.9499 14.2904Z"
-                                  fill="white"
-                                />
+
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="black" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
                               </svg>
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      
+
                     </div>
                   </div>
                 </div>
@@ -630,7 +592,7 @@ export default function BecomeSaller() {
       </Dialog>
 
       <ToastContainer />
-    </Layout>
+    </>
   );
 }
 
