@@ -133,7 +133,9 @@ export default function AddressesTab() {
                                 <td className="p-2 text-[#003EA1]">
                                     <td className="p-2 text-[#003EA1]">
                                         <td className="p-2 text-[#003EA1]">
-                                            <label class="relative inline-block h-7 w-16 cursor-pointer rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-blue-900">
+                                            <label class="relative inline-block h-7 w-16 cursor-pointer rounded-full 
+                                            bg-gray-300 transition [-webkit-tap-highlight-color:_transparent]
+                                             has-[:checked]:bg-[#003EA1] shadow-inner shadow-2 shadow-gray-400 has-[:checked]:shadow-[#0003a1]  hover:">
                                                 <input
                                                     class="peer sr-only"
                                                     type="checkbox"
@@ -142,7 +144,7 @@ export default function AddressesTab() {
                                                     checked={address.status} // Liên kết với trạng thái địa chỉ
                                                     onChange={() => handleToggleDefault(address.id)} // Xử lý khi thay đổi
                                                 />
-                                                <span class="absolute inset-y-0 start-0 m-1 size-5 rounded-full bg-gray-300 ring-[6px] ring-inset ring-white transition-all peer-checked:start-8 peer-checked:w-2 peer-checked:bg-white peer-checked:ring-transparent"></span>
+                                                <span class=" shadow   shadow-gray-400 shadow-[#0003a1] absolute inset-y-0 start-0 m-1 size-5 rounded-full bg-gray-300 ring-[6px] ring-inset ring-white transition-all peer-checked:start-8 peer-checked:w-2 peer-checked:bg-white peer-checked:ring-transparent"></span>
                                             </label>
                                         </td>
                                     </td>
@@ -152,7 +154,8 @@ export default function AddressesTab() {
                                     {/* Biểu tượng chỉnh sửa */}
                                     <div className="mt-4">
                                         <PencilSquareIcon
-                                            className="border border-[#003EA1] text-[#003EA1] p-2 w-10 h-10 font-semibold rounded-lg cursor-pointer"
+                                            className="border border-[#003EA1] text-[#003EA1] p-2 w-10 h-10 font-semibold
+                                             rounded-lg cursor-pointer hover:opacity-70"
                                             onClick={() => {
                                                 setEditingAddressId(address.id);
                                                 setShowModal(true);
@@ -162,7 +165,8 @@ export default function AddressesTab() {
                                     {/* Biểu tượng xóa */}
                                     <div className="mt-4">
                                         <TrashIcon
-                                            className="border border-[#003EA1] text-[#003EA1] p-2 w-10 h-10 font-semibold rounded-lg cursor-pointer"
+                                            className="border border-[#003EA1] text-[#003EA1] p-2 w-10 h-10 font-semibold rounded-lg
+                                             cursor-pointer hover:opacity-70"
                                             onClick={() => handleDeleteClick(address.id)}
                                         />
                                     </div>

@@ -10,6 +10,7 @@ import ProductsFilter from "./ProductsFilter";
 import LazyLoad from "react-lazyload";
 import SearchService from "../../service/user/search";
 import Pagination from '../../pages/Seller/components/pagination';
+
 export default function AllProductPage() {
 
   const [filters, setFilter] = useState({

@@ -8,7 +8,7 @@ const userOrderDetailService = {
     fetchOrderDetail: (orderId) => axiosAuth('null', 'get', createUrl('read', `?billId=${orderId}`)),
     cancelOrderDetail: (billId) => axiosAuth('null', 'post', createUrl('update_status/cancel/', `${billId}`)),
     confirmOrderDetail: (billId) => axiosAuth('null', 'post', createUrl('update_status/confirm/', `${billId}`)),
-    reOrder: (billId) => axiosAuth('null', 'post', createUrl('create/reorder/', `${billId}`)) 
+    reOrderDetail: (billId) => axiosAuth('null', 'post', createUrl('create/reorder/', `${billId}`)) 
 
 }
 export default userOrderDetailService;
