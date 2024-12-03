@@ -24,7 +24,7 @@ export default function Middlebar({ className, type }) {
   const [isOpenEvent, setIsOpenEvent] = useState(false);
   const changeCart = () => {
     if (token) {
-      navigate("/cart");
+     window.location.href = "/cart"
     } else {
       toast.warn("Vui lòng đăng nhập");
     }

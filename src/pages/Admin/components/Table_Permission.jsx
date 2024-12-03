@@ -55,7 +55,7 @@ const TableTwo = () => {
                 toast.success(response.data.message);
             }
         } catch (error) {
-            toast.error("Lỗi hệ thống");
+            toast.error(error.response.data.message);
             console.log("Error: " + error);
         }
     };
@@ -88,8 +88,12 @@ const TableTwo = () => {
         const sheetNames = ['Danh Sách Quyền'];
         try {
             console.log("totalElements: " + data.totalElements);
-            const response = await permission.findAllByRole({ page: currentPage, size: data.totalElements, role, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Quyền.xlsx", sheetNames, [response.data.result.content]);
+            const response = await permission.findAllByRole({ page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, role, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Quyền.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -148,18 +152,7 @@ const TableTwo = () => {
                 <thead>
                     <tr className="border-t border-stroke dark:border-strokedark">
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("v.permission.id");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Mã</span>
-                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "v.permission.id" ? "text-black" : "text-gray-500"} text-black`} />
-                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "v.permission.id" ? "text-black" : "text-gray-500"} text-black`} />
-                            </div>
-                        </th>
+                       
                         <th
                             onClick={() => {
                                 setSortColumn("v.permission.cotSlug");
@@ -197,11 +190,7 @@ const TableTwo = () => {
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 {data.pageable.pageNumber * data.size + index + 1}
                             </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.permission.id}
-                                </div>
-                            </td>
+         
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
                                     {entity.permission.cotSlug}

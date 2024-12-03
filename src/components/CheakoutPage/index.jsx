@@ -145,35 +145,25 @@ export default function CheakoutPage() {
             var priceSaleSeller = ((cartItem?.product?.price * cartItem?.product?.sale) / 100);
             var priceProduct = cartItem?.product?.price;
             var priceFinishSale = (priceProduct - priceSaleSeller);
-            if (cartItem?.quantity <= cartItem?.product?.flashSaleDetail?.quantity) {
-              totalPrice = (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100)) * cartItem.quantity;
-            } else {
-              totalPrice += ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))) * cartItem?.product?.flashSaleDetail.quantity)
-                +
-                ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100) - ((cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * (cartItem?.product?.flashSaleDetail?.sale / 100))) * (cartItem?.quantity - cartItem?.product?.flashSaleDetail.quantity))
-            }
+            totalPrice += (priceFinishSale - ((priceFinishSale * cartItem?.product?.flashSaleDetail?.sale) / 100)) * cartItem.quantity;
           }
           else {
             totalPrice += (cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * cartItem.quantity;
           }
         });
 
-        // if (seller.voucher.id > 0) {
-        //   if (totalPrice * ((seller?.voucher?.sale) / 100) >= seller?.voucher?.totalPriceOrder) {
-        //     totalPrice -= (seller?.voucher.totalPriceOrder);
-        //   } else {
-        //     totalPrice -= (totalPrice * (((seller?.voucher?.sale) / 100)));
-        //   }
-        // }
 
         if (selectedVoucher?.length > 0) {
           var voucher = selectedVoucher.find(voucherSeller => voucherSeller?.id == seller?.id);
-          if ((saleSeller = voucher?.voucher?.sale / 100) * totalPrice > voucher?.voucher?.totalPriceOrder) {
-            saleSeller = voucher?.totalPriceOrder;
-          } else {
-            saleSeller = (voucher?.voucher?.sale / 100) * totalPrice;
+          if (voucher?.voucher?.id > 0) {
+            if ((saleSeller = voucher?.voucher?.sale / 100) * totalPrice > voucher?.voucher?.totalPriceOrder) {
+              saleSeller = voucher?.voucher?.totalPriceOrder;
+            } else {
+              saleSeller = (voucher?.voucher?.sale / 100) * totalPrice;
+            }
           }
         }
+
         setService_fee(service => service + seller?.service_fee);
         try {
           if (totalPrice > adminSelected?.minOrder) {
@@ -468,13 +458,18 @@ export default function CheakoutPage() {
                       <p className="mt-1 text-[15px] w-55 text-gray-500 line-clamp-3">Thể loại : {cartItem?.product?.category?.name}</p>
                     </div>
                     <div className="ml-4 flex items-center w-39">
-                      <p className="mt-1 text-[15px] w-55 text-gray-500 line-clamp-3 text-right">{Intl.NumberFormat().format(cartItem?.product?.price * (1 - (cartItem.product.sale / 100)))}<sup>đ</sup></p>
+                      {cartItem?.product?.flashSaleDetail?.id > 0 ?
+                        (<p className="mt-1 text-[15px] w-55 text-red-600 line-clamp-3 text-right">{Intl.NumberFormat().format(cartItem?.product?.price * (1 - (cartItem.product.sale / 100)) * (1 - (cartItem?.product?.flashSaleDetail?.sale / 100)))}<sup>đ</sup></p>)
+                        :
+                        (<p className="mt-1 text-[15px] w-55 text-gray-500 line-clamp-3 text-right">{Intl.NumberFormat().format(cartItem?.product?.price * (1 - (cartItem.product.sale / 100)))}<sup>đ</sup></p>)}
                     </div>
                     <div className="ml-0 w-45 flex items-center justify-center">
                       <p className="mt-1 text-[15px] w-55 text-gray-500 line-clamp-3 text-right">{cartItem?.quantity}</p>
                     </div>
                     <div className="ml-0 w-60 flex items-center justify-center text-right  pr-10">
-                      <p className="mt-1 text-[15px] w-55 text-gray-500 line-clamp-3">{Intl.NumberFormat().format((cartItem?.product?.price * (1 - (cartItem.product.sale / 100))) * cartItem?.quantity)}</p>
+                      {cartItem?.product?.flashSaleDetail?.id > 0 ? (<p className="mt-1 text-[15px] w-55 text-gray-500 line-clamp-3">{Intl.NumberFormat().format((cartItem?.product?.price * (1 - (cartItem.product.sale / 100)) * (1 - (cartItem?.product?.flashSaleDetail?.sale / 100))) * cartItem?.quantity)}</p>)
+                        :
+                        (<p className="mt-1 text-[15px] w-55 text-gray-500 line-clamp-3">{Intl.NumberFormat().format((cartItem?.product?.price * (1 - (cartItem.product.sale / 100))) * cartItem?.quantity)}</p>)}
                     </div>
                   </li>
                 ))}
