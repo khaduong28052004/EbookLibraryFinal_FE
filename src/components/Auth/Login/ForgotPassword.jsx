@@ -33,7 +33,7 @@ export default function ForgotPassword() {
                 toast.error('Lỗi!.');
             }
         } catch (error) {
-            toast.error(error?.response?.data?.message || 'Thông báo lỗi Lỗi vui lòng kiểm tra email !.');
+            toast.error(error?.response?.data?.message || 'Thông báo lỗi vui lòng kiểm tra email !.');
         }
 
         setLoading(false);
