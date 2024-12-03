@@ -88,9 +88,9 @@ export default function Login() {
 
       if (response.data.code === 1000) {
         setTimeout(() => {
-          if (response.data.roles === "USER") {
+          if (response.data.result.roles === "USER") {
             navigate('/');
-          } else if (response.data.roles === "SELLER") {
+          } else if (response.data.result.roles === "SELLER") {
             navigate('/seller/home');
           } else {
             navigate('/admin/home');
