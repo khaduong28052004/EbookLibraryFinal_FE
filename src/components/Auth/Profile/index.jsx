@@ -97,8 +97,8 @@ export default function Profile() {
                 { name: "hồ sơ", path: "/profile" },
               ]}
             />
-            <div className="w-full bg-white px-10 py-9">
-              <div className="title-area w-full flex justify-between items-center">
+            <div className="xl:w-full bg-white xl:px-10 xl:py-9 w-[750px]">
+              <div className="title-area w-full flex justify-between items-center mb-[20px] mt-[20px]">
                 <h1 className="text-[22px] font-bold text-qblack">
                   Tài khoản
                 </h1>
@@ -116,9 +116,9 @@ export default function Profile() {
                   </button>
                 </div> */}
               </div>
-              <div className="profile-wrapper w-full mt-8 flex space-x-10">
-                <div className="w-[236px] min-h-[600px] border-r border-[rgba(0, 0, 0, 0.1)]">
-                  <div className="flex flex-col space-y-10">
+              <div className="xl:profile-wrapper xl:w-full xl:mt-8 flex xl:space-x-10 profile-wrapper w-full">
+                <div className="xl:w-[236px] xl:min-h-[600px] xl:border-r xl:border-[rgba(0, 0, 0, 0.1)] w-[120px]">
+                  <div className="xl:flex xl:flex-col xl:space-y-10 xl:w-full flex flex-col space-y-10 w-[120px]">
                     <div className="item group">
                       <Link to="/profile#dashboard">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
@@ -269,7 +269,7 @@ export default function Profile() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="item-body dashboard-wrapper w-full">
+                  <div className="item-body dashboard-wrapper sm:w-[200px] md:w-[500px] lg:w-[500px] xl:w-full 2xl:w-full w-[100px] ">
                     {active === "dashboard" ? (
                       <Dashboard />
                     ) : active === "profile" ? (

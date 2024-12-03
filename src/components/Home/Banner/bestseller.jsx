@@ -24,7 +24,7 @@ const BestSeller = ({ products }) => {
 
   return (
 
-    <div className="relative w-full h-auto group px-3 py-3">
+    <div className="relative  group px-3 py-3 xl:h-full  lg:w-full lg:mt-5  lg:mt-0 mt-5 h-[250px] w-[730px] ">
       {/* Background image with gradient overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"

@@ -43,7 +43,7 @@ export default function Dashboard() {
   };
   return (
     <>
-      <div className="welcome-msg w-full">
+      <div className="welcome-msg xl:w-full ">
         <div>
           <p className="text-qblack text-lg">Chào,  {user ? user.fullname : "userEX"}</p>
           <h1 className="font-bold text-[24px] text-qblack">
@@ -51,10 +51,10 @@ export default function Dashboard() {
           </h1>
         </div>
       </div>
-      <div className="quick-view-grid w-full flex justify-between items-center mt-3 ">
+      <div className="xl:quick-view-grid xl:w-full flex xl:justify-between xl:items-center xl:mt-3 w-[500px] justify-between items-center mt-3] ">
         
       <Link to="/profile#order">
-        <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-[#003EA1] transition-all duration-300 ease-in-out p-6">
+        <div className="xl:qv-item xl:w-[252px] xl:h-[208px] bg-qblack group hover:bg-[#003EA1] w-[150px] h-[230px] transition-all duration-300 ease-in-out p-6">
           <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
             <span>
               <svg
@@ -87,7 +87,7 @@ export default function Dashboard() {
           </span>
         </div>
         </Link><Link to="/profile#order">
-          <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-[#003EA1] transition-all duration-300 ease-in-out p-6">
+        <div className="xl:qv-item xl:w-[252px] xl:h-[208px] bg-qblack group hover:bg-[#003EA1] w-[150px] h-[230px] transition-all duration-300 ease-in-out p-6">
             <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
               <span>
                 <svg
@@ -121,7 +121,7 @@ export default function Dashboard() {
           </div>
         </Link>
         <Link to="/profile#order">
-        <div className="qv-item w-[252px] h-[208px] bg-qblack group hover:bg-[#003EA1] transition-all duration-300 ease-in-out p-6">
+        <div className="xl:qv-item xl:w-[252px] xl:h-[208px] bg-qblack group hover:bg-[#003EA1] w-[150px] h-[230px] transition-all duration-300 ease-in-out p-6">
           <div className="w-[62px] h-[62px] rounded bg-white flex justify-center items-center">
             <span>
               <svg
@@ -147,7 +147,7 @@ export default function Dashboard() {
         </div>
         </Link>
       </div>
-      <div className="dashboard-info mt-8 bg-primarygray px-7 py-7 rounded-lg shadow-md">
+      <div className="dashboard-info mt-8 bg-primarygray px-7 py-7 rounded-lg shadow-md xl:w-full w-[500px]">
         <div className="grid grid-cols-1 md:grid-cols-1">
 
           {/* Personal Info Section */}

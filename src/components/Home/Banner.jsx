@@ -135,7 +135,7 @@ export default function Banner({ className }) {
   const topProducts = async () => {
     try {
       // const data = { sellerID:""}{sellerID:"1"}
-      const sellerID = "1";  
+      const sellerID = "1";
       const response = await AuthService.topProducts(sellerID);
       console.log(response);
       // setProductData(defaultProducts);
@@ -176,11 +176,12 @@ export default function Banner({ className }) {
               </div>
               <div
                 data-aos="fade-left"
-                className="flex-1 flex justify-around w-full xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto gap-2"
+                className="flex-1 flex  w-full xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto gap-2"
               >
-                <div className="bg-white rounded   bg-opacity-50 backdrop-blur-sm">
+              
+                <div className="bg-white rounded bg-opacity-50 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
                   <div
-                    className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat"
+                    className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat "
                     style={{
                       backgroundImage: "url('https://via.placeholder.com/500')", // Thay bằng đường dẫn ảnh của bạn
                       backgroundPosition: 'center',
@@ -188,7 +189,6 @@ export default function Banner({ className }) {
                     }}
                   >
                     {/* Nền mờ */}
-                    <div className="inset-0 bg-white bg-opacity-50 backdrop-blur-lg"></div>
 
                     {productData.length > 0 ? (
                       <BestSeller products={productData} />
@@ -209,7 +209,7 @@ export default function Banner({ className }) {
             <div
               data-aos="fade-up"
               className="best-services w-full bg-white flex flex-col space-y-10 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center lg:h-[110px] px-10 lg:py-0 py-10  "
-            >
+            > 
               <div className="item">
                 <div className="flex space-x-5 items-center">
                   <div>
