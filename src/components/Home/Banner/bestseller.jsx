@@ -41,7 +41,7 @@ const BestSeller = ({ products }) => {
         <img
           src="https://png.pngtree.com/png-clipart/20210530/original/pngtree-hot-sale-vector-png-png-image_6337462.png"  // Thay thế với đường dẫn tới biểu tượng Sale của bạn
           alt="Sale"
-          className="w-18 h-auto opacity-90"
+          className="w-18 h-20 opacity-90"
         />
       </div>
 
@@ -78,7 +78,7 @@ const BestSeller = ({ products }) => {
                 <img
                   src={product.imageProducts[0].name}
                   alt={product.title}
-                  className=" w-[200px] h-auto  object-cover rounded-md"
+                  className=" w-[200px] h-[180px]  object-cover rounded-md"
                 />
               </div>
             </Link>
