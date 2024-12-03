@@ -84,9 +84,11 @@ export default function Login() {
         password,
         captchaToken,
       });
-      seterrorFrom((prev) => ({ ...prev, passwordF: 2, usernameF: 2 }));
+
 
       if (response.data.code === 1000) {
+
+        seterrorFrom((prev) => ({ ...prev, passwordF: 2, usernameF: 2 }));
         setTimeout(() => {
           if (response.data.result.roles === "USER") {
             navigate('/');
@@ -104,7 +106,6 @@ export default function Login() {
         //   passwordF: 0,
         // });
         seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
-
         toast.error("Tài khoản không tồn tại!");
       } else if (response?.data?.code === 1002) {
         seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
