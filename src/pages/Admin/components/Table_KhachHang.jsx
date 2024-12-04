@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
@@ -71,8 +71,12 @@ const TableTwo = () => {
         const sheetNames = ['Danh Sách nhân viên'];
         try {
             console.log("totalElements: " + data.totalElements);
-            const response = await accountService.findAllAccount({ currentPage: 0, size: data.totalElements, role: "USER", searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+            const response = await accountService.findAllAccount({ currentPage: 0, size: data.totalElements === 0 ? 5 : data.totalElements, role: "USER", searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Khách Hàng.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -140,18 +144,6 @@ const TableTwo = () => {
                 <thead>
                     <tr className="border-t border-stroke dark:border-strokedark">
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("username");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
-                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
-                            </div>
-                        </th>
 
                         <th
                             onClick={() => {
@@ -223,13 +215,7 @@ const TableTwo = () => {
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                 <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
-                            </td>
-
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.fullname}
-                                </div>
+                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.fullname}</p>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
@@ -261,7 +247,7 @@ const TableTwo = () => {
                                         setIsOpen(true);
                                         setStatusentity(entity.status);
                                     }}>
-                                        {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                        {entity.status ? (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />)}
                                     </button>
                                 </div>
                             </td>
@@ -293,12 +279,12 @@ const TableTwo = () => {
                 confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
                 cancelText="Thoát"
                 icon={statusentity ? (
-                    <TrashIcon className="h-6 w-6 text-red-600" />
+                    <NoSymbolIcon className="h-6 w-6 text-red-600" />
                 ) : (
-                    <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+                    <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
                 )}
-                iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+                iconBgColor={statusentity ? 'bg-red-100' : 'bg-green-100'}
+                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-green-600'} />
         </div>
     );
 };

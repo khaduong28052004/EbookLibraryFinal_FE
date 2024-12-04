@@ -29,7 +29,7 @@ const success = () => {
         const token = sessionStorage.getItem("token");
         setVnp_PayDate(date);
         if (query.get("vnp_TransactionStatus") === "00" && getItem("data")) {
-            axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=2", getItem("data"), {
+            axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=2&id_address" + getItem("id_address"), getItem("data"), {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }

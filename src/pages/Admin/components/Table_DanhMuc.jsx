@@ -76,13 +76,16 @@ const TableTwo = () => {
     };
 
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách nhân viên'];
+        const sheetNames = ['Danh Sách danh mục'];
         try {
             console.log("data.totalElements: " + data.totalElements);
-            const response = await category.findAllCategory({ page: currentPage, size: data.totalElements, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+            const response = await category.findAllCategory({ page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách danh mục.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
-            console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
         }
     }
@@ -212,8 +215,8 @@ const TableTwo = () => {
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                     {data.pageable.pageNumber * data.size + index + 1}
                                 </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 items-center">
+                                    <p className="text-sm text-black dark:text-white truncate w-40">{entity.name}</p>
                                 </td>
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">

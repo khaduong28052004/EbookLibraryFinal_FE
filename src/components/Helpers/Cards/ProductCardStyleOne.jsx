@@ -9,6 +9,7 @@ import Compair from "../icons/Compair";
 import QuickViewIco from "../icons/QuickViewIco";
 import Star from "../icons/Star";
 import ThinLove from "../icons/ThinLove";
+
 export default function ProductCardStyleOne({ datas, type }) {
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState();
@@ -37,7 +38,11 @@ export default function ProductCardStyleOne({ datas, type }) {
     const id_user = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
     if (token) {
-      axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${datas.id}&quantity=${1}`).then(response => {
+      axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${datas.id}&quantity=${1}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      }).then(response => {
         if (response.data.code = 1000) {
           toast.success("Thêm thành công");
           endRequest();
@@ -47,6 +52,23 @@ export default function ProductCardStyleOne({ datas, type }) {
       toast.warn("Vui lòng đăng nhập");
     }
   }
+
+  const handleShare = () => {
+    const productUrl = `${window.location.origin}/productdetail?idProduct=${datas.id}`;
+    if (navigator.share) {
+      navigator.share({
+        title: datas.name,
+        text: `Check out this product: ${datas.name}`,
+        url: productUrl,
+      })
+        .then(() => toast.success("Đã chia sẻ thành công!"))
+        .catch(() => toast.error("Chia sẻ không thành công."));
+    } else {
+      navigator.clipboard.writeText(productUrl)
+        .then(() => toast.success("Liên kết đã được sao chép!"))
+        .catch(() => toast.error("Không thể sao chép liên kết."));
+    }
+  };
 
   return (
     <div
@@ -68,7 +90,7 @@ export default function ProductCardStyleOne({ datas, type }) {
         </LazyLoad>
         {/* product available progress */}
       </div>
-      <div className="product-card-details px-[30px] pb-[15px] relative">
+      <div className="product-card-details px-[30px] pb-[15px] relative text-white">
         {/* add to card button */}
         <div onClick={() => {
           handleCreateCart();
@@ -77,7 +99,7 @@ export default function ProductCardStyleOne({ datas, type }) {
             type="button"
             className={type === 3 ? "flex items-center justify-center h-full w-full bg-[#FFBB38] text-[13px] font-semibold text-[#1d1d1d] leading-none" : "flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none"}
           >
-            <div className="flex items-center space-x-3 " >
+            <div className="flex items-center space-x-3 text-white" >
               <span>
                 <svg
                   width="14"
@@ -143,7 +165,9 @@ export default function ProductCardStyleOne({ datas, type }) {
         </a>
         <a href="#">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
-            <Compair />
+            <Compair createFavorite={handleShare} />
+            {/* chia sẻ */}
+            {/* <ShareModal datas={datas}/> */}
           </span>
         </a>
       </div>

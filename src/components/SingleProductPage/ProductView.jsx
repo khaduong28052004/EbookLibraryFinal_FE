@@ -234,7 +234,7 @@ export default function ProductView({ className, reportHandler, product }) {
             <div className="flex-1 h-full">
               <button onClick={() => handleCreateCart()}
                 type="button"
-                className="black-btn text-sm font-semibold w-full h-full"
+                className="black-btn text-white text-sm font-semibold w-full h-full"
               >
                 Thêm vào giỏ hàng
               </button>

@@ -24,7 +24,7 @@ export default function Middlebar({ className, type }) {
   const [isOpenEvent, setIsOpenEvent] = useState(false);
   const changeCart = () => {
     if (token) {
-      navigate("/cart");
+     window.location.href = "/cart"
     } else {
       toast.warn("Vui lòng đăng nhập");
     }
@@ -36,13 +36,22 @@ export default function Middlebar({ className, type }) {
       setListening(true);
     };
 
+    // recognition.onresult = (event) => {
+    //   const transcript = event.results[0][0].transcript;
+    //   console.log('Đã phát hiện giọng nói result: ', transcript);
+    //   // document.getElementById("inputSearch").value = transcript;
+    //   setTimeout(1000);
+    //   setListening(false);
+    //   navigate("/search?text=" + transcript);
+    // };
+
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       console.log('Đã phát hiện giọng nói result: ', transcript);
       // document.getElementById("inputSearch").value = transcript;
       setTimeout(1000);
       setListening(false);
-      navigate("/search?text=" + transcript);
+      navigate("/search?textAudio=" + transcript);
     };
 
     recognition.onerror = (event) => {
@@ -136,14 +145,15 @@ export default function Middlebar({ className, type }) {
   }, []);
 
   const searchImage = async (data) => {
-    setIsOpenModelImage(false);
     setIsOpenEvent(true);
     try {
       const response = await SearchService.searchImage(data);
       console.log(response);
       navigate(`/search?idProduct=${response.data.similar_product_ids}`);
+      setIsOpenModelImage(false);
       setIsOpenEvent(false);
     } catch (error) {
+      setIsOpenEvent(false);
       console.error(error)
     }
   }

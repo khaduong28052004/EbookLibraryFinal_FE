@@ -5,7 +5,7 @@ import SectionStyleThree from "../Helpers/SectionStyleThree";
 import Layout from "../Partials/Layout";
 import Banner from "./Banner";
 import FlashSale from "./FlashaSale";
-
+import ShareOptions from "../../service/ShareOptions.";
 
 
 
@@ -40,6 +40,9 @@ export default function Home() {
     fetchDataFlashSale();
     fetchDataSelectAll();
   }, [location]);
+  const ShareOptionsClick = ()=>{
+    ShareOptions();
+  }
   return (
     <>
       <Layout>
@@ -55,7 +58,7 @@ export default function Home() {
           sectionHeight="sm:h-[295px] h-full"
           className="products-ads-section mb-[60px]"
         /> */}
-
+        {/* <button onClick={ShareOptions}>ShareOptions</button> */}
 
         <SectionStyleThree
           products={data_ProductAll}

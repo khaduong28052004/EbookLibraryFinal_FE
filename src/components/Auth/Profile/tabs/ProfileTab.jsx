@@ -5,7 +5,7 @@ import AuthService from "../../../../service/authService";
 import { PencilSquareIcon, PhotoIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import { uploadImages1 } from "../../../../service/dangKySellerService";
+import { uploadImageAvt,uploadImageBR } from "../../../../service/dangKySellerService";
 
 export default function ProfileTab() {
   const [formData, setFormData] = useState({
@@ -184,25 +184,36 @@ export default function ProfileTab() {
 
     try {
       const id = sessionStorage.getItem("id_account");
-      if (imgAvartar || imgBackgrourd) {
-        const formDataImages = new FormData();
-        if (imgAvartar) formDataImages.append('imgAvartar', imgAvartar);
-        if (imgBackgrourd) formDataImages.append('imgBackgrourd', imgBackgrourd);
-        await uploadImages1(id, formDataImages);
+    
+      // Upload avatar nếu có
+      if (imgAvartar) {
+        const formDataAvt = new FormData();
+        formDataAvt.append("imgAvatar", imgAvartar);
+        await uploadImageAvt(id, formDataAvt);
       }
+    
+      // Upload background nếu có
+      if (imgBackgrourd) {
+        const formDataBg = new FormData();
+        formDataBg.append("imgBackground", imgBackgrourd);
+        await uploadImageBR(id, formDataBg);
+      }
+    
+      // Cập nhật thông tin tài khoản
       const response = await AuthService.updateAccount(id, formData);
-      toast.success('Cập nhật tài khoản thành công!');
+      toast.success("Cập nhật tài khoản thành công!");
       fetchData();
     } catch (error) {
-      toast.error("Cập nhật thất bại vui lòng kiểm tra lại!");
-      console.error(error);
+      toast.error("Cập nhật thất bại, vui lòng kiểm tra lại!");
+      console.error("Error:", error);
     }
+    
   };
 
   return (
     <div className="flex flex-col space-y-8 items-center bg-white rounded-lg">
       <ToastContainer />
-      <form onSubmit={handleSubmit} className="w-[750px] mt-0">
+      <form onSubmit={handleSubmit} className="xl:w-[750px] xl:mt-0 px-10">
         <div className=' border py-10 flex flex-row rounded-md'
           style={{
             backgroundImage: `url(${imgBackgrourd ? URL.createObjectURL(imgBackgrourd) : formData.imgBackgrourd})`,
@@ -345,7 +356,7 @@ export default function ProfileTab() {
                   <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                 </svg>
               </button>
-              <PencilSquareIcon className="w-12 h-12 md:hidden block rounded-md bg-[#83bef2] hover:bg-[#44dbe6bb] text-white p-2" />
+              {/* <PencilSquareIcon className="w-12 h-12 md:hidden block rounded-md bg-[#83bef2] hover:bg-[#44dbe6bb] text-white p-2" /> */}
             </Link>
           </div>
         </div>

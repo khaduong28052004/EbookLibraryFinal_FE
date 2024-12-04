@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import ModalNhanVien from './ModalNhanVien';
 import accountService from '../../../service/admin/Account';
@@ -74,8 +74,12 @@ const TableTwo = () => {
     const sheetNames = ['Danh Sách nhân viên'];
     try {
       console.log("data.totalElements: " + data.totalElements);
-      const response = await accountService.findAllNhanVien({ page: 0, size: data.totalElements, searchItem, sortColumn, sortBy });
-      return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+      const response = await accountService.findAllNhanVien({ page: 0, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -173,7 +177,18 @@ const TableTwo = () => {
                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
-
+            <th
+              onClick={() => {
+                setSortColumn("role.name");
+                setSortBy(!sortBy);
+              }}
+              className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+              <div className="flex items-center gap-1 hidden xl:flex">
+                <span className="text-sm text-black dark:text-white ">Quyền </span>
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "role.name" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "role.name" ? "text-black" : "text-gray-500"} text-black`} />
+              </div>
+            </th>
             <th
               onClick={() => {
                 setSortColumn("gender");
@@ -226,16 +241,21 @@ const TableTwo = () => {
                 {data.pageable.pageNumber * data.size + index + 1}
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
                 <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
               </td>
-
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 <div className="flex items-center gap-1 hidden xl:flex">
 
                   {entity.fullname}
                 </div>
               </td>
+              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                <div className="flex items-center gap-1 hidden xl:flex">
+
+                  {entity.role.name}
+                </div>
+              </td>
+
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                 <div className="flex items-center gap-1 hidden xl:flex">
                   {entity.gender ? 'Nam' : 'Nữ'}
@@ -254,11 +274,12 @@ const TableTwo = () => {
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                 <div className="flex space-x-3.5">
-                  <button onClick={() => { 
-                    setEntityNhanVien(entity); 
-                    setIsOpen(true); 
-                    setStatusentity(entity.status); }}>
-                    {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                  <button onClick={() => {
+                    setEntityNhanVien(entity);
+                    setIsOpen(true);
+                    setStatusentity(entity.status);
+                  }}>
+                    {entity.status ? (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />)}
                   </button>
                 </div>
               </td>
@@ -290,12 +311,12 @@ const TableTwo = () => {
         confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
         cancelText="Thoát"
         icon={statusentity ? (
-          <TrashIcon className="h-6 w-6 text-red-600" />
+          <NoSymbolIcon className="h-6 w-6 text-red-600" />
         ) : (
-          <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+          <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
         )}
-        iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-        buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+        iconBgColor={statusentity ? 'bg-red-100' : 'bg-green-100'}
+        buttonBgColor={statusentity ? 'bg-red-600' : 'bg-green-600'} />
 
       <ModalNhanVien
         status={status}

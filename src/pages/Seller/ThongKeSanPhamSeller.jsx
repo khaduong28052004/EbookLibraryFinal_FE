@@ -4,7 +4,7 @@ import CardDataStats from '../../components/CardDataStats';
 import { useEffect, useState } from 'react';
 import ThongKeService from '../../service/Seller/thongKeService';
 import { toast, ToastContainer } from 'react-toastify';
-
+import { useLocation } from 'react-router-dom';
 const ThongKeSanPham = () => {
   const [pageNumber, setPageNumber] = useState(0);
   const [pageSize, setPageSize] = useState(5)
@@ -15,9 +15,10 @@ const ThongKeSanPham = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [size, setSize] = useState(5);
+  const location = useLocation();
   useEffect(() => {
     loadTable();
-  }, [pageNumber, search, sortBy, sortColumn]);
+  }, [location, pageNumber, search, sortBy, sortColumn]);
 
   const loadTable = async () => {
     try {

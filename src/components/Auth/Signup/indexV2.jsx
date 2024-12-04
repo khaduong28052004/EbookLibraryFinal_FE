@@ -300,7 +300,8 @@ export default function Signup() {
   };
 
   return (
-    <Layout childrenClasses="pt-0 pb-0">
+    <>
+      {/* <Layout childrenClasses="pt-0 pb-0"> */}
       {/* <ToastContainer
         position="bottom-center"
         autoClose={5000}
@@ -531,6 +532,7 @@ export default function Signup() {
           </div>
         </div>
       </div>
-    </Layout>
+      {/* </Layout> */}
+    </>
   );
 }

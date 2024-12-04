@@ -7,68 +7,69 @@ import Layout from "../Partials/Layout";
 import homeShopService from "../../service/Seller/homeShopService";
 import BeatLoader from "react-spinners/BeatLoader";
 import { toast, ToastContainer } from "react-toastify";
+import { useLocation } from 'react-router-dom';
 
-// const shopDataEX = {
-//     "rating": {
-//         "totalReviews": 10000,
-//         "averageStars": 4.4,
-//         "totalStars": 5
-//     },
-//     "shopDataEX": {
-//         "idSeller": 8,
-//         "avatar": "avatar3.png",
-//         "background": "background3.png",
-//         "shopName": "Cong ty Anh Vang",
-//         "district": "789 Oak Street",
-//         "averageStarRating": null,
-//         "numberOfFollowers": 167747,
-//         "numberOfProducts": 1111111116,
-//         "createAtSeller": "2023-11-19T17:00:00.000+00:00",
-//         "participationTime": 365,
-//         "trackingNumber": 8,
-//         "shopCancellationRate": 8,
-//         "isSaved": true
+const shopDataEX = {
+    "rating": {
+        "totalReviews": 10000,
+        "averageStars": 4.4,
+        "totalStars": 5
+    },
+    "shopDataEX": {
+        "idSeller": 8,
+        "avatar": "avatar3.png",
+        "background": "background3.png",
+        "shopName": "Cong ty Anh Vang",
+        "district": "789 Oak Street",
+        "averageStarRating": null,
+        "numberOfFollowers": 167747,
+        "numberOfProducts": 1111111116,
+        "createAtSeller": "2023-11-19T17:00:00.000+00:00",
+        "participationTime": 365,
+        "trackingNumber": 8,
+        "shopCancellationRate": 8,
+        "isSaved": true
 
-//     }
-// };
+    }
+};
 
 
-// const vouchers = [
-//     {
-//         "id": 2,
-//         "name": "Voucher Giảm Giá 20%",
-//         "note": "Giảm 20% cho đơn hàng trên 300k",
-//         "totalPriceOrder": 300000,
-//         "sale": 20,
-//         "quantity": 30,
-//         "minOrder": 0,
-//         "dateStart": "2024-10-15",
-//         "dateEnd": "2025-11-15",
-//         "typeVoucher": {
-//             "id": 2,
-//             "name": "Voucher combo"
-//         },
-//         "account": {},
-//         "delete": false
-//     },
-//     {
-//         "id": 1,
-//         "name": "Voucher Giảm Giá 10%",
-//         "note": "Giảm 10% cho đơn hàng trên 200k",
-//         "totalPriceOrder": 200000,
-//         "sale": 10,
-//         "quantity": 50,
-//         "minOrder": 0,
-//         "dateStart": "2024-10-01",
-//         "dateEnd": "2024-11-31",
-//         "typeVoucher": {
-//             "id": 1,
-//             "name": "Voucher miễn phí vận chuyển"
-//         },
-//         "account": {},
-//         "delete": false
-//     }
-// ]
+const vouchersdfEAsd = [
+    {
+        "id": 2,
+        "name": "Voucher Giảm Giá 20%",
+        "note": "Giảm 20% cho đơn hàng trên 300k",
+        "totalPriceOrder": 300000,
+        "sale": 20,
+        "quantity": 30,
+        "minOrder": 0,
+        "dateStart": "2024-10-15",
+        "dateEnd": "2025-11-15",
+        "typeVoucher": {
+            "id": 2,
+            "name": "Voucher combo"
+        },
+        "account": {},
+        "delete": false
+    },
+    {
+        "id": 1,
+        "name": "Voucher Giảm Giá 10%",
+        "note": "Giảm 10% cho đơn hàng trên 200k",
+        "totalPriceOrder": 200000,
+        "sale": 10,
+        "quantity": 50,
+        "minOrder": 0,
+        "dateStart": "2024-10-01",
+        "dateEnd": "2024-11-31",
+        "typeVoucher": {
+            "id": 1,
+            "name": "Voucher miễn phí vận chuyển"
+        },
+        "account": {},
+        "delete": false
+    }
+]
 
 const data_Products = {
     data: [
@@ -190,50 +191,56 @@ const data_Products = {
 };
 
 
-export default function ShopHome({ shopId }) {
+export default function ShopHome() {
     const [shopInfo, setShopInfo] = useState({});
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
     const [loading, setLoading] = useState(false);
+    const local = useLocation();
+    const query = new URLSearchParams(local.search);
+    const shopID = query.get("shopID");
 
-    const getIdAccountFromSession = () => {
-        const user = sessionStorage.getItem("user");
+    // const getIdAccountFromSession = () => {
+    //     const user = sessionStorage.getItem("user");
 
-        if (user) {
-            const userObject = JSON.parse(user);
-            return userObject; 
-        }
+    //     if (user) {
+    //         const userObject = JSON.parse(user);
+    //         return userObject; 
+    //     }
 
-        return null;
-    };
-
+    //     return null;
+    // };
 
     const fetchShopInfo = async () => {
+        // setShopInfo(shopDataEX);
         try {
             setLoading(true);
-            const idSeller = 8;
-            const response = await homeShopService.fetchShopInfo({ idSeller });
-
+            const shopID = query.get("shopID");
+            const iduser = sessionStorage.getItem("id_account");
+            // const shopID =3;
+            const response = await homeShopService.fetchShopInfo(shopID, iduser);
             if (response.data.result) {
                 const data = response.data.result;
-                setShopInfo(data);
+                setShopInfo(shopDataEX);
                 setLoading(true);
             } else {
-                toast.warn('Lỗi truyền tải dữ liệu');
+                setShopInfo(shopDataEX);
+                ;
                 throw new Error('Không có dữ liệu');
             }
         } catch (error) {
-            toast.warn('Lỗi truyền tải dữ liệu');
+            ;
         } finally {
             setLoading(false);
         }
     }
 
     const fetchVoucherShopHome = async () => {
+        // setVouchers(vouchersdfEAsd);
         try {
             setLoading(true);
-            const idSeller = 8;
-            const response = await homeShopService.fetchVoucherShopHome({ idSeller });
-
+            const shopID = query.get("shopID");
+            const response = await homeShopService.fetchVoucherShopHome(shopID);
+            console.log(response);
             if (response.data.result) {
                 const data = response.data.result.Voucher;
                 setVouchers(data);
@@ -242,7 +249,8 @@ export default function ShopHome({ shopId }) {
                 throw new Error('Không có dữ liệu');
             }
         } catch (error) {
-            toast.warn('Lỗi truyền tải dữ liệu');
+            setVouchers(vouchersdfEAsd);
+            ;
         } finally {
             setLoading(false);
         }
@@ -264,21 +272,23 @@ export default function ShopHome({ shopId }) {
         console.log("shopInfo", shopInfo);
     }, [shopInfo])
 
-    
-    // if (shopId == null ) {
-    //     return (
-    //         <>
-    //             <ErrorThumb />
-    //         </>
-    //     )
-    // }
 
+    if (!loading && !vouchers || !shopInfo) return
+    <div>
+        <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
+            <div className="flex flex-col items-center justify-center gap-2">
+                <div className="">
+                    <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
+                </div>
+                <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
+            </div>
+        </div>
+    </div>
 
 
     return (
         <Layout childrenClasses="pt-0 pb-0">
             <ToastContainer />
-
             <div className="flex flex-col  gap-5   ">
                 <div className="bg-white py-5">
                     {shopInfo && Object.keys(shopInfo).length > 0 && (
