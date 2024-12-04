@@ -133,7 +133,7 @@ export default function ProductCardStyleOne({ datas, type }) {
           </p>
         </a>
         <p className="price">
-          {datas?.flashSaleDetail ?
+          {datas?.flashSaleDetail?.id > 0 ?
             (<>
               <span className=" text-qred text-[20px] font-extrabold mr-1">
                 {Intl.NumberFormat().format(
@@ -145,7 +145,7 @@ export default function ProductCardStyleOne({ datas, type }) {
               </span>
             </>) :
             (<>
-              <span className="text-[20px] font-bold mr-1">{Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup></span>
+              <span className="text-[20px] font-bold text-red-600 mr-1">{Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup></span>
               <span className="text-[15px] font-normal text-gray-600 line-through">{Intl.NumberFormat().format(datas?.price)}<sup>đ</sup></span>
             </>)}
 
