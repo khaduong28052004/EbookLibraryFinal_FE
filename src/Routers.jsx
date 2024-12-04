@@ -38,6 +38,9 @@ import { toast ,ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Signupv2 from "./components/Auth/Signup/indexV2.jsx";
 import LinkFrom from "./components/Auth/Signup/LinkFrom.jsx";
+
+// import PageTitle from './components/PageTitle'; //thêm page vô nha 
+
 export default function Routers() {
   const location = useLocation();
   // function isTokenExpired(token) {
@@ -70,6 +73,8 @@ export default function Routers() {
     // }
 
   }, []);
+
+  
   return (
     <>
       <ToastContainer/>

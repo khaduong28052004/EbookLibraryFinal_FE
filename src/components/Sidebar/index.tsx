@@ -520,7 +520,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
-                              Người Bán
+                              Shop
                             </NavLink>
                           </li>
                         </ul>

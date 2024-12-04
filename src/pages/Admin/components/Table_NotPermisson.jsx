@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLongDownIcon, NoSymbolIcon, ArrowLongUpIcon, PlusIcon } from '@heroicons/react/24/solid'
+import { ArrowLongDownIcon, CheckIcon, ArrowLongUpIcon, PlusIcon } from '@heroicons/react/24/solid'
 import permission from '../../../service/admin/Permission';
 import rolePermission from '../../../service/admin/PermissionDetails';
 import Modal from "./Modal_ThongBao_NotMail";
@@ -91,8 +91,12 @@ const Table_NotPermission = () => {
         const sheetNames = ['Danh Sách chi tiết quyền của quyền ' + role];
         try {
             console.log("data.totalElements: " + data.totalElements);
-            const response = await permission.findlAllNotRole({ page: currentPage, size: data.totalElements, role, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+            const response = await permission.findlAllNotRole({ page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, role, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Quyền chưa thêm.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -180,7 +184,11 @@ const Table_NotPermission = () => {
                     </button>
                     <button
                         onClick={() => {
-                            setIsOpen(true);
+                            if (entityPermission.length === 0) {
+                                setIsOpen(false);
+                            } else {
+                                setIsOpen(true);
+                            }
                         }}
                         className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
                     >
@@ -200,18 +208,6 @@ const Table_NotPermission = () => {
                 <thead>
                     <tr className="border-t border-stroke dark:border-strokedark">
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("id");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Mã </span>
-                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "id" ? "text-black" : "text-gray-500"} text-black`} />
-                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "id" ? "text-black" : "text-gray-500"} text-black`} />
-                            </div>
-                        </th>
 
                         <th
                             onClick={() => {
@@ -256,9 +252,7 @@ const Table_NotPermission = () => {
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 {index + 1}
                             </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.id}</p>
-                            </td>
+
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
                                     {entity.cotSlug}
@@ -300,7 +294,7 @@ const Table_NotPermission = () => {
                 confirmText={'Xác Nhận'}
                 cancelText="Thoát"
                 icon={
-                    <NoSymbolIcon className="h-6 w-6 text-white" />
+                    <CheckIcon className="h-6 w-6 text-white" />
                 }
                 iconBgColor={'bg-success'}
                 buttonBgColor={'bg-success'} />

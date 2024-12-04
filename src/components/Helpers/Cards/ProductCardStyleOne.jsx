@@ -90,7 +90,7 @@ export default function ProductCardStyleOne({ datas, type }) {
         </LazyLoad>
         {/* product available progress */}
       </div>
-      <div className="product-card-details px-[30px] pb-[15px] relative">
+      <div className="product-card-details px-[30px] pb-[15px] relative text-white">
         {/* add to card button */}
         <div onClick={() => {
           handleCreateCart();
@@ -99,7 +99,7 @@ export default function ProductCardStyleOne({ datas, type }) {
             type="button"
             className={type === 3 ? "flex items-center justify-center h-full w-full bg-[#FFBB38] text-[13px] font-semibold text-[#1d1d1d] leading-none" : "flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none"}
           >
-            <div className="flex items-center space-x-3 " >
+            <div className="flex items-center space-x-3 text-white" >
               <span>
                 <svg
                   width="14"
