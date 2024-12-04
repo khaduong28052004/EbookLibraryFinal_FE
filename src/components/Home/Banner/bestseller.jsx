@@ -24,17 +24,16 @@ const BestSeller = ({ products }) => {
 
   return (
 
-    <div className="relative w-full h-auto group">
+    <div className="relative  group px-3 py-3 xl:h-full  lg:w-full lg:mt-5  lg:mt-0 mt-5 h-[250px] w-[730px] ">
       {/* Background image with gradient overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url(${bgImage})`,
-          filter: 'blur(8px)', // Thêm mờ cho background
+          filter: 'blur(5px)', // Thêm mờ cho background
           backgroundPosition: 'center', // Căn giữa ảnh nền
         }}
       >
-        {/* Gradient overlay (mờ từ dưới lên) */}
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50">
         </div>
       </div>
@@ -42,7 +41,7 @@ const BestSeller = ({ products }) => {
         <img
           src="https://png.pngtree.com/png-clipart/20210530/original/pngtree-hot-sale-vector-png-png-image_6337462.png"  // Thay thế với đường dẫn tới biểu tượng Sale của bạn
           alt="Sale"
-          className="w-18 h-auto opacity-90"
+          className="w-18 h-20 opacity-90"
         />
       </div>
 
@@ -53,7 +52,7 @@ const BestSeller = ({ products }) => {
         centeredSlides={true} // Căn giữa các slide
         loop={true}
         slidesPerView={2} // Cố định chỉ hiển thị 3 ảnh
-        spaceBetween={70} // Khoảng cách âm giữa các ảnh để tạo hiệu ứng chồng lên nhau
+        spaceBetween={-0} // Khoảng cách âm giữa các ảnh để tạo hiệu ứng chồng lên nhau
         autoplay={{
           delay: 1000, // Thời gian giữa các lần chuyển slide (ms)
           disableOnInteraction: true, // Không tắt tự động khi người dùng tương tác
@@ -79,7 +78,7 @@ const BestSeller = ({ products }) => {
                 <img
                   src={product.imageProducts[0].name}
                   alt={product.title}
-                  className=" w-[200px] h-auto  object-cover rounded-md"
+                  className=" w-[200px] h-[180px]  object-cover rounded-md"
                 />
               </div>
             </Link>
@@ -97,7 +96,7 @@ const BestSeller = ({ products }) => {
 
 
       <button
-        className="absolute top-1/2 left-5 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_0_0.5px_rgba(0,0,0,0.)] text-slate-50 bg-gray-500 hover:opacity-80 bg-opacity-75 px-3 rounded-full cursor-pointer z-10 shadow-lg"
+        className="absolute top-1/2 left-5 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_0_0.5px_rgba(0,0,0,0.)] text-slate-50 bg-gray-500 hover:opacity-70 bg-opacity-75 px-3 rounded-full cursor-pointer z-10 shadow-lg"
         onClick={() => swiperRef.current.swiper.slidePrev()}
       >
         <span className="text-2xl">‹</span> {/* Mũi tên trái */}

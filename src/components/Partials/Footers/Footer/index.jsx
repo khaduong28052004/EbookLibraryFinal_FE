@@ -4,9 +4,9 @@ import Youtube from "../../../Helpers/icons/Youtube";
 
 export default function Footer({ type }) {
   return (
-    <footer className="footer-section-wrapper bg-white print:hidden">
+    <footer className="lg:footer-section-wrapper bg-white lg:print:hidden">
       <div className="container-x block mx-auto pt-[56px]">
-        <div className="w-full flex flex-col items-center mb-[50px]">
+        <div className="xl:w-full xl:flex xl:flex-col lg:items-center lg:mb-[50px]">
           {/* logo area */}
           {/* <div className="mb-[40px]">
             {type === 3 ? (
@@ -29,16 +29,16 @@ export default function Footer({ type }) {
               </a>
             )}
           </div> */}
-          <div className="w-full h-[1px] bg-[#E9E9E9]"></div>
+          <div className="lg:w-full h-[1px] bg-[#E9E9E9]"></div>
         </div>
         <div className="lg:flex justify-between mb-[50px]">
-          <div className="lg:w-[424px]  ml-0 w-full mb-10 lg:mb-0">
+          <div className="lg:w-[424px] lg:mb-0  ml-0 mb-10 w-[1500px] ">
             <h1 className="text-[18] font-500 text-[#2F2F2F] mb-5">Giới thiệu về chúng tôi</h1>
-            <p className="text-[#9A9A9A] text-[15px] w-[247px] leading-[28px]">
+            <p className="text-[#9A9A9A] text-[15px] w-[600px] leading-[28px]">
               Chúng tôi biết rằng có rất nhiều nhà phát triển tiềm năng nhưng chúng tôi tự hào là một công ty trong ngành.
             </p>
           </div>
-          <div className="flex-1 lg:flex">
+          <div className="flex lg:flex">
             <div className="lg:w-1/3 w-full mb-10 lg:mb-0">
               <div className="mb-5">
                 <h6 className="text-[18] font-500 text-[#2F2F2F]">Về chúng tôi</h6>
