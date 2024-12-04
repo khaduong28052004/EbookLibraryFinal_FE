@@ -216,20 +216,19 @@ const TableTwo = () => {
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 <div className="flex items-center gap-1 hidden xl:flex">
-
                   {entity.fullname}
                 </div>
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 <div className="flex items-center gap-1 hidden xl:flex">
-
                   {entity.role.name}
                 </div>
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black max-w-5 dark:text-white ">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {entity.email}
+                <div className="flex items-center gap-1 xl:flex">
+                  <p className="text-sm text-black dark:text-white truncate w-40">{entity.email}</p>
                 </div>
+
               </td>
 
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
