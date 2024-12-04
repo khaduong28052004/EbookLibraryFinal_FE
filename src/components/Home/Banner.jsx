@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Voucher from '../Home/Banner/voucher';
 import BestSeller from '../Home/Banner/bestseller';
+import AuthService from '../../service/authService';
 
 
 const vouchers = [
@@ -76,30 +77,40 @@ const vouchers = [
 ]
 
 
-const products = [
+const defaultProducts = [
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50059.jpg?v=1&w=350&h=510',
+    id: 1,
+    imageProducts: [
+      { name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50059.jpg?v=1&w=350&h=510' }
+    ],
+    title: "loe",
   },
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/0/31339.jpg?v=1&w=350&h=510',
+    id: 2,
+    imageProducts: [{ name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510' }],
+    title: "loe",
   },
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510',
+    id: 3,
+    imageProducts: [{ name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/46738.jpg?v=1&w=350&h=510' }],
+    title: "loe",
   },
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/46738.jpg?v=1&w=350&h=510',
+    id: 4,
+    imageProducts: [{ name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50179.jpg?v=1&w=350&h=510' }],
+    title: "loe",
   },
   {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/50179.jpg?v=1&w=350&h=510',
-  },
-  {
-    image: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510',
+    id: 5,
+    imageProducts: [{ name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510' }],
+    title: "loe",
   },
 ];
 
 
 export default function Banner({ className }) {
-
+  const [loading, setLoading] = useState(false);
+  const [productData, setProductData] = useState([]);
 
   const fetchVoucherShopHome = async () => {
     try {
@@ -121,9 +132,23 @@ export default function Banner({ className }) {
     }
   }
 
+  const topProducts = async () => {
+    try {
+      // const data = { sellerID:""}{sellerID:"1"}
+      const sellerID = "1";
+      const response = await AuthService.topProducts(sellerID);
+      console.log(response);
+      // setProductData(defaultProducts);
+      setProductData(response.data.result.listProduct);
+    } catch (error) {
+      setProductData(defaultProducts);
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-    fetchVoucherShopHome();
+    topProducts();
+    // fetchVoucherShopHome();
   }, [])
 
   return (
@@ -133,7 +158,7 @@ export default function Banner({ className }) {
           <div className="main-wrapper w-full">
             <div className="banner-card xl:flex xl:space-x-[30px] xl:h-[250px]   mb-6 ">
               <div className="bg-white">
-                <div data-aos="fade-right" className="xl:w-full w-full xl:h-[100%] h-full rounded-sm">
+                <div data-aos="fade-right" className="xl:w-full w-full xl:h-full h-full rounded-sm">
                   <a href="/single-product">
                     <picture className="xl:h-full h-[600px]">
                       <source
@@ -151,11 +176,12 @@ export default function Banner({ className }) {
               </div>
               <div
                 data-aos="fade-left"
-                className="flex-1 flex justify-around xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto bg-gray-100 gap-2"
+                className="flex-1 flex  w-full xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto gap-2"
               >
-                <div className="bg-white rounded px-2  bg-opacity-50 backdrop-blur-sm">
+              
+                <div className="bg-white rounded bg-opacity-50 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
                   <div
-                    className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat"
+                    className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat "
                     style={{
                       backgroundImage: "url('https://via.placeholder.com/500')", // Thay bằng đường dẫn ảnh của bạn
                       backgroundPosition: 'center',
@@ -163,10 +189,9 @@ export default function Banner({ className }) {
                     }}
                   >
                     {/* Nền mờ */}
-                    <div className="inset-0 bg-white bg-opacity-50 backdrop-blur-lg"></div>
 
-                    {products.length > 0 ? (
-                      <BestSeller products={products} />
+                    {productData.length > 0 ? (
+                      <BestSeller products={productData} />
                     ) : null}
 
                     {/* <div className="w-[20rem] h-full">
@@ -184,7 +209,7 @@ export default function Banner({ className }) {
             <div
               data-aos="fade-up"
               className="best-services w-full bg-white flex flex-col space-y-10 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center lg:h-[110px] px-10 lg:py-0 py-10  "
-            >
+            > 
               <div className="item">
                 <div className="flex space-x-5 items-center">
                   <div>

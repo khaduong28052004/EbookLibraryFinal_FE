@@ -5,7 +5,98 @@ import userOrderService from "../../service/user/order";
 import OrderDetail from '../OrderDetail/index';
 // npm install --save react-spinners
 
-
+const dataTEST = [
+    {
+        "billId": 9,
+        "userId": 2,
+        "totalPriceBill": 651049.2,
+        "priceShippingBill": 49500,
+        "totalQuantityBill": 3,
+        "orderStatus": "Hoàn thành",
+        "createdDatetime": "2024-12-01T02:54:26.758+00:00",
+        "updatedDatetime": "2024-12-01T03:33:04.438+00:00"
+    },
+    {
+        "billId": 8,
+        "userId": 2,
+        "totalPriceBill": 484550,
+        "priceShippingBill": 49500,
+        "totalQuantityBill": 5,
+        "orderStatus": "Hoàn thành",
+        "createdDatetime": "2024-11-30T13:14:33.847+00:00",
+        "updatedDatetime": "2024-12-01T03:23:15.916+00:00"
+    },
+    {
+        "billId": 7,
+        "userId": 2,
+        "totalPriceBill": 145900,
+        "priceShippingBill": 49500,
+        "totalQuantityBill": 1,
+        "orderStatus": "Hoàn thành",
+        "createdDatetime": "2024-11-30T13:14:33.801+00:00",
+        "updatedDatetime": "2024-11-30T13:18:06.146+00:00"
+    },
+    {
+        "billId": 6,
+        "userId": 2,
+        "totalPriceBill": 0,
+        "priceShippingBill": 0,
+        "totalQuantityBill": 5,
+        "orderStatus": "Hoàn thành",
+        "createdDatetime": "2024-11-30T12:07:24.021+00:00",
+        "updatedDatetime": "2024-11-30T13:18:58.863+00:00"
+    },
+    {
+        "billId": 5,
+        "userId": 2,
+        "totalPriceBill": 0,
+        "priceShippingBill": 0,
+        "totalQuantityBill": 5,
+        "orderStatus": "Hoàn thành",
+        "createdDatetime": "2024-11-30T12:07:23.839+00:00",
+        "updatedDatetime": "2024-12-01T03:26:12.002+00:00"
+    },
+    {
+        "billId": 4,
+        "userId": 2,
+        "totalPriceBill": 0,
+        "priceShippingBill": 0,
+        "totalQuantityBill": 5,
+        "orderStatus": "Hoàn thành",
+        "createdDatetime": "2024-11-30T12:07:23.817+00:00",
+        "updatedDatetime": "2024-12-01T03:36:53.614+00:00"
+    },
+    {
+        "billId": 3,
+        "userId": 2,
+        "totalPriceBill": 0,
+        "priceShippingBill": 0,
+        "totalQuantityBill": 5,
+        "orderStatus": "Hoàn thành",
+        "createdDatetime": "2024-11-30T12:07:23.479+00:00",
+        "updatedDatetime": "2024-11-30T12:07:23.479+00:00"
+    },
+    {
+        "billId": 2,
+        "userId": 2,
+        "totalPriceBill": 0,
+        "priceShippingBill": 0,
+        "totalQuantityBill": 5,
+        "orderStatus": "Hoàn thành",
+        "createdDatetime": "2024-11-30T12:07:23.372+00:00",
+        "updatedDatetime": "2024-12-01T03:24:07.417+00:00"
+    },
+    {
+        "billId": 1,
+        "userId": 2,
+        "totalPriceBill": 0,
+        "priceShippingBill": 0,
+        "totalQuantityBill": 5,
+        "orderStatus": "Hoàn thành",
+        "createdDatetime": "2024-11-30T12:07:21.567+00:00",
+        "updatedDatetime": "2024-12-01T03:23:34.938+00:00"
+    }
+]
 export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode }) {
     const [orderId, setOrderId] = useState(undefined);
     const [orders, setOrders] = useState([]);  // Initialize as an empty array
@@ -33,16 +124,13 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
             const userID = getIdAccountFromSession().id_account;
 
-            const response = await userOrderService.fetchOrder({ userID, orderStatusId });
+            const response = await userOrderService.fetchOrder(userID, orderStatusId);
 
-            
             console.log('response.data.data', response.data.data);
             if (response.data.data) {
                 const data = response.data.data;
-
                 setOrders(Array.isArray(data) ? data : []);
             } else {
-                toast.warn('Lỗi truyền tải dữ liệu');
                 throw new Error('Không có dữ liệu');
             }
         } catch (error) {
@@ -51,19 +139,17 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             setLoading(false);
         }
     }
-    
+
     const cancelOrder = async (billId) => {
         try {
             setLoading(true);
 
-            const response = await userOrderService.cancelOrder({ billId });
+            const response = await userOrderService.cancelOrder(billId);
 
-           
             if (response.data.status === "successfully") {
                 setTaskCompleted(true);
                 toast.success('Đơn hàng đã được hủy');
             } else {
-                toast.warn('Lỗi truyền tải dữ liệu');
                 throw new Error('Unexpected data format');
             }
 
@@ -78,13 +164,12 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
         try {
             setLoading(true);
 
-            const response = await userOrderService.confirmOrder({ billId });
+            const response = await userOrderService.confirmOrder(billId);
 
             if (response.data.status === "successfully") {
                 setTaskCompleted(true);
                 toast.success('Đơn hàng đã được xác nhận');
             } else {
-                toast.warn('Lỗi truyền tải dữ liệu');
                 throw new Error('Unexpected data format');
             }
 
@@ -100,13 +185,12 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     const reOrder = async (billId) => {
         try {
 
-            const response = await userOrderService.reOrder({ billId });
-          
+            const response = await userOrderService.reOrder(billId);
+
             if (response.data.status === "successfully") {
                 setTaskCompleted(true);
                 toast.success('Đã thêm vào giỏ hàng');
             } else {
-                toast.warn('Lỗi truyền tải dữ liệu');
                 throw new Error('Unexpected data format');
             }
 
@@ -118,13 +202,14 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     }
 
     const setValue = (billID) => {
+        console.log(billID);
         setOrderId(billID);
-        setIsInDetailMode(false); 
+        setIsInDetailMode(false);
     }
 
     const clearOrderId = () => {
         setOrderId(undefined);
-        setIsInDetailMode(true); 
+        setIsInDetailMode(true);
     }
 
 
@@ -158,11 +243,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     }, [orderId]);
 
     useEffect(() => {
-        console.log("orders ",orders);
-    }, [orders]);
-
-    useEffect(() => {
-        console.log(orders);
+        console.log(activeMenu);
         fetchOrders();
         if (taskCompleted) {
             setTaskCompleted(false);
@@ -207,68 +288,67 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
                                 </tr>
                                 {sortedBills.map((order) => (
                                     <tr
-                                        key={order.billID}
+                                        key={order.billId}
                                         className="text-sm border-b hover:bg-gray-100 hover:cursor-pointer leading-relaxed transform transition-all duration-300"
-                                        onClick={() => setValue(order.billID)}
+                                        onClick={() => setValue(order.billId)}
                                     >
                                         <td className="text-center py-4">
-                                            <span className="text-qgray font-medium">#{order.billID}</span>
+                                            <span className="text-qgray font-medium">#{order.billId}</span>
                                         </td>
                                         <td className="text-center py-4 px-2">
                                             <span className="text-sm text-qgray whitespace-nowrap">
-                                                {order.createdDatetime}
-                                            </span>
+                                                {new Date(order.createdDatetime).toLocaleDateString('vn-Vn')}                                            </span>
                                         </td>
                                         <td className="text-center py-4 px-2">
                                             <span className="text-qblack whitespace-nowrap px-2">
                                                 {new Intl.NumberFormat("vi-VN", {
                                                     style: "currency",
                                                     currency: "VND",
-                                                }).format(order.billTotalPrice)}
+                                                }).format(order.totalPriceBill)}
                                             </span>
                                         </td>
                                         <td className="text-center py-4 px-2">
                                             <span className="rounded text-green-700">
-                                                {order.billOrderStatus}
+                                                {order.orderStatus}
                                             </span>
                                         </td>
                                         <td className="text-center py-4 px-2">
                                             <span className="text-sm text-qgray whitespace-nowrap">
-                                                {order.billPaymentMethod}
+                                                {order.paymentMethod}
                                             </span>
                                         </td>
                                         <td className="text-center py-4 px-2">
                                             <div className="text-[#003EA1] text-[10px] font-bold text-center mx-1 min-w-[120px]">
-                                                {order.billOrderStatus === "Hủy" || order.billOrderStatus === "Hoàn thành" ? (
+                                                {order.orderStatus === "Hủy" || order.orderStatus === "Hoàn thành" ? (
                                                     <button className="border border-[#003EA1] shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            reOrder(order.billID);
+                                                            reOrder(order.billId);
                                                         }}
                                                     >
                                                         Mua lại
                                                     </button>
                                                 ) : null}
-                                                {order.billOrderStatus === "Chờ duyệt" ? (
+                                                {order.orderStatus === "Chờ duyệt" ? (
                                                     <button className="border border-[#003EA1] shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            cancelOrder(order.billID);
+                                                            cancelOrder(order.billId);
                                                         }} >
                                                         Hủy đơn
                                                     </button>
                                                 ) : null}
-                                                {order.billOrderStatus === "Đã giao" ? (
+                                                {order.orderStatus === "Đã giao" ? (
                                                     <button className="border border-[#003EA1] shadow-6 px-2 py-1 rounded min-w-[120px] hover:bg-gray-300 transition-all duration-300"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            confirmOrder(order.billID);
+                                                            confirmOrder(order.billId);
                                                         }}
                                                     >
                                                         Xác nhận
                                                     </button>
                                                 ) : null}
-                                                {order.billOrderStatus == null ? (
+                                                {order.orderStatus == null ? (
                                                     <button className="h-[35px] w-[100%] pointer-events-none opacity-0">
                                                         <span>Không thao tác</span>
                                                     </button>

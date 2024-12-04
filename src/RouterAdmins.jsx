@@ -12,7 +12,6 @@ import VoucherAdmin from "./pages/Admin/VoucherAdmin"
 import ReportAdmin from "./pages/Admin/ReportAdmin"
 import PhanQuyenAdmin from "./pages/Admin/PhanQuyenAdmin"
 import ThongTinChungAdmin from "./pages/Admin/ThongTinChungAdmin"
-import SettingAdmin from "./pages/Admin/SettingAdmin"
 import ThongKeDoanhThuAdmin from "./pages/Admin/ThongKeDoanhThuAdmin"
 import ThongKeKhachHangAdmin from "./pages/Admin/ThongKeKhachHangAdmin"
 import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
@@ -22,8 +21,17 @@ import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
 import ChatBot from "./pages/Seller/ChatBot"
 import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
 import RoleAdmin from './pages/Admin/RoleAdmin'
+import NotPermissionAdmin from './pages/Admin/NotPermissonAdmin.jsx'
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
+import ProtectedRoutePermission from "./components/Auth/ProtectedRoutePERMISSION.jsx";
+import { useEffect, useState } from "react";
 export default function RouterAdmins() {
+  // useEffect(() => {
+  //   const [permission, setPermission] = useState([]);
+  //   const getpermission = sessionStorage.getItem("permission");
+  //   console.warn(getpermission);
+
+  // },);
   return (
     <DefaultLayout>
       <ChatBot />
@@ -45,23 +53,25 @@ export default function RouterAdmins() {
           path="/quanLy/nhanVien"
           element={
             <ProtectedRoute
-              element={
+              element={<ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={
                 <>
                   <PageTitle title="Nhân Viên" />
                   <NhanVienAdmin />
                 </>
               }
+              />
+              }
             />
-
           }
         />
+        
         <Route
           path="/quanLy/voucher"
           element={
-            <>
+            <ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={<>
               <PageTitle title="Voucher" />
               <VoucherAdmin />
-            </>
+            </>} />
           }
         />
         <Route
@@ -92,7 +102,7 @@ export default function RouterAdmins() {
           }
         />
         <Route
-path="/quanLy/shop"
+          path="/quanLy/shop"
           element={
             <>
               <PageTitle title="Shop" />
@@ -112,13 +122,28 @@ path="/quanLy/shop"
         <Route
           path="/quanLy/phanQuyen"
           element={
-            <>
-              <PageTitle title="Phân Quyền" />
+            <ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={<>
+              <PageTitle title="Voucher" />
               <RoleAdmin />
+            </>} />
+            // <>
+            //   <PageTitle title="Phân Quyền" />
+            //   <RoleAdmin />
+            // </>
+          }
+        />
+        <Route
+
+          path="/quanLy/phanquyen/notpermission"
+          element={
+            <>
+              <PageTitle title="Thêm Chi Tiết Quyền" />
+              <NotPermissionAdmin />
             </>
           }
         />
-         <Route
+        <Route
+
           path="/quanLy/quyenchitiet"
           element={
             <>
@@ -154,15 +179,7 @@ path="/quanLy/shop"
             </>
           }
         />
-        <Route
-          path="/setting"
-          element={
-            <>
-              <PageTitle title="Cài Đặt" />
-              <SettingAdmin />
-            </>
-          }
-        />
+
         <Route
           path="/thongKe/doanhThu"
           element={
@@ -194,7 +211,7 @@ path="/quanLy/shop"
           path="/thongKe/seller"
           element={
             <>
-              <PageTitle title="Thống Kê Người Bán" />
+              <PageTitle title="Thống Kê Shop" />
               <ThongKeNguoiBanAdmin />
             </>
           }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLongDownIcon, ArrowLongUpIcon, EyeIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
-import { TrashIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon } from '@heroicons/react/24/outline'
 import Modal from "./Modal_ThongBao_NotMail";
 import ModalQuyen from './ModalQuyen';
 import roleService from '../../../service/admin/Role';
@@ -65,11 +65,15 @@ const TableTwo = () => {
     };
 
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách nhân viên'];
+        const sheetNames = ['Danh sách quyền nhân viên'];
         try {
             console.log("data.totalElements: " + data.totalElements);
-            const response = await roleService.findAllRoleNhanVien({ page: currentPage, size: data.totalElements, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+            const response = await roleService.findAllRoleNhanVien({ page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Quyền Nhân Viên.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -235,7 +239,7 @@ const TableTwo = () => {
                                             setEntity(entity);
                                             setIsOpen(true);
                                         }}>
-                                            <TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />
+                                            <NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />
                                         </button>
                                         <button onClick={(event) => {
                                             event.stopPropagation();
@@ -247,9 +251,9 @@ const TableTwo = () => {
                                         </button>
                                         <button>
                                             <Link to={`/admin/quanLy/quyenchitiet?role=${entity.name}`}>
-                                            <EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' />
-                                            </Link>                                        
-                                            </button>
+                                                <EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' />
+                                            </Link>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -274,7 +278,7 @@ const TableTwo = () => {
                 onConfirm={handleConfirm}
                 confirmText={'Xác Nhận'}
                 cancelText="Thoát"
-                icon={<TrashIcon className="h-6 w-6 text-red-600" />}
+                icon={<NoSymbolIcon className="h-6 w-6 text-red-600" />}
                 iconBgColor={'bg-red-100'}
                 buttonBgColor={'bg-red-600'} />
 

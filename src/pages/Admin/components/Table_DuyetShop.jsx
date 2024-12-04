@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ModalDuyetShop from "./Modal_DuyetShop";
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
@@ -54,8 +54,12 @@ const TableTwo = ({ status, setStatus }) => {
         const sheetNames = ['Danh Sách Đăng Ký Người Bán'];
         try {
             console.log("totalElements: " + data.totalElements);
-            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: data.totalElements, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Đăng Ký Người Bán.xlsx", sheetNames, [response.data.result.content]);
+            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Đăng Ký Người Bán.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -228,8 +232,10 @@ const TableTwo = ({ status, setStatus }) => {
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
-                                        <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
-                                            {entity.status ? (<ArrowPathIcon className='w-5 h-5 text-black hover:text-yellow-500  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                        <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}
+                                            className=" inline-flex items-center justify-center rounded-md bg-yellow-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+                                        >
+                                            Duyệt
                                         </button>
                                     </div>
                                 </td>
@@ -272,7 +278,7 @@ const TableTwo = ({ status, setStatus }) => {
                 title={'Duyệt shop'}
                 message={'Bạn muốn duyệt shop này không?'}
                 confirmText={'Duyệt'}
-                cancelText={"Hủy"}
+                cancelText={"Không duyệt"}
                 icon={statusentity ? (
                     <ArrowPathIcon className="h-6 w-6 text-yellow-600" />
                 ) : (

@@ -71,10 +71,13 @@ const TableTwo = () => {
         const sheetNames = ['Danh Sách Báo Cáo'];
         try {
             console.log("data.totalElements: " + data.totalElements);
-            const response = await accountService.findAllAccountReport({ page: data.totalElements, size: 2, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh sách báo cáo.xlsx", sheetNames, [response.data.result.content]);
+            const response = await accountService.findAllAccountReport({ option, page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh sách báo cáo.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
-            console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
         }
     }
@@ -241,7 +244,9 @@ const TableTwo = () => {
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                 <div className="flex space-x-3.5">
                                     <button onClick={() => { setId(entity.id); setIsOpen(true); }}>
-                                        {entity.status ? (<p className=' inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium bg-success text-success'>Đã phản hồi</p>) : (<ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />)}
+                                        {entity.status ? (<p className=' inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium bg-success text-success'>Đã phản hồi</p>) : (<button
+                                            className=" inline-flex items-center justify-center rounded-md bg-green-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+                                        >Phản hồi</button>)}
                                     </button>
                                 </div>
                             </td>

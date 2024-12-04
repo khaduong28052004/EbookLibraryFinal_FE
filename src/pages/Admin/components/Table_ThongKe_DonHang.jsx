@@ -3,6 +3,7 @@ import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, A
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Thongke from '../../../service/admin/ThongKe';
 import Pagination from './Pagination';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableTwo = ({ onPageChange, entityData }) => {
     const [dateStart, setDateStart] = useState('');
@@ -37,8 +38,12 @@ const TableTwo = ({ onPageChange, entityData }) => {
         const sheetNames = ['Danh Sách Thống Kê Đơn Hàng'];
         try {
             console.log("totalElements: " + entityData.totalElements);
-            const response = await Thongke.bill({ dateStart, dateEnd, orderStatusId, currentPage, size: entityData.totalElements, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [response.data.result.result.content]);
+            const response = await Thongke.bill({ dateStart, dateEnd, orderStatusId, currentPage, size: entityData.totalElements === 0 ? 5 : entityData.totalElements, sortColumn, sortBy });
+            if (!response || response.data.result.thongke.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [response.data.result.thongke.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -49,13 +54,6 @@ const TableTwo = ({ onPageChange, entityData }) => {
         e.preventDefault();
     };
 
-
-    const formatNumber = (number, decimals = 2) => {
-        if (number === null || number === undefined || isNaN(number)) {
-            return '0.00';
-        }
-        return number.toFixed(decimals);
-    };
     const toggleRow =
         (id) => {
             if (expandedRowId === id) {
@@ -66,6 +64,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
         };
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer />
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
@@ -92,41 +91,38 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 />
                             </svg>
                         </button>
-
-                        {/* Input Start Date */}
-                        <input
-                            value={dateStart}
-                            onChange={(e) => {
-                                setDateStart(e.target.value);
-                            }}
-                            type="date"
-                            placeholder="Start Date"
-                            name="startDate"
-                            className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-                        />
-
-                        {/* Arrow Icon from Heroicons */}
-                        <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
-
-                        {/* Input End Date */}
-                        <input
-                            value={dateEnd}
-                            onChange={(e) => {
-                                setDateEnd(e.target.value);
-                            }}
-                            type="date"
-                            placeholder="End Date"
-                            name="endDate"
-                            className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-                        />
-
+                        {orderStatusId === "macdinh" ? (<></>) : (
+                            <>
+                                <input
+                                    value={dateStart}
+                                    onChange={(e) => {
+                                        setDateStart(e.target.value);
+                                    }}
+                                    type="date"
+                                    placeholder="Start Date"
+                                    name="startDate"
+                                    className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+                                />
+                                <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
+                                <input
+                                    value={dateEnd}
+                                    onChange={(e) => {
+                                        setDateEnd(e.target.value);
+                                    }}
+                                    type="date"
+                                    placeholder="End Date"
+                                    name="endDate"
+                                    className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+                                />
+                            </>
+                        )}
                         <select
                             value={orderStatusId}
                             onChange={(e) => setOrderStatusId(e.target.value)}
                             className="xl:w-125 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
                         >
                             <option value="" disabled>Lọc theo</option>
-                            <option value="">Tất cả</option>
+                            <option value="macdinh">Tất cả</option>
                             <option value="1">Chờ xử lý</option>
                             <option value="2">Đang xử lý</option>
                             <option value="3">Đang giao</option>

@@ -12,7 +12,7 @@ import ShopService from '../../service/Seller/ShopService';
 import { toast, ToastContainer } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import axios from 'axios';
-import { uploadImages1 } from "../../service/dangKySellerService";
+import { uploadImageAvt,uploadImageBR } from "../../service/dangKySellerService";
 import AuthService from "../../service/authService";
 
 import {
@@ -23,6 +23,7 @@ import {
   putAddress,
   getOneAddress,
 } from '../../service/addressService';
+import { useLocation } from 'react-router-dom';
 const ShopSeller = () => {
   const [data, setData] = useState({
     id: null,
@@ -40,6 +41,7 @@ const ShopSeller = () => {
     district: '', // lưu id của nó
     commune: '', // lưu id của nó
     wardCode: '',
+    street: "",
   });
   const [editingAddressId, setEditingAddressId] = useState(null);
   const [error, setError] = useState('');
@@ -63,6 +65,7 @@ const ShopSeller = () => {
     avatar: false,
     background: false,
   });
+  const location = useLocation();
   useEffect(() => {
     const fetchProvinces = async () => {
       setLoading(true);
@@ -174,7 +177,7 @@ const ShopSeller = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [location]);
   const handleImageChange = (event, type) => {
     const file = event.target.files[0];
     if (file) {
@@ -213,22 +216,18 @@ const ShopSeller = () => {
         `http://localhost:8080/api/v1/seller/shop/following/count?account_id=${id}`
       );
       const following = shopfollowingResponse.data.result; // Số lượng following
-
       const postResponse = await axios.get(
         `http://localhost:8080/api/v1/seller/shop/posts/count?account_id=${id}`
       );
       const posts = postResponse.data.result; // Số lượng post
       // Gọi API lấy thông tin tài khoản
       const accountResponse = await ShopService.get();
-
       const account = accountResponse.data.result;
-  
       // Gọi API lấy địa chỉ
       const addressResponse = await axios.get(
         `http://localhost:8080/api/v1/user/rest/address/active/${id}`
       );
       const addresses = addressResponse.data.data;
-  
       const activeAddress =
         addresses.find((address) => address.status === true) ||
         { fullNameAddress: 'Chưa có địa chỉ', id: null };
@@ -245,6 +244,7 @@ const ShopSeller = () => {
         phone: account.phone || '', // Số điện thoại
         fullNameAddress: activeAddress.fullNameAddress || 'Chưa có địa chỉ',
         email: account.email || 'Chưa có email', // Email
+        street:activeAddress.street ||"",
       });
   
       setEditingAddressId(activeAddress.id); // Cập nhật id địa chỉ đang chỉnh sửa
@@ -255,6 +255,20 @@ const ShopSeller = () => {
     }
   };
   
+  useEffect(() => {
+    setData((prevData) => ({
+        ...prevData,
+        province: selectedProvince.id,
+        district: selectedDistrict.id,
+        wardCode: selectedWard.id,
+    }));
+}, [
+    selectedProvince,
+    selectedDistrict,
+    selectedWard,
+]);
+
+
   const handleWardChange = (e) => {
     const selectedOption = e.target.options[e.target.selectedIndex];
     setSelectedWard({
@@ -287,34 +301,47 @@ const ShopSeller = () => {
     // Kiểm tra nếu có `data.id` để xác định là cập nhật hay thêm mới
     if (data.id) {
       // Tạo fullNameAddress bằng cách nối các trường
-      const fullNameAddress = [
-        data.fullNameAddress || '',
-        selectedWard?.name || '',
-        selectedDistrict?.name || '',
-        selectedProvince?.name || '',
-      ]
-        .filter((part) => part.trim() !== '') // Loại bỏ phần rỗng
-        .join(', '); // Nối các phần bằng dấu phẩy
+        // Nối các phần bằng dấu phẩy
+        const fullNameAddress = [
+          data.street,
+          selectedWard?.name,
+          selectedDistrict?.name,
+          selectedProvince?.name
+        ]
+          .filter((part) => part && part.trim() !== '') // Loại bỏ các phần tử null/undefined/rỗng
+          .join(', '); // Ghép lại thành chuỗi
+        
       // Cập nhật dữ liệu địa chỉ
       const updatedAddressData = {
         ...data,
         fullNameAddress: fullNameAddress,
       };
       try {
-        if (imgAvartar || imgBackgrourd) {
-          const formDataImages = new FormData();
-          if (imgAvartar) formDataImages.append('imgAvartar', imgAvartar);
-          if (imgBackgrourd) formDataImages.append('imgBackgrourd', imgBackgrourd);
-          await uploadImages1(id, formDataImages); // Upload hình ảnh
+        const id = sessionStorage.getItem("id_account");
+      
+        // Upload avatar nếu có
+        if (imgAvartar) {
+          const formDataAvt = new FormData();
+          formDataAvt.append("imgAvatar", imgAvartar);
+          await uploadImageAvt(id, formDataAvt);
         }
+      
+        // Upload background nếu có
+        if (imgBackgrourd) {
+          const formDataBg = new FormData();
+          formDataBg.append("imgBackground", imgBackgrourd);
+          await uploadImageBR(id, formDataBg);
+        }
+      
         // Cập nhật thông tin tài khoản
         await AuthService.updateAccount(id, data);
         await putAddress(id, updatedAddressData);
-        toast.success('Cập nhật thành công!');
+        toast.success("Cập nhật tài khoản thành công!");
       } catch (error) {
-        toast.error('Có lỗi xảy ra khi cập nhật!');
-        console.error(error);
+        toast.error("Cập nhật thất bại, vui lòng kiểm tra lại!");
+        console.error("Error:", error);
       }
+
     }
     console.log('Address processed:', data);
     setIsOpen(false); // Đóng modal sau khi xử lý thành công
@@ -460,9 +487,6 @@ const ShopSeller = () => {
                 onClick={() => {
                   setIsOpen(true);
                 }}
-                // onClick={() => {
-                //   setIsOpen(true);
-                // }}
                 className="flex cursor-pointer items-center justify-center ml-3 gap-2 rounded bg-primary px-4 text-sm font-medium text-white hover:bg-opacity-90 xsm:px-4"
               >
                 <ArrowPathIcon className="text-white h-5 w-5" />
@@ -537,9 +561,9 @@ const ShopSeller = () => {
                               </label>
                               <input
                                 type="text"
-                                name="fullNameAddress"
-                                id="fullNameAddress"
-                                value={data.fullNameAddress}
+                                name="street"
+                                id="street"
+                                value={data.street}
                                 onChange={handleChange}
                                 required
                                 placeholder="Số nhà, đường..."

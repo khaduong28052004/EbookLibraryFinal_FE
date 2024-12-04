@@ -7,7 +7,7 @@ import DanhGiaService from '../../../service/Seller/danhGiaService';
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './pagination';
 import { ExportExcel } from "./ExportExcel"
-
+import { useLocation } from 'react-router-dom';
 const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusProduct, setStatusProduct] = useState(false);
@@ -28,9 +28,10 @@ const TableTwo = () => {
   const [sortBy, setSortBy] = useState(true);
   const [size, setSize] = useState(5);
   const [sortColumn, setSortColumn] = useState("id");
+  const location = useLocation();
   useEffect(() => {
     getList();
-  }, [search, pageNumber, sortBy, sortColumn]);
+  }, [location, search, pageNumber, sortBy, sortColumn]);
   useEffect(() => {
     if (isStatus) {
       getList();

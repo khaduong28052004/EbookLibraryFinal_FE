@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const LoginGG = () => {
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [token, setToken] = useState("");
     const [erro, setError] = useState("");
@@ -15,36 +16,42 @@ const LoginGG = () => {
     const handleSuccess = async (credentialResponse) => {
         console.log(credentialResponse);
         const decodedToken = jwtDecode(credentialResponse.credential);
-        console.log(credentialResponse.credential);
-        setToken(credentialResponse.credential);
         console.log(decodedToken);
+        setToken(credentialResponse.credential);
         try {
             const data = {
                 token: credentialResponse.credential,
-            }
+            };
             const response = await AuthService.GoogleLogin(data);
-            AuthService.setItem(response.data);
-
             if (response.status === 200) {
-                const data = await response.json();
-                localStorage.setItem("accessToken", data.accessToken);
-                // setError(null); // Xóa thông báo lỗi
-                return navigate('/');
+                localStorage.setItem("accessToken", response.data.accessToken); // Use response.data
+                setError(null); // Clear any previous errors
+                toast.success("Đăng nhập thành công!");
+                setTimeout(() => {
+                    return navigate('/');
+                }, 3000);
+         
             } else if (response.status === 401) {
-                const message = await response.text();
-                setError(message);
+                setError(response.data.message || "Unauthorized access."); // Display API-provided error message
             } else if (response.status === 302) {
-                const redirectUrl = response.headers.get("Location");
-                setError("Đang chuyển hướng đến trang đăng ký...");
+         
+                setError("Redirecting to sign-up page...");
                 return navigate('/' + redirectUrl);
             } else {
-                setError("Phản hồi bất ngờ. Vui lòng thử lại.");
+                setError("Unexpected response. Please try again.");
             }
         } catch (error) {
-            console.error("Lỗi trong quá trình đăng nhập:", error?.response?.data);
-            setError("Đã xảy ra lỗi.Vui lòng thử lại.");
+            const redirectUrl = error.response.headers?.location || "signup";
+            if (error.response.status = 302) {
+                // thoong bao khi chon toast
+                toast.warn("tài khoản này chưa được tạo!");
+                setTimeout(() => {
+                    return navigate('/' + redirectUrl);
+                }, 3000);   
+            }
+            console.error("Error during login:", error?.response?.data || error.message);
+            setError("An error occurred. Please try again.");
         }
-
     };
 
     const handleError = () => {
@@ -68,4 +75,4 @@ const LoginGG = () => {
     );
 };
 
-export default LoginGG;
+export default LoginGG;   

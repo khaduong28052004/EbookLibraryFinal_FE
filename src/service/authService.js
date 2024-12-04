@@ -52,7 +52,7 @@ const AuthService = {
     const url = "/api/v1/user/register";
     return axiosAuth("null", "post", url, data);
   },
-  registerV2: (data,otp,email) => {
+  registerV2: (data, otp, email) => {
     const url = `/api/v2/user/register?otp=${encodeURIComponent(otp)}&email=${encodeURIComponent(email)}`;
     return axiosAuth("null", "post", url, data);
   },
@@ -68,7 +68,7 @@ const AuthService = {
     const url = "/api/v1/otp/generate";
     return axiosAuth("null", "post", url, { email });
   },
-  
+
   verifyOTP: (data) => {
     const url = "/api/v1/otp/verify";
     return axiosAuth("null", "post", url, data);
@@ -79,6 +79,12 @@ const AuthService = {
     //accessToken
     return axiosAuth("null", "post", url, accessToken);
   },
+    // /api/v1/user/topProducts
+    topProducts: (data) => {
+      const sellerIDa = { sellerID: data, };
+      const url = "/api/v1/user/topProducts";
+      return axiosAuth("null", "post", url, sellerIDa);
+    },
 
   //CÂP NHẬT TK
   updateAccount: (id, data) => {
@@ -98,6 +104,7 @@ const AuthService = {
 
     });
   },
+
 };
 
 export default AuthService;

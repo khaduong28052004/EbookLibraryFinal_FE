@@ -10,6 +10,8 @@ import Pagination from './pagination';
 import { storage, getDownloadURL, ref } from '../../../config/firebase';
 import { ExportExcel } from "./ExportExcel"
 import { Editor } from "@tinymce/tinymce-react";
+import { useLocation } from 'react-router-dom';
+import apiCheck from "../../../service/Seller/apiCheck"
 const TableSanPham = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
@@ -47,10 +49,9 @@ const TableSanPham = () => {
   const [idCategory, setIdCategory] = useState(0);
   const [expandedRowId, setExpandedRowId] = useState(null);
   const [size, setSize] = useState(5);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const editorRef = useRef(null);
-
+  const location = useLocation();
   const logContent = () => {
     if (editorRef.current) {
       console.log(editorRef.current.getContent());
@@ -62,6 +63,32 @@ const TableSanPham = () => {
     }
   };
 
+
+  const handleCheckText = async (text) => {
+    try {
+      const response = await apiCheck.checkText({ data: { text: text } });
+      return response.data.result;
+
+    } catch (error) {
+      return false;
+      console.error("Lỗi kiểm tra từ ngữ:", error);
+    }
+  }
+
+  const checkImage = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await apiCheck.checkImage(formData);
+      console.log(response);
+      return response.data?.result ?? false; // Nếu `result` không tồn tại, trả về `false`
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+
   const handleNext = () => {
     if (pageNumber < totalPages - 1) {
       setPageNumber(pageNumber + 1);
@@ -70,7 +97,7 @@ const TableSanPham = () => {
 
   useEffect(() => {
     loadListProduct();
-  }, [search, pageNumber, sortBy, sortColumn]);
+  }, [location, search, pageNumber, sortBy, sortColumn]);
 
   const loadListDoanhMuc = async () => {
     try {
@@ -120,7 +147,7 @@ const TableSanPham = () => {
     }
   }
 
-  const handleAddFiles = (files) => {
+  const handleAddFiles = async (files) => {
     const selectedFiles = Array.from(files);
     const totalFiles = dataProduct.imageProducts.length + selectedFiles.length;
 
@@ -136,10 +163,25 @@ const TableSanPham = () => {
 
     setErrorMessage("");
 
-    setDataProduct(prevData => ({
-      ...prevData,
-      imageProducts: [...prevData.imageProducts, ...selectedFiles]
-    }));
+    // Kiểm tra từng file
+    const validFilesPromises = selectedFiles.map(async (file) => {
+      const isValid = await checkImage(file);
+      if (!isValid) {
+        toast.error(`Ảnh "${file.name}" không hợp lệ!`);
+      }
+      return isValid ? file : null;
+    });
+
+    // Chờ tất cả kết quả
+    const validFiles = (await Promise.all(validFilesPromises)).filter(Boolean);
+
+    if (validFiles.length > 0) {
+      // Cập nhật state chỉ với các file hợp lệ
+      setDataProduct((prevData) => ({
+        ...prevData,
+        imageProducts: [...prevData.imageProducts, ...validFiles],
+      }));
+    }
   };
 
   const editProduct = async (product_id) => {
@@ -191,48 +233,64 @@ const TableSanPham = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (isSubmitting) return;
-
+  
     if (!dataProduct.imageProducts || dataProduct.imageProducts.length === 0) {
       toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
       return;
     }
+  
     setIsSubmitting(true);
-
+  
+    if (await handleCheckText(dataProduct.name) === false) {
+      toast.error("Tên sản phẩm không hợp lệ");
+      setIsSubmitting(false); 
+      return;
+    }
+  
+    // // Kiểm tra mô tả sản phẩm
+    // if (await handleCheckText(dataProduct.introduce) === false) {
+    //   toast.error("Mô tả không hợp lệ");
+    //   setIsSubmitting(false); 
+    //   return;
+    // }
+  
     try {
       const formData = new FormData();
-
       dataProduct.imageProducts.forEach((file) => {
         formData.append("imageProducts", file);
       });
-
-      console.log("DATAAAAAA PRODUCT", dataProduct);
-
+  
       let response;
       if (!isStatus) {
-        [response] = await Promise.all([
-          SanPhamService.create(dataProduct),
-          SanPhamService.createSaveImg(idProduct, formData),
-        ]);
+
+        [response] = await Promise.all([SanPhamService.create(dataProduct)]);
+        const idProduct = response.data.result.id;
+  
+        await SanPhamService.createSaveImg(idProduct, formData);
       } else {
+
         [response] = await Promise.all([
           SanPhamService.update(dataProduct),
           SanPhamService.updateSaveImg(idProduct, formData),
         ]);
       }
-
+  
       toast.success(response.data.message);
       loadListProduct();
       setIsOpenModalSP(false);
-      setStatusButton(false);
-      setIsSubmitting(false);
+      setStatusButton(false); 
+      setIsSubmitting(false); 
+  
     } catch (error) {
+
       setStatusButton(false);
-      setIsSubmitting(false);
+      setIsSubmitting(false); 
       toast.error(error.response?.data?.message || "Đã xảy ra lỗi!");
     }
   };
+  
 
   const deleteProduct = async () => {
     try {
@@ -469,8 +527,8 @@ const TableSanPham = () => {
                   </td>
                   <td className="py-4.5 px-4 ">
                     <div className="flex items-center gap-1 hidden lg:flex">
-                      <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${item.isActive ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                        {item.isActive ? 'Đã Duyệt' : 'Chưa Duyệt'}
+                      <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${item.active ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
+                        {item.active == true ? 'Đã Duyệt' : 'Chưa Duyệt'}
                       </span>
                     </div>
                   </td>
@@ -522,7 +580,7 @@ const TableSanPham = () => {
 
                         <p>
                           <strong>Giảm Giá: </strong>
-                          {item.sale.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
+                          {item.sale} %
                         </p>
                       </div>
                     </td>
@@ -643,7 +701,7 @@ const TableSanPham = () => {
                         name="price"
                         value={dataProduct.price}
                         onChange={handDataProduct}
-                        placeholder="Điều kiện..."
+                        placeholder="Giá..."
                         min={1000}
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
@@ -726,7 +784,7 @@ const TableSanPham = () => {
                                   src={file.blob ? URL.createObjectURL(file.blob) : URL.createObjectURL(file)} alt={`Product ${index}`}
                                   className="w-full h-full object-cover rounded-md"
                                 />
-                                <button
+                                <button type='button'
                                   onClick={(event) => {
                                     event.stopPropagation();
                                     handleRemoveFile(index)
@@ -838,14 +896,6 @@ const TableSanPham = () => {
                     <label className="mb-2.5 block text-black dark:text-white">
                       Mô tả
                     </label>
-                    {/* <textarea
-                      rows={4}
-                      name='introduce'
-                      value={dataProduct.introduce}
-                      onChange={handDataProduct}
-                      placeholder="Mô tả..."
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    ></textarea> */}
                     <Editor
                       apiKey='4wv4bl38ddxgu8et456s2co6syryav9f2t31hkjbnsfoyd6w'
                       init={{
@@ -867,8 +917,6 @@ const TableSanPham = () => {
                         importword_converter_options: { 'formatting': { 'styles': 'inline', 'resets': 'inline', 'defaults': 'inline', } },
                       }}
                       initialValue={dataProduct.introduce}
-                      // onInit={(evt, editor) => (editorRef.current = editor)}
-
                       onChange={(evt, editor) => {
                         (editorRef.current = editor)
                         if (editorRef.current) {

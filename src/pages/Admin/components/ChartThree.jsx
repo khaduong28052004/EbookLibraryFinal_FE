@@ -9,7 +9,7 @@ const ChartThree = ({ list = [], title }) => {
   };
 
   // Tính tổng series để sử dụng trong tính phần trăm
-  const totalSeries = data.series.reduce((acc, value) => acc + value, 0);
+  const totalSeries = data.series.reduce((acc, value) => acc + value, 1);
 
   // Cấu hình chart
   const chartConfig = {

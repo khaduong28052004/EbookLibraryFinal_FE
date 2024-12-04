@@ -47,7 +47,7 @@ const Modal = ({
                                 >
                                     {icon} {/* Hiển thị icon động */}
                                 </div>
-                                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                <div className="mt-3 text-left w-full sm:ml-4 sm:mt-0 sm:text-left">
                                     <DialogTitle as="h3" className="text-base font-semibold leading-6 text-gray-900">
                                         {title}
                                     </DialogTitle>
@@ -84,7 +84,7 @@ const Modal = ({
                                     putActive(false);
                                     setOpen(false);
                                 }}
-                                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                className="mt-3 inline-flex min-w-16 justify-center rounded-md bg-red-600 text-white px-3 py-2 text-sm font-semibold shadow-sm red-1 ring-inset sm:mt-0 sm:w-auto"
                             >
                                 {cancelText}
                             </button>

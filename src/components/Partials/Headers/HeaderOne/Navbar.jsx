@@ -1,13 +1,24 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import AuthService from "../../../../service/authService";
 
 export default function Navbar({ className, type }) {
   const [categoryToggle, setToggle] = useState(false);
   const [elementsSize, setSize] = useState("0px");
-  // const getItems = document.querySelectorAll(`.categories-list li`).length;
-  // if (categoryToggle && getItems > 0) {
-  //   setSize(`${40 * getItems}px`);
-  // }
+  const [isAuth, setIsAuth] = useState(false);
+  const [isRole, setIsRole] = useState(false);
+
+
+  useEffect(() => {
+    const user1 = sessionStorage.getItem("user");
+    setIsAuth(!!user1); // Nếu user tồn tại, đặt isAuth là true
+    const parsedUser = JSON.parse(user1); // Phân tích cú pháp chuỗi JSON thành đối tượng
+    // if (parsedUser) {
+    //   parsedUser?.roles === "SELLER" ? setIsRole(true) : setIsRole(false);
+    // }
+  }, []);
+
+
   const handler = () => {
     setToggle(!categoryToggle);
   };
@@ -21,7 +32,9 @@ export default function Navbar({ className, type }) {
       setSize(`0px`);
     }
   }, [categoryToggle]);
-
+  const handlogoout = () => {
+    AuthService.logout();
+  }
   return (
     <div
       className={` py-5  nav-widget-wrapper w-full  h-[40px] relative z-30 ${type === 3 ? "bg-qh3-blue" : "bg-[#003EA1]"
@@ -1188,34 +1201,51 @@ export default function Navbar({ className, type }) {
                 </ul>
               </div>
             </div>
-            <div className="become-seller-btn  mx-3">
-              <Link to="/login">
-                <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
-                  <div className="flex space-x-2 items-center">
-                    <span className="text-sm text-[#FFFFFF] ">Đăng nhập </span>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <div className="become-seller-btn ">
-              <Link to="/login">
-                <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
-                  <div className="flex space-x-2 items-center">
-                    <span className="text-sm text-[#FFFFFF] ">|</span>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <div className="become-seller-btn  mx-3">
-              <Link to="/signup">
-                <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
-                  <div className="flex space-x-2 items-center">
-                    <span className="text-sm text-[#FFFFFF] ">Đăng ký</span>
-                  </div>
-                </div>
-              </Link>
 
-            </div>
+            {/* ><><><><><><><><><><><><><><><>test show theo đăng nhập<><><><><><><><><><><><><><><><>< */}
+            {!isAuth ? (<>
+              <div className="become-seller-btn  mx-3">
+                <Link to="/login">
+                  <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
+                    <div className="flex space-x-2 items-center">
+                      <span className="text-sm text-[#FFFFFF] ">Đăng nhập </span>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+              <div className="become-seller-btn ">
+                <Link to="/login">
+                  <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
+                    <div className="flex space-x-2 items-center">
+                      <span className="text-sm text-[#FFFFFF] ">|</span>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+              <div className="become-seller-btn  mx-3">
+                <Link to="/signup">
+                  <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
+                    <div className="flex space-x-2 items-center">
+                      <span className="text-sm text-[#FFFFFF] ">Đăng ký</span>
+                    </div>
+                  </div>
+                </Link>
+
+              </div>
+            </>) : (<>
+              <Link to="/login">
+                <div className="become-seller-btn  mx-3">
+                  <div onClick={handlogoout}>
+                    <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
+                      <div className="flex space-x-2 items-center">
+                        <span className="text-sm text-[#FFFFFF] ">Đăng xuất</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </>)}
+
             <div className="become-seller-btn ">
               <Link to="/login">
                 <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
@@ -1226,11 +1256,53 @@ export default function Navbar({ className, type }) {
               </Link>
             </div>
             <div className="become-seller-btn">
-              <Link to="/become-saller">
+              {/* ><><><><><><><><><><><><><><><>test show theo roles đăng nhập<><><><><><><><><><><><><><><><>< */}
+              {!isRole ? (<>
+                <Link to="/become-saller">
+                  <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
+                    <div className="flex space-x-2 items-center text-[#F5F5F5] hover:cursor-pointer w-full p-2">
+                      <span className="text-sm">Đăng Ký Trở Thành Người Bán</span>
+                      <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#F5F5F5" class="size-4">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </span>
+                      <span className="text-[#F5F5F5]">
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </>) : (<> <Link to="/seller/home">
                 <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
-                  {/* <div className="flex space-x-2 items-center">
+                  <div className="flex space-x-2 items-center text-[#F5F5F5] hover:cursor-pointer w-full p-2">
+                    <span className="text-sm">Đến kênh người bán</span>
+                    <span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#F5F5F5" class="size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                      </svg>
+                    </span>
+                    <span className="text-[#F5F5F5]">
+                    </span>
+                  </div>
+                </div>
+              </Link></>)}
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+{/* <Link to="/become-saller">
+                <div className="w-[100%] h-[20px] flex justify-center items-center cursor-pointer">
+                  <div className="flex space-x-2 items-center">
                     <span className="text-sm font-600">Trở Thành Người Bán</span>
-                  </div> */}
+                  </div>
                   <div className="flex space-x-2 items-center text-[#F5F5F5] hover:cursor-pointer w-full p-2">
                     <span className="text-sm">Đăng Ký Trở Thành Người Bán</span>
                     <span>
@@ -1240,11 +1312,11 @@ export default function Navbar({ className, type }) {
                     </span>
                     <span className="text-[#F5F5F5]">
                       <div className="flex ">
-                        {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                           <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
-                        </svg> */}
+                        </svg>
 
-                        {/* <svg
+                        <svg
                           // className="fill-black-2"
                           width="6"
                           height="10"
@@ -1289,7 +1361,7 @@ export default function Navbar({ className, type }) {
                             transform="rotate(135 6 4.9082)"
                             fill="black"
                           />
-                        </svg> */}
+                        </svg>
 
 
                       </div>
@@ -1297,11 +1369,4 @@ export default function Navbar({ className, type }) {
                     </span>
                   </div>
                 </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+              </Link> */}
