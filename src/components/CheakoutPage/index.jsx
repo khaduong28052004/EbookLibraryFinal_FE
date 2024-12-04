@@ -349,7 +349,7 @@ export default function CheakoutPage() {
       vnp_TxnRef: generateTransactionRef(),
       vnp_OrderInfo: "Payment for order 123456789",
       vnp_OrderType: "other",
-      vnp_Amount: (data?.total + service_fee - data?.sale) * 100,
+      vnp_Amount: (total + totalServiceFee - totalSale) * 100,
       vnp_ReturnUrl,
       vnp_IpAddr: "127.0.0.1",
       vnp_CreateDate: new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 14)
