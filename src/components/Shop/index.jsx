@@ -7,7 +7,7 @@ import Layout from "../Partials/Layout";
 import homeShopService from "../../service/Seller/homeShopService";
 import BeatLoader from "react-spinners/BeatLoader";
 import { toast, ToastContainer } from "react-toastify";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 const shopDataEX = {
     "rating": {
@@ -197,33 +197,19 @@ export default function ShopHome() {
     const [loading, setLoading] = useState(false);
     const local = useLocation();
     const query = new URLSearchParams(local.search);
-    const shopID = query.get("shopID");
-
-    // const getIdAccountFromSession = () => {
-    //     const user = sessionStorage.getItem("user");
-
-    //     if (user) {
-    //         const userObject = JSON.parse(user);
-    //         return userObject; 
-    //     }
-
-    //     return null;
-    // };
+    const { Id } = useParams();
 
     const fetchShopInfo = async () => {
-        // setShopInfo(shopDataEX);
         try {
             setLoading(true);
-            const shopID = query.get("shopID");
             const iduser = sessionStorage.getItem("id_account");
-            // const shopID =3;
-            const response = await homeShopService.fetchShopInfo(shopID, iduser);
+            const response = await homeShopService.fetchShopInfo(Id, iduser);
             if (response.data.result) {
                 const data = response.data.result;
-                setShopInfo(shopDataEX);
+                data != null ? setShopInfo(data) : setShopInfo(null);
                 setLoading(true);
             } else {
-                setShopInfo(shopDataEX);
+                setShopInfo(data);
                 ;
                 throw new Error('Không có dữ liệu');
             }
@@ -238,8 +224,7 @@ export default function ShopHome() {
         // setVouchers(vouchersdfEAsd);
         try {
             setLoading(true);
-            const shopID = query.get("shopID");
-            const response = await homeShopService.fetchVoucherShopHome(shopID);
+            const response = await homeShopService.fetchVoucherShopHome(Id);
             console.log(response);
             if (response.data.result) {
                 const data = response.data.result.Voucher;
@@ -262,8 +247,6 @@ export default function ShopHome() {
         fetchVoucherShopHome();
     }, [])
 
-
-
     useEffect(() => {
         console.log("vouchers", vouchers);
     }, [vouchers])
@@ -273,18 +256,17 @@ export default function ShopHome() {
     }, [shopInfo])
 
 
-    if (!loading && !vouchers || !shopInfo) return
-    <div>
-        <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center gap-2">
-                <div className="">
-                    <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
-                </div>
-                <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen ">
+                <BeatLoader color="#56A0D3" />
             </div>
-        </div>
-    </div>
+        );
+    }
 
+    if (shopInfo == null) return (
+        <ErrorThumb></ErrorThumb>
+    )
 
     return (
         <Layout childrenClasses="pt-0 pb-0">
