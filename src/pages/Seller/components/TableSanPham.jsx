@@ -164,24 +164,24 @@ const TableSanPham = () => {
     setErrorMessage("");
 
     // Kiểm tra từng file
-    const validFilesPromises = selectedFiles.map(async (file) => {
-      const isValid = await checkImage(file);
-      if (!isValid) {
-        toast.error(`Ảnh "${file.name}" không hợp lệ!`);
-      }
-      return isValid ? file : null;
-    });
+    // const validFilesPromises = selectedFiles.map(async (file) => {
+    //   const isValid = await checkImage(file);
+    //   if (!isValid) {
+    //     toast.error(`Ảnh "${file.name}" không hợp lệ!`);
+    //   }
+    //   return isValid ? file : null;
+    // });
 
     // Chờ tất cả kết quả
-    const validFiles = (await Promise.all(validFilesPromises)).filter(Boolean);
+    // const validFiles = (await Promise.all(validFilesPromises)).filter(Boolean);
 
-    if (validFiles.length > 0) {
+    // if (validFiles.length > 0) {
       // Cập nhật state chỉ với các file hợp lệ
       setDataProduct((prevData) => ({
         ...prevData,
         imageProducts: [...prevData.imageProducts, ...validFiles],
       }));
-    }
+    // }
   };
 
   const editProduct = async (product_id) => {
@@ -236,18 +236,18 @@ const TableSanPham = () => {
   
     if (isSubmitting) return;
   
-    if (!dataProduct.imageProducts || dataProduct.imageProducts.length === 0) {
-      toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
-      return;
-    }
+    // if (!dataProduct.imageProducts || dataProduct.imageProducts.length === 0) {
+    //   toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
+    //   return;
+    // }
   
     setIsSubmitting(true);
   
-    if (await handleCheckText(dataProduct.name) === false) {
-      toast.error("Tên sản phẩm không hợp lệ");
-      setIsSubmitting(false); 
-      return;
-    }
+    // if (await handleCheckText(dataProduct.name) === false) {
+    //   toast.error("Tên sản phẩm không hợp lệ");
+    //   setIsSubmitting(false); 
+    //   return;
+    // }
   
     // // Kiểm tra mô tả sản phẩm
     // if (await handleCheckText(dataProduct.introduce) === false) {
@@ -268,7 +268,7 @@ const TableSanPham = () => {
         [response] = await Promise.all([SanPhamService.create(dataProduct)]);
         const idProduct = response.data.result.id;
   
-        await SanPhamService.createSaveImg(idProduct, formData);
+        // await SanPhamService.createSaveImg(idProduct, formData);
       } else {
 
         [response] = await Promise.all([
