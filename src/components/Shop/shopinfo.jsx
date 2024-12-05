@@ -6,22 +6,32 @@ export default function ShopInfo({ shopData }) {
 
 
   useEffect(() => {
+    console.log("shopdata2", shopData);
     setShopInfo(shopData.shopDataEX);
     setRating(shopData.rating);
-  }, [shopData])
+  }, [])
 
-  // if (shopData == {}) {
-  //   return (
-  //     <></>
-  //   )
-  // }
+  if (shopData == {}) {
+    return (
+      <>
+
+      </>
+    )
+  }
 
   return (
     <div className="container-x mx-auto">
       <div className="rounded-md py-5 px-5 flex">
         {/* Shop Info */}
-        <div className="border rounded-md w-6/12 py-2 px-5 bg-black">
-          <div className="w-full inline-flex gap-1 mb-1">
+        <div
+          className="border rounded-md w-5/12 py-2 px-5 relative"
+          style={{ backgroundImage: `url(${shopInfo.background})` }}
+        >
+          {/* Lớp phủ mờ ảnh nền */}
+          <div className="absolute inset-0 bg-black opacity-50 backdrop-blur-md"></div>
+
+          {/* Các thành phần bên trên ảnh nền không bị mờ */}
+          <div className="w-full inline-flex gap-1 mb-1 relative z-10">
             <div className="w-50% items-center">
               <img
                 src={shopInfo.avatar}
@@ -29,24 +39,31 @@ export default function ShopInfo({ shopData }) {
                 className="rounded-full shadow-5 w-[70px] h-[70px] border"
               />
             </div>
-            <div className="mx-5 pt-3">
+            <div className="mx-5 pt-3 relative z-10">
               <div className="text-base text-white font-medium">
                 <h1>{shopInfo.shopName}</h1>
               </div>
             </div>
           </div>
-          <div className="mt-2">
+
+          <div className="mt-2 relative z-10">
             {shopInfo.isFollowed ? (
               <button className="border border-sky-500 text-sky-500 w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
                 Đã theo dõi
               </button>
             ) : (
-              <button className="border border-white text-white w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
-                Theo dõi
+              <button className="flex justify-center border border-white text-white w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  Theo dõi
+                </div>
               </button>
             )}
           </div>
         </div>
+
         {/* Shop Statistics */}
         <div className="w-6/12 flex flex-col justify-around py-2 px-10 text-gray-800 text-[15px]">
           <div className="flex py-2">

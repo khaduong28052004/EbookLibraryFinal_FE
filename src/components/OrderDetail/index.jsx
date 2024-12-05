@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Evaluate from '../Evaluate/evaluate';
 import BeatLoader from "react-spinners/BeatLoader";
 import userOrderDetailService from "../../service/user/orderDetail";
@@ -8,6 +8,7 @@ import { toast, ToastContainer } from 'react-toastify';
 
 
 export default function OrderDetail({ orderId, clearOrderId }) {
+    const navigate = new useNavigate();
     const [order, setOrder] = useState();
     const [loading, setLoading] = useState(false);
     const [taskCompleted, setTaskCompleted] = useState(false);
@@ -116,6 +117,10 @@ export default function OrderDetail({ orderId, clearOrderId }) {
         setProductId(undefined);
     };
 
+    const handleShopClick = (id) => {
+        console.log("id", id);
+        navigate(`/home-shop/${id}`);
+    }
 
     useEffect(() => {
         fetchOrderDetail();
@@ -218,13 +223,13 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                             <div className="title font-medium text-[18px]">Chi tiết</div>
                             <div className="dropArrow font-bold"> <span>V</span></div>
                         </div> */}
-                        <div className="cardInfo-container pb-5 px-5">
+                        <div onClick={() =>  handleShopClick(order.shop.id)} className="cardInfo-container pb-5 px-5">
                             <a>
                                 <div className="shopInfo-container inline-flex  flex gap-6 items-center border-b-2  pb-2 pt-5">
                                     <div className="shopName font-bold text-gray-900 text-[18px] hover:cursor-pointer"><p>{order.shop.shopName}</p></div>
                                 </div>
                             </a>
-                        </div>
+                        </div> 
                         {order.products.products.map((product) =>
                             <div className="mb-5" key={product.id}>
                                 <div className="productInfo-container  grid gap-3 px-5 ">
