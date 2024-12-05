@@ -92,6 +92,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                         parseInt(selectedProvince.id, 10)
                     );
                     setDistricts(districtsData);
+                    setWards([])
                     console.log(districtsData);
                 } catch (error) {
                     setError("Failed to load districts. Please try again.");
@@ -139,8 +140,14 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         selectedWard,
     ]);
     const handleSave = async (event) => {
+        // Kiểm tra tính hợp lệ của dữ liệu
+        const validatePhone = (phone) => /^(09|03|08|07)\d{8}$/.test(phone);
+
         if (!addressData.phone || addressData.phone.trim() === "") {
             toast.error("Vui lòng nhập số điện thoại!");
+            return;
+        } else if (!validatePhone(addressData.phone)) {
+            toast.error("Số điện thoại phải bắt đầu bằng 09, 03 hoặc 07 và có 10 số.");
             return;
         }
         if (!addressData.province || addressData.province === "default") {
@@ -219,13 +226,25 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                     setSelectedWard({ id: data.wardCode, name: data.wardsName });
                     console.log("Tải dữ liệu chỉnh sửa thành công");
                 } catch (error) {
-                    console.log("Lỗi khi tải dữ liệu chỉnh sửa");
+                    console.log("Lỗi khi tải dữ liệu chỉnh sửa", error);
                 }
+            } else {
+                // Reset dữ liệu khi thêm mới
+                setAddressData({
+                    status: false, // Trạng thái mặc định của địa chỉ
+                    phone: "",
+                    street: "",
+                });
+                setSelectedProvince({ id: "", name: "" });
+                setSelectedDistrict({ id: "", name: "" });
+                setSelectedWard({ id: "", name: "" });
             }
         };
+    
         fetchAddressData();
     }, [editingAddressId]);
-
+    
+    
 
     const handleChange = (e) => {
         const { id, value } = e.target;
