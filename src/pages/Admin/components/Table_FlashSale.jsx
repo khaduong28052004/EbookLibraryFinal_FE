@@ -247,7 +247,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                 setStatus={setStatus}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
-                title="Thêm Sản Phẩm Mới"
+                title="Thêm Flash Sale Mới"
                 confirmText="Lưu"
                 cancelText="Hủy"
             />
