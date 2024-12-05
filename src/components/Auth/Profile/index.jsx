@@ -269,7 +269,7 @@ export default function Profile() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="item-body dashboard-wrapper sm:w-[200px] md:w-[500px] lg:w-[500px] xl:w-full 2xl:w-full w-[100px] ">
+                  <div className="item-body dashboard-wrapper sm:w-auto md:w-auto lg:w-[900px] xl:w-full 2xl:w-full w-[500px] ">
                     {active === "dashboard" ? (
                       <Dashboard />
                     ) : active === "profile" ? (
@@ -282,12 +282,12 @@ export default function Profile() {
                       </>
                     ) : active === "order" ? (
                       <>
-                        <OrderTab />
+                        <OrderTab />  
                       </>
                     ) : active === "wishlist" ? (
                       <>
-                        <WishlistTab />
-                      </>
+                          <WishlistTab />
+                        </>
                     ) : active === "address" ? (
                       <>
                         <AddressesTab />
