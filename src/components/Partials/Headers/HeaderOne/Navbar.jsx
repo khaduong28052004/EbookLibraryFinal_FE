@@ -13,9 +13,9 @@ export default function Navbar({ className, type }) {
     const user1 = sessionStorage.getItem("user");
     setIsAuth(!!user1); // Nếu user tồn tại, đặt isAuth là true
     const parsedUser = JSON.parse(user1); // Phân tích cú pháp chuỗi JSON thành đối tượng
-    if (parsedUser) {
-      parsedUser?.roles === "SELLER" ? setIsRole(true) : setIsRole(false);
-    }
+    // if (parsedUser) {
+    //   parsedUser?.roles === "SELLER" ? setIsRole(true) : setIsRole(false);
+    // }
   }, []);
 
 

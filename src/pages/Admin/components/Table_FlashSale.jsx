@@ -57,8 +57,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
         const sheetNames = ['Danh Sách FlashSale'];
         try {
             console.log("totalElements: " + entityData.totalElements);
-            const response = await flashSale.findAllFlashSale({ dateStart, dateEnd, currentPage, size: entityData.totalElements, sortColumn, sortBy });
-            return ExportExcel("Danh Sách FlashSale.xlsx", sheetNames, [response.data.result.content]);
+            const response = await flashSale.findAllFlashSale({ dateStart, dateEnd, currentPage, size: entityData.totalElements === 0 ? 5 : entityData.totalElements, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách FlashSale.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");

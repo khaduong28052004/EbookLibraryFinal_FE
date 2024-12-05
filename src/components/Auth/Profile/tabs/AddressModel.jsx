@@ -38,7 +38,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         wardCode: "",
         background: "",
         avatar: "",
-        street:"",
+        street: "",
     });
     const fetchAddresses = async () => {
         const id = sessionStorage.getItem("id_account") || 1;
@@ -304,29 +304,9 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     required
                                 />
                             </div>
-                            <div className="col-span-6">
-                                <label className="text-base" htmlFor="wardCode">
-                                    Xã/Phường
-                                </label>
-                                <select
-                                    className="my-2 placeholder-gray-500 border border-gray-400 rounded-sm p-2 w-full"
-                                    id="wardCode"
-                                    value={selectedWard.id}
-                                    onChange={handleWardChange}
-                                    required
-                                >
-                                    <option value="">Chọn xã/phường</option>
-                                    {wardCode.map((ward) => (
-                                        <option
-                                            key={ward.WardCode}
-                                            value={ward.WardCode}
-                                            data-name={ward.WardName}
-                                        >
-                                            {ward.WardName}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+
+
+
                             <div className="col-span-6">
                                 <label className="text-base" htmlFor="province">
                                     Tỉnh/Thành Phố
@@ -373,13 +353,40 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     ))}
                                 </select>
                             </div>
+                            <div className="col-span-12">
+                                <label className="text-base" htmlFor="wardCode">
+                                    Xã/Phường
+                                </label>
+                                <select
+                                    className="my-2 placeholder-gray-500 border border-gray-400 rounded-sm p-2 w-full"
+                                    id="wardCode"
+                                    value={selectedWard.id}
+                                    onChange={handleWardChange}
+                                    required
+                                >
+                                    <option value="">Chọn xã/phường</option>
+                                    {wardCode.map((ward) => (
+                                        <option
+                                            key={ward.WardCode}
+                                            value={ward.WardCode}
+                                            data-name={ward.WardName}
+                                        >
+                                            {ward.WardName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                         </div>
-                        <button
-                            className="my-2 p-2 bg-blue-500 text-white rounded"
-                            onClick={handleSave}
-                        >
-                            Lưu địa chỉ
-                        </button>
+                        <div className="flex justify-end mt-2">
+                            <button
+                                className="w-[150px] h-[35px] rounded text-white text-[15px]  
+                            px-2 py-0 border bg-[#003EA1] transition-all duration-500 ease-in-out hover:opacity-90  mb-5"
+                                onClick={handleSave}
+                            >
+                                Lưu địa chỉ
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
