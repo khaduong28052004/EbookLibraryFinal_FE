@@ -24,7 +24,7 @@ export default function ShopInfo({ shopData }) {
       <div className="rounded-md py-5 px-5 flex">
         {/* Shop Info */}
         <div
-          className="border rounded-md w-5/12 py-2 px-5 relative"
+          className="border rounded-md w-4/12 py-2 px-5 relative"
           style={{ backgroundImage: `url(${shopInfo.background})` }}
         >
           {/* Lớp phủ mờ ảnh nền */}
@@ -65,7 +65,7 @@ export default function ShopInfo({ shopData }) {
         </div>
 
         {/* Shop Statistics */}
-        <div className="w-6/12 flex flex-col justify-around py-2 px-10 text-gray-800 text-[15px]">
+        <div className="w-7/12 flex flex-col justify-around py-2 px-10 text-gray-800 text-[15px]">
           <div className="flex py-2">
             <div className="flex flex-1 gap-2 items-center">
               <div>
@@ -157,7 +157,7 @@ export default function ShopInfo({ shopData }) {
             </div>
           </div>
           <div className="flex py-2">
-            <div className="flex flex-1 gap-2 items-center items-center">
+            <div className="flex flex-1 gap-1 items-center items-center text-sm">
               <div>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />

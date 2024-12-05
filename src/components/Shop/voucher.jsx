@@ -135,7 +135,7 @@ export default function Voucher({ vouchers }) {
           className="tabBox flex gap-6 list-none overflow-x-hidden overflow-y-hidden scroll-smooth"
         >
           {vouchers.map((voucher) => (
-            <li key={voucher.id} className="tab rounded-lg">
+            <li key={voucher.id} className="tab rounded-lg text-sm">
               <div className={`border w-[250px] h-[100px] p-2 flex items-center select-none ${new Date(voucher.dateEnd) < new Date() || voucher.delete === true
                   ? 'border-white-500 bg-gray-100'
                   : 'border-sky-500 bg-sky-100'
