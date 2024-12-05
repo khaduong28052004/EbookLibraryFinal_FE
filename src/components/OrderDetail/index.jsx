@@ -207,7 +207,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                         </div>
                         <div className="address-info flex inline-block  gap-5">
                             <div className="address-tag text-gray-900 font-medium  w-30">Địa chỉ</div>
-                            <div className="address text-gray-600">{order.userAddress}</div>
+                            <div className="address text-gray-600">{order.dataUser.userAddress}</div>
                         </div>
                     </div>
                 </div>
