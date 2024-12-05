@@ -13,6 +13,7 @@ const ModalFlashSale = ({
     cancelText = 'Cancel',
 }) => {
     const initialFormData = {
+        title:'',
         dateStart: '',
         dateEnd: '',
         account: sessionStorage.getItem("id_account"),
@@ -63,6 +64,20 @@ const ModalFlashSale = ({
                         <form onSubmit={handleSubmit}>
                             <div className="p-6.5">
                                 <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                                    <div className="w-full xl:w-full">
+                                        <label className="mb-2.5 block text-black dark:text-white">
+                                            Tên Flash sale
+                                        </label>
+                                        <input
+                                            name="title"
+                                            value={formData.title}
+                                            onChange={handleChange}
+                                            type="text"
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                                     <div className="w-full xl:w-1/2">
                                         <label className="mb-2.5 block text-black dark:text-white">
                                             Ngày bắt đầu
@@ -72,7 +87,7 @@ const ModalFlashSale = ({
                                             value={formData.dateStart}
                                             onChange={handleChange}
                                             type="datetime-local"
-                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
 
@@ -85,7 +100,7 @@ const ModalFlashSale = ({
                                             value={formData.dateEnd}
                                             onChange={handleChange}
                                             type="datetime-local"
-                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
                                     </div>
 
