@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { NoSymbolIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import Modal from "./Modal_ThongBao_NotMail";
 import ModalFlashSale from './ModalFlaseSale';
 import flashSale from '../../../service/admin/FlashSale';
@@ -68,15 +68,6 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
         e.preventDefault();
     };
 
-    const formatDateStringToDate = (dateString) => {
-        const [datePart, timePart] = dateString.split(" ");
-        const [day, month, year] = datePart.split("/");
-        const [hours, minutes, seconds] = timePart.split(":");
-
-        // Tạo đối tượng Date từ các thành phần ngày, tháng, năm, giờ, phút, giây
-        return new Date(year, month - 1, day, hours, minutes, seconds);
-    };
-
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
@@ -127,14 +118,14 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
-                                setSortColumn("account.fullname");
+                                setSortColumn("title");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Người tạo </span>
-                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
-                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                                <span className="text-sm text-black dark:text-white">Tiêu đề </span>
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "title" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "title" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -182,23 +173,37 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                                 {entityData.pageable.pageNumber * entityData.size + index + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.account.fullname}</p>
+                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.title}</p>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.dateStart}
-                                </div>
+                                    {new Date(entity.dateStart).toLocaleString("vi-VN", {
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                        hour12: false, // Sử dụng định dạng 24 giờ
+                                    })}                                </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.dateEnd}
-                                </div>
+                                    {new Date(entity.dateEnd).toLocaleString("vi-VN", {
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                        hour12: false, // Sử dụng định dạng 24 giờ
+                                    })}                                </div>
                             </td>
 
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
                                 <div className="flex items-center gap-1 hidden lg:flex">
-                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${!entity.delete ? (formatDateStringToDate(entity.dateStart).getTime() > new Date().getTime() ? 'bg-blue-600 text-blue-600' : 'bg-success text-success') : 'bg-danger text-danger'}`}> 
-                                        {!entity.delete ? (formatDateStringToDate(entity.dateStart).getTime() > new Date().getTime() ? 'Đang đợi' : 'Hoạt động') : 'Đã Ngừng'}
+                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${!entity.delete ? (new Date(entity.dateStart).getTime() > new Date().getTime() ? 'bg-blue-600 text-blue-600' : 'bg-success text-success') : 'bg-danger text-danger'}`}>
+                                        {!entity.delete ? (new Date(entity.dateStart).getTime() > new Date().getTime() ? 'Đang đợi' : 'Hoạt động') : 'Đã Ngừng'}
                                     </span>
                                 </div>
                             </td>
@@ -208,7 +213,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                                         setId(entity.id);
                                         setIsOpen(true);
                                     }}>
-                                        {entity.delete || formatDateStringToDate(entity.dateStart).getTime() <= new Date().getTime() ?
+                                        {entity.delete || new Date(entity.dateStart).getTime() <= new Date().getTime() ?
                                             (<></>) :
                                             (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />)
                                         }
@@ -243,6 +248,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                 iconBgColor={'bg-red-100'}
                 buttonBgColor={'bg-red-600'} />
             <ModalFlashSale
+                entity={null}
                 status={status}
                 setStatus={setStatus}
                 open={isOpenModalSP}

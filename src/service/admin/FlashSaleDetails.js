@@ -4,12 +4,12 @@ const token = "null";
 // const token = sessionStorage.getItem("token");
 
 const flashSaleDetails = {
-    findListByFlashSale: ({ id, page, size, sortBy, sortColumn }) => {
-        const url = `/api/v1/admin/flashsaledetails?idFlashSale=${id}&page=${page}&size=${size}&sortBy=${sortBy}&sortColumn=${sortColumn}`;
+    findListByFlashSale: ({searchItem, id, page, size, sortBy, sortColumn }) => {
+        const url = `/api/v1/admin/flashsaledetails?search=${searchItem}&idFlashSale=${id}&page=${page}&size=${size}&sortBy=${sortBy}&sortColumn=${sortColumn}`;
         console.log(token);
         return axiosAuth(token, "get", url);
     },
-    findListNotFalshSale: ({ id, page, size, sortBy, sortColumn }) => {
+    findListNotFalshSale: ({searchItem, id, page, size, sortBy, sortColumn }) => {
         if (sortBy == null || sortBy == undefined) {
             sortBy = '';
         } if (sortColumn == null || sortColumn == undefined) {
@@ -17,7 +17,7 @@ const flashSaleDetails = {
         } if (page == null || page == undefined) {
             page = '';
         }
-        const url = `/api/v1/admin/flashsaledetails/notflashsale?idFlashSale=${id}&page=${page}&size=${size}&sortBy=${sortBy}&sortColumn=${sortColumn}`;
+        const url = `/api/v1/admin/flashsaledetails/notflashsale?search=${searchItem}&idFlashSale=${id}&page=${page}&size=${size}&sortBy=${sortBy}&sortColumn=${sortColumn}`;
         console.log(token);
         return axiosAuth(token, "get", url);
     },
