@@ -11,7 +11,8 @@ import Layout from "../../Partials/Layout";
 import FaceBookSingIn from "./FaceBookSingIn";
 import LoginGG from "./loginGG";
 import Thumbnail from "./Thumbnail";
-
+import { messaging } from '../../../config/firebase';
+import { getMessaging, getToken } from "firebase/messaging";
 
 import CryptoJS from 'crypto-js';
 import Cookies from 'js-cookie';
@@ -45,7 +46,10 @@ export default function Login() {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    if (username.trim() === "") {
+    if (!username || !password) {
+      seterrorFrom((prev) => ({ ...prev, usernameF: 1, passwordF: 1 }));
+    }
+    if (!username) {
       seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
       toast.error("Vui lòng kiểm tra tên đăng nhập!");
       return;
@@ -94,6 +98,30 @@ export default function Login() {
           }
         }, 2000);
         toast.success("Đăng nhập thành công!");
+
+        getToken(messaging, { vapidKey: 'BF6r8B0UNESGl3sKNmjDBBL6elWN-2zV_3n0InFn1Ipmap2j1L1r7ZLUMiFf-0-HFK_NP5z24mvP4hBYm1Fhf5I' }).then((currentToken) => {
+          if (currentToken) {
+            console.log("FCM TOKEN: ", currentToken)
+          } else {
+            console.log('No registration token available. Request permission to generate one.');
+          }
+        }).catch((err) => {
+          console.log('An error occurred while retrieving token. ', err);
+        })
+
+      } else if (response?.data?.code === 1001) {
+        const [errorFrom, seterrorFrom] = useState({
+          usernameF: 0,
+          passwordF: 0,
+        });
+        seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
+        toast.error("Tài khoản không tồn tại!");
+      } else if (response?.data?.code === 1002) {
+        seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+        toast.error("Sai mật khẩu!");
+      } else if (response?.data?.code === 1003) {
+        seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
+        toast.error("Lỗi đăng nhập!");
       } else {
         toast.error("Đăng nhập thất bại vui lòng kiểm tra lại!");
       }
@@ -145,6 +173,14 @@ export default function Login() {
                         : errorFrom.usernameF === 2
                           ? "border-green-300 bg-red-300" // Success state
                           : ""}`}
+                      // =======
+                      //                         ? "ring-red-500 bg-red-100" // Lỗi
+                      //                         : errorFrom.usernameF === 2
+                      //                           ? "ring-green-500 bg-green-100" // Thành công
+                      //                           : "" // Mặc định
+                      //                         }`}
+
+                      // >>>>>>> Stashed changes
 
 
                       // errorFrom.usernameF === 1
@@ -170,6 +206,13 @@ export default function Login() {
                         : errorFrom.passwordF === 2
                           ? "border-green-300 bg-red-300" // Success state
                           : ""}`}
+                      // =======
+                      //                         ? "ring-red-500 bg-red-100" // Lỗi
+                      //                         : errorFrom.passwordF === 2
+                      //                           ? "ring-green-500 bg-green-100" // Thành công
+                      //                           : "" // Mặc định
+                      //                         }`}
+
                       value={password}
                       inputHandler={(e) => setPassword(e.target.value)}
                     >

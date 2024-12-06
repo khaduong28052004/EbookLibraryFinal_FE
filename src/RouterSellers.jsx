@@ -13,9 +13,29 @@ import DanhGiaSeller from "./pages/Seller/DanhGiaSeller"
 import VoucherDetailSeller from "./pages/Seller/VoucherDetailSeller"
 import ChatBot from "./pages/Seller/ChatBot2"
 import Shop from "./pages/Seller/ThongTinShopSeller"
+import { useEffect, useState } from "react";
+import NotificationModal from "./components/Notification/NotificationModal";
+
+
 export default function RouterSellers() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    const channel = new BroadcastChannel("notifications");
+    channel.addEventListener("message", (event) => {
+      console.log("Receive background: ", event.data);
+      setMessage(event.data.data.content || "Bạn có một thông báo mới!");
+      setIsOpen(true);
+    });
+
+  },[])
+  const handleClose = () => {
+    setIsOpen(false);
+    setMessage("");
+  };
   return (
     <SellerLayout>
+      <NotificationModal isOpen={isOpen} message={message} onClose={handleClose} />
       <ChatBot />
       <Routes>
         <Route
