@@ -39,6 +39,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Signupv2 from "./components/Auth/Signup/indexV2.jsx";
 import LinkFrom from "./components/Auth/Signup/LinkFrom.jsx";
 
+import RegistrationForm from './components/Auth/Signup/RegistrationForm.jsx'
+
 // import PageTitle from './components/PageTitle'; //thêm page vô nha 
 
 export default function Routers() {
@@ -116,7 +118,10 @@ export default function Routers() {
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/faq" element={<Faq />} />
           <Route exact path="/login" element={<Login />} />
-          <Route exact path="/signup" element={<Signup />} />
+
+          <Route exact path="/signup" element={<RegistrationForm/>} />
+          <Route exact path="/haha" element={<Signup/>} />
+
           <Route exact path="/profile" element={
             <ProtectedRoute element={<Profile />} />
           } />
@@ -130,7 +135,6 @@ export default function Routers() {
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route exact path="/change-password/*" element={<UpdatePassword />} />
           <Route exact path="/home-shop/*" element={<HomeShop />} />
-          <Route exact path="haha" element={<RegistrationForm />} />
         </Routes>
       </RequestProvider>
     </>
