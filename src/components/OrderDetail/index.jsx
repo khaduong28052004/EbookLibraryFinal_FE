@@ -5,15 +5,28 @@ import BeatLoader from "react-spinners/BeatLoader";
 import userOrderDetailService from "../../service/user/orderDetail";
 import { toast, ToastContainer } from 'react-toastify';
 // npm install --save react-spinners
+import RatingModal from "../Evaluate/RatingModal"
 
 
 export default function OrderDetail({ orderId, clearOrderId }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = new useNavigate();
     const [order, setOrder] = useState();
     const [loading, setLoading] = useState(false);
     const [taskCompleted, setTaskCompleted] = useState(false);
     const [orderDetailId, setOrderDetailId] = useState();
     const [productId, setProductId] = useState();
+
+
+    const openModal = (productId,billDetailId ) => {
+        setOrderDetailId(billDetailId);
+        setProductId(productId);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
 
     const getIdAccountFromSession = () => {
         const user = sessionStorage.getItem("user");
@@ -34,7 +47,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
             const response = await userOrderDetailService.fetchOrderDetail(orderId);
             console.log("orderId", response.data.data);
 
-            if ( response.data.data) {
+            if (response.data.data) {
                 const data = response.data.data;
                 setOrder(data);
             } else {
@@ -108,6 +121,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     }
 
     const setValue = (billDetailId, productId) => {
+        setIsModalOpen(true);
         setOrderDetailId(billDetailId);
         setProductId(productId);
     }
@@ -128,12 +142,11 @@ export default function OrderDetail({ orderId, clearOrderId }) {
 
     useEffect(() => {
         console.log("helo");
-        console.log("order.bill.id",order);
+        console.log("order.bill.id", order);
     }, [order])
 
     useEffect(() => {
         fetchOrderDetail();
-        console.log("đã đánh giá");
     }, [orderDetailId])
 
     useEffect(() => {
@@ -161,7 +174,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     </div>
 
 
-    if (orderDetailId) return <Evaluate orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} /**isSuccessfully={evaluateSuccessfully} */></Evaluate>
+    // if (orderDetailId) return <Evaluate orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} /**isSuccessfully={evaluateSuccessfully} */></Evaluate>
 
     return (
         <>
@@ -193,163 +206,174 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                             </div>
                             <div className="orderInfo-date text-[15px] text-gray-600">
                                 <p>Ngày tạo đơn: <span>{new Date(order.bill.bill.createAt).toLocaleDateString('vn-Vn')}</span>
-                            </p>
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="customerInfo-container h-300px w-100%  border-t-2  border-b-2 py-2">
-                    {/* <div className="customerInfo-title flex inline-block justify-between px-5 py-2 bg-gray-50 rounded-t-xl  items-center">
+                    <div className="customerInfo-container h-300px w-100%  border-t-2  border-b-2 py-2">
+                        {/* <div className="customerInfo-title flex inline-block justify-between px-5 py-2 bg-gray-50 rounded-t-xl  items-center">
                             <div className="title font-medium text-[18px] ">Thông tin người nhận</div>
                         </div> */}
-                    <div className="customerInfo grid gap-1 text-[15px] px-5 py-2">
-                        <div className="username-info flex inline-block gap-5">
-                            <div className="username-tag text-gray-900  font-medium w-30">Tên người nhận</div>
-                            <div className="username text-gray-600">{order.dataUser.userFullname}</div>
-                        </div>
-                        <div className="phoneNumber-info flex inline-block  gap-5">
-                            <div className="phoneNumber-tag text-gray-900 font-medium w-30">Số điện thoại</div>
-                            <div className="phoneNumber text-gray-600">{order.dataUser.userPhone}</div>
-                        </div>
-                        <div className="address-info flex inline-block  gap-5">
-                            <div className="address-tag text-gray-900 font-medium  w-30">Địa chỉ</div>
-                            <div className="address text-gray-600">{order.dataUser.userAddress}</div>
+                        <div className="customerInfo grid gap-1 text-[15px] px-5 py-2">
+                            <div className="username-info flex inline-block gap-5">
+                                <div className="username-tag text-gray-900  font-medium w-30">Tên người nhận</div>
+                                <div className="username text-gray-600">{order.dataUser.userFullname}</div>
+                            </div>
+                            <div className="phoneNumber-info flex inline-block  gap-5">
+                                <div className="phoneNumber-tag text-gray-900 font-medium w-30">Số điện thoại</div>
+                                <div className="phoneNumber text-gray-600">{order.dataUser.userPhone}</div>
+                            </div>
+                            <div className="address-info flex inline-block  gap-5">
+                                <div className="address-tag text-gray-900 font-medium  w-30">Địa chỉ</div>
+                                <div className="address text-gray-600">{order.dataUser.userAddress}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="border rounded-lg border-t-2 px-2">
-                    <div className="customerInfo-container h-300px w-100%  border-b-2 pb-5 ">
-                        {/* <div className="card-title flex inline-block justify-between  px-5 py-3 items-center ">
+                    <div className="border rounded-lg border-t-2 px-2">
+                        <div className="customerInfo-container h-300px w-100%  border-b-2 pb-5 ">
+                            {/* <div className="card-title flex inline-block justify-between  px-5 py-3 items-center ">
                             <div className="title font-medium text-[18px]">Chi tiết</div>
                             <div className="dropArrow font-bold"> <span>V</span></div>
                         </div> */}
-                        <div onClick={() =>  handleShopClick(order.shop.id)} className="cardInfo-container pb-5 px-5">
-                            <a>
-                                <div className="shopInfo-container inline-flex  flex gap-6 items-center border-b-2  pb-2 pt-5">
-                                    <div className="shopName font-bold text-gray-900 text-[18px] hover:cursor-pointer"><p>{order.shop.shopName}</p></div>
-                                </div>
-                            </a>
-                        </div> 
-                        {order.products.products.map((product) =>
-                            <div className="mb-5" key={product.id}>
-                                <div className="productInfo-container  grid gap-3 px-5 ">
-                                    <Link to={`/productdetail?idProduct=${product.productId}`} className="hover:bg-gray-50">
-                                        <div className="productImage-wrapper flex p-2 rounded border  justify-between" >
-                                            <div className="productInfo-1 w-[15%] ">
-                                                <a href="">
-                                                    <div className="productImage-container hover:cursor-pointer">
-                                                        <img className="w-[80px] h-[100px] rounded  object-cover " src={product.urlImge} alt="product-image" />
-                                                    </div>
-                                                </a>
-                                            </div>
-                                            <div className="productInfo-1 flex justify-between w-[85%]">
-                                                <div className="productInfo-2 text-[18px] grid text-gray-500 font-medium  ">
-                                                    <div className="productName text-gray-900 "><p>{product.productName}</p></div>
-                                                    <div className="flex-col content-end">
-                                                        <div className="productPrice"><p className="text-gray-500 font-light text-[15px] ">Đơn giá: <span className="font-normal">
-                                                            {new Intl.NumberFormat("vi-VN", {
-                                                                style: "currency",
-                                                                currency: "VND",
-                                                            }).format(product.price)}</span></p></div>
-                                                        <div className="productQuantity"><p className="text-gray-500 font-light text-[15px] ">Số lượng: <span className="font-normal">{product.quantity}</span></p></div>
-                                                    </div>
+                            <div onClick={() => handleShopClick(order.shop.id)} className="cardInfo-container pb-5 px-5">
+                                <a>
+                                    <div className="shopInfo-container inline-flex  flex gap-6 items-center border-b-2  pb-2 pt-5">
+                                        <div className="shopName font-bold text-gray-900 text-[18px] hover:cursor-pointer"><p>{order.shop.shopName}</p></div>
+                                    </div>
+                                </a>
+                            </div>
+                            {order.products.products.map((product) =>
+                                <div className="mb-5" key={product.id}>
+                                    <div className="productInfo-container  grid gap-3 px-5 ">
+                                        <Link to={`/productdetail?idProduct=${product.productId}`} className="hover:bg-gray-50">
+                                            <div className="productImage-wrapper flex p-2 rounded border  justify-between" >
+                                                <div className="productInfo-1 w-[15%] ">
+                                                    <a href="">
+                                                        <div className="productImage-container hover:cursor-pointer">
+                                                            <img className="w-[80px] h-[100px] rounded  object-cover " src={product.urlImge} alt="product-image" />
+                                                        </div>
+                                                    </a>
                                                 </div>
-                                                <div className="productInfo-3 flex flex-col justify-between mr-0">
-                                                    {order.bill.orderstatus === "Hoàn thành" && product.isEvaluated == false ?
-                                                        (
-                                                            <div className="productInfo-butoton w-[100%] flex items-end mt-auto">
-                                                                <div className="productInfo-rating">
-                                                                    <button onClick={(event) => {
-                                                                        event.preventDefault(); // Ngăn điều hướng khi bấm nút
-                                                                        setValue(product.billDetailId, product.productId);
-                                                                    }} className="w-[100px] h-[35px] rounded text-[#003EA1] text-[15px]  
-                                                                                px-2 py-0 border border-[#003EA1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">Đánh giá</button>
+                                                <div className="productInfo-1 flex justify-between w-[85%]">
+                                                    <div className="productInfo-2 text-[18px] grid text-gray-500 font-medium  ">
+                                                        <div className="productName text-gray-900 "><p>{product.productName}</p></div>
+                                                        <div className="flex-col content-end">
+                                                            <div className="productPrice"><p className="text-gray-500 font-light text-[15px] ">Đơn giá: <span className="font-normal">
+                                                                {new Intl.NumberFormat("vi-VN", {
+                                                                    style: "currency",
+                                                                    currency: "VND",
+                                                                }).format(product.price)}</span></p></div>
+                                                            <div className="productQuantity"><p className="text-gray-500 font-light text-[15px] ">Số lượng: <span className="font-normal">{product.quantity}</span></p></div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="productInfo-3 flex flex-col justify-between mr-0">
+                                                        {order.bill.orderstatus === "Hoàn thành" && product.isEvaluated == false ?
+                                                            (
+                                                                <div className="productInfo-butoton w-[100%] flex items-end mt-auto">
+                                                                    <div className="productInfo-rating">
+                                                                        <button onClick={(event) => {
+                                                                            event.preventDefault(); // Ngăn điều hướng khi bấm nút
+                                                                            setValue(product.billDetailId, product.productId);
+                                                                        }} className="w-[100px] h-[35px] rounded text-[#003EA1] text-[15px]  
+                                                                                    px-2 py-0 border border-[#003EA1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">Đánh giá</button>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        )
-                                                        : <></>}
+                                                                // <div className="productInfo-butoton w-[100%] flex items-end mt-auto">
+                                                                //     <div className="productInfo-rating">
+                                                                //         <button onClick={(event) => {
+                                                                //             event.preventDefault();
+                                                                //             openModal(product.billDetailId, product.productId)
+                                                                //         }} className="w-[100px] h-[35px] rounded text-[#003EA1] text-[15px]  
+                                                                //             px-2 py-0 border border-[#003EA1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">Đánh giá</button>
+                                                                //     </div>
+                                                                // </div>
+                                                            )
+                                                            : <></>}
 
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </Link  >
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    <div className="summary-wrapper">
-                        <div className="summary-container h-300px w-100%   ">
-                            <div className="summary-title flex inline-block justify-between px-5 py-2 rounded-xl  items-center">
-                                <div className="title font-medium text-[18px] ">Tóm tắt đơn hàng</div>
-                            </div>
-                            <div className="summary grid gap-1 text-[15px] px-5 py-1">
-                                <div className="summary-1 flex inline-block  justify-between gap-5">
-                                    <div className="summary-tag  text-gray-600  font-medium w-30">Tạm tính</div>
-                                    <div className="summary text-gray-600">
-                                        {new Intl.NumberFormat("vi-VN", {
-                                            style: "currency",
-                                            currency: "VND",
-                                        }).format(order.bill.bill.priceTemp)}
+                                        </Link  >
                                     </div>
                                 </div>
-                                <div className="summary-2 flex inline-block  justify-between  gap-5">
-                                    <div className="summary-tag  text-gray-600 font-medium w-30">Phí vận chuyển</div>
-                                    <div className="summary text-gray-600">
-                                        {new Intl.NumberFormat("vi-VN", {
-                                            style: "currency",
-                                            currency: "VND",
-                                        }).format(order.bill.bill.priceShipping)}</div>
+                            )}
+                        </div>
+                        <div className="summary-wrapper">
+                            <div className="summary-container h-300px w-100%   ">
+                                <div className="summary-title flex inline-block justify-between px-5 py-2 rounded-xl  items-center">
+                                    <div className="title font-medium text-[18px] ">Tóm tắt đơn hàng</div>
                                 </div>
-                                <div className="summary-3 flex inline-block  justify-between  gap-5">
-                                    <div className="summary-tag  text-gray-600 font-medium  w-30">Giảm giá</div>
-                                    <div className="summary text-gray-600">
-                                        {new Intl.NumberFormat("vi-VN", {
+                                <div className="summary grid gap-1 text-[15px] px-5 py-1">
+                                    <div className="summary-1 flex inline-block  justify-between gap-5">
+                                        <div className="summary-tag  text-gray-600  font-medium w-30">Tạm tính</div>
+                                        <div className="summary text-gray-600">
+                                            {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                            }).format(order.bill.bill.priceTemp)}
+                                        </div>
+                                    </div>
+                                    <div className="summary-2 flex inline-block  justify-between  gap-5">
+                                        <div className="summary-tag  text-gray-600 font-medium w-30">Phí vận chuyển</div>
+                                        <div className="summary text-gray-600">
+                                            {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                            }).format(order.bill.bill.priceShipping)}</div>
+                                    </div>
+                                    <div className="summary-3 flex inline-block  justify-between  gap-5">
+                                        <div className="summary-tag  text-gray-600 font-medium  w-30">Giảm giá</div>
+                                        <div className="summary text-gray-600">
+                                            {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                            }).format(order.bill.bill.discountPrice)}</div>
+                                    </div>
+                                </div>
+                                <div className="summary-2 grid gap-1 text-[15px] py-2 border-t mx-5 ">
+                                    <div className="summary-3 flex inline-block  justify-between  text-gray-900 font-medium  gap-5">
+                                        <div className="summary-tag   w-30">Tổng tiền</div>
+                                        <div className="summary ">  {new Intl.NumberFormat("vi-VN", {
                                             style: "currency",
                                             currency: "VND",
-                                        }).format(order.bill.bill.discountPrice)}</div>
+                                        }).format(order.bill.bill.totalPrice)}</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="summary-2 grid gap-1 text-[15px] py-2 border-t mx-5 ">
-                                <div className="summary-3 flex inline-block  justify-between  text-gray-900 font-medium  gap-5">
-                                    <div className="summary-tag   w-30">Tổng tiền</div>
-                                    <div className="summary ">  {new Intl.NumberFormat("vi-VN", {
-                                        style: "currency",
-                                        currency: "VND",
-                                    }).format(order.bill.bill.totalPrice)}</div>
+                        </div>
+                    </div>
+
+                    <div className="orderInfo-container  border-gray-100 px-1">
+                        <div className="orderInfo  ">
+                            <div className="orderInfo-1-container flex inline-block justify-end items-center">
+                                <div className="orderInfo-1-item h-100px  ">
+                                    <div className="orderstatus-container flex justify-end">
+                                        {((order.bill.orderstatus === "Hủy") || (order.bill.orderstatus === "Hoàn thành")) ? (
+                                            <div className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1 hover:opacity-95 ">
+                                                <button onClick={() => reOrder(order.bill.bill.id)}>Mua lại</button>
+                                            </div>
+                                        ) : <></>}
+                                        {order.bill.orderstatus === "Chờ duyệt" ? (
+                                            <div className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1 hover:opacity-95 ">
+                                                <button onClick={() => cancelOrder(order.bill.bill.id)}>Hủy đơn</button>
+                                            </div>
+                                        ) : <></>}
+
+                                        {order.bill.orderstatus === "Đã giao" && (
+                                            <div className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1 hover:opacity-95 ">
+                                                <button onClick={() => confirmOrder(order.bill.bill.id)}>Xác nhận đã nhận hàng</button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div className="orderInfo-container  border-gray-100 px-1">
-                    <div className="orderInfo  ">
-                        <div className="orderInfo-1-container flex inline-block justify-end items-center">
-                            <div className="orderInfo-1-item h-100px  ">
-                                <div className="orderstatus-container flex justify-end">
-                                    {((order.bill.orderstatus === "Hủy") || (order.bill.orderstatus === "Hoàn thành")) ? (
-                                        <div className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1 hover:opacity-95 ">
-                                            <button onClick={() => reOrder(order.bill.bill.id)}>Mua lại</button>
-                                        </div>
-                                    ) : <></>}
-                                    {order.bill.orderstatus === "Chờ duyệt" ? (
-                                        <div className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1 hover:opacity-95 ">
-                                            <button onClick={() => cancelOrder(order.bill.bill.id)}>Hủy đơn</button>
-                                        </div>
-                                    ) : <></>}
-
-                                    {order.bill.orderstatus === "Đã giao" && (
-                                        <div className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1 hover:opacity-95 ">
-                                            <button onClick={() => confirmOrder(order.bill.bill.id)}>Xác nhận đã nhận hàng</button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div >
+            </div >
+            
+            <RatingModal orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} isOpen={isModalOpen} handleClose={closeModal} />
 
         </>
     )
