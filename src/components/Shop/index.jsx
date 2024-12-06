@@ -194,6 +194,7 @@ const data_Products = {
 export default function ShopHome() {
     const [shopInfo, setShopInfo] = useState({});
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
+    const [products, setProducts] = useState([]);  // Initialize as an empty array
     const [loading, setLoading] = useState(false);
     const local = useLocation();
     const query = new URLSearchParams(local.search);
@@ -241,10 +242,31 @@ export default function ShopHome() {
         }
     }
 
+    const fetchProductShopHome = async () => {
+        // setVouchers(vouchersdfEAsd);
+        try {
+            setLoading(true);
+            const response = await homeShopService.fetchProductShopHome(Id);
+            console.log("response product",response.data.result);
+            if (response.data.result) {
+                const data =response.data.result;
+                setProducts(data);
+                setLoading(true);
+            } else {
+                throw new Error('Không có dữ liệu');
+            }
+        } catch (error) {
+            setProducts(data_Products);
+        } finally {
+            setLoading(false);
+        }
+    }
+
 
     useEffect(() => {
         fetchShopInfo();
         fetchVoucherShopHome();
+        fetchProductShopHome();
     }, [])
 
     useEffect(() => {
@@ -254,6 +276,10 @@ export default function ShopHome() {
     useEffect(() => {
         console.log("shopInfo", shopInfo);
     }, [shopInfo])
+
+    useEffect(() => {
+        console.log("shopInfo", shopInfo);
+    }, [products])
 
 
     if (loading) {
@@ -290,7 +316,7 @@ export default function ShopHome() {
                         <SectionStyleThree
                             className="new-products mb-[60px] "
                             seeMoreUrl="/all-products"
-                            products={data_Products}
+                            products={products}
                         />
                     </div>
                 </div>

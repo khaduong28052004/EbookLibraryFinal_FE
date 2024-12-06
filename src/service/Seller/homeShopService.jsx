@@ -23,6 +23,13 @@ const homeShopService = {
         return axiosAuth("null", "get", url);
     },
 
+    
+    fetchProductShopHome: (idSeller) => {
+        const url = `/api/v1/user/shop/selectall?id_Shop=${idSeller}`;
+        console.log("idSeller",idSeller);
+        return axiosAuth("null", "get", url);
+    },
+
 
 
 }
