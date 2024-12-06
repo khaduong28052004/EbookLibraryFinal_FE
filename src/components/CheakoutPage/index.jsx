@@ -548,9 +548,6 @@ export default function CheakoutPage() {
             <div onClick={() => setIsPaymentMethod("PAYOS")} className={`border p-1 ${isPaymentMethod == "PAYOS" ? "border-blue-700" : "border-gray-300 p-1"}`}>
               <p className={`text-base font-normal cursor-pointer  ${isPaymentMethod == "PAYOS" ? "text-blue-600" : ""}`}>Thanh toán PAYOS</p>
             </div>
-            <div onClick={() => setIsPaymentMethod("PAYOS")} className={`border p-1 ${isPaymentMethod == "PAYOS" ? "border-blue-700" : "border-gray-300 p-1"}`}>
-              <p className={`text-base font-normal cursor-pointer  ${isPaymentMethod == "PAYOS" ? "text-blue-600" : ""}`}>Thanh toán PAYOS</p>
-            </div>
           </div>
         </div>
       </div>
