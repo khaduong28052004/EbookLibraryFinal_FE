@@ -164,7 +164,6 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
                   <input type="checkbox" id="checkbox_all" onChange={(event) => handleCheckBoxAll(event)} class="form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 focus:ring-offset-0 border-gray-300 flex items-center" />
                   <span className="pl-2">Sản phẩm</span>
                 </div>
-
               </td>
               <td className="py-4 whitespace-nowrap text-center w-[250px]">Thể loại</td>
               <td className="py-4 whitespace-nowrap text-center w-[150px]">Đơn giá</td>

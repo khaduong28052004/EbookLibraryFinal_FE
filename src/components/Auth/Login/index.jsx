@@ -45,15 +45,17 @@ export default function Login() {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    if (username.trim() === "") {
+    if(!username||!password){
+      seterrorFrom((prev) => ({ ...prev, usernameF: 1,passwordF:1 }));
+    }
+    if (!username) {
       seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
       toast.error("Vui lòng kiểm tra tên đăng nhập!");
       return;
     } else {
       seterrorFrom((prev) => ({ ...prev, usernameF: 0 }));
     }
-
-    if (password.trim() === "") {
+    if (!password) {
       seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
       toast.error("Vui lòng kiểm tra mật khẩu!");
       return;
@@ -82,26 +84,42 @@ export default function Login() {
         password,
         captchaToken,
       });
-      seterrorFrom((prev) => ({ ...prev, passwordF: 2, usernameF: 2 }));
-      if (response.status) {
+
+
+      if (response.data.code === 1000) {
+
+        seterrorFrom((prev) => ({ ...prev, passwordF: 2, usernameF: 2 }));
         setTimeout(() => {
-          if (response.data.roles === "USER") {
+          if (response.data.result.roles === "USER") {
             navigate('/');
-          } else if (response.data.roles === "SELLER") {
+          } else if (response.data.result.roles === "SELLER") {
             navigate('/seller/home');
           } else {
             navigate('/admin/home');
           }
         }, 2000);
+        AuthService.setItem(response.data.result);
         toast.success("Đăng nhập thành công!");
+      } else if (response?.data?.code === 1001) {
+        // const [errorFrom, seterrorFrom] = useState({
+        //   usernameF: 0,
+        //   passwordF: 0,
+        // });
+        seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
+        toast.error("Tài khoản không tồn tại!");
+      } else if (response?.data?.code === 1002) {
+        seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+        toast.error("Sai mật khẩu!");
+      } else if (response?.data?.code === 1003) {
+        seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
+        toast.error("Lỗi đăng nhập!");
       } else {
-        toast.error("Đăng nhập thất bại vui lòng kiểm tra lại!");
+        seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
+        toast.error("Lỗi đăng nhập!");
       }
-      AuthService.setItem(response.data);
     } catch (error) {
-      // toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
+      seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
       toast.error("Đăng nhập thất bại!");
-
     }
   };
 
@@ -131,6 +149,7 @@ export default function Login() {
                     <svg width="172" height="29" viewBox="0 0 172 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M1 5.08742C17.6667 19.0972 30.5 31.1305 62.5 27.2693C110.617 21.4634 150 -10.09 171 5.08727" stroke="#FFBB38" />
                     </svg>
+
                   </div>
                 </div>
 
@@ -142,10 +161,12 @@ export default function Login() {
                       name="username"
                       type="text"
                       inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.usernameF === 1
-                        ? "border-red-300 bg-red-300" // Error state
-                        : errorFrom.usernameF === 2
-                          ? "border-green-300 bg-red-300" // Success state
-                          : ""}`}
+                          ? "ring-red-500 bg-red-100" // Lỗi
+                          : errorFrom.usernameF === 2
+                            ? "ring-green-500 bg-green-100" // Thành công
+                            : "" // Mặc định
+                        }`}
+
 
 
                       // errorFrom.usernameF === 1
@@ -167,10 +188,12 @@ export default function Login() {
                       name="password"
                       type={showPassword ? "text" : "password"}
                       inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.passwordF === 1
-                        ? "border-red-300 bg-red-300" // Error state
-                        : errorFrom.passwordF === 2
-                          ? "border-green-300 bg-red-300" // Success state
-                          : ""}`}
+                          ? "ring-red-500 bg-red-100" // Lỗi
+                          : errorFrom.passwordF === 2
+                            ? "ring-green-500 bg-green-100" // Thành công
+                            : "" // Mặc định
+                        }`}
+
                       value={password}
                       inputHandler={(e) => setPassword(e.target.value)}
                     >
@@ -247,7 +270,9 @@ export default function Login() {
                 </div>
               </div>
             </div>
+
             <Thumbnail />
+
           </div>
         </div>
       </div>

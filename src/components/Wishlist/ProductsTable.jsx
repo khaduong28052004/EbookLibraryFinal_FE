@@ -39,8 +39,8 @@ export default function ProductsTable({ className, datas, handleDelete }) {
               </td>
               <td className="py-4 whitespace-nowrap text-center">Thể loại</td>
               <td className="py-4 whitespace-nowrap text-center">Giá</td>
-              <td className="py-4 whitespace-nowrap  text-center">Số lượng</td>
-              <td className="py-4 whitespace-nowrap  text-center">Tổng cộng</td>
+              {/* <td className="py-4 whitespace-nowrap  text-center">Số lượng</td>
+              <td className="py-4 whitespace-nowrap  text-center">Tổng cộng</td> */}
               <td className="py-4 whitespace-nowrap text-right w-[114px] block"></td>
             </tr>
             {/* table heading end */}
@@ -96,7 +96,7 @@ export default function ProductsTable({ className, datas, handleDelete }) {
                       </>)}
                   </div>
                 </td>
-                <td className=" py-4">
+                {/* <td className=" py-4">
                   <div className="flex justify-center items-center">
                     {
                       favorite?.product.flashSaleDetail?.id > 0 ? (<InputQuantityCom quantityCart={favorite?.quantity} handleQuantity={updateQuantity} idFavorite={favorite?.id} maxQuantity={favorite?.product?.flashSaleDetail?.quantity} />)
@@ -116,7 +116,7 @@ export default function ProductsTable({ className, datas, handleDelete }) {
 
                     }<sup>đ</sup></span>
                   </div>
-                </td>
+                </td> */}
                 <td className="text-right py-4">
                   <div className="flex space-x-1 items-center justify-center">
                     <span>

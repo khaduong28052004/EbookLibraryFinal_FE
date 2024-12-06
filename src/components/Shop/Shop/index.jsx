@@ -220,15 +220,14 @@ export default function ShopHome() {
             const response = await homeShopService.fetchShopInfo(shopID, iduser);
             if (response.data.result) {
                 const data = response.data.result;
-                setShopInfo(shopDataEX);
+                setShopInfo(data);
                 setLoading(true);
             } else {
                 setShopInfo(shopDataEX);
-                ;
-                throw new Error('Không có dữ liệu');
+                toast.warn('Lỗi truyền tải dữ liệu');
             }
         } catch (error) {
-            ;
+            toast.warn('Lỗi truyền tải dữ liệu');
         } finally {
             setLoading(false);
         }
@@ -250,7 +249,7 @@ export default function ShopHome() {
             }
         } catch (error) {
             setVouchers(vouchersdfEAsd);
-            ;
+            toast.warn('Lỗi truyền tải dữ liệu');
         } finally {
             setLoading(false);
         }
@@ -271,19 +270,6 @@ export default function ShopHome() {
     useEffect(() => {
         console.log("shopInfo", shopInfo);
     }, [shopInfo])
-
-
-    if (!loading && !vouchers || !shopInfo) return
-    <div>
-        <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center gap-2">
-                <div className="">
-                    <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
-                </div>
-                <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
-            </div>
-        </div>
-    </div>
 
 
     return (

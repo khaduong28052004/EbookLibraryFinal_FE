@@ -18,7 +18,11 @@ export default function Wishlist({ wishlist = true }) {
     if (token) {
       const id_user = sessionStorage.getItem("id_account");
       if (id_user) {
-        axios("http://localhost:8080/api/v1/user/favorite/getall/" + id_user).then(response => {
+        axios("http://localhost:8080/api/v1/user/favorite/getall/" + id_user, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        }).then(response => {
           setData(response.data.result.datas);
         }).catch(error => console.error("fetch getall favorite error " + error));
       }
