@@ -4,6 +4,7 @@ import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Thongke from '../../../service/admin/ThongKe';
 import Pagination from './Pagination';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableTwo = ({ onPageChange, entityData }) => {
     const [dateStart, setDateStart] = useState('');
@@ -35,11 +36,15 @@ const TableTwo = ({ onPageChange, entityData }) => {
     }, [dateStart, dateEnd, option, searchItem, currentPage, sortBy, sortColumn]);
 
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách Thống Kê Seller'];
+        const sheetNames = ['Danh Sách Thống Kê Người Bán'];
         try {
             console.log("totalElements: " + entityData.totalElements);
-            const response = await Thongke.nguoiban({ dateStart, dateEnd, searchItem, option, currentPage, size: entityData.totalElements, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Thống Kê Seller.xlsx", sheetNames, [response.data.result.thongke.content]);
+            const response = await Thongke.nguoiban({ dateStart, dateEnd, searchItem, option, currentPage, size: entityData.totalElements === 0 ? 5 : entityData.totalElements, sortColumn, sortBy });
+            if (!response || response.data.result.thongke.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Thống Kê Người Bán.xlsx", sheetNames, [response.data.result.thongke.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -60,6 +65,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer />
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
@@ -86,33 +92,31 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 />
                             </svg>
                         </button>
-
-                        {/* Input Start Date */}
-                        <input
-                            value={dateStart}
-                            onChange={(e) => {
-                                setDateStart(e.target.value);
-                            }}
-                            type="date"
-                            placeholder="Start Date"
-                            name="startDate"
-                            className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-                        />
-
-                        {/* Arrow Icon from Heroicons */}
-                        <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
-
-                        {/* Input End Date */}
-                        <input
-                            value={dateEnd}
-                            onChange={(e) => {
-                                setDateEnd(e.target.value);
-                            }}
-                            type="date"
-                            placeholder="End Date"
-                            name="endDate"
-                            className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-                        />
+                        {option === "macdinh" ? (<></>) : (
+                            <>
+                                < input
+                                    value={dateStart}
+                                    onChange={(e) => {
+                                        setDateStart(e.target.value);
+                                    }}
+                                    type="date"
+                                    placeholder="Start Date"
+                                    name="startDate"
+                                    className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+                                />
+                                <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
+                                <input
+                                    value={dateEnd}
+                                    onChange={(e) => {
+                                        setDateEnd(e.target.value);
+                                    }}
+                                    type="date"
+                                    placeholder="End Date"
+                                    name="endDate"
+                                    className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+                                />
+                            </>
+                        )}
                         <input
                             value={searchItem}
                             onChange={(e) => {
@@ -122,7 +126,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             type="text"
                             placeholder="Tìm kiếm..."
                             className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-50" />
-                        {/* Dropdown Option */}
+
                         <select
                             value={option}
                             onChange={(e) => setOption(e.target.value)}
@@ -163,7 +167,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Tài khoản </span>
+                                <span className="text-sm text-black dark:text-white">Tên shop </span>
                                 <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "shopname" ? "text-black" : "text-gray-500"} text-black`} />
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "shopname" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
@@ -239,7 +243,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                     {entityData.pageable.pageNumber * entityData.size + index + 1}
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                    {/* <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" /> */}
+                                    <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
                                     <p className="text-sm text-black dark:text-white truncate w-24">{entity.shopName}</p>
                                 </td>
 

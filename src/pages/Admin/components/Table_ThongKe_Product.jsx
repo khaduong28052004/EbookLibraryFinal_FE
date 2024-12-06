@@ -3,6 +3,7 @@ import { ChevronRightIcon, ArrowRightIcon, ChevronDownIcon, ArrowLongDownIcon, A
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Thongke from '../../../service/admin/ThongKe';
 import Pagination from './Pagination';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableTwo = ({ onPageChange, entityData }) => {
     const [dateStart, setDateStart] = useState('');
@@ -45,8 +46,12 @@ const TableTwo = ({ onPageChange, entityData }) => {
         const sheetNames = ['Danh Sách Thống Kê Sản Phẩm'];
         try {
             console.log("totalElements: " + entityData.totalElements);
-            const response = await Thongke.product({ dateStart, dateEnd, option, currentPage, size: entityData.totalElements, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.result.content]);
+            const response = await Thongke.product({ dateStart, dateEnd, option, currentPage, size: entityData.totalElements === 0 ? 5 : entityData.totalElements, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.thongke.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Thống Kê Sản phẩm.xlsx", sheetNames, [response.data.result.thongke.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -66,6 +71,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
     };
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer />
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
@@ -236,11 +242,6 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "avgStar" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
-                        {/* <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Trạng thái</span>
-                            </div>
-                        </th> */}
                     </tr>
                 </thead>
 
@@ -291,14 +292,6 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                         {formatNumber(entity.avgStar)}
                                     </div>
                                 </td>
-                                {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                                <div className="flex items-center gap-1 hidden lg:flex">
-                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                        {entity.status ? 'Hoạt Động' : 'Đã Ngừng'}
-                                    </span>
-                                </div>
-                            </td> */}
-
                             </tr>
                             {expandedRowId === entity.id && (
                                 <tr>
@@ -306,13 +299,12 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                         <div className="p-5 border border-gray-100 hover:bg-slate-100">
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
+                                                <p>Tên sách: {entity.name}</p>
+                                                <p>Tác giả: {entity.writerName}</p>
+                                                <p>Nhà xuất bản: {entity.publishingCompany}</p>
                                                 <p>Shop: {entity.account.shopName}</p>
                                                 <p>Ngày tạo: {entity.createAt}</p>
                                                 <p>Trạng thái : {entity.delete == false ? 'Đang hoạt động' : 'Ngừng hoạt động'}</p>
-                                                <p>Tác giả: {entity.writerName}</p>
-                                                <p>Nhà xuất bản: {entity.publishingCompany}</p>
-                                                <p>Giới thiệu: {entity.introduce}</p>
-
                                             </div>
                                         </div>
                                     </td>

@@ -30,7 +30,7 @@ const FalshSaleAdmin = () => {
 
   const findAllFlashSale = async () => {
     try {
-      const response = await flashSale.findAllFlashSale({ dateStart, dateEnd, currentPage, size: 2, sortColumn, sortBy });
+      const response = await flashSale.findAllFlashSale({ dateStart, dateEnd, currentPage, size: 10, sortColumn, sortBy });
       console.log("content: " + response.data.result.content);
       setData(response.data.result);
       console.log(data);

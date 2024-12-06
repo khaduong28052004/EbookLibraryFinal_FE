@@ -74,8 +74,12 @@ const TableTwo = ({ status }) => {
         const sheetNames = ['Danh Sách Shop'];
         try {
             console.log("totalElements: " + data.totalElements);
-            const response = await accountService.findAllAccount({ currentPage, size: data.totalElements, role: "SELLER", searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Shop.xlsx", sheetNames, [response.data.result.content]);
+            const response = await accountService.findAllAccount({ currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, role: "SELLER", searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Shop.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");

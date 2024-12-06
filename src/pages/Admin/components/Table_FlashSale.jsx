@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { NoSymbolIcon, ReceiptRefundIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import Modal from "./Modal_ThongBao_NotMail";
 import ModalFlashSale from './ModalFlaseSale';
-import ModalFlashSaleCT from './Modal_FlashSaleCT';
 import flashSale from '../../../service/admin/FlashSale';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
+import { Link } from 'react-router-dom';
 
 const TableTwo = ({ onPageChange, onIdChange, entityData, status,
     setStatus }) => {
@@ -16,12 +16,9 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
     const [isOpenModalSP, setIsOpenModalSP] = useState(false);
-    const [isOpenModalCT, setIsOpenModalCT] = useState(false);
-    const [entityFlashSale, setEntityFlashSale] = useState([]);
 
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
-    const [statusentity, setStatusentity] = useState(false);
 
     const handleConfirm = () => {
         setIsOpen(false);
@@ -47,18 +44,20 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
 
     useEffect(() => {
         onPageChange(dateStart, dateEnd, currentPage, sortBy, sortColumn);
-        console.log("pageNumber: " + currentPage);
-        console.log("totalPages: " + entityData?.totalPages);
-        console.log("totalElements: " + entityData?.totalElements);
-        console.log("setPageNumber: " + currentPage);
     }, [dateStart, dateEnd, currentPage, sortBy, sortColumn]);
     ;
+
+
     const handleExport = async () => {
         const sheetNames = ['Danh Sách FlashSale'];
         try {
             console.log("totalElements: " + entityData.totalElements);
-            const response = await flashSale.findAllFlashSale({ dateStart, dateEnd, currentPage, size: entityData.totalElements, sortColumn, sortBy });
-            return ExportExcel("Danh Sách FlashSale.xlsx", sheetNames, [response.data.result.content]);
+            const response = await flashSale.findAllFlashSale({ dateStart, dateEnd, currentPage, size: entityData.totalElements === 0 ? 5 : entityData.totalElements, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách FlashSale.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -119,14 +118,14 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
-                                setSortColumn("account.fullname");
+                                setSortColumn("title");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Người tạo </span>
-                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
-                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                                <span className="text-sm text-black dark:text-white">Tiêu đề </span>
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "title" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "title" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -174,23 +173,37 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                                 {entityData.pageable.pageNumber * entityData.size + index + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.account.fullname}</p>
+                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.title}</p>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.dateStart}
-                                </div>
+                                    {new Date(entity.dateStart).toLocaleString("vi-VN", {
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                        hour12: false, // Sử dụng định dạng 24 giờ
+                                    })}                                </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.dateEnd}
-                                </div>
+                                    {new Date(entity.dateEnd).toLocaleString("vi-VN", {
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                        hour12: false, // Sử dụng định dạng 24 giờ
+                                    })}                                </div>
                             </td>
 
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
                                 <div className="flex items-center gap-1 hidden lg:flex">
-                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${!entity.delete ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                        {!entity.delete ? 'Hoạt Động' : 'Đã Ngừng'}
+                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${!entity.delete ? (new Date(entity.dateStart).getTime() > new Date().getTime() ? 'bg-blue-600 text-blue-600' : 'bg-success text-success') : 'bg-danger text-danger'}`}>
+                                        {!entity.delete ? (new Date(entity.dateStart).getTime() > new Date().getTime() ? 'Đang đợi' : 'Hoạt động') : 'Đã Ngừng'}
                                     </span>
                                 </div>
                             </td>
@@ -199,16 +212,14 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                                     <button onClick={() => {
                                         setId(entity.id);
                                         setIsOpen(true);
-                                        setStatusentity(!entity.delete);
                                     }}>
-                                        {!entity.delete ? (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                        {entity.delete || new Date(entity.dateStart).getTime() <= new Date().getTime() ?
+                                            (<></>) :
+                                            (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />)
+                                        }
                                     </button>
-                                    <button onClick={() => {
-                                        setEntityFlashSale(entity);
-                                        setIsOpenModalCT(true);
-                                        // setId(entity.id);
-                                    }}>
-                                        <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
+                                    <button>
+                                        <Link to={`/admin/quanLy/flashsaledetails?flashsale_id=${entity.id}`}><ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' /></Link>
                                     </button>
                                 </div>
                             </td>
@@ -237,21 +248,14 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                 iconBgColor={'bg-red-100'}
                 buttonBgColor={'bg-red-600'} />
             <ModalFlashSale
+                entity={null}
                 status={status}
                 setStatus={setStatus}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
-                title="Thêm Sản Phẩm Mới"
+                title="Thêm Flash Sale Mới"
                 confirmText="Lưu"
                 cancelText="Hủy"
-            />
-            <ModalFlashSaleCT
-                statusFillAll={status}
-                setStatusFillAll={setStatus}
-                entityFlashSale={entityFlashSale}
-                open={isOpenModalCT}
-                setOpen={setIsOpenModalCT}
-                title="Cập nhật Flash sale"
             />
         </div>
     );

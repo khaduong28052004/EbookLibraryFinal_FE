@@ -71,10 +71,13 @@ const TableTwo = () => {
         const sheetNames = ['Danh Sách Báo Cáo'];
         try {
             console.log("data.totalElements: " + data.totalElements);
-            const response = await accountService.findAllAccountReport({ page: data.totalElements, size: 2, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh sách báo cáo.xlsx", sheetNames, [response.data.result.content]);
+            const response = await accountService.findAllAccountReport({ option, page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh sách báo cáo.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
-            console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
         }
     }

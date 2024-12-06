@@ -38,8 +38,12 @@ const TableVoucher = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Voucher Chi Tiết'];
     try {
-      const response = await VoucherService.getDetail(voucher_id, search, pageNumber, sortBy, sortColumn, size);
-      return ExportExcel("Danh Sách Voucher Chi Tiết.xlsx", sheetNames, [response.data.result.content]);
+      const response = await VoucherService.getDetail(voucher_id, search, pageNumber, sortBy, sortColumn, size === 0 ? 5 : size);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Voucher Chi Tiết.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");

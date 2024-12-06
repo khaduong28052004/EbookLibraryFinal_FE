@@ -26,7 +26,11 @@ const LoginGG = () => {
             if (response.status === 200) {
                 localStorage.setItem("accessToken", response.data.accessToken); // Use response.data
                 setError(null); // Clear any previous errors
-                return navigate('/');
+                toast.success("Đăng nhập thành công!");
+                setTimeout(() => {
+                    return navigate('/');
+                }, 3000);
+         
             } else if (response.status === 401) {
                 setError(response.data.message || "Unauthorized access."); // Display API-provided error message
             } else if (response.status === 302) {
@@ -40,7 +44,10 @@ const LoginGG = () => {
             const redirectUrl = error.response.headers?.location || "signup";
             if (error.response.status = 302) {
                 // thoong bao khi chon toast
-                return navigate('/' + redirectUrl);
+                toast.warn("tài khoản này chưa được tạo!");
+                setTimeout(() => {
+                    return navigate('/' + redirectUrl);
+                }, 3000);   
             }
             console.error("Error during login:", error?.response?.data || error.message);
             setError("An error occurred. Please try again.");

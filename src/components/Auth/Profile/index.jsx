@@ -14,11 +14,12 @@ import AddressesTab from "./tabs/AddressesTab";
 import Dashboard from "./tabs/Dashboard";
 import OrderTab from "./tabs/OrderTab";
 import PasswordTab from "./tabs/PasswordTab";
-import Report from "./tabs/Report";
 import ProfileTab from "./tabs/ProfileTab";
 import ReviewTab from "./tabs/ReviewTab";
-import SupportTab from "./tabs/SupportTab";
+import BecomeSeller from "./tabs/BecomSeller";
 import WishlistTab from "./tabs/WishlistTab";
+import ReportTab from "./tabs/Report";
+
 // import IcoPayment from './path/to/IcoPayment';
 import { toast } from "react-toastify";
 import { FaFlag } from "react-icons/fa"; // Hoặc biểu tượng khác bạn cần.
@@ -28,7 +29,7 @@ import IcoPayment from './icons/IcoPayment'; // Đảm bảo đường dẫn ch�
 const IcoReport = () => <FaFlag className="text-lg text-qgray group-hover:text-qblack" />;
 
 export default function Profile() {
-  
+
   const [switchDashboard, setSwitchDashboard] = useState(false);
   const location = useLocation();
   const getHashContent = location.hash.split("#");
@@ -96,8 +97,8 @@ export default function Profile() {
                 { name: "hồ sơ", path: "/profile" },
               ]}
             />
-            <div className="w-full bg-white px-10 py-9">
-              <div className="title-area w-full flex justify-between items-center">
+            <div className="xl:w-full bg-white xl:px-10 xl:py-9 w-[750px]">
+              <div className="title-area w-full flex justify-between items-center mb-[20px] mt-[20px]">
                 <h1 className="text-[22px] font-bold text-qblack">
                   Tài khoản
                 </h1>
@@ -115,9 +116,9 @@ export default function Profile() {
                   </button>
                 </div> */}
               </div>
-              <div className="profile-wrapper w-full mt-8 flex space-x-10">
-                <div className="w-[236px] min-h-[600px] border-r border-[rgba(0, 0, 0, 0.1)]">
-                  <div className="flex flex-col space-y-10">
+              <div className="xl:profile-wrapper xl:w-full xl:mt-8 flex xl:space-x-10 profile-wrapper w-full">
+                <div className="xl:w-[236px] xl:min-h-[600px] xl:border-r xl:border-[rgba(0, 0, 0, 0.1)] w-[120px]">
+                  <div className="xl:flex xl:flex-col xl:space-y-10 xl:w-full flex flex-col space-y-10 w-[120px]">
                     <div className="item group">
                       <Link to="/profile#dashboard">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
@@ -144,13 +145,13 @@ export default function Profile() {
                     </div>
 
                     <div className="item group">
-                      <Link to="/profile#report">
+                      <Link to="/profile#become-seller">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
                           <span>
                             <IcoPayment />
                           </span>
                           <span className=" font-normal text-base">
-                            Phương thức thanh toán
+                            Trở thành người bán
                           </span>
                         </div>
                       </Link>
@@ -215,7 +216,7 @@ export default function Profile() {
                         </div>
                       </Link>
                     </div>
-                    
+
                     {/* <div className="item group">
                       <Link to="/profile#support">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
@@ -229,16 +230,16 @@ export default function Profile() {
                       </Link>
                     </div> */}
 
-<div className="item group">
-  <Link to="/profile#report">
-    <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
-      <span>
-        <IcoReport /> {/* Thay bằng biểu tượng báo cáo hoặc icon khác */}
-      </span>
-      <span className="font-normal text-base">Báo cáo</span>
-    </div>
-  </Link>
-</div>
+                    <div className="item group">
+                      <Link to="/profile#report">
+                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
+                          <span>
+                            <IcoReport /> {/* Thay bằng biểu tượng báo cáo hoặc icon khác */}
+                          </span>
+                          <span className="font-normal text-base">Báo cáo</span>
+                        </div>
+                      </Link>
+                    </div>
                     {
                       isToken ? (<div className="item group">
                         <Link to="/login">
@@ -258,7 +259,7 @@ export default function Profile() {
                               <IcoLogout />
                             </span>
                             <span className=" font-normal text-base">
-                              Đăng nhập
+                              Đăng xuất
                             </span>
                           </div>
                         </Link>
@@ -268,16 +269,16 @@ export default function Profile() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="item-body dashboard-wrapper w-full">
+                  <div className="item-body dashboard-wrapper sm:w-[200px] md:w-[500px] lg:w-[500px] xl:w-full 2xl:w-full w-[100px] ">
                     {active === "dashboard" ? (
                       <Dashboard />
                     ) : active === "profile" ? (
                       <>
                         <ProfileTab />
                       </>
-                    ) : active === "report" ? (
+                    ) : active === "become-seller" ? (
                       <>
-                        <Report />
+                        <BecomeSeller />
                       </>
                     ) : active === "order" ? (
                       <>
@@ -303,8 +304,8 @@ export default function Profile() {
                       <>
                         <ReviewTab products={datas.products} />
                       </>
-                      ) : active === "report" ? ( // Logic hiển thị Báo cáo
-                        <ReportTab />
+                    ) : active === "report" ? ( // Logic hiển thị Báo cáo
+                      <ReportTab />
                     ) : (
                       ""
                     )}

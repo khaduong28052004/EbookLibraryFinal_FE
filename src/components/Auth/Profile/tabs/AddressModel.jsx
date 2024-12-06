@@ -38,7 +38,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         wardCode: "",
         background: "",
         avatar: "",
-        street:"",
+        street: "",
     });
     const fetchAddresses = async () => {
         const id = sessionStorage.getItem("id_account") || 1;
@@ -260,13 +260,19 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
             <div className="w-[600px] flex flex-col">
-                <button
-                    className="text-white text-xl place-self-end mb-1"
-                    onClick={onClose}
-                >
-                    X
-                </button>
-                <div className="bg-white p-2 rounded">
+
+                <div className="relative bg-white p-2 rounded">
+                    <div>
+                        <button
+                            className="absolute rounded-full px-[5px] opacity-80  text-sm place-self-end mb-1 top-5 right-4"
+                            onClick={onClose}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+
+                        </button>
+                    </div>
                     <div>
                         <h2 className="p-2.5 font-bold text-lg">Địa Chỉ</h2>
                         <hr className="border-gray-500" />
@@ -304,29 +310,9 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     required
                                 />
                             </div>
-                            <div className="col-span-6">
-                                <label className="text-base" htmlFor="wardCode">
-                                    Xã/Phường
-                                </label>
-                                <select
-                                    className="my-2 placeholder-gray-500 border border-gray-400 rounded-sm p-2 w-full"
-                                    id="wardCode"
-                                    value={selectedWard.id}
-                                    onChange={handleWardChange}
-                                    required
-                                >
-                                    <option value="">Chọn xã/phường</option>
-                                    {wardCode.map((ward) => (
-                                        <option
-                                            key={ward.WardCode}
-                                            value={ward.WardCode}
-                                            data-name={ward.WardName}
-                                        >
-                                            {ward.WardName}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+
+
+
                             <div className="col-span-6">
                                 <label className="text-base" htmlFor="province">
                                     Tỉnh/Thành Phố
@@ -373,13 +359,40 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     ))}
                                 </select>
                             </div>
+                            <div className="col-span-12">
+                                <label className="text-base" htmlFor="wardCode">
+                                    Xã/Phường
+                                </label>
+                                <select
+                                    className="my-2 placeholder-gray-500 border border-gray-400 rounded-sm p-2 w-full"
+                                    id="wardCode"
+                                    value={selectedWard.id}
+                                    onChange={handleWardChange}
+                                    required
+                                >
+                                    <option value="">Chọn xã/phường</option>
+                                    {wardCode.map((ward) => (
+                                        <option
+                                            key={ward.WardCode}
+                                            value={ward.WardCode}
+                                            data-name={ward.WardName}
+                                        >
+                                            {ward.WardName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                         </div>
-                        <button
-                            className="my-2 p-2 bg-blue-500 text-white rounded"
-                            onClick={handleSave}
-                        >
-                            Lưu địa chỉ
-                        </button>
+                        <div className="flex justify-end mt-2">
+                            <button
+                                className="w-[150px] h-[35px] rounded text-white text-[15px]  
+                            px-2 py-0 border bg-[#003EA1] transition-all duration-500 ease-in-out hover:opacity-90  mb-5"
+                                onClick={handleSave}
+                            >
+                                Lưu địa chỉ
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
