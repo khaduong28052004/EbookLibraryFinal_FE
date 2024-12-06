@@ -41,7 +41,7 @@ export default function ShopInfo({ shopData }) {
       <div className="rounded-md py-5 px-5 flex">
         {/* Shop Info */}
         <div
-          className="border rounded-md w-4/12 py-2 px-5 relative"
+          className="border rounded-md w-5/12 py-2 px-5 relative"
           style={{ backgroundImage: `url(${shopInfo.background})` }}
         >
           {/* Lớp phủ mờ ảnh nền */}
@@ -102,7 +102,7 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Sản phẩm:</p>
-              <span className="text-sky-600">{shopInfo.numberOfProducts}</span>
+              <span className="text-[#003EA1]">{shopInfo.numberOfProducts}</span>
             </div>
             <div className="flex flex-1 gap-2 items-center">
               <div>
@@ -122,7 +122,7 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Đánh giá:</p>
-              <span className="text-sky-600">
+              <span className="text-[#003EA1]">
                 {rating.averageStars} ({rating.totalReviews})
               </span>
             </div>
@@ -146,7 +146,7 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Người theo dõi:</p>
-              <span className="text-sky-600">{shopInfo.numberOfFollowers}</span>
+              <span className="text-[#003EA1]">{shopInfo.numberOfFollowers}</span>
             </div>
             <div className="flex flex-1 gap-2 items-center">
               <div>
@@ -166,7 +166,7 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Tham gia:</p>
-              <span className="text-sky-600"> {shopInfo?.participationTime >= 365 ? (
+              <span className="text-[#003EA1]"> {shopInfo?.participationTime >= 365 ? (
                 <p>{Math.floor(shopInfo?.participationTime / 365)} năm</p>
               ) : (
                 <p>{shopInfo?.participationTime} Ngày </p>

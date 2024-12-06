@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import SectionStyleThree from '../Helpers/SectionStyleThree';
+import SectionStyleThreeHomeShop from '../Helpers/SectionStyleThreeHomeShop';
 import Voucher from '../Shop/voucher';
 import ShopInfo from '../Shop/shopinfo';
 import ErrorThumb from '../../components/FourZeroFour'
@@ -315,7 +315,7 @@ export default function ShopHome() {
                         <h1 className="text-gray-700">SẢN PHẨM</h1>
                     </div>
                     <div className="mb-1 text-gray-300">
-                        <SectionStyleThree
+                        <SectionStyleThreeHomeShop
                             className="new-products mb-[60px] "
                             seeMoreUrl="/all-products"
                             products={products}
