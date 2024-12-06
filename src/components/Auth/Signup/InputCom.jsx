@@ -13,7 +13,7 @@ const InputCom = ({ placeholder, label, name, type, inputHandler, value, childre
                     type={type}
                     onChange={inputHandler}
                     value={value}
-                    className="input-field placeholder:text-sm text-sm px-6 text-dark-gray w-full h-full font-normal bg-white focus:ring-0 focus:outline-none h-[50px]"
+                    className="block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6"
                 />
                 {children}
             </div>

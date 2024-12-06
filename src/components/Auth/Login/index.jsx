@@ -241,9 +241,9 @@ export default function Login() {
                 <div className="social-login-buttons flex space-x-1 mt-6 text-sm">
                   <span className='text-gray-600'>Chưa có tài khoản?</span><Link to="/signup" className="text-[#003EA1]">Tạo tài khoản</Link>
                 </div>
-                <div className="social-login-buttons flex space-x-4 mt-6">
+                {/* <div className="social-login-buttons flex space-x-4 mt-6">
                   <Link to="/singupLinkFrom" className="text-base text-qyellow">Đăng ký tài khoản v2!</Link>
-                </div>
+                </div> */}
               </div>
             </div>
             <Thumbnail />
