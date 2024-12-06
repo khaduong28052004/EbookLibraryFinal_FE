@@ -111,13 +111,10 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
     const getIdAccountFromSession = () => {
         const user = sessionStorage.getItem("user");
-
         if (user) {
             const userObject = JSON.parse(user);
-            return userObject; // Trả về id_account
+            return userObject; 
         }
-
-        return null;
     };
 
     const fetchOrders = async () => {
@@ -125,13 +122,11 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             setLoading(true);
 
             const orderStatusId = activeMenu;
-
             const userID = getIdAccountFromSession().id_account;
-
             const response = await userOrderService.fetchOrder(userID, orderStatusId, currentPage, size);
 
             console.log('response.data.data', response.data);
-            if (response.data.data) {
+            if (response.data) {
                 const data = response.data;
                 setOrders(Array.isArray(data.data) ? data.data : []);
                 setData(data);
@@ -235,7 +230,6 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     };
 
     const sortedBills = [...orders];
-
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < data.totalPages) {
@@ -396,7 +390,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
                 }
             </div>
             <div className="flex justify-end w-full  border-t">
-                {data.totalItems > 0 ? (
+                {data?.totalItems > 0 ? (
                     <Pagination
                         pageNumber={data?.currentPage}
                         totalPages={data?.totalPages}
@@ -404,7 +398,8 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
                         handlePrevious={handlePrevious}
                         handleNext={handleNext}
                         setPageNumber={setCurrentPage}
-                        size={data?.pageSize}></Pagination>
+                        size={data?.pageSize}>
+                    </Pagination>
                 ) : <></>}
             </div>
         </>
