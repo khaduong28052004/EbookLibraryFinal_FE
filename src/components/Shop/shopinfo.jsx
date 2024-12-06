@@ -1,22 +1,39 @@
 import React, { useEffect, useState, useRef } from 'react';
+import homeShopService from "../../service/Seller/homeShopService";
 
 export default function ShopInfo({ shopData }) {
   const [shopInfo, setShopInfo] = useState({});
   const [rating, setRating] = useState([]);  // Initialize as an empty array
+  const [isFollowed, setIsFollowed] = useState(false);
 
+
+  const handleFollow = async (idShop) => {
+    const idUser = sessionStorage.getItem("id_account");
+    try {
+      if (isFollowed) {
+        await homeShopService.createFollower(idUser, idShop);
+        setIsFollowed(false);
+      } else {
+        await homeShopService.createFollower(idUser, idShop);
+        setIsFollowed(true);
+      }
+    } catch (error) {
+      console.error("Error updating follow status:", error);
+    }
+  };
 
   useEffect(() => {
-    console.log("shopdata2", shopData);
-    setShopInfo(shopData.shopDataEX);
-    setRating(shopData.rating);
-  }, [])
+    if (shopData && Object.keys(shopData).length > 0) {
+      console.log("shopdata2", shopData);
+      setShopInfo(shopData.shopDataEX);
+      setRating(shopData.rating);
+      setIsFollowed(shopData.shopDataEX.isFollowed);
+    }
+  }, [shopData]);
 
-  if (shopData == {}) {
-    return (
-      <>
 
-      </>
-    )
+  if (!shopData || Object.keys(shopData).length === 0) {
+    return null;
   }
 
   return (
@@ -47,12 +64,12 @@ export default function ShopInfo({ shopData }) {
           </div>
 
           <div className="mt-2 relative z-10">
-            {shopInfo.isFollowed ? (
-              <button className="border border-sky-500 text-sky-500 w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
+            {isFollowed ? (
+              <button onClick={() => handleFollow(shopInfo.idSeller)} className="border border-sky-500 text-sky-500 w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
                 Đã theo dõi
               </button>
             ) : (
-              <button className="flex justify-center border border-white text-white w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
+              <button onClick={() => handleFollow(shopInfo.idSeller)}   className="flex justify-center border border-white text-white w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
                 <div className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

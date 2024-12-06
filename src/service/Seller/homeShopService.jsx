@@ -30,6 +30,16 @@ const homeShopService = {
         return axiosAuth("null", "get", url);
     },
 
+    
+    createFollower: (idUser, idSeller) => {
+        console.log("idSeller",idSeller);
+        console.log("idUser",idUser );
+        const url = `http://localhost:8080/api/v1/user/follower/create?id_user=${idUser}&id_shop=${idSeller}`;
+      
+        return axiosAuth("null", "get", url);
+    },
+
+
 
 
 }

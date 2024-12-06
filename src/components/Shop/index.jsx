@@ -196,6 +196,7 @@ export default function ShopHome() {
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
     const [products, setProducts] = useState([]);  // Initialize as an empty array
     const [loading, setLoading] = useState(false);
+    const [isFollowed, setIsFollowed] = useState(false);
     const local = useLocation();
     const query = new URLSearchParams(local.search);
     const { Id } = useParams();
@@ -208,6 +209,7 @@ export default function ShopHome() {
             if (response.data.result) {
                 const data = response.data.result;
                 data != null ? setShopInfo(data) : setShopInfo(null);
+                setIsFollowed(response.data.result.shopDataEX.isFollowed);
                 setLoading(true);
             } else {
                 setShopInfo(data);
@@ -247,9 +249,9 @@ export default function ShopHome() {
         try {
             setLoading(true);
             const response = await homeShopService.fetchProductShopHome(Id);
-            console.log("response product",response.data.result);
+            console.log("response");
             if (response.data.result) {
-                const data =response.data.result;
+                const data = response.data.result;
                 setProducts(data);
                 setLoading(true);
             } else {
@@ -290,7 +292,7 @@ export default function ShopHome() {
         );
     }
 
-    if (shopInfo == null) return (
+    if (!shopInfo || Object.keys(shopInfo).length === 0) return (
         <ErrorThumb></ErrorThumb>
     )
 
