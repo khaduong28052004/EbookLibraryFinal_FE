@@ -230,7 +230,7 @@ const TableTwo = () => {
                                                     setEntityChietKhau(entity);
                                                     setIsOpenModalSP(true);
                                                 }}>
-                                                    <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
+                                                    {/* <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' /> */}
                                                 </button>
                                             ) : (<></>)}
                                         </>
