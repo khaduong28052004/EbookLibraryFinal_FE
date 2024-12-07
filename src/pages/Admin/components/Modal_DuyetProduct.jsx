@@ -56,10 +56,10 @@ const Modal = ({
                                     </div>
                                     <div>
                                         <label className="my-2.5 block text-black dark:text-white">
-                                            Lí do:
+                                            Nội dung:
                                         </label>
                                         <textarea cols={5} rows={5}
-                                            placeholder="Lí do..."
+                                            placeholder="Nội dung..."
                                             onChange={(e) => { setContents(e.target.value) }}
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                             name="" id=""></textarea>

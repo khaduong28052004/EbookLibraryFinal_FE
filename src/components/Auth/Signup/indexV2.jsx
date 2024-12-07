@@ -26,16 +26,16 @@ export default function Signup() {
     fullname: ''
   });
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const otp = queryParams.get('otp');
-    const emailurl = queryParams.get('email');
-    setOtpToken(otp);
-    setFormData((prev) => ({
-      ...prev,
-      email: emailurl,
-    }));
-  }, [location]);
+  // useEffect(() => {
+  //   const queryParams = new URLSearchParams(location.search);
+  //   const otp = queryParams.get('otp');
+  //   const emailurl = queryParams.get('email');
+  //   setOtpToken(otp);
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     email: emailurl,
+  //   }));
+  // }, [location]);
   const [error, setError] = useState({}); // State for error messages
   const navigate = useNavigate(); // Hook for navigation
 
@@ -54,7 +54,7 @@ export default function Signup() {
     validateInput(name, value);
   };
 
-  const validateInput = (name, value) => {
+  const validateInput = (name, value) => {//check loi
     switch (name) {
       case "username":
         setError((prev) => ({
@@ -143,10 +143,9 @@ export default function Signup() {
         break;
     }
   };
-
+  // đăng ký
   const handleRegister = async (event) => {
     event.preventDefault();
-    // const { username, email, password, confirmPassword, phone, fullname } = formData;
     if (!formData.fullname || !formData.username || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
       toast.error("Vui lòng điền đầy đủ thông tin!");
       return;
@@ -235,6 +234,13 @@ export default function Signup() {
         error: formData.phone.length !== 10,
         message: formData.phone.length !== 10 ? "Số điện thoại phải chứa đúng 10 số!" : "",
 
+      },
+      username: {
+        error: formData.username.length <= 0,
+        message: formData.username.length <= 0 ? "Tên tài khoản quá ngắn!" : "",
+      }, password: {
+        error: formData.password.length <= 0,
+        message: formData.password.length <= 0 ? "Tên tài khoản quá ngắn!" : "",
       },
 
 

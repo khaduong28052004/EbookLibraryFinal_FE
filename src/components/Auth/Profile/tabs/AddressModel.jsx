@@ -279,13 +279,19 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
             <div className="w-[600px] flex flex-col">
-                <button
-                    className="text-white text-xl place-self-end mb-1"
-                    onClick={onClose}
-                >
-                    X
-                </button>
-                <div className="bg-white p-2 rounded">
+
+                <div className="relative bg-white p-2 rounded">
+                    <div>
+                        <button
+                            className="absolute rounded-full px-[5px] opacity-80  text-sm place-self-end mb-1 top-5 right-4"
+                            onClick={onClose}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+
+                        </button>
+                    </div>
                     <div>
                         <h2 className="p-2.5 font-bold text-lg">Địa Chỉ</h2>
                         <hr className="border-gray-500" />

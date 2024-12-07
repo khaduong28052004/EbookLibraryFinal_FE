@@ -32,7 +32,7 @@ export default function CheakoutPage() {
   const [totalSaleAdmin, setTotalSaleAdmin] = useState(0);
   const [adminSelected, setAdminSelected] = useState();
   const [feeSeller, setFeeSeller] = useState({});
-  const [isPaymentMethod, setIsPaymentMethod] = useState(false);
+  const [isPaymentMethod, setIsPaymentMethod] = useState("COD");
   const getServiceFee = async (serviceId, idSeller, weight, addressFrom, addressTo) => {
     try {
       const { service_fee } = await Service_Fee(serviceId, weight, 0, addressFrom, addressTo);
@@ -55,17 +55,16 @@ export default function CheakoutPage() {
     }
   }
   useEffect(() => {
-
     if (data?.datas?.length > 0) {
-      setData({
+      const update = {
         ...data,
         datas:
           data?.datas?.map((item) => ({
             ...item,
             service_fee: feeSeller[item?.id] || 0
           }))
-      }
-      );
+      };
+      setData(updateSeller(update));
     }
   }, [feeSeller]);
 
@@ -151,8 +150,6 @@ export default function CheakoutPage() {
             totalPrice += (cartItem?.product?.price - ((cartItem?.product?.price * cartItem?.product?.sale) / 100)) * cartItem.quantity;
           }
         });
-
-
         if (selectedVoucher?.length > 0) {
           var voucher = selectedVoucher.find(voucherSeller => voucherSeller?.id == seller?.id);
           if (voucher?.voucher?.id > 0) {
@@ -233,12 +230,10 @@ export default function CheakoutPage() {
     inputs.forEach(input => {
       if (input.checked) {
         setAddressActive(addresses.find(address => address.id == input.value));
+        setData(updateSeller(data));
       }
     });
   }
-  useEffect(() => {
-
-  }, [setAddressActive]);
 
   const handleVoucher = (idSeller) => {
     if (idSeller != 0) {
@@ -272,8 +267,18 @@ export default function CheakoutPage() {
 
     }
   }
-  useEffect(() => { if (data?.datas?.length > 0) { setData(updateSeller(data)) } }
-    , [selectedVoucher, adminSelected]);
+  useEffect(() => {
+    if (data?.datas?.length > 0) {
+      setData(updateSeller(data));
+    }
+  }
+    , [selectedVoucher, adminSelected, addressActive]);
+  useEffect(() => {
+    if (data?.datas?.length > 0) {
+      autoActiveVoucher(data);
+      setData(updateSeller(data));
+    }
+  }, [addressActive])
   const handleSelectVoucher = (voucher) => {
 
     if (voucher?.sellerId > 0) {
@@ -289,7 +294,6 @@ export default function CheakoutPage() {
       });
       // Kiểm tra xem seller có tồn tại trong danh sách không
       const sellerExists = selectedVoucher?.some(seller => seller.id === voucher.sellerId);
-
       if (!sellerExists) {
         // Tìm seller mới trong danh sách data
         const sellerNew = data?.datas?.find(sellerItem => sellerItem?.id === voucher.sellerId);
@@ -325,12 +329,9 @@ export default function CheakoutPage() {
     } else {
       setAdminSelected(voucher?.voucher);
     }
-
   };
 
-  const handleVoucherAdmin = (voucher) => {
-    setAdminSelected(voucher);
-  }
+
 
 
 
@@ -349,7 +350,7 @@ export default function CheakoutPage() {
       vnp_TxnRef: generateTransactionRef(),
       vnp_OrderInfo: "Payment for order 123456789",
       vnp_OrderType: "other",
-      vnp_Amount: (data?.total + service_fee - data?.sale) * 100,
+      vnp_Amount: (total + totalServiceFee - totalSale) * 100,
       vnp_ReturnUrl,
       vnp_IpAddr: "127.0.0.1",
       vnp_CreateDate: new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 14)
@@ -385,14 +386,35 @@ export default function CheakoutPage() {
     return sorted;
   };
   // =========================================END===========================================================================
+
+
+  const createPaymentLink = async () => {
+    const idUser = sessionStorage.getItem("id_account");
+    try {
+      const response = await axios.post('http://localhost:8080/api/v1/user/create-payment-link?id_user=' + idUser + "&id_address=" + addressActive?.id, data);
+
+      // Nhận URL thanh toán từ backend
+      const checkoutUrl = response.data.checkoutUrl;
+
+      // Chuyển hướng người dùng đến trang thanh toán
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      console.error('Error creating payment link:', error);
+    }
+  };
+
+
+
   const pay = () => {
     const idUser = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
 
-    if (isPaymentMethod) {
+    if (isPaymentMethod == "VNPAY") {
       setItem("data", data);
       setItem("id_address", addressActive?.id);
       createPaymentUrl();
+    } else if (isPaymentMethod == "PAYOS") {
+      createPaymentLink();
     } else {
       startRequest();
       axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=1&id_address=" + addressActive?.id, data, {
@@ -406,6 +428,7 @@ export default function CheakoutPage() {
         setData("");
       }).catch();
     }
+
   }
   return (
     <Layout childrenClasses="pt-0 pb-0">
@@ -450,6 +473,7 @@ export default function CheakoutPage() {
                       />
                     </div>
 
+
                     <div className="ml-4 flex items-center">
                       <p className="mt-1 text-sm text-gray-500"></p>
                     </div>
@@ -478,14 +502,14 @@ export default function CheakoutPage() {
           </div>
           <div className="bg-white p-5 mb-0 mx-auto max-w-7xl px-6 lg:px-8 gap-4 border-t-[1px] border-gray-200">
             <div className='flex flex-col-2 justify-end'>
-              <div className='space-y-5 mr-70'>
+              <div className='space-y-5 mr-10'>
                 <p className='text-left'>Phí vận chuyển</p>
                 <p className='text-left'>Voucher của Shop</p>
               </div>
               <div className='space-y-5'>
                 <p className='text-right'>{Intl.NumberFormat().format(seller?.service_fee)}<sup>đ</sup></p>
                 <div className='flex'>
-                  <p className='text-right mr-10'>Giảm giá : {Intl.NumberFormat().format(seller?.saleSeller)}<sup>đ</sup></p>
+                  <p className='text-right mr-10'>Giảm giá : <span className='text-red-600'>-{Intl.NumberFormat().format(seller?.saleSeller)}<sup>đ</sup></span></p>
                   <p onClick={() => handleVoucher(seller?.id)} className='text-blue-700 cursor-pointer'>Chọn Voucher</p>
                 </div>
               </div>
@@ -502,11 +526,11 @@ export default function CheakoutPage() {
         </>
       ))}
       <div className="bg-white p-5 mb-5 mx-auto max-w-7xl px-6 lg:px-8 gap-4 ">
-        <div className="mt-4 flex justify-between">
-          <p className="text-base ">TOEL Voucher</p>
+        <div className="mt-4 flex justify-end">
+          <p className="text-base mr-20">TOEL Voucher</p>
 
           <div className='flex'>
-            <p className='mr-10'>Giảm giá : {Intl.NumberFormat().format(totalSaleAdmin)}</p>
+            <p className='mr-10'>Giảm giá : <span className='text-red-600'>-{Intl.NumberFormat().format(totalSaleAdmin)}<sup>đ</sup></span></p>
             <p className='text-blue-700 cursor-pointer' onClick={() => handleVoucher(0)}>Chọn Voucher</p>
           </div>
         </div>
@@ -515,17 +539,20 @@ export default function CheakoutPage() {
         <div className="mt-4 ">
           <p className="text-xl font-medium mb-5">Phương Thức Thanh Toán</p>
           <div className="flex space-x-3 mb-4">
-            <div onClick={() => setIsPaymentMethod(false)} className={`border p-1 ${isPaymentMethod == false ? "border-blue-700" : "border-gray-300 p-1"}`}>
-              <p className={`text-base font-normal cursor-pointer  ${isPaymentMethod == false ? "text-blue-600" : ""}`}>Thanh Toán Khi Nhận Hàng</p>
+            <div onClick={() => setIsPaymentMethod("COD")} className={`border p-1 ${isPaymentMethod == "COD" ? "border-blue-700" : "border-gray-300 p-1"}`}>
+              <p className={`text-base font-normal cursor-pointer  ${isPaymentMethod == "COD" ? "text-blue-600" : ""}`} >Thanh Toán Khi Nhận Hàng</p>
             </div>
-            <div onClick={() => setIsPaymentMethod(true)} className={`border p-1 ${isPaymentMethod == true ? "border-blue-700" : "border-gray-300 p-1"}`}>
-              <p className={`text-base font-normal cursor-pointer  ${isPaymentMethod == true ? "text-blue-600" : ""}`}>Thanh toán VNPAY</p>
+            <div onClick={() => setIsPaymentMethod("VNPAY")} className={`border p-1 ${isPaymentMethod == "VNPAY" ? "border-blue-700" : "border-gray-300 p-1"}`}>
+              <p className={`text-base font-normal cursor-pointer  ${isPaymentMethod == "VNPAY" ? "text-blue-600" : ""}`}>Thanh toán VNPAY</p>
+            </div>
+            <div onClick={() => setIsPaymentMethod("PAYOS")} className={`border p-1 ${isPaymentMethod == "PAYOS" ? "border-blue-700" : "border-gray-300 p-1"}`}>
+              <p className={`text-base font-normal cursor-pointer  ${isPaymentMethod == "PAYOS" ? "text-blue-600" : ""}`}>Thanh toán PAYOS</p>
             </div>
           </div>
         </div>
       </div>
       <div className="bg-white p-5 mb-5 mx-auto max-w-7xl px-6 lg:px-8 gap-4 ">
-        <div className="mt-4 flex flex-col-2 justify-end space-x-50 text-gray-600 mb-5">
+        <div className="mt-4 flex flex-col-2 justify-end space-x-20 text-gray-600 mb-5">
           <div className='space-y-3'>
             <div className="text-left">
               <p>Tổng tiền hàng</p>
@@ -546,10 +573,10 @@ export default function CheakoutPage() {
               <p>{Intl.NumberFormat().format(total)}<sup>đ</sup></p>
             </div>
             <div className="text-right">
-              <p>{Intl.NumberFormat().format(totalServiceFee)}<sup>đ</sup></p>
+              <p className='text-red-600'>-{Intl.NumberFormat().format(totalServiceFee)}<sup>đ</sup></p>
             </div>
             <div className="text-right">
-              <p>{Intl.NumberFormat().format(totalSale)}<sup>đ</sup></p>
+              <p className='text-red-600'>-{Intl.NumberFormat().format(totalSale)}<sup>đ</sup></p>
             </div>
             <div className="text-right">
               <p>{Intl.NumberFormat().format(total + totalServiceFee - totalSale)}<sup>đ</sup></p>

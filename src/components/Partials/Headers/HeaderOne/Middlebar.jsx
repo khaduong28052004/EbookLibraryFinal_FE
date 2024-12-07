@@ -1,6 +1,8 @@
+import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { FaMicrophone } from 'react-icons/fa';
+import { MdOutlineImageSearch } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import Cart from "../../../Cart";
@@ -9,9 +11,6 @@ import ThinLove from "../../../Helpers/icons/ThinLove";
 import ThinPeople from "../../../Helpers/icons/ThinPeople";
 import SearchBox from "../../../Helpers/SearchBox";
 import { useRequest } from '../../../Request/RequestProvicer';
-import { MdOutlineImageSearch } from "react-icons/md";
-import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
-import SearchService from '../../../../service/user/search';
 
 export default function Middlebar({ className, type }) {
   const navigate = useNavigate();
@@ -59,6 +58,7 @@ export default function Middlebar({ className, type }) {
       setListening(false);
     };
 
+    
     recognition.onend = (event) => {
       console.log("Quá trình nhận diện giọng nói đã kết thúc");
       if (event.results && event.results[0] && event.results[0][0]) {
@@ -118,14 +118,16 @@ export default function Middlebar({ className, type }) {
     const handleDragEnter = (e) => {
       e.preventDefault();
       e.stopPropagation();
-    
-      if (e.dataTransfer && e.dataTransfer.items[0]?.type.startsWith("image/")) {
-        setIsOpenModelImage(true);
-      } else if (e.dataTransfer && e.dataTransfer.items[0]?.kind === "string") {
-          setIsOpenModelImage(true)          
-      }
-    };
-    
+      const url = window.location.pathname;
+      console.log("URL",url)
+      if (!url.includes('/profile')) {
+        if (e.dataTransfer && e.dataTransfer.items[0]?.type.startsWith("image/")) {
+          setIsOpenModelImage(true);
+        } else if (e.dataTransfer && e.dataTransfer.items[0]?.kind === "string") {
+          setIsOpenModelImage(true)
+        }
+      };
+    }
 
     // Xử lý khi thả ảnh
     const handleDrop = (e) => {
@@ -146,7 +148,15 @@ export default function Middlebar({ className, type }) {
 
   const searchImage = async (data) => {
     setIsOpenEvent(true);
+    // alert("name " + data?.filename)
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data', // or 'application/json' depending on the server
+      },
+    };
+    console.log("file " + typeof data)
     try {
+
       const response = await SearchService.searchImage(data);
       console.log(response);
       navigate(`/search?idProduct=${response.data.similar_product_ids}`);
@@ -273,6 +283,7 @@ export default function Middlebar({ className, type }) {
                           onChange={(e) => {
                             const file = e.target.files[0];
                             if (file) {
+                              setIsOpenModelImage(false);
                               const formData = new FormData();
                               formData.append("file", file);
                               searchImage(formData);
@@ -340,7 +351,7 @@ export default function Middlebar({ className, type }) {
                     <ThinPeople />
                   </span>
                 </Link>
-                
+
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState} from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import About from "./components/About/index.jsx";
 import AllProductPage from "./components/AllProductPage/index.jsx";
@@ -25,9 +25,6 @@ import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
 import HomeShop from "./components/shop/index.jsx"
-import QuyCheHoatDong from "./components/QuyCheHoatDong";
-import HuongDanBanHang from "./components/HuongDanBanHang";
-import ChinhSachNguoiBan from "./components/ChinhSachNguoiBan";
 
 // const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));
@@ -37,11 +34,13 @@ import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
 import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
 import ChatBot from "./pages/Seller/ChatBot2.jsx";
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx";
-import { toast ,ToastContainer} from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Signupv2 from "./components/Auth/Signup/indexV2.jsx";
 import LinkFrom from "./components/Auth/Signup/LinkFrom.jsx";
-import Popup from './common/Loader/LyLy';
+
+import RegistrationForm from './components/Auth/Signup/RegistrationForm.jsx'
+
 // import PageTitle from './components/PageTitle'; //thêm page vô nha 
 
 export default function Routers() {
@@ -77,28 +76,16 @@ export default function Routers() {
 
   }, []);
 
-
-// Hàm đóng popup
-const handlePopupClose = () => {
-  setIsPopupOpen(false); // Đóng popup khi bấm nút "×"
-};
-const [isPopupOpen, setIsPopupOpen] = useState(true); // Mở popup khi trang được tải
-
-
-
   
   return (
-    
     <>
-      <ToastContainer/>
+      <ToastContainer />
       <RequestProvider>
         <ChatBot />
         <Routes location={location} key={location.pathname} >
           <Route exact path="/" element={
-
             <Suspense fallback={<Loader />}>
               <Home />
-              {isPopupOpen && <Popup onClose={handlePopupClose} />} {/* Hiển thị popup khi isPopupOpen là true */}
             </Suspense>
           }
           />
@@ -126,32 +113,32 @@ const [isPopupOpen, setIsPopupOpen] = useState(true); // Mở popup khi trang đ
           <Route exact path="/sallers" element={<Sallers />} />
           <Route exact path="/about" element={<About />} />
           <Route exact path="/blogs" element={<Blogs />} />
-          <Route exact path="/ban-hang" element={<HuongDanBanHang />} />
-          <Route exact path="/chinh-sach" element={<ChinhSachNguoiBan />} />
           <Route exact path="/blogs/blog" element={<Blog />} />
           <Route exact path="/tracking-order" element={<TrackingOrder />} />
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/faq" element={<Faq />} />
           <Route exact path="/login" element={<Login />} />
-          <Route exact path="/signup" element={<Signup />} />
+
+          <Route exact path="/signup" element={<RegistrationForm/>} />
+          <Route exact path="/haha" element={<Signup/>} />
+
           <Route exact path="/profile" element={
             <ProtectedRoute element={<Profile />} />
           } />
-          <Route exact path="/quyche-hoatdong" element={<QuyCheHoatDong />} />
 
           <Route exact path="/become-saller" element={<BecomeSaller />} />
           <Route exact path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route exact path="/terms-condition" element={<TermsCondition />} />
           <Route exact path="*" element={<FourZeroFour />} />
-          <Route exact path="/singupLinkFrom" element={<LinkFrom/>}/>
-          <Route exact path="/singup2/*" element={<Signupv2/>}/>
+          <Route exact path="/singupLinkFrom" element={<LinkFrom />} />
+          <Route exact path="/singup2/*" element={<Signupv2 />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route exact path="/change-password/*" element={<UpdatePassword />} />
-          <Route exact path="/home-shop/*" element={<HomeShop/>} />
-          </Routes>
+          <Route exact path="/home-shop/*" element={<HomeShop />} />
+        </Routes>
       </RequestProvider>
     </>
 
 
-);
+  );
 }
