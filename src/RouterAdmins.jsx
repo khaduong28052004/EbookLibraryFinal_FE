@@ -24,6 +24,8 @@ import RoleAdmin from './pages/Admin/RoleAdmin'
 import NotPermissionAdmin from './pages/Admin/NotPermissonAdmin.jsx'
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
 import ProtectedRoutePermission from "./components/Auth/ProtectedRoutePERMISSION.jsx";
+import FlashSaleDetailsAdmin from './pages/Admin/FlashsaleDetails.jsx'
+
 import { useEffect, useState } from "react";
 export default function RouterAdmins() {
   // useEffect(() => {
@@ -64,7 +66,7 @@ export default function RouterAdmins() {
             />
           }
         />
-        
+
         <Route
           path="/quanLy/voucher"
           element={
@@ -211,7 +213,7 @@ export default function RouterAdmins() {
           path="/thongKe/seller"
           element={
             <>
-              <PageTitle title="Thống Kê Người Bán" />
+              <PageTitle title="Thống Kê Shop" />
               <ThongKeNguoiBanAdmin />
             </>
           }
@@ -231,6 +233,15 @@ export default function RouterAdmins() {
             <>
               <PageTitle title="Chi Tiết Voucher" />
               <VoucherDetailAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/quanLy/flashsaledetails"
+          element={
+            <>
+              <PageTitle title="Chi Tiết Flash Sale" />
+              <FlashSaleDetailsAdmin />
             </>
           }
         />

@@ -18,8 +18,12 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd, setDateStart, setDateEn
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Thống Kê Đơn Hàng'];
     try {
-      const response = await ThongKeService.bill(dateStart, dateEnd, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [response.data.result.content]);
+      const response = await ThongKeService.bill(dateStart, dateEnd, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");

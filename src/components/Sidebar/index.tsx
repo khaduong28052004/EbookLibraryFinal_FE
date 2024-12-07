@@ -232,8 +232,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           }`}
                       >
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
-                          <li>
-                            {!hasPermission('READ_PRODUCT') ?
+                          {/* {!hasPermission('READ_PRODUCT') ? */}
+                            <li>
                               <NavLink
                                 to="/admin/quanLy/nhanVien"
                                 className={({ isActive }) =>
@@ -242,10 +242,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 }
                               >
                                 Nhân Viên
-                              </NavLink> : <></>}
-                          </li>
+                              </NavLink>
+                            </li>
+                            {/* // : <></>} */}
+                            {/* {hasPermission('READ_VOUCHER') ? ( */}
                           <li>
-                            {hasPermission('READ_VOUCHER') ? (
+                            
                               <NavLink
                                 to="/admin/quanLy/voucher"
                                 className={({ isActive }) =>
@@ -255,10 +257,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               >
                                 Voucher
                               </NavLink>
-                            ) : null}
+                   
                           </li>
+                        {/* )  : null} */}
+                        {/* {hasPermission('READ_PRODUCT') ? ( */}
                           <li>
-                            {hasPermission('READ_PRODUCT') ? (
+                         
                               <NavLink
                                 to="/admin/quanLy/product"
                                 className={({ isActive }) =>
@@ -267,9 +271,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 }
                               >
                                 Sản Phẩm
-                              </NavLink>) : null}
+                              </NavLink>
                           </li>
-                          {hasPermission('READ_FLASHSALE') ? (
+                        {/* ) : null} */}
+                          {/* {hasPermission('READ_FLASHSALE') ? ( */}
                             <li>
                               <NavLink
                                 to="/admin/quanLy/flashSale"
@@ -280,8 +285,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               >
                                 Flash Sale
                               </NavLink>
-                            </li>) : null}
-                          {hasPermission('READ_FLASHSALE') ? (
+                            </li>
+                          {/* // ) : null} */}
+                          {/* {hasPermission('READ_FLASHSALE') ? ( */}
                             <li>
                               <NavLink
                                 to="/admin/quanLy/khachHang"
@@ -292,7 +298,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               >
                                 Khách Hàng
                               </NavLink>
-                            </li>) : null}
+                            </li>
+                            {/* ) : null} */}
                           <li>
                             <NavLink
                               to="/admin/quanLy/shop"
@@ -513,7 +520,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
-                              Người Bán
+                              Shop
                             </NavLink>
                           </li>
                         </ul>

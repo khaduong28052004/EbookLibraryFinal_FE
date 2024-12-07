@@ -34,10 +34,15 @@ import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
 import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
 import ChatBot from "./pages/Seller/ChatBot2.jsx";
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx";
-import { toast ,ToastContainer} from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Signupv2 from "./components/Auth/Signup/indexV2.jsx";
 import LinkFrom from "./components/Auth/Signup/LinkFrom.jsx";
+
+import RegistrationForm from './components/Auth/Signup/RegistrationForm.jsx'
+
+// import PageTitle from './components/PageTitle'; //thêm page vô nha 
+
 export default function Routers() {
   const location = useLocation();
   // function isTokenExpired(token) {
@@ -70,9 +75,11 @@ export default function Routers() {
     // }
 
   }, []);
+
+  
   return (
     <>
-      <ToastContainer/>
+      <ToastContainer />
       <RequestProvider>
         <ChatBot />
         <Routes location={location} key={location.pathname} >
@@ -80,7 +87,6 @@ export default function Routers() {
             <Suspense fallback={<Loader />}>
               <Home />
             </Suspense>
-
           }
           />
           <Route exact path="/search" element={<AllProductPage />} />
@@ -112,7 +118,10 @@ export default function Routers() {
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/faq" element={<Faq />} />
           <Route exact path="/login" element={<Login />} />
-          <Route exact path="/signup" element={<Signup />} />
+
+          <Route exact path="/signup" element={<RegistrationForm/>} />
+          <Route exact path="/haha" element={<Signup/>} />
+
           <Route exact path="/profile" element={
             <ProtectedRoute element={<Profile />} />
           } />
@@ -121,15 +130,15 @@ export default function Routers() {
           <Route exact path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route exact path="/terms-condition" element={<TermsCondition />} />
           <Route exact path="*" element={<FourZeroFour />} />
-          <Route exact path="/singupLinkFrom" element={<LinkFrom/>}/>
-          <Route exact path="/singup2/*" element={<Signupv2/>}/>
+          <Route exact path="/singupLinkFrom" element={<LinkFrom />} />
+          <Route exact path="/singup2/*" element={<Signupv2 />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route exact path="/change-password/*" element={<UpdatePassword />} />
-          <Route exact path="/home-shop/*" element={<HomeShop/>} />
-          </Routes>
+          <Route exact path="/home-shop/*" element={<HomeShop />} />
+        </Routes>
       </RequestProvider>
     </>
 
- 
-);
+
+  );
 }

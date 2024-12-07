@@ -35,9 +35,11 @@ const ModalSanPham = ({
         e.preventDefault();
         try {
             const response = await DanhGiaService.phanHoi(dataRequest);
+            toast.success(response.data.message);
             setOpen(false);
             setStatus(true);
         } catch (error) {
+            toast.error(error.response.data.message);
             console.error('Có lỗi khi gửi phản hồi:', error);
             // Thực hiện xử lý lỗi nếu cần
         }
@@ -46,6 +48,7 @@ const ModalSanPham = ({
 
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <ToastContainer></ToastContainer>
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
@@ -66,7 +69,7 @@ const ModalSanPham = ({
                                         onChange={handleChange}
                                         placeholder="Nội dung..."
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                        required
+                                        
                                     ></textarea>
                                 </div>
                             </div>

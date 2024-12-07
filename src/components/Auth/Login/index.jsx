@@ -46,8 +46,9 @@ export default function Login() {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    if (!username || !password) {
-      seterrorFrom((prev) => ({ ...prev, usernameF: 1, passwordF: 1 }));
+
+    if(!username||!password){
+      seterrorFrom((prev) => ({ ...prev, usernameF: 1,passwordF:1 }));
     }
     if (!username) {
       seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
@@ -56,10 +57,9 @@ export default function Login() {
     } else {
       seterrorFrom((prev) => ({ ...prev, usernameF: 0 }));
     }
-
-    if (password.trim() === "") {
+    if (!password) {
       seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
-      toast.error("Vui lòng kiểm tra tên đăng nhập!");
+      toast.error("Vui lòng kiểm tra mật khẩu!");
       return;
     } else {
       seterrorFrom((prev) => ({ ...prev, passwordF: 0 }));
@@ -67,7 +67,7 @@ export default function Login() {
 
 
     if (!captchaToken) {
-      toast.error("Vui lòng điền capchat!");
+      toast.error("Vui lòng tích capchat!");
       return;
     }
 
@@ -86,17 +86,21 @@ export default function Login() {
         password,
         captchaToken,
       });
-      seterrorFrom((prev) => ({ ...prev, passwordF: 2, usernameF: 2 }));
-      if (response.status) {
+
+
+      if (response.data.code === 1000) {
+
+        seterrorFrom((prev) => ({ ...prev, passwordF: 2, usernameF: 2 }));
         setTimeout(() => {
-          if (response.data.roles === "USER") {
+          if (response.data.result.roles === "USER") {
             navigate('/');
-          } else if (response.data.roles === "SELLER") {
+          } else if (response.data.result.roles === "SELLER") {
             navigate('/seller/home');
           } else {
             navigate('/admin/home');
           }
         }, 2000);
+        AuthService.setItem(response.data.result);
         toast.success("Đăng nhập thành công!");
 
         getToken(messaging, { vapidKey: 'BF6r8B0UNESGl3sKNmjDBBL6elWN-2zV_3n0InFn1Ipmap2j1L1r7ZLUMiFf-0-HFK_NP5z24mvP4hBYm1Fhf5I' }).then((currentToken) => {
@@ -114,6 +118,7 @@ export default function Login() {
           usernameF: 0,
           passwordF: 0,
         });
+
         seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
         toast.error("Tài khoản không tồn tại!");
       } else if (response?.data?.code === 1002) {
@@ -123,18 +128,18 @@ export default function Login() {
         seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
         toast.error("Lỗi đăng nhập!");
       } else {
-        toast.error("Đăng nhập thất bại vui lòng kiểm tra lại!");
+        seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
+        toast.error("Lỗi đăng nhập!");
       }
-      AuthService.setItem(response.data);
     } catch (error) {
-      // toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
+      seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
       toast.error("Đăng nhập thất bại!");
-
     }
   };
 
   return (
-    <Layout childrenClasses="pt-0 pb-0">
+    <>
+      {/* // <Layout childrenClasses="pt-0 pb-0"> */}
       {/* <ToastContainer
         position="bottom-center"
         autoClose={5000}
@@ -158,6 +163,7 @@ export default function Login() {
                     <svg width="172" height="29" viewBox="0 0 172 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M1 5.08742C17.6667 19.0972 30.5 31.1305 62.5 27.2693C110.617 21.4634 150 -10.09 171 5.08727" stroke="#FFBB38" />
                     </svg>
+
                   </div>
                 </div>
 
@@ -181,6 +187,7 @@ export default function Login() {
                       //                         }`}
 
                       // >>>>>>> Stashed changes
+
 
 
                       // errorFrom.usernameF === 1
@@ -212,6 +219,7 @@ export default function Login() {
                       //                           ? "ring-green-500 bg-green-100" // Thành công
                       //                           : "" // Mặc định
                       //                         }`}
+
 
                       value={password}
                       inputHandler={(e) => setPassword(e.target.value)}
@@ -284,15 +292,18 @@ export default function Login() {
                 <div className="social-login-buttons flex space-x-1 mt-6 text-sm">
                   <span className='text-gray-600'>Chưa có tài khoản?</span><Link to="/signup" className="text-[#003EA1]">Tạo tài khoản</Link>
                 </div>
-                <div className="social-login-buttons flex space-x-4 mt-6">
+                {/* <div className="social-login-buttons flex space-x-4 mt-6">
                   <Link to="/singupLinkFrom" className="text-base text-qyellow">Đăng ký tài khoản v2!</Link>
-                </div>
+                </div> */}
               </div>
             </div>
+
             <Thumbnail />
+
           </div>
         </div>
       </div>
-    </Layout>
+      {/* </Layout> */}
+    </>
   );
 }

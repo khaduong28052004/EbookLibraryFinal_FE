@@ -38,7 +38,11 @@ export default function ProductCardStyleOne({ datas, type }) {
     const id_user = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
     if (token) {
-      axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${datas.id}&quantity=${1}`).then(response => {
+      axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${datas.id}&quantity=${1}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      }).then(response => {
         if (response.data.code = 1000) {
           toast.success("Thêm thành công");
           endRequest();
@@ -86,7 +90,7 @@ export default function ProductCardStyleOne({ datas, type }) {
         </LazyLoad>
         {/* product available progress */}
       </div>
-      <div className="product-card-details px-[30px] pb-[15px] relative">
+      <div className="product-card-details px-[30px] pb-[15px] relative text-white">
         {/* add to card button */}
         <div onClick={() => {
           handleCreateCart();
@@ -95,7 +99,7 @@ export default function ProductCardStyleOne({ datas, type }) {
             type="button"
             className={type === 3 ? "flex items-center justify-center h-full w-full bg-[#FFBB38] text-[13px] font-semibold text-[#1d1d1d] leading-none" : "flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none"}
           >
-            <div className="flex items-center space-x-3 " >
+            <div className="flex items-center space-x-3 text-white" >
               <span>
                 <svg
                   width="14"
@@ -129,7 +133,7 @@ export default function ProductCardStyleOne({ datas, type }) {
           </p>
         </a>
         <p className="price">
-          {datas?.flashSaleDetail ?
+          {datas?.flashSaleDetail?.id > 0 ?
             (<>
               <span className=" text-qred text-[20px] font-extrabold mr-1">
                 {Intl.NumberFormat().format(
@@ -141,7 +145,7 @@ export default function ProductCardStyleOne({ datas, type }) {
               </span>
             </>) :
             (<>
-              <span className="text-[20px] font-bold mr-1">{Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup></span>
+              <span className="text-[20px] font-bold text-red-600 mr-1">{Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup></span>
               <span className="text-[15px] font-normal text-gray-600 line-through">{Intl.NumberFormat().format(datas?.price)}<sup>đ</sup></span>
             </>)}
 

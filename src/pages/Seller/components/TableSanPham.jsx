@@ -139,8 +139,12 @@ const TableSanPham = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Sản Phẩm'];
     try {
-      const response = await SanPhamService.getAll(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
+      const response = await SanPhamService.getAll(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -233,42 +237,42 @@ const TableSanPham = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (isSubmitting) return;
-  
+
     if (!dataProduct.imageProducts || dataProduct.imageProducts.length === 0) {
       toast.error("Vui lòng thêm ít nhất một hình ảnh sản phẩm!");
       return;
     }
-  
+
     setIsSubmitting(true);
-  
+
     if (await handleCheckText(dataProduct.name) === false) {
       toast.error("Tên sản phẩm không hợp lệ");
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
       return;
     }
-  
+
     // // Kiểm tra mô tả sản phẩm
-    // if (await handleCheckText(dataProduct.introduce) === false) {
-    //   toast.error("Mô tả không hợp lệ");
-    //   setIsSubmitting(false); 
-    //   return;
-    // }
-  
+    if (await handleCheckText(dataProduct.introduce) === false) {
+      toast.error("Mô tả không hợp lệ");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const formData = new FormData();
       dataProduct.imageProducts.forEach((file) => {
         formData.append("imageProducts", file);
       });
-  
+
       let response;
       if (!isStatus) {
 
         [response] = await Promise.all([SanPhamService.create(dataProduct)]);
         const idProduct = response.data.result.id;
-  
-        await SanPhamService.createSaveImg(idProduct, formData);
+
+        // await SanPhamService.createSaveImg(idProduct, formData);
       } else {
 
         [response] = await Promise.all([
@@ -276,21 +280,21 @@ const TableSanPham = () => {
           SanPhamService.updateSaveImg(idProduct, formData),
         ]);
       }
-  
+
       toast.success(response.data.message);
       loadListProduct();
       setIsOpenModalSP(false);
-      setStatusButton(false); 
-      setIsSubmitting(false); 
-  
+      setStatusButton(false);
+      setIsSubmitting(false);
+
     } catch (error) {
 
       setStatusButton(false);
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
       toast.error(error.response?.data?.message || "Đã xảy ra lỗi!");
     }
   };
-  
+
 
   const deleteProduct = async () => {
     try {
@@ -426,8 +430,6 @@ const TableSanPham = () => {
         </div>
       </div>
       <div>
-
-        {/* <button onClick={logContent}>Log Content</button> */}
       </div>
       <table className="w-full border-collapse border border-stroke dark:border-strokedark">
         <thead>
@@ -508,11 +510,8 @@ const TableSanPham = () => {
                     {index + 1 + pageNumber * pageSize}
                   </td>
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                    {item.imageProducts.map((image) => (
-                      <img className="h-12.5 w-12.5 rounded-md" src={image.name} alt="ImageProduct" />
-                    ))}
-                    <p className="text-sm text-black dark:text-white truncate w-24">{item.name}</p>
-
+                    <img className="h-15 w-12.5 rounded-md" src={item.imageProducts[0].name} alt="ImageProduct" />
+                    <p className="text-sm text-black dark:text-white truncate w-60">{item.name}</p>
                   </td>
 
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
