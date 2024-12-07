@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon} from '@heroicons/react/24/solid'
+import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon, ExclamationTriangleIcon, ArrowUpCircleIcon} from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import BillService from "../../../service/Seller/billSevice";
 import { toast, ToastContainer } from 'react-toastify';
@@ -55,8 +55,12 @@ const TableTwo = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Đơn Hàng'];
     try {
-      const response = await BillService.getAll(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Đơn Hàng.xlsx", sheetNames, [response.data.result.content]);
+      const response = await BillService.getAll(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Đơn Hàng.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -365,9 +369,9 @@ const TableTwo = () => {
         cancelText="Thoát"
         icon={
           !orderStatusId ? (
-            <TrashIcon className="h-6 w-6 text-red-600" />
+            <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
           ) : (
-            <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
+            <ArrowUpCircleIcon className="h-6 w-6 text-green-600" />
           )
         }
         iconBgColor={!orderStatusId ? 'bg-red-100' : 'bg-green-100'}

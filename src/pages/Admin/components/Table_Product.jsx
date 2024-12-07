@@ -325,12 +325,12 @@ const TableTwo = () => {
                                         <div className="p-5 border border-gray-100 hover:bg-slate-100">
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
-                                                <p>Mã sản phẩm: {entity.id}</p>
-                                                <p>Tên sản phẩm: {entity.name}</p>
-                                                <p>Thể loại: {entity.category.name}</p>
                                                 <p>Shop: {entity.account.shopName}</p>
                                                 <p>Email: {entity.account.email}</p>
                                                 <p>Số điện thoại: {entity.account.phone}</p>
+                                                <p>Mã sản phẩm: {entity.id}</p>
+                                                <p>Tên sản phẩm: {entity.name}</p>
+                                                <p>Thể loại: {entity.category.name}</p>
                                             </div>
                                         </div>
                                     </td>

@@ -69,8 +69,12 @@ const TableTwo = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Đánh Giá'];
     try {
-      const response = await DanhGiaService.getData(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Đánh Giá.xlsx", sheetNames, [response.data.result.content]);
+      const response = await DanhGiaService.getData(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Đánh Giá.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -168,7 +172,7 @@ const TableTwo = () => {
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Hình Ảnh Đánh Giá</span>
+                <span className="text-sm text-black dark:text-white">Hình Ảnh</span>
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
@@ -210,11 +214,11 @@ const TableTwo = () => {
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 {index + 1 + pageNumber * pageSize}
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                <p className="text-sm text-black dark:text-white truncate w-24">{danhGia.account.fullname}</p>
+              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                <p className="text-sm text-black dark:text-white truncate w-30">{danhGia.account.fullname}</p>
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                <div className="flex items-center gap-1 hidden xl:flex">
+                <div className="flex items-center gap-1 hidden xl:flex truncate w-60">
                   {danhGia.product.name}
                 </div>
               </td>
@@ -226,7 +230,7 @@ const TableTwo = () => {
                 </div>
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden xl:flex">
+                <div className="flex items-center gap-1 hidden xl:flex truncate w-60">
                   {danhGia.content}
                 </div>
               </td>
@@ -235,13 +239,15 @@ const TableTwo = () => {
                   {danhGia.star}/5 <StarIcon className='w-5 h-5 text-yellow-500' />
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                <div className="flex space-x-3.5">
-                  <button onClick={(event) => {
-                    event.stopPropagation();
-                    openModal(danhGia)
-                  }}>
-                    <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5">
+              <div className="flex flex-wrap gap-4">
+                  <button
+                    className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      openModal(danhGia)
+                    }}>
+                    Phản hồi
                   </button>
                 </div>
               </td>

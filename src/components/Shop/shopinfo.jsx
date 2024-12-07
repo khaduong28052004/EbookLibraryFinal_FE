@@ -20,13 +20,20 @@ export default function ShopInfo({ shopData }) {
     <div className="container-x mx-auto">
       <div className="rounded-md py-5 px-5 flex">
         {/* Shop Info */}
-        <div className="border rounded-md w-6/12 py-2 px-5 bg-black">
+        <div
+          className={`border rounded-md w-6/12 py-2 px-5 ${shopInfo.background ? "bg-black" : "bg-white"
+            }`}
+          style={{
+            backgroundImage: `url(${shopInfo.background})`,
+          }}
+        >
           <div className="w-full inline-flex gap-1 mb-1">
             <div className="w-50% items-center">
               <img
                 src={shopInfo.avatar}
                 alt="avatar"
-                className="rounded-full shadow-5 w-[70px] h-[70px] border"
+                className={`rounded-full shadow-5 w-[70px] h-[70px] ${shopInfo.background ? "bg-black" : "bg-white"
+                  }`}
               />
             </div>
             <div className="mx-5 pt-3">
