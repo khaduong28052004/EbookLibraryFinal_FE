@@ -192,6 +192,7 @@ const data_Products = {
 
 
 export default function ShopHome() {
+    const [idUser, setIdUser] = useState({});
     const [shopInfo, setShopInfo] = useState({});
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
     const [products, setProducts] = useState([]);  // Initialize as an empty array
@@ -201,11 +202,21 @@ export default function ShopHome() {
     const query = new URLSearchParams(local.search);
     const { Id } = useParams();
 
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+
     const fetchShopInfo = async () => {
         try {
             setLoading(true);
-            const iduser = sessionStorage.getItem("id_account");
-            const response = await homeShopService.fetchShopInfo(Id, iduser);
+            const idAccountUser = sessionStorage.getItem("id_account");
+            setIdUser(idAccountUser)
+            const response = await homeShopService.fetchShopInfo(Id, idAccountUser);
             if (response.data.result) {
                 const data = response.data.result;
                 data != null ? setShopInfo(data) : setShopInfo(null);
@@ -292,9 +303,9 @@ export default function ShopHome() {
         );
     }
 
-    if (!shopInfo || Object.keys(shopInfo).length === 0) return (
-        <ErrorThumb></ErrorThumb>
-    )
+    // if (!shopInfo || Object.keys(shopInfo).length === 0) return (
+    //     <ErrorThumb></ErrorThumb>
+    // )
 
     return (
         <Layout childrenClasses="pt-0 pb-0">
@@ -302,7 +313,7 @@ export default function ShopHome() {
             <div className="flex flex-col  gap-5   ">
                 <div className="bg-white py-5">
                     {shopInfo && Object.keys(shopInfo).length > 0 && (
-                        <ShopInfo shopData={shopInfo} />
+                        <ShopInfo shopData={shopInfo} idUser={idUser}/>
                     )}
                 </div>
                 <div className=" container-x mx-auto mb-3">
@@ -323,6 +334,10 @@ export default function ShopHome() {
                     </div>
                 </div>
             </div>
+
+
         </Layout>
+
+
     );
 }

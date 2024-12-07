@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import homeShopService from "../../service/Seller/homeShopService";
+import ReportModal from "../Shop/Shop/reportModal"
 
-export default function ShopInfo({ shopData }) {
+export default function ShopInfo({ shopData, idUser }) {
   const [shopInfo, setShopInfo] = useState({});
   const [rating, setRating] = useState([]);  // Initialize as an empty array
   const [isFollowed, setIsFollowed] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
 
   const handleFollow = async (idShop) => {
-    const idUser = sessionStorage.getItem("id_account");
     try {
       if (isFollowed) {
         await homeShopService.createFollower(idUser, idShop);
@@ -22,9 +23,12 @@ export default function ShopInfo({ shopData }) {
     }
   };
 
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false); 
+
   useEffect(() => {
     if (shopData && Object.keys(shopData).length > 0) {
-      console.log("shopdata2", shopData);
       setShopInfo(shopData.shopDataEX);
       setRating(shopData.rating);
       setIsFollowed(shopData.shopDataEX.isFollowed);
@@ -38,6 +42,8 @@ export default function ShopInfo({ shopData }) {
 
   return (
     <div className="container-x mx-auto">
+      <ReportModal accountId={idUser} shopId={shopInfo.idSeller} isOpen={isModalOpen} handleClose={closeModal} />
+
       <div className="rounded-md py-5 px-5 flex">
         {/* Shop Info */}
         <div
@@ -45,31 +51,36 @@ export default function ShopInfo({ shopData }) {
           style={{ backgroundImage: `url(${shopInfo.background})` }}
         >
           {/* Lớp phủ mờ ảnh nền */}
-          <div className="absolute inset-0 bg-black opacity-50 backdrop-blur-md"></div>
+          <div className="absolute inset-0 bg-white opacity-50 backdrop-blur-md"></div>
 
           {/* Các thành phần bên trên ảnh nền không bị mờ */}
           <div className="w-full inline-flex gap-1 mb-1 relative z-10">
-            <div className="w-50% items-center">
+            <div className="w-[18%] items-center">
               <img
                 src={shopInfo.avatar}
                 alt="avatar"
                 className="rounded-full shadow-5 w-[70px] h-[70px] border"
               />
             </div>
-            <div className="mx-5 pt-3 relative z-10">
+            <div className="w-[70%] mx-5 pt-3 relative z-10">
               <div className="text-base text-white font-medium">
                 <h1>{shopInfo.shopName}</h1>
               </div>
+            </div>
+            <div className='pt-3 hover:cursor-pointer' onClick={openModal}            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-5 hover:stroke-red-500 transition-colors duration-300">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.25-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
+              </svg>
             </div>
           </div>
 
           <div className="mt-2 relative z-10">
             {isFollowed ? (
-              <button onClick={() => handleFollow(shopInfo.idSeller)} className="border border-sky-500 text-sky-500 w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
+              <button onClick={() => handleFollow(shopInfo.idSeller)} className="border border-[#003EA1] text-[#003EA1] w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
                 Đã theo dõi
               </button>
             ) : (
-              <button onClick={() => handleFollow(shopInfo.idSeller)}   className="flex justify-center border border-white text-white w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
+              <button onClick={() => handleFollow(shopInfo.idSeller)} className="flex justify-center border border-white text-white w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
                 <div className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -188,6 +199,7 @@ export default function ShopInfo({ shopData }) {
           </div>
         </div>
       </div>
+
     </div>
   );
 }
