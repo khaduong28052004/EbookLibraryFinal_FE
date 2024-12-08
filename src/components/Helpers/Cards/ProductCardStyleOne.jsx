@@ -85,7 +85,7 @@ export default function ProductCardStyleOne({ datas, type }) {
             <ClipLoader size={50} color={"#3498db"} loading={true} />
           </div>}
         >
-          <img src={datas.imageProducts[0]?.name} alt="" className="h-[100%] w-full p-7" />
+          <img src={datas?.imageProducts[0]?.name} alt="" className="h-[100%] w-full p-7" />
 
         </LazyLoad>
         {/* product available progress */}
