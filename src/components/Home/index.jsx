@@ -30,9 +30,9 @@ export default function Home() {
     const id_account = sessionStorage.getItem("id_account") || 0;
     await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account + "&page=" + currentPage)
       .then(response => {
-        if (currentPage > 0) {
+        if (currentPage > 0 && currentPage < totalPages) {
           setData_ProducAll((prev) => [...prev, ...response.data.result?.datas]);
-        } else {
+        } else if (currentPage ==0){
           setData_ProducAll(response.data.result?.datas);
         }
         setTotalPages(response.data.result?.totalPages);
