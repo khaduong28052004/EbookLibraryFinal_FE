@@ -154,19 +154,6 @@ const TableTwo = () => {
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
             <th
               onClick={() => {
-                setSortColumn("username");
-                setSortBy(!sortBy);
-              }}
-              className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <div className="flex items-center gap-1">
-                <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "username" ? "text-black" : "text-gray-500"} text-black`} />
-              </div>
-            </th>
-
-            <th
-              onClick={() => {
                 setSortColumn("fullname");
                 setSortBy(!sortBy);
               }}
@@ -189,19 +176,6 @@ const TableTwo = () => {
                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "role.name" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
-            <th
-              onClick={() => {
-                setSortColumn("gender");
-                setSortBy(!sortBy);
-              }}
-              className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Giới tính</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "gender" ? "text-black" : "text-gray-500"} text-black`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "gender" ? "text-black" : "text-gray-500"} text-black`} />
-              </div>
-            </th>
-
             <th
               onClick={() => {
                 setSortColumn("email");
@@ -240,31 +214,21 @@ const TableTwo = () => {
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 {data.pageable.pageNumber * data.size + index + 1}
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
-              </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 <div className="flex items-center gap-1 hidden xl:flex">
-
                   {entity.fullname}
                 </div>
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 <div className="flex items-center gap-1 hidden xl:flex">
-
                   {entity.role.name}
                 </div>
               </td>
+              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black max-w-5 dark:text-white ">
+                <div className="flex items-center gap-1 xl:flex">
+                  <p className="text-sm text-black dark:text-white truncate w-40">{entity.email}</p>
+                </div>
 
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {entity.gender ? 'Nam' : 'Nữ'}
-                </div>
-              </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {entity.email}
-                </div>
               </td>
 
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">

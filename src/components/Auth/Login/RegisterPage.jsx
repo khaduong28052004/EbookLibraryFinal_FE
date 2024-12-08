@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthService from "../../../service/authService";
 import { toast, ToastContainer } from "react-toastify";
+import axios, { Axios } from "axios";
 
 const RegisterPage = () => {
     const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility

@@ -4,7 +4,7 @@ import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, 
 import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
-import {ExportExcel} from "./ExportExcel"
+import { ExportExcel } from "./ExportExcel"
 
 const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, sortBy, setSortBy, sortColumn, setSortColumn }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,8 +17,12 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Thống Kê Khách Hàng'];
     try {
-      const response = await ThongKeService.khachHang(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Thống Kê Khách Hàng.xlsx", sheetNames, [response.data.result.content]);
+      const response = await ThongKeService.khachHang(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Thống Kê Khách Hàng.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -59,7 +63,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
               type="text"
               placeholder="Tìm kiếm..."
               name="search"
-              onChange={(e) => {setSearch(e.target.value); setPageNumber(0)}}
+              onChange={(e) => { setSearch(e.target.value); setPageNumber(0) }}
               className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
             />
 
@@ -72,7 +76,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
 
           </button>
           <button
-          onClick={handleExport}
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4 md:mb-0"
           >
             Excel

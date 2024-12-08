@@ -12,7 +12,7 @@ const flashSale = {
         return axiosAuth(token, "get", url);
     },
     findById: ({ id }) => {
-        const url = `/api/v1/admin/flashsale?id=${id}`;
+        const url = `/api/v1/admin/flashsale/id?id=${id}`;
         console.log(token);
         return axiosAuth(token, "get", url);
     },
