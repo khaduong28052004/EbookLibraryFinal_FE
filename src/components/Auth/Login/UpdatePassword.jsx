@@ -11,6 +11,13 @@ export default function UpdatePassword() {
     const [error, setError] = useState(false);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [errorFrom, seterrorFrom] = useState({
+        emailF: 0,
+        passwordF: 0,
+        confirmPasswordF: 0,
+    });
+    const [showRequirements, setShowRequirements] = useState(false); // Quản lý trạng thái hiển thị
+
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
@@ -27,58 +34,151 @@ export default function UpdatePassword() {
         setOtpToken(otp);
     }, [location]);
 
+    const checkForm = (email, password, confirmPassword, otpToken) => {
+        let isValid = true;
+        let errors = {};
+        let e = otpToken;
+        if (!email) {
+            errors.old_password = 'Email không được để trống!';
+            // toast.warn("Mật khẩu không được để trống!");
+            seterrorFrom((prev) => ({ ...prev, emailF: 1 }));
+            setError(false);
+            isValid = false;
+        } else {
+            seterrorFrom((prev) => ({ ...prev, emailF: 0 }));
+            // isvail = true;
+        }
+
+        if (!password) {
+            setError(false);
+            // toast.warn("Mật khẩu không được để trống!");
+            errors.new_password = 'Mật khẩu mới không được để trống!';
+            seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+            isValid = false;
+        } else if (password.length < 8) {
+            errors.password = 'Mật khẩu phải >= 8 ký tự!';
+            // toast.error("Mật khẩu phải >= 8 ký tự!");
+            isValid = false;
+            seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+            // return;
+        } else if (!/[A-Z]/.test(password)) {
+            errors.password = 'Mật khẩu phải có ít nhất một kí tự viết Hoa!';
+            isValid = false;
+            seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+        } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            errors.password = 'Mật khẩu phải có ít nhất một kí tự đặt biệt!!';
+            isValid = false;
+            seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+        } else {
+            seterrorFrom((prev) => ({ ...prev, passwordF: 0 }));
+        }
+        //
+        if (confirmPassword !== password) {
+            setError(false);
+            seterrorFrom((prev) => ({ ...prev, confirmPasswordF: 1 }));
+            // toast.warn("Xác nhận mật khẩu không khớp!");
+            errors.new_password = 'Xác nhận mật khẩu không khớp!';
+            isValid = false;
+        } else {
+            seterrorFrom((prev) => ({ ...prev, confirmPasswordF: 0 }));
+            // isvail = true;
+
+        }
+        if (!confirmPassword) {
+            setError(false);
+            seterrorFrom((prev) => ({ ...prev, confirmPasswordF: 1 }));
+            // toast.warn("Xác nhận mật khẩu không được để trống!");
+            errors.confirm_password = 'Xác nhận không được để trống!';
+            isValid = false;
+        } else {
+            seterrorFrom((prev) => ({ ...prev, confirmPasswordF: 0 }));
+            // isvail = true;
+
+        }
+
+        if (!isValid) {
+            const errorMessages = Object.values(errors).join("\n"); // Tạo chuỗi lỗi
+            toast.error(
+                <div>
+                    {errorMessages.split("\n").map((msg, index) => (
+                        <div key={index} className="text-sm text-red-500">{msg}</div>
+                    ))}
+                </div>
+            );
+        }
+        setError(errors);
+        // setError(true);
+        return isValid;
+    };
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        if(otpToken==""){
-            toast.error("Địa chỉ from không tồn tại!");
-            setLoading(false);
-            setError(false);
-        }
-        if (!email || !password || !confirmPassword) {
-            toast.error("Vui lòng điền đầy đủ thông tin!");
-            setLoading(false);
-            setError(false);
-            return;
-        }
+        if (checkForm(email, password, confirmPassword, otpToken)) {
+            setLoading(true);
 
-        if (password !== confirmPassword) {
-            toast.error("Mật khẩu không khớp!");
-            setLoading(false);
-            setError(false);
-            return;
-        }
+            // if(otpToken==""){
+            //     toast.error("Địa chỉ from không tồn tại!");
+            //     setLoading(false);
+            //     setError(false);
+            // }
+            // if (!email || !password || !confirmPassword) {
+            //     toast.error("Vui lòng điền đầy đủ thông tin!");
+            //     setLoading(false);
+            //     setError(false);
+            //     return;
+            // }
 
-        try {
-            if (!email || !otpToken) {
-                toast.error("Email và OTP không được để trống!");
-                setLoading(false);
+            // if (password !== confirmPassword) {
+            //     toast.error("Mật khẩu không khớp!");
+            //     setLoading(false);
+            //     setError(false);
+            //     return;
+            // }
+
+            try {
+                // if (!email || !otpToken) {
+                //     toast.error("Email và OTP không được để trống!");
+                //     setLoading(false);
+                //     setError(false);
+                //     return;
+                // }
+                const data = {
+                    email: email,
+                    otp: otpToken,
+                    newpass: password,
+                };
+                const response = await AuthService.verifyOTP(data);
+                if (response.status) {
+                    toast.success("Đổi mật khẩu thành công!");
+                    setError(true);
+                    setTimeout(() => {
+                        navigate('/login');
+                    }, 4000);
+                } else {
+                    setError(false);
+                    toast.error("Đổi mật khẩu không thành công!");
+                }
+            } catch (error) {
                 setError(false);
-                return;
+                console.log(error);
+                toast.error(error?.response?.data?.message || "Lỗi đặt lại mật khẩu không thành công vui lòng kiểm tra lại!.");
             }
-            const data = {
-                email: email,
-                otp: otpToken,
-                newpass: password,
-            };
-            const response = await AuthService.verifyOTP(data);
-            if (response.status) {
-                toast.success("Đổi mật khẩu thành công!");
-                setError(true);
-                setTimeout(() => {
-                    navigate('/login');
-                }, 4000);
-            } else {
-                setError(false);
-                toast.error("Đổi mật khẩu không thành công!");
-            }
-        } catch (error) {
-            setError(false);
-            console.log(error);
-            toast.error(error?.response?.data?.message || "Lỗi đặt lại mật khẩu không thành công vui lòng kiểm tra lại!.");
-        }
 
-        setLoading(false);
+            setLoading(false);
+        }
+    };
+
+    const generatePassword = () => {
+        const length = 16; // Adjusted length for the password
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let Password = "@";
+
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            Password += charset[randomIndex];
+        }
+        setPassword(Password);
+        setConfirmPassword(Password);
+        return Password;
     };
 
     return (
@@ -93,9 +193,9 @@ export default function UpdatePassword() {
                                 <svg width="472" height="40" viewBox="0 0 172 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1 5.08742C17.6667 19.0972 30.5 31.1305 62.5 27.2693C110.617 21.4634 150 -10.09 171 5.08727" stroke="#FFBB38" />
                                 </svg>
-                                
+
                             </div>
-                            
+
                         </div>
                         <form onSubmit={handleUpdatePassword}>
                             <div className="input-item mb-5">
@@ -108,11 +208,11 @@ export default function UpdatePassword() {
                                     value={email}
                                     inputHandler={(e) => setEmail(e.target.value)}
                                     placeholder="Nhập email"
-                                    inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error
-                                        ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300" // Error state
-                                        // : errorFrom.usernameF === 2
-                                        //   ? "border-green-500 bg-red-400" // Success state
-                                        //   : ""
+                                    inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.emailF === 1
+                                        ? "ring-red-500 bg-red-100" // Lỗi
+                                        : errorFrom.emailF === 2
+                                            ? "ring-green-500 bg-green-100" // Thành công
+                                            : "" // Mặc định
                                         }`}
                                     required
                                 />
@@ -128,11 +228,11 @@ export default function UpdatePassword() {
                                     placeholder="Nhập mật khẩu mới"
                                     // className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
                                     type={showRePassword ? "text" : "password"}
-                                    inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error
-                                        ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300" // Error state
-                                        // : errorFrom.usernameF === 2
-                                        //   ? "border-green-500 bg-red-400" // Success state
-                                        //   : ""
+                                    inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.passwordF === 1
+                                        ? "ring-red-500 bg-red-100" // Lỗi
+                                        : errorFrom.passwordF === 2
+                                            ? "ring-green-500 bg-green-100" // Thành công
+                                            : "" // Mặc định
                                         }`}
                                     required
                                 >
@@ -164,11 +264,11 @@ export default function UpdatePassword() {
                                     inputHandler={(e) => setConfirmPassword(e.target.value)}
                                     placeholder="Xác nhận mật khẩu"
                                     // className="w-full h-[50px] p-3 border border-[#E0E0E0] rounded-md"
-                                    inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error
-                                        ? "border-green-300 bg-green-300" : "border-red-300 bg-red-300" // Error state
-                                        // : errorFrom.usernameF === 2
-                                        //   ? "border-green-500 bg-red-400" // Success state
-                                        //   : ""
+                                    inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.confirmPasswordF === 1
+                                        ? "ring-red-500 bg-red-100" // Lỗi
+                                        : errorFrom.confirmPasswordF === 2
+                                            ? "ring-green-500 bg-green-100" // Thành công
+                                            : "" // Mặc định
                                         }`}
                                     required
                                 >  <button
@@ -187,6 +287,30 @@ export default function UpdatePassword() {
                                     </button>
                                 </InputCom>
                             </div>
+                            <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
+                                <div className='w-[50%] flex justify-start' onMouseEnter={() => setShowRequirements(true)} onMouseLeave={() => setShowRequirements(false)}>
+                                    <span className='text-black-400 text-start'>
+                                        {error ? (
+                                            <>{error?.message}</>
+                                        ) : (
+                                            <>yêu cầu!</>
+                                        )}
+                                    </span>
+
+                                    {/* <div className="top-full rounded-md shadow-md">
+                                            <ul className="absolute bg-white p-4 border border-gray-300">
+                                                <li>Mật khẩu phải dài ít nhất 8 ký tự</li>
+                                                <li>Phải chứa ít nhất một chữ hoa và một chữ thường</li>
+                                                <li>Phải có ít nhất một ký tự đặc biệt (@, #, $, v.v.)</li>
+                                            </ul>
+                                        </div> */}
+                                </div>
+                                <div className='w-[50%] flex justify-end'>
+                                    <div className='bg-blue-400 text-white shadow-sm cursor-auto' onClick={generatePassword}>
+                                        Gợi ý!
+                                    </div>
+                                </div>
+                            </div>
                             <button
                                 type="submit"
                                 className="black-btn mb-6 text-sm text-white w-full h-[50px] font-semibold flex justify-center bg-purple items-center rounded-md"
@@ -195,9 +319,20 @@ export default function UpdatePassword() {
                                 {loading ? 'Đang cập nhật...' : 'Cập nhật mật khẩu'}
                             </button>
                         </form>
-                        <div className="text-center mt-6">
+                        <div className="text-center mt-6 mb-6">
                             <span className="text-base text-qyellow">Nhớ mật khẩu? <Link to="/login" className="text-blue-500">Đăng nhập</Link></span>
                         </div>
+                        {/* {showRequirements && ( */}
+                        <div className="top-full rounded-md ">
+
+                            <ul className=" bg-white p-4 border border-gray-300">
+                                <li>Mật khẩu phải dài ít nhất 8 ký tự</li>
+                                <li>Phải chứa ít nhất một chữ hoa và một chữ thường</li>
+                                <li>Phải có ít nhất một ký tự đặc biệt (@, #, $, v.v.)</li>
+                            </ul>
+                        </div>
+                        {/* )} */}
+
                     </div>
                 </div>
             </div>
