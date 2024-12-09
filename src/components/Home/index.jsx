@@ -5,18 +5,15 @@ import SectionStyleThree from "../Helpers/SectionStyleThree";
 import Layout from "../Partials/Layout";
 import Banner from "./Banner";
 import FlashSale from "./FlashaSale";
-import ShareOptions from "../../service/ShareOptions.";
-
-
-
-
 
 export default function Home() {
-
-  const [data_FlashSale, setData_FlashSale] = useState();
-  const [data_ProductAll, setData_ProducAll] = useState();
+  const [data_FlashSale, setData_FlashSale] = useState([]);
+  const [data_ProductAll, setData_ProducAll] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const location = useLocation();
 
+  // Fetch dữ liệu Flash Sale
   const fetchDataFlashSale = async () => {
     const id_account = sessionStorage.getItem("id_account") || 0;
     try {
@@ -28,38 +25,63 @@ export default function Home() {
     }
   };
 
+  // Fetch tất cả sản phẩm với phân trang
   const fetchDataSelectAll = async () => {
     const id_account = sessionStorage.getItem("id_account") || 0;
-    await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account).then(response => {
-      setData_ProducAll(response.data.result);
-    }).catch(error => {
-      console.log("fetch selectall error " + error);
-    })
-  }
+    await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account + "&page=" + currentPage)
+      .then(response => {
+        if (currentPage > 0) {
+          setData_ProducAll((prev) => [...prev, ...response.data.result?.datas]);
+        } else {
+          setData_ProducAll(response.data.result?.datas);
+        }
+        setTotalPages(response.data.result?.totalPages);
+      }).catch(error => {
+        console.log("fetch selectall error " + error);
+      });
+  };
+
+
+  const checkScroll = () => {
+
+    const scrollHeight = document.documentElement.scrollHeight;
+    const scrollTop = document.documentElement.scrollTop;
+    const clientHeight = window.innerHeight;
+
+    // Kiểm tra nếu người dùng cuộn đến cuối trang
+    if (scrollHeight - scrollTop <= clientHeight + 10) {
+      if (currentPage < totalPages - 1) {
+        setCurrentPage((prev) => prev + 1);
+      }
+    }
+  };
+
+  // Lắng nghe sự kiện cuộn của window
+  useEffect(() => {
+    if (currentPage < totalPages - 1) {
+      window.addEventListener('scroll', checkScroll);
+      return () => {
+        window.removeEventListener('scroll', checkScroll);
+      };
+    }
+  }, [currentPage, totalPages]);
+
+  // Lắng nghe thay đổi currentPage và fetch dữ liệu
+  useEffect(() => {
+    fetchDataSelectAll(); // Gọi fetch khi currentPage thay đổi
+  }, [currentPage]);
+
+  // Lắng nghe thay đổi location và fetch dữ liệu khi trang thay đổi
   useEffect(() => {
     fetchDataFlashSale();
     fetchDataSelectAll();
   }, [location]);
-  const ShareOptionsClick = ()=>{
-    ShareOptions();
-  }
+
   return (
     <>
       <Layout>
-        {/* {ads && <Ads handler={adsHandle} />} */}
         <Banner className="banner-wrapper mb-6" />
-        {/* <>{data_FlashSale[0]?.product.name}</> */}
-
-
         <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
-
-        {/* <ProductsAds
-          ads={[`/assets/images/ads-1.png`, `/assets/images/ads-2.png`]}
-          sectionHeight="sm:h-[295px] h-full"
-          className="products-ads-section mb-[60px]"
-        /> */}
-        {/* <button onClick={ShareOptions}>ShareOptions</button> */}
-
         <SectionStyleThree
           products={data_ProductAll}
           sectionTitle="Sản phẩm"

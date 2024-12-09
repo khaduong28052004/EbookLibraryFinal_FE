@@ -8,6 +8,7 @@ import homeShopService from "../../service/Seller/homeShopService";
 import BeatLoader from "react-spinners/BeatLoader";
 import { toast, ToastContainer } from "react-toastify";
 import { useLocation, useParams } from 'react-router-dom';
+import axios from "axios";
 
 const shopDataEX = {
     "rating": {
@@ -15,15 +16,16 @@ const shopDataEX = {
         "averageStars": 4.4,
         "totalStars": 5
     },
+    
     "shopDataEX": {
         "idSeller": 8,
-        "avatar": "avatar3.png",
-        "background": "background3.png",
+        "avatar": "https://firebasestorage.googleapis.com/v0/b/ebookstore-4fbb3.appspot.com/o/1_W35QUSvGpcLuxPo3SRTH4w.png?alt=media",
+        "background": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpV1PD_FQJmavk9gMA--dVtlHhEZJ9VV3oDg&s",
         "shopName": "Cong ty Anh Vang",
         "district": "789 Oak Street",
         "averageStarRating": null,
-        "numberOfFollowers": 167747,
-        "numberOfProducts": 1111111116,
+        "numberOfFollowers": 167,
+        "numberOfProducts": 111,
         "createAtSeller": "2023-11-19T17:00:00.000+00:00",
         "participationTime": 365,
         "trackingNumber": 8,
@@ -71,8 +73,8 @@ const vouchersdfEAsd = [
     }
 ]
 
-const data_Products = {
-    data: [
+const data_Products1 = {
+    datas: [
         {
             id: 1,
             name: 'Áo sơ mi nam cao cấp',
@@ -211,6 +213,20 @@ export default function ShopHome() {
     };
 
 
+    const fetchDataSelectAll = async () => {
+        const id_account = sessionStorage.getItem("id_account") || 0;
+        await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account).then(response => {
+            setData_ProducAll(response.data.result);
+        }).catch(error => {
+            setData_ProducAll(data_Products1);
+            console.log("fetch selectall error " + error);
+        })
+    }
+    useEffect(() => {
+        // fetchDataFlashSale();
+        fetchDataSelectAll();
+    }, [location]);
+
     const fetchShopInfo = async () => {
         try {
             setLoading(true);
@@ -232,10 +248,9 @@ export default function ShopHome() {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     const fetchVoucherShopHome = async () => {
-        // setVouchers(vouchersdfEAsd);
         try {
             setLoading(true);
             const response = await homeShopService.fetchVoucherShopHome(Id);
@@ -245,7 +260,7 @@ export default function ShopHome() {
                 setVouchers(data);
                 setLoading(true);
             } else {
-                throw new Error('Không có dữ liệu');
+                throw new Error("Không có dữ liệu voucher từ API");
             }
         } catch (error) {
             setVouchers(vouchersdfEAsd);

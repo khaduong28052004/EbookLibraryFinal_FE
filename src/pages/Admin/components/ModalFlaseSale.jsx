@@ -1,9 +1,10 @@
-import React, { Dispatch, SetStateAction, ReactNode, FormEvent, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import flashSale from '../../../service/admin/FlashSale';
 import { toast, ToastContainer } from 'react-toastify';
 
 const ModalFlashSale = ({
+    entity,
     status,
     setStatus,
     open,
@@ -13,7 +14,7 @@ const ModalFlashSale = ({
     cancelText = 'Cancel',
 }) => {
     const initialFormData = {
-        title:'',
+        title: '',
         dateStart: '',
         dateEnd: '',
         account: sessionStorage.getItem("id_account"),
@@ -41,14 +42,52 @@ const ModalFlashSale = ({
         }
     }
 
+
+    const putFlashSale = async () => {
+        try {
+            const response = await flashSale.put({ data: formData });
+            setStatus(!status);
+            toast.success(response.data.message);
+            setFormData(initialFormData);
+            setOpen(false);
+        } catch (error) {
+            toast.error(error.response.data.message);
+            console.log("Error: " + error);
+        }
+    }
+
+    useEffect(() => {
+        if (entity != null) {
+            setFormData({
+                id: entity.id || '',
+                title: entity.title || '',
+                dateStart: entity.dateStart || '',
+                dateEnd: entity.dateEnd || '',
+                account: sessionStorage.getItem("id_account"),
+            });
+        } else {
+            setFormData({
+                title: '',
+                dateStart: '',
+                dateEnd: '',
+                account: sessionStorage.getItem("id_account"),
+            });
+        }
+    }, [entity]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (new Date(formData.dateStart) >= new Date(formData.dateEnd)) {
             toast.error("Ngày bắt đầu phải trước ngày kết thúc.");
             return;
         }
-        postFlashSale(formData);
+        if (entity != null) {
+            putFlashSale();
+        } else {
+            postFlashSale();
+        }
     };
+
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <ToastContainer></ToastContainer>
@@ -110,6 +149,13 @@ const ModalFlashSale = ({
                                     className="inline-flex w-full ml-auto mr-3 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
                                 >
                                     {confirmText}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setOpen(false)}
+                                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                >
+                                    {cancelText}
                                 </button>
                             </div>
                         </form>

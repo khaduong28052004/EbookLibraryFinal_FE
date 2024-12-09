@@ -59,7 +59,8 @@ export default function ShopInfo({ shopData, idUser }) {
               <img
                 src={shopInfo.avatar}
                 alt="avatar"
-                className="rounded-full shadow-5 w-[70px] h-[70px] border"
+                className={`rounded-full shadow-5 w-[70px] h-[70px] ${shopInfo.background ? "bg-black" : "bg-white"
+                  }`}
               />
             </div>
             <div className="w-[70%] mx-5 pt-3 relative z-10">

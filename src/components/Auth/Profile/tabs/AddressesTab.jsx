@@ -19,7 +19,6 @@ export default function AddressesTab() {
     const [showModal, setShowModal] = useState(false);
     const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(true);
-    const accountId = 1; // Account ID
     const [addressIdToDelete, setAddressIdToDelete] = useState(null);
     const [editingAddressId, setEditingAddressId] = useState(null);
 
@@ -100,8 +99,8 @@ export default function AddressesTab() {
                 <div className="flex justify-end">
                     <button
                         onClick={() => {
-                            setShowModal(true);
                             setEditingAddressId(null);
+                            setShowModal(true);
                         }}
                         className="w-[150px] h-[35px] rounded text-[#003EA1] text-[15px]  
                 px-2 py-0 border border-[#003EA1] transition-all duration-500 ease-in-out hover:bg-gray-200  mb-5"
