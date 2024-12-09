@@ -1,34 +1,61 @@
 import React, { useEffect, useState, useRef } from 'react';
+import homeShopService from "../../service/Seller/homeShopService";
+import ReportModal from "../Shop/Shop/reportModal"
 
-export default function ShopInfo({ shopData }) {
+export default function ShopInfo({ shopData, idUser }) {
   const [shopInfo, setShopInfo] = useState({});
   const [rating, setRating] = useState([]);  // Initialize as an empty array
+  const [isFollowed, setIsFollowed] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+
+  const handleFollow = async (idShop) => {
+    try {
+      if (isFollowed) {
+        await homeShopService.createFollower(idUser, idShop);
+        setIsFollowed(false);
+      } else {
+        await homeShopService.createFollower(idUser, idShop);
+        setIsFollowed(true);
+      }
+    } catch (error) {
+      console.error("Error updating follow status:", error);
+    }
+  };
+
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false); 
 
   useEffect(() => {
-    setShopInfo(shopData.shopDataEX);
-    setRating(shopData.rating);
-  }, [shopData])
+    if (shopData && Object.keys(shopData).length > 0) {
+      setShopInfo(shopData.shopDataEX);
+      setRating(shopData.rating);
+      setIsFollowed(shopData.shopDataEX.isFollowed);
+    }
+  }, [shopData]);
 
-  // if (shopData == {}) {
-  //   return (
-  //     <></>
-  //   )
-  // }
+
+  if (!shopData || Object.keys(shopData).length === 0) {
+    return null;
+  }
 
   return (
     <div className="container-x mx-auto">
+      <ReportModal accountId={idUser} shopId={shopInfo.idSeller} isOpen={isModalOpen} handleClose={closeModal} />
+
       <div className="rounded-md py-5 px-5 flex">
         {/* Shop Info */}
         <div
-          className={`border rounded-md w-6/12 py-2 px-5 ${shopInfo.background ? "bg-black" : "bg-white"
-            }`}
-          style={{
-            backgroundImage: `url(${shopInfo.background})`,
-          }}
+          className="border rounded-md w-5/12 py-2 px-5 relative"
+          style={{ backgroundImage: `url(${shopInfo.background})` }}
         >
-          <div className="w-full inline-flex gap-1 mb-1">
-            <div className="w-50% items-center">
+          {/* Lớp phủ mờ ảnh nền */}
+          <div className="absolute inset-0 bg-white opacity-50 backdrop-blur-md"></div>
+
+          {/* Các thành phần bên trên ảnh nền không bị mờ */}
+          <div className="w-full inline-flex gap-1 mb-1 relative z-10">
+            <div className="w-[18%] items-center">
               <img
                 src={shopInfo.avatar}
                 alt="avatar"
@@ -36,26 +63,38 @@ export default function ShopInfo({ shopData }) {
                   }`}
               />
             </div>
-            <div className="mx-5 pt-3">
+            <div className="w-[70%] mx-5 pt-3 relative z-10">
               <div className="text-base text-white font-medium">
                 <h1>{shopInfo.shopName}</h1>
               </div>
             </div>
+            <div className='pt-3 hover:cursor-pointer' onClick={openModal}            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-5 hover:stroke-red-500 transition-colors duration-300">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.25-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
+              </svg>
+            </div>
           </div>
-          <div className="mt-2">
-            {shopInfo.isFollowed ? (
-              <button className="border border-sky-500 text-sky-500 w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
+
+          <div className="mt-2 relative z-10">
+            {isFollowed ? (
+              <button onClick={() => handleFollow(shopInfo.idSeller)} className="border border-[#003EA1] text-[#003EA1] w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
                 Đã theo dõi
               </button>
             ) : (
-              <button className="border border-white text-white w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
-                Theo dõi
+              <button onClick={() => handleFollow(shopInfo.idSeller)} className="flex justify-center border border-white text-white w-full py-1 px-5 text-sm rounded-md hover:bg-white hover:bg-opacity-20">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  Theo dõi
+                </div>
               </button>
             )}
           </div>
         </div>
+
         {/* Shop Statistics */}
-        <div className="w-6/12 flex flex-col justify-around py-2 px-10 text-gray-800 text-[15px]">
+        <div className="w-7/12 flex flex-col justify-around py-2 px-10 text-gray-800 text-[15px]">
           <div className="flex py-2">
             <div className="flex flex-1 gap-2 items-center">
               <div>
@@ -75,7 +114,7 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Sản phẩm:</p>
-              <span className="text-sky-600">{shopInfo.numberOfProducts}</span>
+              <span className="text-[#003EA1]">{shopInfo.numberOfProducts}</span>
             </div>
             <div className="flex flex-1 gap-2 items-center">
               <div>
@@ -95,7 +134,7 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Đánh giá:</p>
-              <span className="text-sky-600">
+              <span className="text-[#003EA1]">
                 {rating.averageStars} ({rating.totalReviews})
               </span>
             </div>
@@ -119,7 +158,7 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Người theo dõi:</p>
-              <span className="text-sky-600">{shopInfo.numberOfFollowers}</span>
+              <span className="text-[#003EA1]">{shopInfo.numberOfFollowers}</span>
             </div>
             <div className="flex flex-1 gap-2 items-center">
               <div>
@@ -139,15 +178,29 @@ export default function ShopInfo({ shopData }) {
                 </svg>
               </div>
               <p>Tham gia:</p>
-              <span className="text-sky-600"> {shopInfo?.participationTime >= 365 ? (
+              <span className="text-[#003EA1]"> {shopInfo?.participationTime >= 365 ? (
                 <p>{Math.floor(shopInfo?.participationTime / 365)} năm</p>
               ) : (
                 <p>{shopInfo?.participationTime} Ngày </p>
               )}</span>
             </div>
           </div>
+          <div className="flex py-2">
+            <div className="flex flex-1 gap-1 items-center items-center text-sm">
+              <div>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                </svg>
+              </div>
+              <p>Địa chỉ:</p>
+              <span className="text-gray-600">{shopInfo.district}</span>
+            </div>
+
+          </div>
         </div>
       </div>
+
     </div>
   );
 }

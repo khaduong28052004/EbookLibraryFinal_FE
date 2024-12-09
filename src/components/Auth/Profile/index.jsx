@@ -97,7 +97,7 @@ export default function Profile() {
                 { name: "hồ sơ", path: "/profile" },
               ]}
             />
-            <div className="xl:w-full bg-white xl:px-10 xl:py-9 w-[750px]">
+            <div className="xl:w-full bg-white md:px-10 md:w-[750px] xl:px-10 xl:py-9 w-[750px]">
               <div className="title-area w-full flex justify-between items-center mb-[20px] mt-[20px]">
                 <h1 className="text-[22px] font-bold text-qblack">
                   Tài khoản
@@ -269,7 +269,7 @@ export default function Profile() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="item-body dashboard-wrapper sm:w-[200px] md:w-[500px] lg:w-[500px] xl:w-full 2xl:w-full w-[100px] ">
+                  <div className="item-body dashboard-wrapper sm:w-auto md:w-auto lg:w-[900px] xl:w-full 2xl:w-full w-[500px] ">
                     {active === "dashboard" ? (
                       <Dashboard />
                     ) : active === "profile" ? (
@@ -282,12 +282,12 @@ export default function Profile() {
                       </>
                     ) : active === "order" ? (
                       <>
-                        <OrderTab />
+                        <OrderTab />  
                       </>
                     ) : active === "wishlist" ? (
                       <>
-                        <WishlistTab />
-                      </>
+                          <WishlistTab />
+                        </>
                     ) : active === "address" ? (
                       <>
                         <AddressesTab />

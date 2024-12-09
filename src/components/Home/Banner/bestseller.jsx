@@ -27,21 +27,21 @@ const BestSeller = ({ products }) => {
     <div className="relative  group px-3 py-3 xl:h-full  lg:w-full lg:mt-0 mt-5 h-[250px] w-[730px] ">
       {/* Background image with gradient overlay */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat shadow-lg shadow-inner bg-[#7d9fd60f]"
         style={{
-          backgroundImage: `url(${bgImage})`,
-          filter: 'blur(5px)', // Thêm mờ cho background
-          backgroundPosition: 'center', // Căn giữa ảnh nền
+          
+          // filter: 'blur(5px)', // Thêm mờ cho background
+          // backgroundPosition: 'center', // Căn giữa ảnh nền
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50">
+        <div className="absolute ">
         </div>
       </div>
-      <div className="absolute top-2 right-2 z-99999">
+      <div className="absolute top-0 right-2 z-99999">
         <img
-          src="https://png.pngtree.com/png-clipart/20210530/original/pngtree-hot-sale-vector-png-png-image_6337462.png"  // Thay thế với đường dẫn tới biểu tượng Sale của bạn
+          src="https://firebasestorage.googleapis.com/v0/b/ebookstore-4fbb3.appspot.com/o/evalue%2F99cc2d5a-6834-4ee6-8215-8cbf3fe53972-hotsale-01.png?alt=media"  // Thay thế với đường dẫn tới biểu tượng Sale của bạn
           alt="Sale"
-          className="w-18 h-20 opacity-90"
+          className="w-auto h-22 mr-3 shadow-4 shadow shadow-inner"
         />
       </div>
 
@@ -78,7 +78,7 @@ const BestSeller = ({ products }) => {
                 <img
                   src={product.imageProducts[0].name}
                   alt={product.title}
-                  className=" w-[200px] h-[180px]  object-cover rounded-md"
+                  className=" w-[200px] h-[180px]  object-cover rounded-md shadow shadow-lg shadow-black"
                 />
               </div>
             </Link>
