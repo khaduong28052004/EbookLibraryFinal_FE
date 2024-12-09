@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import SectionStyleThree from '../Helpers/SectionStyleThree';
+import SectionStyleThreeHomeShop from '../Helpers/SectionStyleThreeHomeShop';
 import Voucher from '../Shop/voucher';
 import ShopInfo from '../Shop/shopinfo';
 import ErrorThumb from '../../components/FourZeroFour'
@@ -7,7 +7,7 @@ import Layout from "../Partials/Layout";
 import homeShopService from "../../service/Seller/homeShopService";
 import BeatLoader from "react-spinners/BeatLoader";
 import { toast, ToastContainer } from "react-toastify";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import axios from "axios";
 
 const shopDataEX = {
@@ -194,24 +194,24 @@ const data_Products1 = {
 
 
 export default function ShopHome() {
+    const [idUser, setIdUser] = useState({});
     const [shopInfo, setShopInfo] = useState({});
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
-    const [data_Products, setData_ProducAll] = useState([]); 
+    const [products, setProducts] = useState([]);  // Initialize as an empty array
     const [loading, setLoading] = useState(false);
+    const [isFollowed, setIsFollowed] = useState(false);
     const local = useLocation();
     const query = new URLSearchParams(local.search);
-    const shopID = query.get("shopID");
+    const { Id } = useParams();
 
-    // const getIdAccountFromSession = () => {
-    //     const user = sessionStorage.getItem("user");
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
 
-    //     if (user) {
-    //         const userObject = JSON.parse(user);
-    //         return userObject; 
-    //     }
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
 
-    //     return null;
-    // };
 
     const fetchDataSelectAll = async () => {
         const id_account = sessionStorage.getItem("id_account") || 0;
@@ -230,14 +230,16 @@ export default function ShopHome() {
     const fetchShopInfo = async () => {
         try {
             setLoading(true);
-            const iduser = sessionStorage.getItem("id_account");
-            const response = await homeShopService.fetchShopInfo(shopID, iduser);
+            const idAccountUser = sessionStorage.getItem("id_account");
+            setIdUser(idAccountUser)
+            const response = await homeShopService.fetchShopInfo(Id, idAccountUser);
             if (response.data.result) {
                 const data = response.data.result;
-                setShopInfo(shopDataEX);
+                data != null ? setShopInfo(data) : setShopInfo(null);
+                setIsFollowed(response.data.result.shopDataEX.isFollowed);
                 setLoading(true);
             } else {
-                setShopInfo(shopDataEX);
+                setShopInfo(data);
                 ;
                 throw new Error('Không có dữ liệu');
             }
@@ -251,9 +253,12 @@ export default function ShopHome() {
     const fetchVoucherShopHome = async () => {
         try {
             setLoading(true);
-            const response = await homeShopService.fetchVoucherShopHome(shopID);
-            if (response.data && response.data.result && response.data.result.Voucher) {
-                setVouchers(response.data.result.Voucher);
+            const response = await homeShopService.fetchVoucherShopHome(Id);
+            console.log(response);
+            if (response.data.result) {
+                const data = response.data.result.Voucher;
+                setVouchers(data);
+                setLoading(true);
             } else {
                 throw new Error("Không có dữ liệu voucher từ API");
             }
@@ -263,14 +268,34 @@ export default function ShopHome() {
         } finally {
             setLoading(false);
         }
-    };
+    }
+
+    const fetchProductShopHome = async () => {
+        // setVouchers(vouchersdfEAsd);
+        try {
+            setLoading(true);
+            const response = await homeShopService.fetchProductShopHome(Id);
+            console.log("response");
+            if (response.data.result) {
+                const data = response.data.result;
+                setProducts(data);
+                setLoading(true);
+            } else {
+                throw new Error('Không có dữ liệu');
+            }
+        } catch (error) {
+            setProducts(data_Products);
+        } finally {
+            setLoading(false);
+        }
+    }
+
 
     useEffect(() => {
         fetchShopInfo();
         fetchVoucherShopHome();
+        fetchProductShopHome();
     }, [])
-
-
 
     useEffect(() => {
         console.log("vouchers", vouchers);
@@ -280,19 +305,22 @@ export default function ShopHome() {
         console.log("shopInfo", shopInfo);
     }, [shopInfo])
 
+    useEffect(() => {
+        console.log("shopInfo", shopInfo);
+    }, [products])
 
-    if (!loading && !vouchers || !shopInfo) return
-    <div>
-        <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
-            <div className="flex flex-col items-center justify-center gap-2">
-                <div className="">
-                    <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
-                </div>
-                <div> <p className="text-sm text-gray-400">Lỗi truyền tải dữ liệu</p></div>
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen ">
+                <BeatLoader color="#56A0D3" />
             </div>
-        </div>
-    </div>
+        );
+    }
 
+    // if (!shopInfo || Object.keys(shopInfo).length === 0) return (
+    //     <ErrorThumb></ErrorThumb>
+    // )
 
     return (
         <Layout childrenClasses="pt-0 pb-0">
@@ -300,7 +328,7 @@ export default function ShopHome() {
             <div className="flex flex-col  gap-5   ">
                 <div className="bg-white py-5">
                     {shopInfo && Object.keys(shopInfo).length > 0 && (
-                        <ShopInfo shopData={shopInfo} />
+                        <ShopInfo shopData={shopInfo} idUser={idUser}/>
                     )}
                 </div>
                 <div className=" container-x mx-auto mb-3">
@@ -313,14 +341,18 @@ export default function ShopHome() {
                         <h1 className="text-gray-700">SẢN PHẨM</h1>
                     </div>
                     <div className="mb-1 text-gray-300">
-                        <SectionStyleThree
+                        <SectionStyleThreeHomeShop
                             className="new-products mb-[60px] "
                             seeMoreUrl="/all-products"
-                            products={data_Products}
+                            products={products}
                         />
                     </div>
                 </div>
             </div>
+
+
         </Layout>
+
+
     );
 }
