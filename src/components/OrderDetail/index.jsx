@@ -16,6 +16,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
     const [taskCompleted, setTaskCompleted] = useState(false);
     const [orderDetailId, setOrderDetailId] = useState();
     const [productId, setProductId] = useState();
+    const [product, setProduct] = useState();
 
 
     const openModal = (productId,billDetailId ) => {
@@ -120,10 +121,11 @@ export default function OrderDetail({ orderId, clearOrderId }) {
         }
     }
 
-    const setValue = (billDetailId, productId) => {
+    const setValue = (billDetailId, productId, product) => {
         setIsModalOpen(true);
         setOrderDetailId(billDetailId);
         setProductId(productId);
+        setProduct(product);
     }
 
     const clearValue = () => {
@@ -274,7 +276,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                                                                     <div className="productInfo-rating">
                                                                         <button onClick={(event) => {
                                                                             event.preventDefault(); // Ngăn điều hướng khi bấm nút
-                                                                            setValue(product.billDetailId, product.productId);
+                                                                            setValue(product.billDetailId, product.productId, product);
                                                                         }} className="w-[100px] h-[35px] rounded text-[#003EA1] text-[15px]  
                                                                                     px-2 py-0 border border-[#003EA1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">Đánh giá</button>
                                                                     </div>
@@ -373,7 +375,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
                 </div>
             </div >
             
-            <RatingModal orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} isOpen={isModalOpen} handleClose={closeModal} />
+            <RatingModal product={product} orderDetailId={orderDetailId} productId={productId} clearOrderDetailId={clearValue} isOpen={isModalOpen} handleClose={closeModal} />
 
         </>
     )
