@@ -1,14 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaStar } from 'react-icons/fa'; // Font Awesome
-import LazyLoad from "react-lazyload";
 import { useNavigate } from "react-router-dom";
-import ClipLoader from "react-spinners/ClipLoader";
 import { toast } from "react-toastify";
 import { useRequest } from "../../Request/RequestProvicer";
 import Compair from "../icons/Compair";
 import QuickViewIco from "../icons/QuickViewIco";
 import ThinLove from "../icons/ThinLove";
+import ImageLoader from "../ImageLoading/ImageWithLoader.jsx";
 export default function ProductCardStyleOne({ datas, type }) {
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState();
@@ -72,21 +71,19 @@ export default function ProductCardStyleOne({ datas, type }) {
   return (
     <div
       className="product-card-one w-full h-full bg-white relative group overflow-hidden"
-      // style={{ boxShadow: "0px 15px 64px 0px rgba(0, 0, 0, 0.05)" }}
+    // style={{ boxShadow: "0px 15px 64px 0px rgba(0, 0, 0, 0.05)" }}
     >
       <div
         className="product-card-img w-full h-[200px] flex justify-center"
       >
+        <div className="relative">
+          <ImageLoader
+            src={datas?.imageProducts[0]?.name || ""}
+            alt="Product Image"
+            className="h-[100%] w-full p-4"
+          />
+        </div>
 
-        <LazyLoad
-          once={false}
-          placeholder={<div className="flex justify-center mt-30">
-            <ClipLoader size={50} color={"#3498db"} loading={true} />
-          </div>}
-        >
-          <img src={datas?.imageProducts[0]?.name} alt="" className="h-[100%] w-full p-4" />
-
-        </LazyLoad>
         {/* product available progress */}
       </div>
       <div className="product-card-details px-[30px] pb-[15px] relative text-white">
@@ -123,14 +120,24 @@ export default function ProductCardStyleOne({ datas, type }) {
         <p className="price">
           {datas?.flashSaleDetail?.id > 0 ?
             (<>
-              <span className=" text-qred text-[20px] font-extrabold mr-1">
-                {Intl.NumberFormat().format(
-                  datas?.price - ((datas?.price * datas?.sale) / 100) - ((datas?.price - ((datas?.price * datas?.sale) / 100)) * (datas?.flashSaleDetail?.sale / 100))
-                )}<sup>đ</sup>
-              </span>
-              <span className="text-[15px] font-normal text-gray-600 line-through">
-                {Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup>
-              </span>
+              <div className="grid grid-cols-1">
+                <div className="flex items-center">
+                  <span className=" text-qred text-[20px] font-extrabold mr-1">
+                    {Intl.NumberFormat().format(
+                      datas?.price - ((datas?.price * datas?.sale) / 100) - ((datas?.price - ((datas?.price * datas?.sale) / 100)) * (datas?.flashSaleDetail?.sale / 100))
+                    )}<sup>đ</sup>
+                  </span>
+                  <div className="bg-red-600 rounded-[4px] flex items-center">
+                    <span className="text-[12px] font-semibold p-[4px] text-center justify-center">-{datas?.flashSaleDetail?.sale}%</span>
+                  </div>
+                </div>
+                <span className="text-[15px] font-normal text-gray-600 line-through">
+                  {Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup>
+                </span>
+              </div>
+
+
+
             </>) :
             (<>
               <div className="grid grid-cols-1">
@@ -184,3 +191,5 @@ export default function ProductCardStyleOne({ datas, type }) {
     </div>
   );
 }
+
+

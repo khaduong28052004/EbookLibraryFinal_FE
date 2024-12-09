@@ -558,7 +558,7 @@ export default function CheakoutPage() {
               <p>Tổng tiền hàng</p>
             </div>
             <div className="text-left">
-              <p>tổng tiền phí vận chuyển</p>
+              <p>Tổng tiền phí vận chuyển</p>
             </div>
             <div className="text-left">
               <p>Tổng giảm giá</p>
@@ -573,7 +573,7 @@ export default function CheakoutPage() {
               <p>{Intl.NumberFormat().format(total)}<sup>đ</sup></p>
             </div>
             <div className="text-right">
-              <p className='text-red-600'>-{Intl.NumberFormat().format(totalServiceFee)}<sup>đ</sup></p>
+              <p className='text-red-600'>+{Intl.NumberFormat().format(totalServiceFee)}<sup>đ</sup></p>
             </div>
             <div className="text-right">
               <p className='text-red-600'>-{Intl.NumberFormat().format(totalSale)}<sup>đ</sup></p>
