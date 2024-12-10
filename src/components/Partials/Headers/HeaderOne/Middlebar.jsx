@@ -11,7 +11,7 @@ import ThinLove from "../../../Helpers/icons/ThinLove";
 import ThinPeople from "../../../Helpers/icons/ThinPeople";
 import SearchBox from "../../../Helpers/SearchBox";
 import { useRequest } from '../../../Request/RequestProvicer';
-
+import SearchService from '../../../../service/user/search';
 export default function Middlebar({ className, type }) {
   const navigate = useNavigate();
   const [totalCart, setTotalCart] = useState(0);
@@ -148,15 +148,7 @@ export default function Middlebar({ className, type }) {
 
   const searchImage = async (data) => {
     setIsOpenEvent(true);
-    // alert("name " + data?.filename)
-    const config = {
-      headers: {
-        'Content-Type': 'multipart/form-data', // or 'application/json' depending on the server
-      },
-    };
-    console.log("file " + typeof data)
     try {
-
       const response = await SearchService.searchImage(data);
       console.log(response);
       navigate(`/search?idProduct=${response.data.similar_product_ids}`);
