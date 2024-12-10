@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import userOrderService from "../../service/user/order";
 import OrderDetail from '../OrderDetail/index';
 // npm install --save react-spinners
-
+import { useLocation } from "react-router-dom";
 const dataTEST = [
     {
         "billId": 9,
@@ -104,7 +104,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     const [taskCompleted, setTaskCompleted] = useState(false);
     const [sortOrder, setSortOrder] = useState("asc");
     const [sortField, setSortField] = useState(null);
-
+    const local = useLocation();
     const getIdAccountFromSession = () => {
         const user = sessionStorage.getItem("user");
 
@@ -249,6 +249,15 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             setTaskCompleted(false);
         }
     }, [activeMenu, taskCompleted]);
+
+    useEffect(() => {
+        const id = sessionStorage.getItem("billId");
+        if (id) {
+            setValue(id);
+            console.log("ID:", id);
+            sessionStorage.removeItem("billId");
+        }
+    }, [local]);
 
 
     if (loading) {
