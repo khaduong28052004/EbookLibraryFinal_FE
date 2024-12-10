@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect,useState} from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import About from "./components/About/index.jsx";
 import AllProductPage from "./components/AllProductPage/index.jsx";
@@ -32,22 +32,15 @@ import HomeShop from "./components/shop/index.jsx";
 import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
-
+import ChatBot from "./pages/Seller/ChatBot2.jsx";
 
 // const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));
 const SingleProductPage = lazy(() => import('./components/SingleProductPage/index.jsx'))
 const CheakoutSuccess = lazy(() => import("./components/CheakoutPage/success.jsx"))
-import ForgotPassword from "./components/Auth/Login/ForgotPassword.jsx";
-import UpdatePassword from "./components/Auth/Login/UpdatePassword.jsx";
-import ChatBot from "./pages/Seller/ChatBot2.jsx";
-import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import Signupv2 from "./components/Auth/Signup/indexV2.jsx";
-import LinkFrom from "./components/Auth/Signup/LinkFrom.jsx";
-import RegistrationForm from './components/Auth/Signup/RegistrationForm.jsx'
-import Popup from './common/Loader/LyLy';
+
+import RegistrationForm from './components/Auth/Signup/RegistrationForm.jsx';
+
 // import PageTitle from './components/PageTitle'; //thêm page vô nha 
 
 export default function Routers() {
@@ -59,11 +52,7 @@ export default function Routers() {
   //   const currentTimestamp = Date.now();
   //   return expirationTime < currentTimestamp;
   // }
-// Hàm đóng popup
-const handlePopupClose = () => {
-  setIsPopupOpen(false); // Đóng popup khi bấm nút "×"
-};
-const [isPopupOpen, setIsPopupOpen] = useState(true); // Mở popup khi trang được tải
+
 
 
   useEffect(() => {
@@ -95,10 +84,7 @@ const [isPopupOpen, setIsPopupOpen] = useState(true); // Mở popup khi trang đ
         <ChatBot />
         <Routes location={location} key={location.pathname} >
           <Route exact path="/" element={
-            <Suspense fallback={<Loader />}>
-               {isPopupOpen && <Popup onClose={handlePopupClose} />} {/* Hiển thị popup khi isPopupOpen là true */}
-              <Home />
-            </Suspense>
+            <Home />
           }
           />
           <Route exact path="/search" element={<AllProductPage />} />
@@ -146,8 +132,8 @@ const [isPopupOpen, setIsPopupOpen] = useState(true); // Mở popup khi trang đ
           <Route exact path="/singup2/*" element={<Signupv2 />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route exact path="/change-password/*" element={<UpdatePassword />} />
-          <Route exact path="/home-shop/:Id" element={<HomeShop/>} />
-          </Routes>
+          <Route exact path="/home-shop/*" element={<HomeShop />} />
+        </Routes>
       </RequestProvider>
     </>
 
