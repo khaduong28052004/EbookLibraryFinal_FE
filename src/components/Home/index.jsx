@@ -47,9 +47,14 @@ export default function Home() {
   };
 
   const fetchSuggests = async () => {
-  const id_user = sessionStorage.getItem("id_account");
-    await axios.get("http://localhost:8080/api/v1/user/home/suggest?id_user="+id_user).then(response => {
+    var id_user = 0;
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      id_user = sessionStorage.getItem("id_account");
+    }
+    await axios.get("http://localhost:8080/api/v1/user/home/suggest?id_user=" + id_user).then(response => {
       setSuggests(response.data.result);
+
     }).catch(error => console.error("fetch suggest error : " + error));
   }
 
@@ -92,7 +97,7 @@ export default function Home() {
 
   return (
     <>
-      {loading? (
+      {loading ? (
         // <div className="flex justify-center items-center h-screen">
         <Loader />
 
