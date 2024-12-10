@@ -163,6 +163,7 @@ export default function ShopHome() {
 
     const fetchDataSelectAll = async () => {
         const id_account = sessionStorage.getItem("id_account") || 0;
+        console.log("sửa nhe");
         await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account).then(response => {
             setProducts(response.data.result);
         }).catch(error => {
