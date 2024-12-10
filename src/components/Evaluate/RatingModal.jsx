@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from "react"
 import BeatLoader from "react-spinners/BeatLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -5,10 +6,13 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { Fragment } from "react";
 import userEvaluateService from '../../service/user/evaluate';
 import { toast, ToastContainer } from 'react-toastify';
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 // npm install --save react-spinners
 
-export default function Evaluate({ orderDetailId, productId, clearOrderDetailId }) {
-    // const [order, setOrder] = useState();
+const RatingModal = ({ product, orderDetailId, productId, isOpen, handleClose, clearOrderDetailId }) => {
+    if (!isOpen) return null; // Nếu modal không mở thì không hiển thị gì
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [star, setStar] = useState(0);
     const [content, setContent] = useState("");
@@ -28,49 +32,48 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId 
         return null;
     };
 
-    const fetchEvaluate = () => {
+    const fetchEvaluate = async () => {
+        try {
+            setLoading(true);
 
-        setTimeout(
-            async () => {
-                try {
-                    const accountId = getIdAccountFromSession().id_account;
-                    if (!star || star <= 0) {
-                        toast.warn("Vui lòng đánh giá sao trước khi gửi");
-                        setLoading(false);
-                        return;
-                    }
-                    console.log('1');
+            const accountId = getIdAccountFromSession().id_account;
+            if (!star || star <= 0) {
+                toast.warn("Vui lòng đánh giá sao trước khi gửi");
+                setLoading(false);
+                return;
+            }
+            console.log('1');
 
-                    console.log('star:', star);
-                    console.log('content:', content);
-                    console.log('orderDetailId:', orderDetailId);
-                    console.log('productId:', productId);
-                    console.log('accountId:', accountId);
-                    console.log('images:', images);
+            console.log('star:', star);
+            console.log('content:', content);
+            console.log('orderDetailId:', orderDetailId);
+            console.log('productId:', productId);
+            console.log('accountId:', accountId);
+            console.log('images:', images);
 
-                    const response = await userEvaluateService.createEvaluate({
-                        star,
-                        content: content || "",
-                        orderDetailId,
-                        productId,
-                        accountId: accountId,
-                        images: images,
-                    });
+            const response = await userEvaluateService.createEvaluate({
+                star,
+                content: content || "",
+                orderDetailId,
+                productId,
+                accountId: accountId,
+                images: images,
+            });
 
-                    if (response.status !== 200) {
-                        handleErrorResponse(response.data);
-                        return;
-                    }
-                    toast.success("Gửi đánh giá thành công");
-                    clearOrderDetailId();
+            if (response.status !== 200) {
+                handleErrorResponse(response.data);
+                return;
+            }
+            toast.success("Gửi đánh giá thành công");
+            handleClose()
+            clearOrderDetailId();
 
-                } catch (error) {
-                    console.log('Caught error:', error.message);
-                    toast.error(error.message || "Đã xảy ra lỗi khi gửi đánh giá");
-                } finally {
-                    setLoading(false);
-                }
-            }, 1000);
+        } catch (error) {
+            console.log('Caught error:', error.message);
+            toast.error(error.message || "Đã xảy ra lỗi khi gửi đánh giá");
+        } finally {
+            setLoading(false);
+        }
     };
 
 
@@ -130,21 +133,45 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId 
         setMessage("");
     };
 
+    useEffect(() => {
+        console.log("{product.urlImge", product)
+    }, [])
+
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center h-screen ">
                 <BeatLoader color="#56A0D3" />
             </div>
         );
-    } else {
-        return (
-            <>
-                <div className="border-b">
-                    <div className="rounded text-gray-500 font-light text-[5px] pb-2 flex inline-block  hover: cursor-pointer w-[100px]" onClick={clearOrderDetailId}>
-                        <img src="https://cdn-icons-png.flaticon.com/128/10728/10728732.png" alt="" className="w-[10px] mr-2" /> TRỞ LẠI
+    }
+
+    return (
+        <div className={`${loading ? 'opacity-50' : 'opacity-100'} fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50`}>
+            <div className="bg-white rounded-lg p-6 w-1/3">
+
+                <div className="flex justify-end border-b">
+                    <div className="rounded text-gray-500 font-light text-[5px] pb-2 flex inline-block  hover: cursor-pointer" onClick={handleClose}>
+                        {/* <img src="https://cdn-icons-png.flaticon.com/128/10728/10728732.png" alt="" className="w-[10px] mr-2" /> */}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+
                     </div>
                 </div>
-                <div className="p-5 border mt-[30px] rounded">
+                
+                <div className="border border-[#003EA1] p-2 flex gap-4 mb-5">
+                        <img className='w-[50px] h-[50px] border border-[#003EA1] rounded ' src={`${product.urlImge}`} alt="" />
+                        <div className="flex flex-col text-sm text-[#003EA1]">
+                            <div>{product.productName}</div>
+                            <div className='text-[5px]'>
+                                {new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                }).format(product.price)}
+                            </div>
+                        </div>
+                    </div>
+                <div className="p-5 border mt-[10px] rounded">
                     <ToastContainer></ToastContainer>
                     <div className="">
                         <form encType="multipart/form-data" className="text-sm">
@@ -198,7 +225,7 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId 
                                                 <div className="mt-5 h-[160px]">
                                                     {" "}
                                                     <label className="block mb-2 font-medium text-gray-700">
-                                                        Đăng tải ảnh sản phẩm
+                                                        Đăng tải ảnh đánh giá
                                                     </label>
                                                     <div className="border border-dashed w-full h-full border-gray-400 p-5 rounded-md flex justify-center items-center">
                                                         <label
@@ -217,8 +244,8 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId 
                                                                     clipRule="evenodd"
                                                                 />
                                                             </svg>
-                                                            <span className="mt-2 text-sm text-gray-600">
-                                                                Đăng tải ảnh sản phẩm
+                                                            <span className="mt-2 text-sm text-center text-gray-600">
+                                                                Đăng tải ảnh
                                                             </span>
                                                         </label>
                                                         <input
@@ -266,8 +293,8 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId 
                                     <>
                                         <button
                                             type="button"
-                                            className="my-4 min-w-[90px] rounded-md bg-indigo-600 px-4 py-1 text-white  hover:bg-indigo-800 hover:cursor-pointer
-                                           cursor-default"
+                                            className="my-4 min-w-[90px] rounded-md bg-[#003EA1] px-4 py-1 text-white  hover:opacity-90 hover:cursor-pointer
+                                       cursor-default"
                                             style={{ width: "90px" }}
                                             onClick={() => fetchEvaluate()}
                                         >
@@ -279,10 +306,9 @@ export default function Evaluate({ orderDetailId, productId, clearOrderDetailId 
                         </form>
                     </div>
                 </div>
-            </>
-        )
-    }
+            </div>
+        </div>
+    );
+};
 
-
-
-}
+export default RatingModal;

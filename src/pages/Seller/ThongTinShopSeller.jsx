@@ -12,8 +12,11 @@ import ShopService from '../../service/Seller/ShopService';
 import { toast, ToastContainer } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import axios from 'axios';
-import { uploadImageAvt,uploadImageBR } from "../../service/dangKySellerService";
-import AuthService from "../../service/authService";
+import {
+  uploadImageAvt,
+  uploadImageBR,
+} from '../../service/dangKySellerService';
+import AuthService from '../../service/authService';
 
 import {
   loadProvinces,
@@ -32,7 +35,7 @@ const ShopSeller = () => {
     fullname: '',
     shopName: '',
     posts: 0,
-    followers : null,
+    followers: null,
     following: 0,
     phone: '',
     email: '',
@@ -41,7 +44,7 @@ const ShopSeller = () => {
     district: '', // lưu id của nó
     commune: '', // lưu id của nó
     wardCode: '',
-    street: "",
+    street: '',
   });
   const [editingAddressId, setEditingAddressId] = useState(null);
   const [error, setError] = useState('');
@@ -82,6 +85,7 @@ const ShopSeller = () => {
     };
     fetchProvinces();
   }, []);
+
   useEffect(() => {
     const fetchDistricts = async () => {
       if (selectedProvince.id) {
@@ -92,6 +96,7 @@ const ShopSeller = () => {
             parseInt(selectedProvince.id, 10),
           );
           setDistricts(districtsData);
+          setWards([]); // Reset wards only when district is cleared
           console.log(districtsData);
         } catch (error) {
           setError('Failed to load districts. Please try again.');
@@ -99,12 +104,12 @@ const ShopSeller = () => {
           setLoading(false);
         }
       } else {
-        setDistricts([]);
-        setWards([]);
+        setDistricts([]); // Only reset districts, not wards
       }
     };
     fetchDistricts();
   }, [selectedProvince]);
+
   useEffect(() => {
     const fetchWards = async () => {
       if (selectedDistrict.id) {
@@ -120,11 +125,12 @@ const ShopSeller = () => {
           setLoading(false);
         }
       } else {
-        setWards([]);
+        setWards([]); // Reset wards only when district is cleared
       }
     };
     fetchWards();
   }, [selectedDistrict]);
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setData((prevData) => ({
@@ -168,56 +174,72 @@ const ShopSeller = () => {
       name: selectedOption.getAttribute('data-name'),
     });
   };
-  const [image, setImage] = useState({
-    avatar: null,
-    background: null,
-  });
+  // const [image, setImage] = useState({
+  //   avatar: null,
+  //   background: null,
+  // });
 
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     loadData();
   }, [location]);
-  const handleImageChange = (event, type) => {
+
+  const handleImageChange = async (event, type) => {
     const file = event.target.files[0];
-    if (file) {
-      handleFile(file, type);
+    if (!file) return;
+
+    try {
+      const id = sessionStorage.getItem('id_account');
+      const formData = new FormData();
+
+      if (type === 'avatar') {
+        formData.append('imgAvatar', file);
+        await uploadImageAvt(id, formData);
+        toast.success('Cập nhật ảnh đại diện thành công!');
+      } else if (type === 'background') {
+        formData.append('imgBackground', file);
+        await uploadImageBR(id, formData);
+        toast.success('Cập nhật ảnh nền thành công!');
+      }
+    } catch (error) {
+      toast.error('Cập nhật hình ảnh thất bại, vui lòng thử lại!');
+      console.error('Error:', error);
     }
   };
+
   const handleFile = (file, type) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Vui lòng chỉ tải lên tệp hình ảnh');
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
       toast.error('File quá lớn. Vui lòng chọn file nhỏ hơn 5MB');
       return;
     }
-
     if (type === 'avatar') {
       setimgAvartar(file);
     } else if (type === 'background') {
       setimgBackgrourd(file);
     }
   };
- 
+
   const loadData = async () => {
     try {
       const id = sessionStorage.getItem('id_account'); // Lấy id từ sessionStorage
-  
+
       // Gọi API lấy thông tin shop
       const shopResponse = await axios.get(
-        `http://localhost:8080/api/v1/seller/shop/followers/count?shop_id=${id}`
+        `http://localhost:8080/api/v1/seller/shop/followers/count?shop_id=${id}`,
       );
       const followers = shopResponse.data.result; // Số lượng followers
-  
+
       const shopfollowingResponse = await axios.get(
-        `http://localhost:8080/api/v1/seller/shop/following/count?account_id=${id}`
+        `http://localhost:8080/api/v1/seller/shop/following/count?account_id=${id}`,
       );
       const following = shopfollowingResponse.data.result; // Số lượng following
       const postResponse = await axios.get(
-        `http://localhost:8080/api/v1/seller/shop/posts/count?account_id=${id}`
+        `http://localhost:8080/api/v1/seller/shop/posts/count?account_id=${id}`,
       );
       const posts = postResponse.data.result; // Số lượng post
       // Gọi API lấy thông tin tài khoản
@@ -225,13 +247,13 @@ const ShopSeller = () => {
       const account = accountResponse.data.result;
       // Gọi API lấy địa chỉ
       const addressResponse = await axios.get(
-        `http://localhost:8080/api/v1/user/rest/address/active/${id}`
+        `http://localhost:8080/api/v1/user/rest/address/active/${id}`,
       );
       const addresses = addressResponse.data.data;
-      const activeAddress =
-        addresses.find((address) => address.status === true) ||
-        { fullNameAddress: 'Chưa có địa chỉ', id: null };
-  
+      const activeAddress = addresses.find(
+        (address) => address.status === true,
+      ) || { fullNameAddress: 'Chưa có địa chỉ', id: null };
+
       // Cập nhật state
       setData({
         imgAvartar: account.avatar,
@@ -244,9 +266,10 @@ const ShopSeller = () => {
         phone: account.phone || '', // Số điện thoại
         fullNameAddress: activeAddress.fullNameAddress || 'Chưa có địa chỉ',
         email: account.email || 'Chưa có email', // Email
-        street:activeAddress.street ||"",
+        shopName: account.shopName || 'Chưa có shopName', // Email
+        street: activeAddress.street || '',
       });
-  
+
       setEditingAddressId(activeAddress.id); // Cập nhật id địa chỉ đang chỉnh sửa
       console.log('Địa chỉ đang chỉnh sửa:', activeAddress.id);
     } catch (error) {
@@ -254,20 +277,15 @@ const ShopSeller = () => {
       console.error('Lỗi khi tải dữ liệu:', error);
     }
   };
-  
+
   useEffect(() => {
     setData((prevData) => ({
-        ...prevData,
-        province: selectedProvince.id,
-        district: selectedDistrict.id,
-        wardCode: selectedWard.id,
+      ...prevData,
+      province: selectedProvince.id,
+      district: selectedDistrict.id,
+      wardCode: selectedWard.id,
     }));
-}, [
-    selectedProvince,
-    selectedDistrict,
-    selectedWard,
-]);
-
+  }, [selectedProvince, selectedDistrict, selectedWard]);
 
   const handleWardChange = (e) => {
     const selectedOption = e.target.options[e.target.selectedIndex];
@@ -276,11 +294,33 @@ const ShopSeller = () => {
       name: selectedOption.getAttribute('data-name'),
     });
   };
+
   const handleSave = async (event) => {
+    event.preventDefault();
+
+    // Kiểm tra email
+    if (!data.email || data.email.trim() === '') {
+      toast.error('Vui lòng nhập email!');
+      return;
+    } else if (
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data.email)
+    ) {
+      toast.error('Định dạng email không hợp lệ!');
+      return;
+    }
+
+    // Kiểm tra số điện thoại
     if (!data.phone || data.phone.trim() === '') {
       toast.error('Vui lòng nhập số điện thoại!');
       return;
+    } else if (!/^(09|03|07)\d{8}$/.test(data.phone)) {
+      toast.error(
+        'Số điện thoại phải bắt đầu bằng 09, 03 hoặc 07 và có 10 số.',
+      );
+      return;
     }
+
+    // Kiểm tra các trường địa chỉ
     if (!data.province || data.province === 'default') {
       toast.error('Vui lòng chọn Tỉnh/Thành Phố!');
       return;
@@ -295,72 +335,65 @@ const ShopSeller = () => {
       toast.error('Vui lòng chọn Xã/Phường!');
       return;
     }
-    event.preventDefault();
+
     const id = sessionStorage.getItem('id_account') || 1;
-  try {
-    // Kiểm tra nếu có `data.id` để xác định là cập nhật hay thêm mới
-    if (data.id) {
-      // Tạo fullNameAddress bằng cách nối các trường
-        // Nối các phần bằng dấu phẩy
+
+    try {
+      // Kiểm tra nếu có `data.id` để xác định là cập nhật hay thêm mới
+      if (data.id) {
+        // Tạo fullNameAddress
         const fullNameAddress = [
           data.street,
           selectedWard?.name,
           selectedDistrict?.name,
-          selectedProvince?.name
+          selectedProvince?.name,
         ]
           .filter((part) => part && part.trim() !== '') // Loại bỏ các phần tử null/undefined/rỗng
           .join(', '); // Ghép lại thành chuỗi
-        
-      // Cập nhật dữ liệu địa chỉ
-      const updatedAddressData = {
-        ...data,
-        fullNameAddress: fullNameAddress,
-      };
-      try {
-        const id = sessionStorage.getItem("id_account");
-      
-        // Upload avatar nếu có
+
+        // Cập nhật dữ liệu địa chỉ
+        const updatedAddressData = {
+          ...data,
+          fullNameAddress: fullNameAddress,
+        };
+
+        // Xử lý upload hình ảnh và cập nhật tài khoản
         if (imgAvartar) {
           const formDataAvt = new FormData();
-          formDataAvt.append("imgAvatar", imgAvartar);
+          formDataAvt.append('imgAvatar', imgAvartar);
           await uploadImageAvt(id, formDataAvt);
         }
-      
-        // Upload background nếu có
+
         if (imgBackgrourd) {
           const formDataBg = new FormData();
-          formDataBg.append("imgBackground", imgBackgrourd);
+          formDataBg.append('imgBackground', imgBackgrourd);
           await uploadImageBR(id, formDataBg);
         }
-      
-        // Cập nhật thông tin tài khoản
+
         await AuthService.updateAccount(id, data);
         await putAddress(id, updatedAddressData);
-        toast.success("Cập nhật tài khoản thành công!");
-      } catch (error) {
-        toast.error("Cập nhật thất bại, vui lòng kiểm tra lại!");
-        console.error("Error:", error);
+        toast.success('Cập nhật tài khoản thành công!');
       }
 
+      console.log('Address processed:', data);
+      setIsOpen(false); // Đóng modal sau khi xử lý thành công
+    } catch (error) {
+      console.error('Error processing address:', error);
+      toast.error('Lỗi khi xử lý địa chỉ!');
     }
-    console.log('Address processed:', data);
-    setIsOpen(false); // Đóng modal sau khi xử lý thành công
-  } catch (error) {
-    console.error('Error processing address:', error);
-    toast.error('Lỗi khi xử lý địa chỉ!');
-  }
   };
-  
-  
+
   return (
     <>
-    <ToastContainer /> 
+      <ToastContainer />
       <Breadcrumb pageName="Thông Tin Chung" status="Quản Trị" />
       <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="relative z-20 h-35 md:h-65">
           <img
-             src={
-              imgBackgrourd ? URL.createObjectURL(imgBackgrourd) : data.imgBackgrourd
+            src={
+              imgBackgrourd
+                ? URL.createObjectURL(imgBackgrourd)
+                : data.imgBackgrourd
             }
             alt="profile cover"
             className="h-full w-full rounded-tl-sm rounded-tr-sm object-cover object-center"
@@ -376,7 +409,7 @@ const ShopSeller = () => {
                 type="file"
                 className="sr-only"
                 accept="image/*"
-                onChange={(e) => handleImageChange(e, 'background')}
+                onChange={(event) => handleImageChange(event, 'background')}
               />
               <span>
                 <svg
@@ -401,7 +434,6 @@ const ShopSeller = () => {
                   />
                 </svg>
               </span>
-              <span>Edit</span>
             </label>
           </div>
         </div>
@@ -444,11 +476,8 @@ const ShopSeller = () => {
                   type="file"
                   className="sr-only"
                   accept="image/*"
-                  onChange={(e) => handleImageChange(e, 'avatar')}
-                  // type="file"
-                  // name="profile"
+                  onChange={(event) => handleImageChange(event, 'avatar')}
                   id="profile"
-                  // className="sr-only"
                 />
               </label>
             </div>
@@ -508,19 +537,34 @@ const ShopSeller = () => {
                   <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                       <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-                        <h3 className="font-semibold text-xl text-black dark:text-white">
-                          Liên Hệ
-                        </h3>
+                        <h1 className="font-semibold text-xl text-blue-700 dark:text-white text-center">
+                          THÔNG TIN SHOP
+                        </h1>
                       </div>
                       <form>
                         <div className="p-6.5">
+                          <div className="mb-4.5">
+                            <label className="mb-2.5 block text-slate-500 dark:text-white">
+                              Tên Shop*
+                            </label>
+                            <input
+                              type="text"
+                              id="shopName"
+                              placeholder="Vui lòng nhập tên shop"
+                              value={data.shopName}
+                              onChange={handleChange}
+                              required
+                              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                            />
+                          </div>
+
                           <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                             <div className="w-full xl:w-1/2">
-                              <label className="mb-2.5 block text-black dark:text-white">
-                                Email
+                              <label className="mb-2.5 block text-slate-500 dark:text-white">
+                                Email*
                               </label>
                               <input
-                                type="text"
+                                type="email"
                                 id="email"
                                 placeholder="Vui lòng nhập email"
                                 value={data.email}
@@ -531,8 +575,8 @@ const ShopSeller = () => {
                             </div>
 
                             <div className="w-full xl:w-1/2">
-                              <label className="mb-2.5 block text-black dark:text-white">
-                                Tỉnh, Thành Phố
+                              <label className="mb-2.5 block text-slate-500 dark:text-white">
+                                 Tỉnh, Thành Phố*
                               </label>
                               <select
                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -554,10 +598,11 @@ const ShopSeller = () => {
                               </select>
                             </div>
                           </div>
+
                           <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                             <div className="w-full xl:w-1/2">
-                              <label className="mb-2.5 block text-black dark:text-white">
-                                Số Nhà, Đường
+                              <label className="mb-2.5 block text-slate-500 dark:text-white">
+                                Số Nhà, Đường*
                               </label>
                               <input
                                 type="text"
@@ -571,8 +616,8 @@ const ShopSeller = () => {
                               />
                             </div>
                             <div className="w-full xl:w-1/2">
-                              <label className="mb-2.5 block text-black dark:text-white">
-                                Quận, Huyện
+                              <label className="mb-2.5 block text-slate-500 dark:text-white">
+                                Quận, Huyện*
                               </label>
                               <select
                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -581,7 +626,7 @@ const ShopSeller = () => {
                                 onChange={handleDistrictChange}
                                 required
                               >
-                                <option value="">Chọn quận/huyện</option>
+                                <option value="">Chọn quận/huyện </option>
                                 {districts.map((district) => (
                                   <option
                                     key={district.DistrictID}
@@ -594,10 +639,11 @@ const ShopSeller = () => {
                               </select>
                             </div>
                           </div>
+
                           <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                             <div className="w-full xl:w-1/2">
-                              <label className="mb-2.5 block text-black dark:text-white">
-                                Số Điện Thoại
+                              <label className="mb-2.5 block text-slate-500 dark:text-white">
+                                Số Điện Thoại*
                               </label>
                               <input
                                 type="text"
@@ -612,8 +658,8 @@ const ShopSeller = () => {
                             </div>
 
                             <div className="w-full xl:w-1/2">
-                              <label className="mb-2.5 block text-black dark:text-white">
-                                Xã, Phường
+                              <label className="mb-2.5 block text-slate-500 dark:text-white">
+                                Xã, Phường*
                               </label>
                               <select
                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"

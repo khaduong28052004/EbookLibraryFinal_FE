@@ -9,6 +9,12 @@ export default function PasswordTab() {
   const [oldPass, setOldPass] = useState("hide-password");
   const [newPass, setNewPass] = useState("hide-password");
   const [confirmPass, setConfirmPass] = useState("hide-password");
+  const [showRequirements, setShowRequirements] = useState(false); // Quản lý trạng thái hiển thị
+  const [errorFrom, seterrorFrom] = useState({
+    passwordF: 0,
+    confirmPasswordNewF: 0,
+    confirmPasswordF: 0,
+  });
   const navigate = useNavigate(); // Hook for navigation
   const showPassword = (value) => {
     const password = document.getElementById(`${value}`);
@@ -40,6 +46,7 @@ export default function PasswordTab() {
       }
     }
   };
+
   const [data, setData] = useState({
     old_password: '',
     confirm_password: '',
@@ -58,6 +65,7 @@ export default function PasswordTab() {
   useEffect(() => {
     console.log("Updated data:", data);
   }, [data]);
+
   const getPasswordStrengthClass = (strength) => {
     switch (strength) {
       case "weak":
@@ -80,10 +88,15 @@ export default function PasswordTab() {
       try {
         const response = await AuthService.UpdatePass(data.id, data.new_password, data.old_password);
         if (response.status === 200) {
-          toast.success("Cập nhật mật khẩu thành công!");
+          // toast.success("Cập nhật mật khẩu thành công!");
+          toast.success("Cập nhật mật khẩu thành công hay đăng nhập lại!");
+
           setError(true);
+          seterrorFrom((prev) => ({ ...prev, passwordF: 2, confirmPasswordNewF: 2, confirmPasswordF: 2, }));
           setTimeout(() => {
-            navigate('/profile#dashboard');
+            // navigate('/profile#dashboard');
+            AuthService.logout;
+            navigate('/login');
           }, 2000);
         } else {
           setError(false);
@@ -166,26 +179,109 @@ export default function PasswordTab() {
     }
   };
 
+  //   const [errorFrom, seterrorFrom] = useState({
+  //     passwordF: 0,
+  //     confirmPasswordNewF: 0,
+  //     confirmPasswordF: 0,
+  // });
 
   const checkForm = (data) => {
+    let isValid = true;
+    let errors = {};
     if (!data.old_password) {
-      toast.warn("Mật khẩu không được để trống!");
+      errors.old_password = 'Mật khẩu không được để trống!';
+      // toast.warn("Mật khẩu không được để trống!");
+      seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
       setError(false);
-      return false;
+      isValid = false;
+    } else {
+      seterrorFrom((prev) => ({ ...prev, passwordF: 0 }));
+      // isvail = true;
     }
+
     if (!data.new_password) {
       setError(false);
-      toast.warn("Mật khẩu không được để trống!");
-      return false;
+      // toast.warn("Mật khẩu không được để trống!");
+      errors.new_password = 'Mật khẩu mới không được để trống!';
+      seterrorFrom((prev) => ({ ...prev, confirmPasswordNewF: 1 }));
+      isValid = false;
+    } else if (data.new_password.length < 8) {
+      errors.password = 'Mật khẩu phải >= 8 ký tự!';
+      // toast.error("Mật khẩu phải >= 8 ký tự!");
+      isValid = false;
+      seterrorFrom((prev) => ({ ...prev, confirmPasswordNewF: 1 }));
+      // return;
+    } else if (!/[A-Z]/.test(data.new_password)) {
+      errors.password = 'Mật khẩu phải có ít nhất một kí tự viết Hoa!';
+      isValid = false;
+      seterrorFrom((prev) => ({ ...prev, confirmPasswordNewF: 1 }));
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(data.new_password)) {
+      errors.password = 'Mật khẩu phải có ít nhất một kí tự đặt biệt!!';
+      isValid = false;
+      seterrorFrom((prev) => ({ ...prev, confirmPasswordNewF: 1 }));
+    } else {
+      seterrorFrom((prev) => ({ ...prev, confirmPasswordNewF: 0 }));
     }
+
+
+    //
     if (data.confirm_password !== data.new_password) {
       setError(false);
-      toast.warn("Xác nhận mật khẩu không khớp!");
-      return false;
+      seterrorFrom((prev) => ({ ...prev, confirmPasswordF: 1 }));
+      // toast.warn("Xác nhận mật khẩu không khớp!");
+      errors.new_password = 'Xác nhận mật khẩu không khớp!';
+      isValid = false;
+    } else {
+      seterrorFrom((prev) => ({ ...prev, confirmPasswordF: 0 }));
+      // isvail = true;
+
     }
-    setError(true);
-    return true;
+    if (!data.confirm_password) {
+      setError(false);
+      seterrorFrom((prev) => ({ ...prev, confirmPasswordF: 1 }));
+      // toast.warn("Xác nhận mật khẩu không được để trống!");
+      errors.confirm_password = 'Xác nhận không được để trống!';
+      isValid = false;
+    } else {
+      seterrorFrom((prev) => ({ ...prev, confirmPasswordF: 0 }));
+      // isvail = true;
+
+    }
+
+    if (!isValid) {
+      const errorMessages = Object.values(errors).join("\n"); // Tạo chuỗi lỗi
+      toast.error(
+        <div>
+          {errorMessages.split("\n").map((msg, index) => (
+            <div key={index} className="text-sm text-red-500">{msg}</div>
+          ))}
+        </div>
+      );
+    }
+    setError(errors);
+    // setError(true);
+    return isValid;
   };
+
+  const generatePassword = () => {
+    const length = 16; // Adjusted length for the password
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let Password = "@";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      Password += charset[randomIndex];
+    }
+    // const [data, setData] = useState({
+    //   old_password: '',
+    //   confirm_password: '',
+    //   new_password: '',
+    //   id: sessionStorage.getItem('id_account') || ''
+    // });
+    setData((prev) => ({ ...prev, confirm_password: Password, new_password: Password, }));
+    return Password;
+  };
+
 
 
   return (
@@ -203,11 +299,13 @@ export default function PasswordTab() {
             <div className="relative">
               <input
                 placeholder="● ● ● ● ● ●"
-                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "boder border-green-300 " : "boder border-red-300 " // Error state
-                  // : errorFrom.usernameF === 2
-                  //   ? "border-green-500 bg-red-400" // Success state
-                  //   : ""
-                  }`} type="password"
+                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.passwordF === 1
+                  ? "ring-red-500 bg-red-100" // Lỗi
+                  : errorFrom.passwordF === 2
+                    ? "ring-green-500 bg-green-100" // Thành công
+                    : "" // Mặc định
+                  }`}
+                type="password"
                 id="old_password"
                 name="old_password"
                 onChange={handleData}
@@ -239,15 +337,16 @@ export default function PasswordTab() {
             <div className="relative">
               <input
                 placeholder="● ● ● ● ● ●"
-                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "boder border-green-300 " : "boder border-red-300 "
-                  // errorFrom.usernameF === 1
-                  // ? "border-red-500 bg-red-400" // Error state
-                  // : errorFrom.usernameF === 2
-                  //   ? "border-green-500 bg-red-400" // Success state
-                  //   : ""
-                  }`} type="password"
+                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.confirmPasswordNewF === 1
+                  ? "ring-red-500 bg-red-100" // Lỗi
+                  : errorFrom.confirmPasswordNewF === 2
+                    ? "ring-green-500 bg-green-100" // Thành công
+                    : "" // Mặc định
+                  }`}
+                type="password"
                 id="new_password"
                 name="new_password"
+                value={new_password}
                 onChange={handleData}
               />
               <div
@@ -277,15 +376,16 @@ export default function PasswordTab() {
             <div className="relative flex align-middle">
               <input
                 placeholder="● ● ● ● ● ●"
-                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error ? "boder border-green-300 " : "boder border-red-300 "
-                  // errorFrom.usernameF === 1
-                  // ? "border-red-500 bg-red-400" // Error state
-                  // : errorFrom.usernameF === 2
-                  //   ? "border-green-500 bg-red-400" // Success state
-                  //   : ""
-                  }`} type="password"
+                className={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.confirmPasswordF === 1
+                  ? "ring-red-500 bg-red-100" // Lỗi
+                  : errorFrom.confirmPasswordF === 2
+                    ? "ring-green-500 bg-green-100" // Thành công
+                    : "" // Mặc định
+                  }`}
+                type="password"
                 id="confirm_password"
                 name="confirm_password"
+                value={confirm_password}
                 onChange={handleData}
               />
               <div
@@ -305,6 +405,34 @@ export default function PasswordTab() {
               </div>
             </div>
           </div>
+          {/* /// */}
+          <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
+            <div className='w-[50%] flex justify-start' onMouseEnter={() => setShowRequirements(true)} onMouseLeave={() => setShowRequirements(false)}>
+              <span className='text-gray-400 text-start'>
+                {error ? (
+                  <>{error?.message}</>
+                ) : (
+                  <>yêu cầu!</>
+                )}
+              </span>
+              {showRequirements && (
+                <div className="top-full rounded-md shadow-md">
+                  <ul className="absolute bg-white p-4 border border-gray-300">
+                    <li>Mật khẩu phải dài ít nhất 8 ký tự</li>
+                    <li>Phải chứa ít nhất một chữ hoa và một chữ thường</li>
+                    <li>Phải có ít nhất một ký tự đặc biệt (@, #, $, v.v.)</li>
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <div className='w-[50%] flex justify-end'>
+              <button className='bg-blue-400 text-white shadow-sm' onClick={generatePassword}>
+                Gợi ý!
+              </button>
+            </div>
+          </div>
+          {/* /// */}
           <div className="w-full mt-[30px] flex justify-end">
             <div className=" sm:space-x-[30px] items-end">
               <div className="w-full h-[40px]">
