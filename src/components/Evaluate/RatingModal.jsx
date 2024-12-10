@@ -10,7 +10,7 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/re
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 // npm install --save react-spinners
 
-const RatingModal = ({ orderDetailId, productId, isOpen, handleClose, clearOrderDetailId }) => {
+const RatingModal = ({ product, orderDetailId, productId, isOpen, handleClose, clearOrderDetailId }) => {
     if (!isOpen) return null; // Nếu modal không mở thì không hiển thị gì
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -119,9 +119,6 @@ const RatingModal = ({ orderDetailId, productId, isOpen, handleClose, clearOrder
         event.target.value = "";
     };
 
-
-
-
     const removeImage = (index) => {
         console.log(index);
         setImages((images) => images.filter((_image, idx) => idx !== index));
@@ -136,6 +133,9 @@ const RatingModal = ({ orderDetailId, productId, isOpen, handleClose, clearOrder
         setMessage("");
     };
 
+    useEffect(() => {
+        console.log("{product.urlImge", product)
+    }, [])
 
     if (loading) {
         return (
@@ -158,7 +158,20 @@ const RatingModal = ({ orderDetailId, productId, isOpen, handleClose, clearOrder
 
                     </div>
                 </div>
-                <div className="p-5 border mt-[30px] rounded">
+                
+                <div className="border border-[#003EA1] p-2 flex gap-4 mb-5">
+                        <img className='w-[50px] h-[50px] border border-[#003EA1] rounded ' src={`${product.urlImge}`} alt="" />
+                        <div className="flex flex-col text-sm text-[#003EA1]">
+                            <div>{product.productName}</div>
+                            <div className='text-[5px]'>
+                                {new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                }).format(product.price)}
+                            </div>
+                        </div>
+                    </div>
+                <div className="p-5 border mt-[10px] rounded">
                     <ToastContainer></ToastContainer>
                     <div className="">
                         <form encType="multipart/form-data" className="text-sm">
@@ -212,7 +225,7 @@ const RatingModal = ({ orderDetailId, productId, isOpen, handleClose, clearOrder
                                                 <div className="mt-5 h-[160px]">
                                                     {" "}
                                                     <label className="block mb-2 font-medium text-gray-700">
-                                                        Đăng tải ảnh sản phẩm
+                                                        Đăng tải ảnh đánh giá
                                                     </label>
                                                     <div className="border border-dashed w-full h-full border-gray-400 p-5 rounded-md flex justify-center items-center">
                                                         <label
@@ -231,8 +244,8 @@ const RatingModal = ({ orderDetailId, productId, isOpen, handleClose, clearOrder
                                                                     clipRule="evenodd"
                                                                 />
                                                             </svg>
-                                                            <span className="mt-2 text-sm text-gray-600">
-                                                                Đăng tải ảnh sản phẩm
+                                                            <span className="mt-2 text-sm text-center text-gray-600">
+                                                                Đăng tải ảnh
                                                             </span>
                                                         </label>
                                                         <input
@@ -280,7 +293,7 @@ const RatingModal = ({ orderDetailId, productId, isOpen, handleClose, clearOrder
                                     <>
                                         <button
                                             type="button"
-                                            className="my-4 min-w-[90px] rounded-md bg-indigo-600 px-4 py-1 text-white  hover:bg-indigo-800 hover:cursor-pointer
+                                            className="my-4 min-w-[90px] rounded-md bg-[#003EA1] px-4 py-1 text-white  hover:opacity-90 hover:cursor-pointer
                                        cursor-default"
                                             style={{ width: "90px" }}
                                             onClick={() => fetchEvaluate()}
