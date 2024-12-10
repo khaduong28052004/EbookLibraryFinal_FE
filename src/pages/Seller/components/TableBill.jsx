@@ -177,7 +177,7 @@ const TableTwo = () => {
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+            {/* <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
               onClick={() => {
                 setSortBy(!sortBy);
                 setSortColumn("totalQuantity");
@@ -188,7 +188,7 @@ const TableTwo = () => {
                 <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "totalQuantity" ? "text-black" : "text-gray-500"} text-black`} />
                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "totalQuantity" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
-            </th>
+            </th> */}
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
               onClick={() => {
@@ -244,11 +244,11 @@ const TableTwo = () => {
                     {new Date(item.createAt).toLocaleDateString("en-GB")}
                   </div>
                 </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
                     {item.totalQuantity}
                   </div>
-                </td>
+                </td> */}
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
                     {item.totalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
