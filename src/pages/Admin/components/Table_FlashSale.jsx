@@ -177,7 +177,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {new Date(entity.dateStart).toLocaleString("vi-VN", {
+                                    {/* {new Date(entity.dateStart).toLocaleString("vi-VN", {
                                         day: "2-digit",
                                         month: "2-digit",
                                         year: "numeric",
@@ -185,11 +185,13 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                                         minute: "2-digit",
                                         second: "2-digit",
                                         hour12: false, // Sử dụng định dạng 24 giờ
-                                    })}                                </div>
+                                    })}                                 */}
+                                    {entity.dateStart.toLocaleString("en-GB")}
+                                </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {new Date(entity.dateEnd).toLocaleString("vi-VN", {
+                                    {/* {new Date(entity.dateEnd).toLocaleString("vi-VN", {
                                         day: "2-digit",
                                         month: "2-digit",
                                         year: "numeric",
@@ -197,7 +199,9 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                                         minute: "2-digit",
                                         second: "2-digit",
                                         hour12: false, // Sử dụng định dạng 24 giờ
-                                    })}                                </div>
+                                    })} */}
+                                    {entity.dateEnd.toLocaleString("en-GB")}
+                                </div>
                             </td>
 
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">

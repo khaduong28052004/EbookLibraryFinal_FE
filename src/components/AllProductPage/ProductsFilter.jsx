@@ -13,7 +13,8 @@ export default function ProductsFilter({
   filterToggle,
   filterToggleHandler,
   categories,
-  handleSelected
+  handleSelected,
+  setPage
 }) {
   const [selected, setSelected] = useState();
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function ProductsFilter({
     for (let item in selected) {
       console.log("length " + Object.keys(selected).length);
     }
+    setPage(0);
   }
 
 
