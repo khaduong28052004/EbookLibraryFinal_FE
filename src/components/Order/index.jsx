@@ -3,7 +3,7 @@ import BeatLoader from "react-spinners/BeatLoader";
 import { toast } from 'react-toastify';
 import userOrderService from "../../service/user/order";
 import OrderDetail from '../OrderDetail/index';
-// npm install --save react-spinners
+import Pagination from '../../pages/User/components/pagination';
 import { useLocation } from "react-router-dom";
 const dataTEST = [
     {
@@ -105,15 +105,16 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     const [sortOrder, setSortOrder] = useState("asc");
     const [sortField, setSortField] = useState(null);
     const local = useLocation();
+    const [currentPage, setCurrentPage] = useState(0);
+    const [size, setSize] = useState(6);
+    const [data, setData] = useState(null);
+
     const getIdAccountFromSession = () => {
         const user = sessionStorage.getItem("user");
-
         if (user) {
             const userObject = JSON.parse(user);
-            return userObject; // Trả về id_account
+            return userObject; 
         }
-
-        return null;
     };
 
     const fetchOrders = async () => {
@@ -121,15 +122,15 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             setLoading(true);
 
             const orderStatusId = activeMenu;
-
             const userID = getIdAccountFromSession().id_account;
+            const response = await userOrderService.fetchOrder(userID, orderStatusId, currentPage, size);
 
-            const response = await userOrderService.fetchOrder(userID, orderStatusId);
-
-            console.log('response.data.data', response.data.data);
-            if (response.data.data) {
-                const data = response.data.data;
-                setOrders(Array.isArray(data) ? data : []);
+            console.log('response.data.data', response.data);
+            if (response.data) {
+                const data = response.data;
+                setOrders(Array.isArray(data.data) ? data.data : []);
+                setData(data);
+                setCurrentPage(data.currentPage)
             } else {
                 throw new Error('Không có dữ liệu');
             }
@@ -212,7 +213,6 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
         setIsInDetailMode(true);
     }
 
-
     // Hàm để thay đổi thứ tự sắp xếp
     const handleSort = (field) => {
         const isAsc = sortField === field && sortOrder === "asc";
@@ -231,11 +231,27 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
     const sortedBills = [...orders];
 
+    const handlePageChange = (newPage) => {
+        if (newPage >= 0 && newPage < data.totalPages) {
+            setCurrentPage(newPage);
+            console.log("currentPage: " + newPage);
+        }
+    };
+    const handlePrevious = () => {
+        handlePageChange(currentPage - 1);
+    };
+
+    const handleNext = () => {
+        handlePageChange(currentPage + 1);
+    };
 
     useEffect(() => {
         fetchOrders();
-        console.log("tesst 1");
     }, []);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [currentPage]);
 
     useEffect(() => {
         fetchOrders();
@@ -268,7 +284,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
         );
     }
 
-    if (!loading && !orders) return <div>  <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
+    if (!loading && !orders) return <div>  <div className="min-h-[470px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
         <div className="flex flex-col items-center justify-center gap-2">
             <div className="">
                 <img className="w-[88px] h-fit items-center" src="https://cdn-icons-png.flaticon.com/128/17568/17568968.png" alt="" />
@@ -281,13 +297,13 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
     return (
         <>
-            <div className="relative w-full overflow-x-auto border-t mt-5 pt-5">
+            <div className="relative w-full overflow-x-auto border-t mt-5 pt-5 h-[470px]">
                 {sortedBills && sortedBills.length > 0 ? (
                     <>
-                        <table className="w-full text-sm text-left rounded-xl text-white dark:text-gray-400 bg-white shadow border">
+                        <table className=" w-full text-sm text-left  text-white dark:text-gray-400 bg-white shadow border">
                             <tbody>
                                 {/* table heading */}
-                                <tr className="text-[15px] text-gray-900 whitespace-nowrap px-2 border-b default-border-bottom justify-center">
+                                <tr className=" text-[15px] text-gray-900 whitespace-nowrap px-2 border-b default-border-bottom justify-center">
                                     <td className={`py-4 px-2 whitespace-nowrap text-center hover:cursor-pointer ${sortField === "billID" ? "font-bold" : ""}`} onClick={() => handleSort("billID")}>  Đơn hàng  <span>&#160;  &#8645;</span></td>
                                     <td className={`py-4 px-2 whitespace-nowrap text-center hover:cursor-pointer ${sortField === "createdDatetime" ? "font-bold" : ""}`} onClick={() => handleSort("createdDatetime")}>Ngày mua  <span>&#160;  &#8645;</span></td>
                                     <td className={`py-4 px-2 whitespace-nowrap text-center hover:cursor-pointer ${sortField === "billTotalPrice" ? "font-bold" : ""}`} onClick={() => handleSort("billTotalPrice")}>Tổng tiền  <span>&#160;  &#8645;</span></td>
@@ -371,7 +387,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
                     </>
                 ) : (
-                    <div className="min-h-[510px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
+                    <div className="min-h-[410px] bg-white  my-3 mb-5 rounded-md flex items-center justify-center">
                         <div className="flex flex-col items-center justify-center gap-2">
                             <div className="">
                                 <img className="w-[88px] h-fit items-center" src="https://st3.depositphotos.com/5532432/17972/v/450/depositphotos_179728282-stock-illustration-web-search-flat-vector-icon.jpg" alt="" />
@@ -381,6 +397,19 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
                     </div>
                 )
                 }
+            </div>
+            <div className="flex justify-end w-full  border-t">
+                {data?.totalItems > 0 ? (
+                    <Pagination
+                        pageNumber={data?.currentPage}
+                        totalPages={data?.totalPages}
+                        totalElements={data?.totalItems}
+                        handlePrevious={handlePrevious}
+                        handleNext={handleNext}
+                        setPageNumber={setCurrentPage}
+                        size={data?.pageSize}>
+                    </Pagination>
+                ) : <></>}
             </div>
         </>
     );

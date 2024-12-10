@@ -233,7 +233,7 @@ const RegistrationForm = () => {
             seterrorFrom((prev) => ({ ...prev, emailF: 1 }));// toast.error("Vui lòng điền email!");
             isValid = false;
             // return;
-
+            //    /(84|0[3|5|7|8|9])+([0-9]{8})\b/g
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             errors.email = 'Email không đúng định dạng!';
             seterrorFrom((prev) => ({ ...prev, emailF: 1 }));
@@ -256,7 +256,16 @@ const RegistrationForm = () => {
             isValid = false;
             seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
             // return;
-        } else {
+        } else if (!/[A-Z]/.test(formData.password)) {
+            errors.password = 'Mật khẩu phải có ít nhất một kí tự viết Hoa!';
+            isValid = false;
+            seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+        } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+            errors.password = 'Mật khẩu phải có ít nhất một kí tự đặt biệt!!';
+            isValid = false;
+            seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+        }
+        else {
             seterrorFrom((prev) => ({ ...prev, passwordF: 0 }));
         }
 
@@ -293,7 +302,7 @@ const RegistrationForm = () => {
 
     const [showRequirements, setShowRequirements] = useState(false); // Quản lý trạng thái hiển thị
 
-    const apiCheckEmail = async () => {
+    const apiCheckEmail = async () => {// không dùng được
         const token = import.meta.env.VITE_TOKEN_HUNTER;
         const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${formData.email}&api_key=${token}`);
         console.log(response);
@@ -617,7 +626,7 @@ const RegistrationForm = () => {
                                         </div>
                                         <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
                                             <div className='w-[50%] flex justify-start' onMouseEnter={() => setShowRequirements(true)} onMouseLeave={() => setShowRequirements(false)}>
-                                                <span className='text-gray-400 text-start'>
+                                                <span className='text-black-400 text-start'>
                                                     {error ? (
                                                         <>{error?.message}</>
                                                     ) : (
@@ -636,9 +645,9 @@ const RegistrationForm = () => {
                                             </div>
 
                                             <div className='w-[50%] flex justify-end'>
-                                                <span className='bg-blue-400 text-white shadow-sm' onClick={generatePassword}>
+                                                <button className='bg-blue-400 text-white shadow-sm' onClick={generatePassword}>
                                                     Gợi ý!
-                                                </span>
+                                                </button>   
                                             </div>
                                         </div>
                                         {/* {Object.keys(error).length > 0 && (

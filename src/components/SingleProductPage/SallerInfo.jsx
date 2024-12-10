@@ -2,10 +2,11 @@ import { UserMinusIcon, UserPlusIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
-import { useLocation,Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
+import ImageLoader from "../Helpers/ImageLoading/ImageWithLoader";
 import Star from "../Helpers/icons/Star";
 export default function SallerInfo({ seller, datas }) {
   const local = useLocation();
@@ -39,10 +40,10 @@ export default function SallerInfo({ seller, datas }) {
   return (
     <div className="saller-info-wrapper w-full">
       <div className="saller-info sm:flex justify-between items-center pb-[30px] border-b border-[#E8E8E8]">
-        <Link to={`/home-shop?shopID=${seller.id}`}>
+        <Link to={`/home-shop/${seller.id}`}>
           <div className="sm:flex sm:space-x-5 items-center sm:w-1.5/4">
             <div className="saller w-[73px] h-[73px] rounded-full overflow-hidden">
-              <img
+              <ImageLoader
                 src={seller?.avatar}
                 alt="saller"
                 className="w-full h-full object-cover"
