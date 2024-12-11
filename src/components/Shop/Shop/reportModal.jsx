@@ -15,7 +15,7 @@ const ReportModal = ({ accountId, shopId, isOpen, handleClose }) => {
     const createReport = async (createAt) => {
         const title = "Báo cáo shop"
         try {
-            const response = await homeShopService.createReport(accountId, shopId, createAt, content, title);
+            const response = await homeShopService.createReport(accountId, shopId, createAt, content, title, images);
             if (response.data.status !== 200) {
                 console.error("Error report:", response.data.message);
                 toast.warn(response.data.message);
