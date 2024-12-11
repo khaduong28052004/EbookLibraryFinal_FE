@@ -39,13 +39,14 @@ const homeShopService = {
         return axiosAuth("null", "get", url);
     },
 
-    createReport: (idUser, idSeller, createAt, content, title) => {
+    createReport: (idUser, idSeller, createAt, content, title, images) => {
         console.log("idSeller", idSeller);
         console.log("idUser", idUser);
         console.log("createAt", createAt);
         console.log("content", content);
         console.log("title", title);
-        
+        console.log("images", images);
+
         const url = `http://localhost:8080/api/v1/user/shop/createReport`;
         const data = {
             accountId: idUser,
@@ -53,7 +54,8 @@ const homeShopService = {
             status: false,
             createAt: createAt,
             content: content,
-            title: title
+            title: title,
+            images: images
         };
         return axiosAuth("null", "post", url, data);
     }
