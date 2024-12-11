@@ -25,6 +25,9 @@ import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
 import HomeShop from "./components/Shop/index.jsx"
+import ChinhSachNguoiBan from "./components/ChinhSachNguoiBan";
+import QuyCheHoatDong from "./components/QuyCheHoatDong";
+import HuongDanBanHang from "./components/HuongDanBanHang";
 
 // const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));
@@ -122,6 +125,9 @@ const [isPopupOpen, setIsPopupOpen] = useState(true); // Mở popup khi trang đ
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/faq" element={<Faq />} />
           <Route exact path="/login" element={<Login />} />
+          <Route exact path="/chinh-sach" element={<ChinhSachNguoiBan />} />
+          <Route exact path="/quyche-hoatdong" element={<QuyCheHoatDong />} />
+          <Route exact path="/ban-hang" element={<HuongDanBanHang />} />
 
           <Route exact path="/signup" element={<RegistrationForm/>} />
           <Route exact path="/haha" element={<Signup/>} />

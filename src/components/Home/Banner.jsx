@@ -150,7 +150,28 @@ export default function Banner({ className }) {
     topProducts();
     // fetchVoucherShopHome();
   }, [])
+  const [images, setImages] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0); // Theo dõi ảnh hiện tại
 
+  useEffect(() => {
+    // Fetch dữ liệu từ API
+    fetch('http://localhost:8080/api/v1/user/platforms/1')
+      .then((response) => response.json())
+      .then((data) => {
+        setImages(data.images);  // Lưu các URL vào state
+      })
+      .catch((error) => console.error('Error fetching images:', error));
+  }, []);
+
+  // Chuyển ảnh mỗi 3 giây
+  useEffect(() => {
+    if (images.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+      }, 3000); // Thay đổi ảnh mỗi 3 giây
+      return () => clearInterval(interval); // Dọn dẹp khi component unmount
+    }
+  }, [images]);
   return (
     <>
       <div className={`w-full ${className || ""}`}>
@@ -160,17 +181,31 @@ export default function Banner({ className }) {
               <div className="bg-white">
                 <div data-aos="fade-right" className="xl:w-full w-full xl:h-full h-full rounded-sm">
                   <a href="/single-product">
-                    <picture className="xl:h-full h-[600px]">
-                      <source
-                        media="(min-width:1025px)"
-                        srcSet={`https://www.nxbgd.vn/Attachments/images/Sach%20moi/CMLBT_BANNER-WEB-BOOKIZ.png`}
-                      />
-                      <img
-                        src={`https://www.nxbtre.com.vn/Images/News/nxbtre_full_19482018_084815.jpg`}
-                        alt=""
-                        className="w-full h-full object-cover rounded-sm"
-                      />
-                    </picture>
+
+
+<div>
+  {images.length > 0 && (
+    <picture
+      className="xl:h-full h-[600px]"
+      style={{ width: "800px", height: "250px" }} // Đặt cứng chiều rộng và chiều cao
+    >
+      <source
+        media="(min-width:1025px)"
+        srcSet={images[currentIndex].url} // Sử dụng URL ảnh hiện tại
+      />
+      <img
+        src={images[currentIndex]?.url} // Sử dụng URL ảnh hiện tại
+        alt="Platform image"
+        className="w-full h-full object-cover rounded-sm"
+        style={{ width: "800px", height: "250px" }} // Đặt cứng chiều rộng và chiều cao
+      />
+    </picture>
+  )}
+</div>
+
+
+
+
                   </a>
                 </div>
               </div>
@@ -194,11 +229,7 @@ export default function Banner({ className }) {
                       <BestSeller products={productData} />
                     ) : null}
 
-                    {/* <div className="w-[20rem] h-full">
-                  {vouchers.length > 0 ? (
-                    <Voucher vouchers={vouchers} />
-                  ) : null}
-                </div> */}
+
                   </div>
 
                 </div>
