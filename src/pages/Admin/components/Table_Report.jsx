@@ -60,7 +60,7 @@ const TableTwo = () => {
 
     const putStatusAccount = async () => {
         try {
-            const response = await accountService.putStatus({ id, contents });
+            const response = await accountService.putStatusAccountReport({ id, contents });
             console.log("Mã Code status: " + response.data.code);
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
@@ -75,13 +75,13 @@ const TableTwo = () => {
 
     const putStatusProduct = async () => {
         try {
-            const response = await productService.putStatus({ id, contents });
+            const response = await productService.putStatusProductReport({ id, contents });
             console.log("Mã Code status: " + response.data.code);
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
             }
             setContents("");
-            findAllAccountReport();
+            findAllProductReport();
         } catch (error) {
             toast.error(error.response.data.message);
             console.log("Error: " + error);
