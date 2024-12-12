@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import homeShopService from "../../../service/Seller/homeShopService";
+import homeShopService from "../../service/Seller/homeShopService";
 import { toast, ToastContainer } from "react-toastify";
 
 // npm install --save react-spinners
