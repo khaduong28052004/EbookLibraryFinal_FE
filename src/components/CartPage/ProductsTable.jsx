@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import LazyLoad from "react-lazyload";
 import { useNavigate } from 'react-router-dom';
+import ImageLoader from "../Helpers/ImageLoading/ImageWithLoader";
 import InputQuantityCom from "../Helpers/InputQuantityCom";
-
-
 
 
 export default function ProductsTable({ datas, handleSaveProduct, removeCart, handleQuantityCartIndex }) {
   const navigate = useNavigate();
-
+  const [productOfSeller, setProductOfSeller] = useState();
   const [idProduct, setIdProduct] = useState();
   useEffect(() => {
     if (datas) {
@@ -27,31 +26,6 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
     }
   }, [datas]);  // Đảm bảo useEffect này sẽ chạy khi datas hoặc totalOrderSeller thay đổi
 
-  const filteredSellers = () => {
-    const validProductIds = [];
-    // Lọc các product id hợp lệ từ idProduct
-    for (let key in idProduct) {
-      if (idProduct.hasOwnProperty(key) && idProduct[key] === true) {
-        validProductIds.push(Number(key));
-      }
-    }
-    // Lọc các sellers có sản phẩm hợp lệ trong giỏ hàng
-    return datas
-      .map(seller => {
-        // Lọc giỏ hàng của seller, chỉ giữ lại sản phẩm có id hợp lệ
-        const filteredCart = seller.cart.filter(item => validProductIds.includes(item.product.id));
-        // Trả về một seller mới với giỏ hàng đã lọc
-        if (filteredCart.length > 0) {
-          return {
-            ...seller,
-            cart: filteredCart,
-          };
-        } else {
-          return null;
-        }
-      })
-      .filter(seller => seller !== null);
-  }
   const saveIdProduct = () => {
     const validProductIds = [];
     // Lọc các product id hợp lệ từ idProduct
@@ -77,8 +51,7 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
       })
       .filter(seller => seller !== null);
     handleSaveProduct(filteredSellers);
-    setSaveProductOfSeller(filteredSellers);
-
+    setProductOfSeller(filteredSellers);
   };
 
 
@@ -146,6 +119,31 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
 
 
   const handleQuantityCart = (quantity, idCart) => {
+    if (productOfSeller) {
+      datas = datas.map(data => {
+        // Kiểm tra nếu data và data.cart tồn tại
+        if (!data?.cart) return data;
+
+        // Tìm item trong cart có id trùng với idCart
+        const updatedCart = data.cart.map(cartItem => {
+          if (cartItem.id === idCart) {
+            return {
+              ...cartItem,
+              quantity: quantity, // Cập nhật quantity
+            };
+          }
+          return cartItem; // Giữ nguyên nếu không trùng
+        });
+
+        // Trả về đối tượng data với cart đã cập nhật
+        return {
+          ...data,
+          cart: updatedCart,
+        };
+      });
+
+      saveIdProduct();
+    }
     handleQuantityCartIndex(quantity, idCart);
   }
 
@@ -226,8 +224,14 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
                         <input type="checkbox" onChange={(event) => { handleShop(event, seller.id) }} data-id-shop={seller.id} className="checkbox_shop form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 focus:ring-offset-0 border-gray-300 flex items-center" />
                       </div>
 
-                      <img src={seller?.avatar ? seller?.avatar : "https://img.freepik.com/premium-photo/sales-manager-digital-avatar-generative-ai_934475-9274.jpg"} alt="avatar" className="w-10 h-10 rounded-full border-2 border-gray-300 shadow-md" />
 
+
+                      <ImageLoader
+                        src={seller?.avatar ? seller?.avatar : "https://img.freepik.com/premium-photo/sales-manager-digital-avatar-generative-ai_934475-9274.jpg"}
+                        alt="avatar"
+                        className="w-10 h-10 rounded-full border-2 border-gray-300 shadow-md"
+
+                      />
                       <span className="whitespace- flex items-center px-2">{seller.shopName}</span>
                     </div>              </td>
                 </tr>
@@ -266,10 +270,11 @@ export default function ProductsTable({ datas, handleSaveProduct, removeCart, ha
                           </div>
                           <div className="flex space-x-6 items-center">
                             <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
-                              <img
+                              <ImageLoader
                                 src={cart?.product?.imageProducts[0]?.name}
                                 alt="product"
                                 className="w-full h-full object-contain"
+
                               />
                             </div>
                             <div className="flex-1 flex flex-col">
