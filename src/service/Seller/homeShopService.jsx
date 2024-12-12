@@ -6,6 +6,7 @@ const homeShopService = {
 
     fetchShopInfo: (idSeller, userID) => {
         console.log("idSeller", idSeller)
+        console.log("userID", userID)
         const data = {
             userID: userID,
             sellerID: idSeller
@@ -45,29 +46,31 @@ const homeShopService = {
         return axiosAuth("null", "get", url);
     },
 
-    createReport: (idUser, idSeller, createAt, content, title, images) => {
-        const url = `http://localhost:8080/api/v1/user/shop/createReport`;
+    createReport: ({userId, sellerId, content, title, images}) => {
+        const url = `/api/v1/user/shop/createReport/saveImg`;
 
-        console.log("idSeller formData", idSeller);
-        console.log("idUser formData", idUser);
-        console.log("createAt", createAt);
+        const formData = new FormData();
+        formData.append('accountId', userId);
+        formData.append('content', content || "");
+        formData.append('shopId', sellerId);
+        formData.append('status', false);
+        formData.append('createAt', new Date());
+        formData.append('title', title);
+        
+        // Thêm ảnh (MultipartFile array)
+         if (images && images.length > 0) {
+            images.forEach((image, index) => {
+                formData.append(`images[${index}]`, image);
+                console.log(`images[${index}]:`, image);
+            });
+        }
+    
+        console.log("idSeller formData", sellerId);
+        console.log("idUser formData", userId);
+        console.log("createAt", new Date());
         console.log("content", content);
         console.log("title", title);
         console.log("images", images);
-
-        const formData = new FormData();
-        formData.append('accountId', idUser);
-        formData.append('content', content || "");
-        formData.append('shopId', idSeller);
-        formData.append('status', false);
-        formData.append('createAt', new Date(createAt).toISOString());
-        formData.append('title', title);
-
-        if (images && images.length > 0) {
-            images.forEach((image) => {
-                formData.append('images', image); // Tất cả file dùng key 'images'
-            });
-        }
 
         return axiosAuth("null", "post", url, formData);
     }
