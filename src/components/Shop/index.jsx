@@ -218,9 +218,9 @@ export default function ShopHome() {
     const fetchDataSelectAll = async () => {
         const id_account = sessionStorage.getItem("id_account") || 0;
         await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account).then(response => {
-            setData_ProducAll(response.data.result);
+            setProducts(response.data.result);
         }).catch(error => {
-            setData_ProducAll(data_Products1);
+            setProducts(data_Products1);
             console.log("fetch selectall error " + error);
         })
     }
@@ -286,7 +286,7 @@ export default function ShopHome() {
                 throw new Error('Không có dữ liệu');
             }
         } catch (error) {
-            setProducts(data_Products);
+            setProducts(data_Products1);
         } finally {
             setLoading(false);
         }
@@ -306,7 +306,7 @@ export default function ShopHome() {
                 throw new Error('Không có dữ liệu');
             }
         } catch (error) {
-            setProducts(data_Products);
+            setProducts(data_Products1);
         } finally {
             setLoading(false);
         }
