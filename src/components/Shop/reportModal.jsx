@@ -8,17 +8,10 @@ const ReportModal = ({ accountId, shopId, isOpen, handleClose }) => {
     if (!isOpen) return null;
     const [images, setImages] = useState([]);
     const [message, setMessage] = useState("");
+
     const [content, setContent] = useState('')
 
-    const token = sessionStorage.getItem("token");
-
     const createReport = async () => {
-
-        if (!token) {
-            toast.warn("Vui lòng đăng nhập!.");
-            return <Navigate to="/login" />;
-        }
-
         const title = "Báo cáo shop"
         try {
             const response = await homeShopService.createReport({
@@ -34,6 +27,7 @@ const ReportModal = ({ accountId, shopId, isOpen, handleClose }) => {
                 toast.warn(response.data.message);
                 return;
             }
+            
             toast.success(response.data.message);
         } catch (error) {
             console.error("Error report:", error);
