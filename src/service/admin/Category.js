@@ -13,8 +13,8 @@ const category = {
     ,
     post: ({ data }) => axiosAuth(token, "post", url("", ""), data)
     ,
-    put: ({ data }) => axiosAuth(token, "put", url("", ""), data)
+    put: ({ data }) => axiosAuth(token, "put", url("", `?accountID=${sessionStorage.getItem("id_account")}`), data)
     ,
-    delete: ({ id }) => axiosAuth(token, "delete", url("", `?&id=${id}`))
+    delete: ({ id }) => axiosAuth(token, "delete", url("", `?accountID=${sessionStorage.getItem("id_account")}&id=${id}`))
 }
 export default category;

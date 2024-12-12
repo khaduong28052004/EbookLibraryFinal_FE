@@ -76,12 +76,10 @@ export default function AllProductPage() {
     setIsOpen(!isOpen);
   };
 
-  useEffect(() => {
+  useEffect(() => {// tìm kiếm không ma trận
     const text = query.get("text");
     const idProduct = query.get('idProduct');
     const textAudio = query.get('textAudio');
-
-
     // Nếu có idProduct
     if (idProduct) {
       const idProducts = idProduct.split(',').map(Number);
@@ -107,43 +105,44 @@ export default function AllProductPage() {
       }
   }, [location, currentPage]);
 
-  const handlePageChange = (newPage) => {
+  const handlePageChange = (newPage) => {// newPage
     if (newPage >= 0 && newPage < data.totalPages) {
       setCurrentPage(newPage);
       console.log("currentPage: " + newPage);
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = () => {// load data bỏ 
     handlePageChange(currentPage - 1);
   };
 
-  const handleNext = () => {
+  const handleNext = () => { // load data thêm 
     handlePageChange(currentPage + 1);
   };
 
-  const searchImage = async (idProducts) => {
+  const searchImage = async (idProducts) => {// tìm theo hình (phuc)
     try {
       const response = await SearchService.searchByIds(idProducts, currentPage);
       setDatas(response.data.result.content);
       setDataPagination(response.data.result);
+      // 
     } catch (error) {
       console.log(error)
     }
   }
 
-  const searchAudio = async (text) => {
+  const searchAudio = async (text) => {  // tìm audio (tuyến)
     try {
       const response = await SearchService.searchAudio(text, currentPage);
-      setDatas(response.data.result.content);
-      setDataPagination(response.data.result);
-
+      setDatas(response.data.result.product.content);
+      setDataPagination(response.data.result.product);
+      setCategories(response.data.result.categories);
     } catch (error) {
       console.log(error)
     }
   }
 
-  const handleSelected = (value) => {
+  const handleSelected = (value) => { //filer theo  danh mục theo giá (kha)
     // Tạo mảng validSelected chứa các key có giá trị true
     const validSelected = Object.keys(value)
       .filter(key => value[key] === true)  // Lọc các khóa có giá trị true
@@ -160,7 +159,8 @@ export default function AllProductPage() {
       console.log("No categories selected");
     }
   }
-  useEffect(() => {
+
+  useEffect(() => { //filer theo  danh mục theo giá (kha)
     const filterPrice = () => {
       axios.get(`http://localhost:8080/api/v1/user/filterprice?priceMin=${volume[0]}&priceMax=${volume[1]}`).then(response => {
         setDatas(response.data.result.datas);
@@ -189,6 +189,7 @@ export default function AllProductPage() {
                   className="mb-[30px]"
                   categories={categories}
                   handleSelected={handleSelected}
+                  setPage={setCurrentPage}
                 />
                 {/* ads */}
 
@@ -244,22 +245,21 @@ export default function AllProductPage() {
                             key={datas?.id}
                             height={100}
                             offset={[-100, 100]}
-                            placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-                              <div class="animate-pulse flex space-x-4">
-                                <div class="flex-1 space-y-3 py-1">
-                                  <div class="rounded-none bg-slate-700 h-[165px] w-full"></div>
-                                  <div class="h-5 bg-slate-700 rounded"></div>
-                                  <div class="h-5 bg-slate-700 rounded"></div>
-                                  <div class="space-y-3">
-                                    <div class="grid grid-cols-4 gap-4">
-                                      <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                                      <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                                    </div>
-                                    {/* <div class="h-2 bg-slate-700 rounded"></div> */}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>}
+                            // placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                            //   <div class="animate-pulse flex space-x-4">
+                            //     <div class="flex-1 space-y-3 py-1">
+                            //       <div class="rounded-none bg-slate-700 h-[165px] w-full"></div>
+                            //       <div class="h-5 bg-slate-700 rounded"></div>
+                            //       <div class="h-5 bg-slate-700 rounded"></div>
+                            //       <div class="space-y-3">
+                            //         <div class="grid grid-cols-4 gap-4">
+                            //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                            //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                            //         </div>
+                            //       </div>
+                            //     </div>
+                            //   </div>
+                            // </div>}
                           >
 
                             <ProductCardStyleOne datas={datas} />

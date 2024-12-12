@@ -287,7 +287,6 @@ export default function Middlebar({ className, type }) {
                   </DialogPanel>
                 </div>
               </div>
-
             </Dialog>
             <div className="flex space-x-6 items-center">
               {/* <div className="compaire relative">

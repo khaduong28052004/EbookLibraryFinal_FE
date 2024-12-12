@@ -65,6 +65,12 @@ const ModalFlashSale = ({
                 dateEnd: entity.dateEnd || '',
                 account: sessionStorage.getItem("id_account"),
             });
+            console.log("====================update");
+            console.log("====================entity.id: " + entity.id);
+            console.log("====================entity.title: " + entity.title);
+            console.log("====================entity.dateStart: " + entity.dateStart);
+            console.log("====================entity.dateEnd: " + entity.dateEnd);
+            console.log("====================account: " + sessionStorage.getItem("id_account"));
         } else {
             setFormData({
                 title: '',
@@ -72,6 +78,7 @@ const ModalFlashSale = ({
                 dateEnd: '',
                 account: sessionStorage.getItem("id_account"),
             });
+            console.log("====================create");
         }
     }, [entity]);
 
@@ -87,7 +94,16 @@ const ModalFlashSale = ({
             postFlashSale();
         }
     };
-
+    function formatDatetimeLocal(value) {
+        const date = new Date(value); // Chuyển chuỗi ISO thành đối tượng Date
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <ToastContainer></ToastContainer>
@@ -123,7 +139,7 @@ const ModalFlashSale = ({
                                         </label>
                                         <input
                                             name="dateStart"
-                                            value={formData.dateStart}
+                                            value={formatDatetimeLocal(formData.dateStart)}
                                             onChange={handleChange}
                                             type="datetime-local"
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -136,7 +152,7 @@ const ModalFlashSale = ({
                                         </label>
                                         <input
                                             name="dateEnd"
-                                            value={formData.dateEnd}
+                                            value={formatDatetimeLocal(formData.dateEnd)}
                                             onChange={handleChange}
                                             type="datetime-local"
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
