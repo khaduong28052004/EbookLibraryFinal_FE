@@ -48,25 +48,26 @@ const TableTwo = () => {
         findAllHistory();
     }, [searchItem, currentPage, sortBy, sortColumn]);
     ;
-    const handleExport = async () => {
-        const sheetNames = ['Danh Sách Lịch Sử Hoạt Động'];
+
+    const deleteHistory = async () => {
         try {
-            console.log("data.totalElements: " + data.totalElements);
-            const response = await historyService.findAllHistory({ searchItem, AccountID: AccountID, page: currentPage, size: totalElements, sortColumn, sortBy });
-            if (!response || response.data.result.totalElements === 0) {
-                toast.error("Không có dữ liệu");
-            } else {
-                return ExportExcel("Danh sách lịch sử hoạt động.xlsx", sheetNames, [response.data.result.content]);
+            const response = await historyService.delete({ id: Entity.id });
+            console.log("xóa: " + response.data.message);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
             }
+            findAllHistory();
         } catch (error) {
-            console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
-            toast.error("Có lỗi xảy ra khi xuất dữ liệu");
+            toast.error(error.response.data.message);
+            console.log("Error: " + error);
         }
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleConfirm = () => {
+        deleteHistory();
+        setIsOpen(false);
     };
+
     const toggleRow = (id) => {
         if (expandedRowId === id) {
             setExpandedRowId(null); // Nếu đã mở thì click lại sẽ đóng
@@ -221,14 +222,17 @@ const TableTwo = () => {
                                     </div>
                                 </td>
                                 <td className="py-4.5 ">
-                                    <div className="flex justify-start px-4 ">
-                                        <button onClick={() => {
+                                    {sessionStorage.getItem("id_account") === "1" ?
+                                        <div className="flex justify-start px-4 ">
+                                            <button onClick={(event) => {
+                                                event.stopPropagation();
                                                 setEntity(entity);
                                                 setIsOpen(true);
                                             }}>
-                                            <TrashIcon className="w-5 h-5 text-black hover:text-red-600 dark:text-white" />
-                                        </button>
-                                    </div>
+                                                <TrashIcon className="w-5 h-5 text-black hover:text-red-600 dark:text-white" />
+                                            </button>
+                                        </div>
+                                        : <></>}
                                 </td>
                             </tr>
 
@@ -501,7 +505,7 @@ const TableTwo = () => {
                 handleNext={handleNext}
                 setPageNumber={setCurrentPage}
                 size={data.size}></Pagination>
-     <Modal
+            <Modal
                 open={isOpen}
                 setOpen={setIsOpen}
                 title={'Xóa lịch sử'}
