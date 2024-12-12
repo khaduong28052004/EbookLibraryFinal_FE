@@ -159,19 +159,26 @@ export default function CardPage({ cart = true }) {
     }
   }, [feeSeller]);
   const handSubmitPay = () => {
-    if (dataSubmit.length > 0) {
-      const data = {
-        datas: dataSubmit,
-        user: user,
-        total: total,
-        sale: totalSale,
-        // service_fee: serviceFee
+
+    if (user?.addresses?.length > 0) {
+      if (dataSubmit.length > 0) {
+        const data = {
+          datas: dataSubmit,
+          user: user,
+          total: total,
+          sale: totalSale,
+          // service_fee: serviceFee
+        }
+        setItem("data", data);
+        sessionStorage.setItem("pay", JSON.stringify(data));
+        navigate("/checkout");
+      } else {
+        toast.warn("Chưa chọn sản phẩm");
       }
-      setItem("data", data);
-      sessionStorage.setItem("pay", JSON.stringify(data));
-      navigate("/checkout");
+
+
     } else {
-      toast.warn("Chưa chọn sản phẩm")
+      toast.warn("Vui lòng thêm địa chỉ");
     }
   }
 

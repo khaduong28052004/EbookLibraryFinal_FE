@@ -8,12 +8,32 @@ import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
 import InputCom from "../Helpers/InputCom";
 import Layout from "../Partials/Layout";
+import { useRequest } from "../Request/RequestProvicer";
 import { formatTimeAgo } from "../service/DateTime";
 import ProductView from "./ProductView";
 import Reviews from "./Reviews";
 import SallerInfo from "./SallerInfo";
-import { useRequest } from "../Request/RequestProvicer";
 export default function SingleProductPage() {
+  const [imageMultipart, setImageMultipart] = useState([]);
+
+  const [images, setImages] = useState([]);
+
+  const [checkSubmit, setCheckSubmit] = useState(true);
+  const handleFileChange = (file) => {
+
+    const newImages = {
+      name: file.name,
+      src: URL.createObjectURL(file),
+    };
+    setImageMultipart(fileImage => [...fileImage, file]);
+    setImages((prevImages) => [...prevImages, { ...newImages }]);
+  };
+
+  const removeImage = (index) => {
+    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+
+
   const [tab, setTab] = useState("des");
   // const [rating, setRating] = useState(0);
   // const [hover, setHover] = useState(0);
@@ -41,16 +61,18 @@ export default function SingleProductPage() {
   const submitReport = () => {
     const token = sessionStorage.getItem("token");
     const id_user = sessionStorage.getItem("id_account");
-    if (token) {
+    if (token && checkSubmit) {
+      setCheckSubmit(false);
       startRequest();
       axios.post("http://localhost:8080/api/v1/user/report/product", {
         title: title,
         content: content,
         id_user: id_user,
-        id_product: query.get("idProduct")
+        id_product: query.get("idProduct"),
+        images: imageMultipart
       }, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`
         }
       }).then(response => {
@@ -58,7 +80,6 @@ export default function SingleProductPage() {
         endRequest();
       }).catch(error => console.error(" create report product error " + error));
     }
-
   }
 
   // --------------------------------------------------------------------------------------------------------------------------------------
@@ -253,22 +274,22 @@ export default function SingleProductPage() {
                             key={datas?.id}
                             height={100}
                             offset={[-100, 100]}
-                            placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-                              <div class="animate-pulse flex space-x-4">
-                                <div class="flex-1 space-y-3 py-1">
-                                  <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
-                                  <div class="h-5 bg-slate-700 rounded"></div>
-                                  <div class="h-5 bg-slate-700 rounded"></div>
-                                  <div class="space-y-3">
-                                    <div class="grid grid-cols-4 gap-4">
-                                      <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                                      <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                                    </div>
-                                    {/* <div class="h-2 bg-slate-700 rounded"></div> */}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>}
+                            // placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                            //   <div class="animate-pulse flex space-x-4">
+                            //     <div class="flex-1 space-y-3 py-1">
+                            //       <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
+                            //       <div class="h-5 bg-slate-700 rounded"></div>
+                            //       <div class="h-5 bg-slate-700 rounded"></div>
+                            //       <div class="space-y-3">
+                            //         <div class="grid grid-cols-4 gap-4">
+                            //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                            //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                            //         </div>
+                            //         {/* <div class="h-2 bg-slate-700 rounded"></div> */}
+                            //       </div>
+                            //     </div>
+                            //   </div>
+                            // </div>}
                           >
                             <div>
                               <ProductCardStyleOne datas={datas} />
@@ -291,7 +312,7 @@ export default function SingleProductPage() {
               ></div>
               <div
                 data-aos="fade-up"
-                className="sm:w-[548px] sm:h-[509px] w-full h-full bg-white relative py-[40px] px-[38px]"
+                className="sm:w-[548px] sm:h-auto w-full h-full bg-white relative py-[40px] px-[38px]"
                 style={{ zIndex: "999" }}
               >
                 <div className="title-bar flex items-center justify-between mb-3">
@@ -327,7 +348,7 @@ export default function SingleProductPage() {
                       labelClasses="text-[13px] font-600 leading-[24px] text-qblack"
                     />
                   </div>
-                  <div className="w-full mb-[40px]">
+                  <div className="w-full mb-[10px]">
                     <h6 className="input-label  capitalize text-[13px] font-600 leading-[24px] text-qblack block mb-2 ">
                       Nội dung
                     </h6>
@@ -341,6 +362,65 @@ export default function SingleProductPage() {
                       placeholder="Nội dung báo cáo ở đây"
                     ></textarea>
                   </div>
+
+
+                  {/* Khu vực kéo thả hoặc upload file */}
+                  <div
+                    className="mb-2 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg py-2 px-4 hover:border-blue-500 hover:bg-gray-100 transition"
+                    onDragOver={(e) => {
+                      e.preventDefault(); // Ngăn trình duyệt mở file
+                      e.currentTarget.classList.add("border-blue-500", "bg-gray-100");
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.remove("border-blue-500", "bg-gray-100");
+
+                      const file = e.dataTransfer.files[0]; // Lấy file đầu tiên được kéo thả
+                      if (file && file.type.startsWith("image/")) {
+                        console.log("Dropped file:", file);
+                        // Thêm logic xử lý file ở đây
+                        // Gắn file vào input để tận dụng xử lý hiện tại
+                        const inputElement = document.getElementById("file-upload");
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        inputElement.files = dataTransfer.files;
+                        handleFileChange(file);
+                      } else {
+                        alert("Vui lòng gửi tệp là hình ảnh.");
+                      }
+
+
+                    }}
+                  >
+                    {/* <img width="70" height="70" src="https://img.icons8.com/?size=100&id=zqpSOVL88Ol1&format=png&color=000000" alt="image" /> */}
+                    <p className="mb-2 text-gray-600">Kéo một hình ảnh vào đây hoặc</p>
+                    {/* Nút upload file */}
+                    <label
+                      htmlFor="file-upload"
+                      className="cursor-pointer text-blue-500 hover:underline"
+                    >
+                      tải lên một tệp
+                    </label>
+                    <input
+                      id="file-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          handleFileChange(file);
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="flex border  border-gray-200 p-1 mb-2">
+                    {images?.map(image => (
+                      <img src={image?.src} className="w-20" alt="" />
+
+                    ))}
+                  </div>
+
 
                   <button onClick={() => submitReport()} type="button" className="w-full h-[50px] black-btn">
                     Gửi báo cáo
