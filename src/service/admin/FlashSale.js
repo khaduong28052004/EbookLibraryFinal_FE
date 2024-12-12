@@ -17,17 +17,17 @@ const flashSale = {
         return axiosAuth(token, "get", url);
     },
     post: ({ data }) => {
-        const url = `/api/v1/admin/flashsale`;
+        const url = `/api/v1/admin/flashsale?accountID=${sessionStorage.getItem("id_account")}`;
         console.log(token);
         return axiosAuth(token, "post", url, data);
     },
     put: ({ data }) => {
-        const url = `/api/v1/admin/flashsale`;
+        const url = `/api/v1/admin/flashsale?accountID=${sessionStorage.getItem("id_account")}`;
         console.log(token);
         return axiosAuth(token, "put", url, data);
     },
     delete: ({ id }) => {
-        const url = `/api/v1/admin/flashsale?id=${id}`;
+        const url = `/api/v1/admin/flashsale?id=${id}&accountID=${sessionStorage.getItem("id_account")}`;
         console.log(token);
         return axiosAuth(token, "delete", url);
     },

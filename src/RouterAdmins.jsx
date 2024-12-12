@@ -24,7 +24,9 @@ import RoleAdmin from './pages/Admin/RoleAdmin'
 import NotPermissionAdmin from './pages/Admin/NotPermissonAdmin.jsx'
 import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
 import ProtectedRoutePermission from "./components/Auth/ProtectedRoutePERMISSION.jsx";
-import FlashSaleDetailsAdmin from './pages/Admin/FlashsaleDetails.jsx'
+import FlashSaleDetailsAdmin from './pages/Admin/FlashsaleDetails.jsx';
+import HistoryAdmin from './pages/Admin/HistoryAdmin.jsx';
+
 
 import { useEffect, useState } from "react";
 export default function RouterAdmins() {
@@ -242,6 +244,15 @@ export default function RouterAdmins() {
             <>
               <PageTitle title="Chi Tiết Flash Sale" />
               <FlashSaleDetailsAdmin />
+            </>
+          }
+        />
+         <Route
+          path="/quanLy/history"
+          element={
+            <>
+              <PageTitle title="Lịch sử hoạt động" />
+              <HistoryAdmin />
             </>
           }
         />
