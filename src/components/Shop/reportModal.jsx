@@ -7,20 +7,27 @@ import { toast, ToastContainer } from "react-toastify";
 const ReportModal = ({ accountId, shopId, isOpen, handleClose }) => {
     if (!isOpen) return null;
     const [images, setImages] = useState([]);
-    const [listImage, setListImage] = useState([]);
     const [message, setMessage] = useState("");
 
     const [content, setContent] = useState('')
 
-    const createReport = async (createAt) => {
+    const createReport = async () => {
         const title = "Báo cáo shop"
         try {
-            const response = await homeShopService.createReport(accountId, shopId, createAt, content, title, images);
+            const response = await homeShopService.createReport({
+                userId: accountId,
+                sellerId: shopId,
+                content,
+                title,
+                images
+            });
+
             if (response.data.status !== 200) {
                 console.error("Error report:", response.data.message);
                 toast.warn(response.data.message);
                 return;
             }
+            
             toast.success(response.data.message);
         } catch (error) {
             console.error("Error report:", error);
@@ -174,7 +181,7 @@ const ReportModal = ({ accountId, shopId, isOpen, handleClose }) => {
                         </div>
                         <div className="flex justify-end space-x-">
                             <button
-                                onClick={() => createReport(new Date())}
+                                onClick={() => createReport()}
                                 className="bg-[#003EA1] text-white w-40 py-1 px-5 text-sm rounded-md hover:bg-opacity-90"
                             >
                                 Gửi báo cáo
