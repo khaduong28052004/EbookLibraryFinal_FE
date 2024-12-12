@@ -34,7 +34,6 @@ const ReportModal = ({ accountId, shopId, isOpen, handleClose }) => {
                 toast.warn(response.data.message);
                 return;
             }
-
             toast.success(response.data.message);
         } catch (error) {
             console.error("Error report:", error);
