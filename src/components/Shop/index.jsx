@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import SectionStyleThreeHomeShop from '../Helpers/SectionStyleThreeHomeShop';
 import Voucher from '../Shop/voucher';
+import TopProducts from '../Shop/topProducts';
 import ShopInfo from '../Shop/shopinfo';
 import ErrorThumb from '../../components/FourZeroFour'
 import Layout from "../Partials/Layout";
@@ -16,7 +17,7 @@ const shopDataEX = {
         "averageStars": 4.4,
         "totalStars": 5
     },
-    
+
     "shopDataEX": {
         "idSeller": 8,
         "avatar": "https://firebasestorage.googleapis.com/v0/b/ebookstore-4fbb3.appspot.com/o/1_W35QUSvGpcLuxPo3SRTH4w.png?alt=media",
@@ -198,7 +199,8 @@ export default function ShopHome() {
     const [shopInfo, setShopInfo] = useState({});
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
     const [products, setProducts] = useState([]);  // Initialize as an empty array
-    const [loading, setLoading] = useState(false);
+    const [dataTopProducts, setDataTopProducts] = useState([]);  // Initialize as an empty array
+     const [loading, setLoading] = useState(false);
     const [isFollowed, setIsFollowed] = useState(false);
     const local = useLocation();
     const query = new URLSearchParams(local.search);
@@ -270,6 +272,26 @@ export default function ShopHome() {
         }
     }
 
+    const fetchTopProducts = async () => {
+        // setVouchers(vouchersdfEAsd);
+        try {
+            setLoading(true);
+            const response = await homeShopService.fetchTopProducts(Id);
+            console.log("response");
+            if (response.data.result) {
+                const data = response.data.result;
+                setProducts(data);
+                setLoading(true);
+            } else {
+                throw new Error('Không có dữ liệu');
+            }
+        } catch (error) {
+            setProducts(data_Products);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const fetchProductShopHome = async () => {
         // setVouchers(vouchersdfEAsd);
         try {
@@ -278,7 +300,7 @@ export default function ShopHome() {
             console.log("response");
             if (response.data.result) {
                 const data = response.data.result;
-                setProducts(data);
+                setDataTopProducts(data);
                 setLoading(true);
             } else {
                 throw new Error('Không có dữ liệu');
@@ -295,6 +317,7 @@ export default function ShopHome() {
         fetchShopInfo();
         fetchVoucherShopHome();
         fetchProductShopHome();
+        fetchTopProducts();
     }, [])
 
     useEffect(() => {
@@ -328,13 +351,16 @@ export default function ShopHome() {
             <div className="flex flex-col  gap-5   ">
                 <div className="bg-white py-5">
                     {shopInfo && Object.keys(shopInfo).length > 0 && (
-                        <ShopInfo shopData={shopInfo} idUser={idUser}/>
+                        <ShopInfo shopData={shopInfo} idUser={idUser} />
                     )}
                 </div>
                 <div className=" container-x mx-auto mb-3">
                     {vouchers.length > 0 ? (
                         <Voucher vouchers={vouchers} />
                     ) : null}
+                </div>
+                <div className=" container-x mx-auto mb-3">
+                    <TopProducts data={dataTopProducts} />
                 </div>
                 <div className="flex-col align-middle justify-center">
                     <div className="max-w-[1216px] mx-auto px-2 sm:px-6">
@@ -349,8 +375,6 @@ export default function ShopHome() {
                     </div>
                 </div>
             </div>
-
-
         </Layout>
 
 
