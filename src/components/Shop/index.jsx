@@ -140,7 +140,7 @@ const data_Products1 = {
 
 export default function ShopHome() {
     const [idUser, setIdUser] = useState({});
-    const [shopInfo, setShopInfo] = useState({});
+    const [ shopInfo, setShopInfo] = useState({});
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
     const [products, setProducts] = useState([]);  // Initialize as an empty array
     const [dataTopProducts, setDataTopProducts] = useState([]);  // Initialize as an empty array
@@ -214,25 +214,7 @@ export default function ShopHome() {
         }
     }
 
-    const fetchTopProducts = async () => {
-        // setVouchers(vouchersdfEAsd);
-        try {
-            setIsLoading(true);
-            const response = await homeShopService.fetchTopProducts(Id);
-            if (response.data.result) {
-                const data = response.data.result;
-                setProducts(data);
-                setIsLoading(true);
-            } else {
-                throw new Error('Không có dữ liệu');
-            }
-        } catch (error) {
-            setProducts(data_Products1);
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
+   
     const fetchProductShopHome = async (currentSize) => {
         // setVouchers(vouchersdfEAsd);
         try {
@@ -263,7 +245,6 @@ export default function ShopHome() {
         fetchShopInfo();
         fetchVoucherShopHome();
         fetchProductShopHome();
-        fetchTopProducts();
     }, [])
 
 
@@ -318,7 +299,7 @@ export default function ShopHome() {
                     ) : null}
                 </div>
                 <div className=" container-x mx-auto mb-3">
-                    <TopProducts data={dataTopProducts} />
+                    <TopProducts shopData={shopInfo}  />
                 </div>
                 <div className="flex-col align-middle justify-center">
                     <div className="max-w-[1216px] mx-auto px-2 sm:px-6">
