@@ -25,11 +25,19 @@ const homeShopService = {
     },
 
 
-    fetchProductShopHome: (idSeller) => {
-        const url = `/api/v1/user/shop/selectall?id_Shop=${idSeller}`;
+    fetchProductShopHome: (idSeller,  size) => {
+        console.log("Size1222", size);
+        
+        const url = `/api/v1/user/shop/selectall?id_Shop=${idSeller}&size=${size}`;
         console.log("idSeller", idSeller);
-        return axiosAuth("null", "get", url);
+        return axiosAuth("null", "get", url);   
     },
+
+    // fetchProductShopHome: (idSeller, page = 1, size = 8) => {
+    //     const url = `/api/v1/user/shop/selectall?id_Shop=${idSeller}&page=${page}&size=${size}`;
+    //     console.log("idSeller", idSeller);
+    //     return axiosAuth("null", "get", url);
+    // },
 
     fetchTopProducts: (idSeller) => {
         const url = `/api/v1/user/shop/fetchTopProducts?id_Shop=${idSeller}`;
