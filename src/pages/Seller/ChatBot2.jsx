@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import checkService from '../../service/Seller/apiCheck';
 import { useNavigate } from "react-router-dom";
 import { PhotoIcon } from '@heroicons/react/24/solid';
 import SearchService from '../../service/user/search';
@@ -62,7 +61,7 @@ const ChatBubbleApp = () => {
     };
 
     const handleSend = useCallback(async (input) => {
-        const normalizedInput = input.trim().toLowerCase(); // Chuẩn hóa chuỗi: loại bỏ khoảng trắng và chuyển về chữ thường
+        const normalizedInput = input.trim().toLowerCase();
         setMessages((prevMessages) => [
             ...prevMessages,
             { text: input, sender: 'user' },
@@ -73,9 +72,15 @@ const ChatBubbleApp = () => {
                 setIsLoading(true);
                 try {
                     const aiResponse = await generateAIResponse(input);
+                    const categoryResponse = await SearchService.searchCategory(input);
+                    let productsInfo;
+                    if (categoryResponse?.data?.result?.products?.length > 0) {
+                        productsInfo = categoryResponse?.data?.result?.products;
+                    }
+                    console.log("Product", productsInfo);
                     setMessages((prevMessages) => [
                         ...prevMessages,
-                        { text: aiResponse, sender: 'ai' },
+                        { text: aiResponse, product: productsInfo, sender: 'ai' },
                     ]);
                 } catch (error) {
                     console.error("Lỗi khi gọi AI response:", error);
@@ -224,7 +229,7 @@ const ChatBubbleApp = () => {
 
             {/* Chat Box */}
             {isOpen && (
-                <div className="fixed bottom-4 right-4 z-50 w-115 h-[500px] bg-white rounded-lg shadow-lg flex flex-col">
+                <div className="fixed bottom-4 right-4 z-99999 w-115 h-[500px] bg-white rounded-lg shadow-lg flex flex-col">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-t-lg flex justify-between items-center">
                         <h3 className="text-lg font-semibold">Chatbot</h3>
@@ -270,7 +275,7 @@ const ChatBubbleApp = () => {
                                     ) : msg.status === 'bill' ? (
                                         <>
                                             <span>Đơn hàng: {msg.text}</span>
-                                            <span>, tổng tiền: {msg.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })} </span>
+                                            <span>, tổng tiền: {msg.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</span>
                                             <span>, trạng thái: {msg.statusBill} </span>
                                             <span
                                                 onClick={() => navigate(msg.link)}
@@ -285,7 +290,24 @@ const ChatBubbleApp = () => {
                                         </>) : (
                                         <span>
                                             {msg.file ? (<img src={URL.createObjectURL(msg.file)} alt="" className='w-40 h-60' />
-                                            ) : (<div className="text-sm">{msg.text}</div>)}
+                                            ) : (<div className="text-sm text-justify ">{msg.text}
+                                                {
+                                                    msg.product?.length > 0 ?
+                                                        (
+                                                            <>
+                                                                <p> - Mình gợi ý cho bạn những sản phẩm này nhé: </p>
+                                                                {
+                                                                    msg.product?.map((entity) => (
+
+                                                                        <p className='pl-4'>+ {entity.name} <Link className="" to={`/productdetail?idProduct=${entity.id}`}>Xem sản phẩm</Link></p>
+                                                                    ))}
+                                                            </>
+                                                        )
+                                                        :
+                                                        (<>
+                                                        </>)
+                                                }
+                                            </div>)}
                                         </span>
                                     )}
                                 </div>
@@ -402,8 +424,9 @@ const ChatBubbleApp = () => {
                         Powered by <a href="https://google.com" className="text-blue-500">Google AI</a>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
 
