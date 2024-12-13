@@ -25,9 +25,7 @@ const homeShopService = {
     },
 
 
-    fetchProductShopHome: (idSeller,  size) => {
-        console.log("Size1222", size);
-        
+    fetchProductShopHome: (idSeller,  size) => {        
         const url = `/api/v1/user/shop/selectall?id_Shop=${idSeller}&size=${size}`;
         console.log("idSeller", idSeller);
         return axiosAuth("null", "get", url);   
@@ -40,7 +38,7 @@ const homeShopService = {
     // },
 
     fetchTopProducts: (idSeller) => {
-        const url = `/api/v1/user/shop/fetchTopProducts?id_Shop=${idSeller}`;
+        const url = `/api/v1/user/shop/top3ProductShop?id_Shop=${idSeller}`;
         console.log("idSeller", idSeller);
         return axiosAuth("null", "get", url);
     },
