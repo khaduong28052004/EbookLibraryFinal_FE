@@ -140,7 +140,7 @@ const data_Products1 = {
 
 export default function ShopHome() {
     const [idUser, setIdUser] = useState({});
-    const [ shopInfo, setShopInfo] = useState({});
+    const [shopInfo, setShopInfo] = useState({});
     const [vouchers, setVouchers] = useState([]);  // Initialize as an empty array
     const [products, setProducts] = useState([]);  // Initialize as an empty array
     const [dataTopProducts, setDataTopProducts] = useState([]);  // Initialize as an empty array
@@ -213,7 +213,7 @@ export default function ShopHome() {
         }
     }
 
-   
+
     const fetchProductShopHome = async (currentSize) => {
         // setVouchers(vouchersdfEAsd);
         try {
@@ -235,6 +235,26 @@ export default function ShopHome() {
         }
     }
 
+    const fetchTop3Products = async (shopInfo) => {
+        try {
+            setIsLoading(true);
+            const response = await homeShopService.fetchTopProducts(shopInfo.shopDataEX.idSeller);
+            console.log("data topPro",response);
+            if (response.data.result) {
+                const data = response.data.result;
+                
+                setDataTopProducts(data.datas);
+            } else {
+                throw new Error('Không có dữ liệu');
+            }
+        } catch (error) {
+            // setProducts(data_Products1);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+
     const handleLoadMore = () => {
         if (hasMore && !isLoading)
             setSize((prevSize) => prevSize + 8);
@@ -244,6 +264,7 @@ export default function ShopHome() {
         fetchShopInfo();
         fetchVoucherShopHome();
         fetchProductShopHome();
+        fetchProductShopHome(size);
     }, [])
 
 
@@ -257,6 +278,7 @@ export default function ShopHome() {
 
     useEffect(() => {
         console.log("shopInfo", shopInfo);
+        fetchTop3Products(shopInfo);
     }, [shopInfo])
 
     useEffect(() => {
@@ -298,7 +320,7 @@ export default function ShopHome() {
                     ) : null}
                 </div>
                 <div className=" container-x mx-auto mb-3">
-                    <TopProducts shopData={shopInfo}  />
+                    <TopProducts shopData={dataTopProducts} />
                 </div>
                 <div className="flex-col align-middle justify-center">
                     <div className="max-w-[1216px] mx-auto px-2 sm:px-6">
