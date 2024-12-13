@@ -233,19 +233,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
     const sortedBills = [...orders];
 
-    const handlePageChange = (newPage) => {
-        if (newPage >= 0 && newPage < data.totalPages) {
-            setCurrentPage(newPage);
-            console.log("currentPage: " + newPage);
-        }
-    };
-    const handlePrevious = () => {
-        handlePageChange(currentPage - 1);
-    };
 
-    const handleNext = () => {
-        handlePageChange(currentPage + 1);
-    };
 
     const handleLoadMore = () => {
         console.log("hasMore && !setLoading",hasMore && !setLoading );
@@ -257,10 +245,6 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     useEffect(() => {
         fetchOrders(size);
     }, []);
-
-    // useEffect(() => {
-    //     fetchOrders();
-    // }, [currentPage]);
 
     useEffect(() => {
         fetchOrders();
