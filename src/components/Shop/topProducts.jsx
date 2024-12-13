@@ -36,36 +36,10 @@ const datas = [
 ];
 export default function topProducts({ shopData }) {
 
-    const [products, setProducts] = useState({});  // Initialize as an empty array
     const [isLoading, setIsLoading] = useState(false);
     
-    const fetchTop3Products = async () => {        
-        try {
-            setIsLoading(true);
-            const response = await homeShopService.fetchTopProducts(shopData.shopDataEX.idSeller);
-            if (response.data.result) {
-                const data = response.data.result;
-                setProducts(data.datas);
-                setIsLoading(true);
-            } else {
-                throw new Error('Không có dữ liệu');
-            }
-        } catch (error) {
-            // setProducts(data_Products1);
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        fetchTop3Products();
-    }, [])
-
-    useEffect(() => {
-        console.log("product toptop", products);
-    }, [products])
-
-    if (isLoading) {
+   
+       if (isLoading) {
         return (
             <div className="flex justify-center items-center h-screen ">
                 <BeatLoader color="#56A0D3" />
@@ -73,6 +47,7 @@ export default function topProducts({ shopData }) {
         );
     }
 
+    
     return (
         <div className=" container-x mx-auto gap-5 bg-white py-4">
             <div className="mb-3">
@@ -80,7 +55,7 @@ export default function topProducts({ shopData }) {
             </div>
             <div className="wrapper relative  max-w-full overflow-x-hidden bg-white">
                 <div className='w-20% flex gap-10 hover:shadow'>
-                {Array.isArray(products) && products.map((data) => (
+                {Array.isArray(shopData) && shopData.map((data) => (
                         <ProductCardStyleOne datas={data} />
                     ))}
                 </div>
