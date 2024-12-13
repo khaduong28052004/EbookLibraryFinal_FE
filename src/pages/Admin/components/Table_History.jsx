@@ -338,26 +338,81 @@ const TableTwo = () => {
                                                             </>
                                                         ) : null}
                                                         {entity.tableName === "FlashSale" ? (
-                                                            <div className="pl-20 pt-2 gap-3 grid grid-cols-3">
-                                                                <p>Tiêu đề: {parsedDoiTuongOld.title}</p>
-                                                                <p>Thời gian bắt đầu: {new Date(parsedDoiTuongOld.dateStart).toLocaleString("vi-VN", {
-                                                                    day: "2-digit",
-                                                                    month: "2-digit",
-                                                                    year: "numeric",
-                                                                    hour: "2-digit",
-                                                                    minute: "2-digit",
-                                                                    second: "2-digit",
-                                                                    hour12: false, // Sử dụng định dạng 24 giờ
-                                                                })}</p>
-                                                                <p>Thời gian kết thúc: {new Date(parsedDoiTuongOld.dateEnd).toLocaleString("vi-VN", {
-                                                                    day: "2-digit",
-                                                                    month: "2-digit",
-                                                                    year: "numeric",
-                                                                    hour: "2-digit",
-                                                                    minute: "2-digit",
-                                                                    second: "2-digit",
-                                                                    hour12: false, // Sử dụng định dạng 24 giờ
-                                                                })}</p>
+                                                            <div className={`pl-20 pt-2 gap-3 grid ${parsedDoiTuongNew ? 'grid-cols-1':'grid-cols-3'}`}>
+                                                                <p>
+                                                                    Tiêu đề:
+                                                                    <span className=" text-gray-900 px-2">
+                                                                        {parsedDoiTuongOld?.title || ""}
+                                                                    </span>
+                                                                    {parsedDoiTuongNew && (
+                                                                        <>
+                                                                            <span className="text-gray-500 mx-4">→</span>
+                                                                            <span className=" text-green-700">
+                                                                                {parsedDoiTuongNew?.title || ""}
+                                                                            </span>
+                                                                        </>
+                                                                    )}
+                                                                </p>
+                                                                <p>
+                                                                    Thời gian bắt đầu:
+                                                                    <span className=" text-gray-900 px-2">
+                                                                        {new Date(parsedDoiTuongOld.dateStart).toLocaleString("vi-VN", {
+                                                                            day: "2-digit",
+                                                                            month: "2-digit",
+                                                                            year: "numeric",
+                                                                            hour: "2-digit",
+                                                                            minute: "2-digit",
+                                                                            second: "2-digit",
+                                                                            hour12: false, // Sử dụng định dạng 24 giờ
+                                                                        }) || ""}
+                                                                    </span>
+                                                                    {parsedDoiTuongNew && (
+                                                                        <>
+                                                                            <span className="text-gray-500 mx-4">→</span>
+                                                                            <span className=" text-green-700">
+                                                                                {new Date(parsedDoiTuongNew.dateStart).toLocaleString("vi-VN", {
+                                                                                    day: "2-digit",
+                                                                                    month: "2-digit",
+                                                                                    year: "numeric",
+                                                                                    hour: "2-digit",
+                                                                                    minute: "2-digit",
+                                                                                    second: "2-digit",
+                                                                                    hour12: false, // Sử dụng định dạng 24 giờ
+                                                                                }) || ""}
+                                                                            </span>
+                                                                        </>
+                                                                    )}
+                                                                </p>
+                                                                <p>
+                                                                    Thời gian bắt đầu:
+                                                                    <span className=" text-gray-900 px-2">
+                                                                        {new Date(parsedDoiTuongOld.dateEnd).toLocaleString("vi-VN", {
+                                                                            day: "2-digit",
+                                                                            month: "2-digit",
+                                                                            year: "numeric",
+                                                                            hour: "2-digit",
+                                                                            minute: "2-digit",
+                                                                            second: "2-digit",
+                                                                            hour12: false, // Sử dụng định dạng 24 giờ
+                                                                        }) || ""}
+                                                                    </span>
+                                                                    {parsedDoiTuongNew && (
+                                                                        <>
+                                                                            <span className="text-gray-500 mx-4">→</span>
+                                                                            <span className=" text-green-700">
+                                                                                {new Date(parsedDoiTuongNew.dateEnd).toLocaleString("vi-VN", {
+                                                                                    day: "2-digit",
+                                                                                    month: "2-digit",
+                                                                                    year: "numeric",
+                                                                                    hour: "2-digit",
+                                                                                    minute: "2-digit",
+                                                                                    second: "2-digit",
+                                                                                    hour12: false, // Sử dụng định dạng 24 giờ
+                                                                                }) || ""}
+                                                                            </span>
+                                                                        </>
+                                                                    )}
+                                                                </p>
                                                             </div>
                                                         ) : null}
                                                         {entity.tableName === "AccountReport" || entity.tableName === "ProductReport" ? (<>
@@ -440,7 +495,7 @@ const TableTwo = () => {
                                                             </div>
                                                         ) : null}
                                                         {entity.tableName === "DiscountRate" ? (
-                                                            <div className="pl-20 pt-2 gap-1 grid grid-cols-2">
+                                                            <div className={`pl-20 pt-2 gap-1 grid  ${parsedDoiTuongNew ? 'grid-cols-1':'grid-cols-2'}`}>
                                                                 <p>
                                                                     Mức chiết khấu:
                                                                     <span className=" text-gray-900 px-2">
