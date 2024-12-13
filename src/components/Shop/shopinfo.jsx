@@ -144,7 +144,7 @@ export default function ShopInfo({ shopData, idUser }) {
               </div>
               <p>Đánh giá:</p>
               <span className="text-[#003EA1]">
-                {rating.averageStars} ({rating.totalReviews})
+                {Math.floor(rating.averageStars * 10) / 10}<> </>({rating.totalReviews})
               </span>
             </div>
           </div>
