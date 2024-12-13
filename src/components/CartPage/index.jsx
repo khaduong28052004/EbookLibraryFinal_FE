@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Loader from "../../common/Loader";
 import AuthService from "../../service/authService";
 import BreadcrumbCom from "../BreadcrumbCom";
 import EmptyCardError from "../EmptyCardError";
@@ -23,6 +24,7 @@ export default function CardPage({ cart = true }) {
   const { startRequest, endRequest, setItem } = useRequest();
   const localtion = useLocation();
   const [feeSeller, setFeeSeller] = useState({});
+  const [loading, setLoading] = useState(false);
 
 
   // token
@@ -60,6 +62,7 @@ export default function CardPage({ cart = true }) {
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
+    setLoading(true);
     retoken(token);
     if (token) {
       const id_account = sessionStorage.getItem("id_account");
@@ -70,6 +73,7 @@ export default function CardPage({ cart = true }) {
       }).then(response => {
         setData(response.data.result);
         setUser(response.data.result.user);
+        setLoading(false);
       }).catch(error => console.error("fetch cart error " + error));
     } else {
       toast.warn("Vui lòng đăng nhập");
@@ -155,19 +159,26 @@ export default function CardPage({ cart = true }) {
     }
   }, [feeSeller]);
   const handSubmitPay = () => {
-    if (dataSubmit.length > 0) {
-      const data = {
-        datas: dataSubmit,
-        user: user,
-        total: total,
-        sale: totalSale,
-        // service_fee: serviceFee
+
+    if (user?.addresses?.length > 0) {
+      if (dataSubmit.length > 0) {
+        const data = {
+          datas: dataSubmit,
+          user: user,
+          total: total,
+          sale: totalSale,
+          // service_fee: serviceFee
+        }
+        setItem("data", data);
+        sessionStorage.setItem("pay", JSON.stringify(data));
+        navigate("/checkout");
+      } else {
+        toast.warn("Chưa chọn sản phẩm");
       }
-      setItem("data", data);
-      sessionStorage.setItem("pay", JSON.stringify(data));
-      navigate("/checkout");
+
+
     } else {
-      toast.warn("Chưa chọn sản phẩm")
+      toast.warn("Vui lòng thêm địa chỉ");
     }
   }
 
@@ -200,66 +211,70 @@ export default function CardPage({ cart = true }) {
     }).catch(error => console.error("update cart error " + error + "id =" + idCart + "quantity " + quantity));
   }
   return (
-    <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>
-      {cart === false ? (
-        <div className="cart-page-wrapper w-full">
-          <div className="container-x mx-auto">
-            <BreadcrumbCom
-              paths={[
-                { name: "Trang chủ", path: "/" },
-                { name: "giỏ hàng", path: "/cart" },
-              ]}
-            />
-            <EmptyCardError />
-          </div>
-        </div>
-      ) : (
-        <div className="cart-page-wrapper w-full bg-white pb-[60px]">
-          <div className="w-full">
-            <PageTitle
-              title="Giỏ hàng của bạn"
-              breadcrumb={[
-                { name: "Trang chủ", path: "/" },
-                { name: "giỏ hàng", path: "/cart" },
-              ]}
-            />
-          </div>
-          <div className="w-full mt-[23px]">
-            <div className="container-x mx-auto">
-              <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} removeCart={removeCart} handleQuantityCartIndex={handleQuantityCartIndex} />
-              <div className="w-full mt-[30px] flex sm:justify-end">
-                <div className="sm:w-[520px] w-full border border-[#EDEDED] px-[30px] py-[26px]">
-                  <div className="sub-total mb-6">
-                    <div className=" flex justify-between mb-6">
-                      <p className="text-[15px] font-medium text-qblack">
-                        Tổng thu
-                      </p>
-                      <p className="text-[15px] font-medium text-qred">{Intl.NumberFormat().format(total)} VND</p>
+    <>
+      {loading ? (<Loader />) : (
+        <Layout childrenClasses={cart ? "pt-0 pb-0" : ""}>
+          {cart === false ? (
+            <div className="cart-page-wrapper w-full">
+              <div className="container-x mx-auto">
+                <BreadcrumbCom
+                  paths={[
+                    { name: "Trang chủ", path: "/" },
+                    { name: "giỏ hàng", path: "/cart" },
+                  ]}
+                />
+                <EmptyCardError />
+              </div>
+            </div>
+          ) : (
+            <div className="cart-page-wrapper w-full bg-white pb-[60px]">
+              <div className="w-full">
+                <PageTitle
+                  title="Giỏ hàng của bạn"
+                  breadcrumb={[
+                    { name: "Trang chủ", path: "/" },
+                    { name: "giỏ hàng", path: "/cart" },
+                  ]}
+                />
+              </div>
+              <div className="w-full mt-[23px]">
+                <div className="container-x mx-auto">
+                  <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} removeCart={removeCart} handleQuantityCartIndex={handleQuantityCartIndex} />
+                  <div className="w-full mt-[30px] flex sm:justify-end">
+                    <div className="sm:w-[520px] w-full border border-[#EDEDED] px-[30px] py-[26px]">
+                      <div className="sub-total mb-6">
+                        <div className=" flex justify-between mb-6">
+                          <p className="text-[15px] font-medium text-qblack">
+                            Tổng thu
+                          </p>
+                          <p className="text-[15px] font-medium text-qred">{Intl.NumberFormat().format(total)} VND</p>
+                        </div>
+                        <div className="w-full h-[1px] bg-[#EDEDED]"></div>
+                      </div>
+                      <div className="total mb-6">
+                        <div className=" flex justify-between">
+                          <p className="text-[18px] font-medium text-qblack">
+                            Tổng tiền
+                          </p>
+                          <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total - totalSale)} VND</p>
+                        </div>
+                      </div>
+                      <a onClick={handSubmitPay}>
+                        <div className="w-full h-[50px] black-btn flex justify-center items-center">
+                          <span className="text-sm font-semibold">
+                            Mua hàng
+                          </span>
+                        </div>
+                      </a>
                     </div>
-                    <div className="w-full h-[1px] bg-[#EDEDED]"></div>
                   </div>
-                  <div className="total mb-6">
-                    <div className=" flex justify-between">
-                      <p className="text-[18px] font-medium text-qblack">
-                        Tổng tiền
-                      </p>
-                      <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total - totalSale)} VND</p>
-                    </div>
-                  </div>
-                  <a onClick={handSubmitPay}>
-                    <div className="w-full h-[50px] black-btn flex justify-center items-center">
-                      <span className="text-sm font-semibold">
-                        Mua hàng
-                      </span>
-                    </div>
-                  </a>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          )}
+        </Layout>
       )}
-    </Layout>
+    </>
 
   );
 }

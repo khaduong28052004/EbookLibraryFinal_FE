@@ -4,17 +4,33 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import CountDown from "../Helpers/CountDown";
 import Star from "../Helpers/icons/Star";
+import ImageWithLoader from "../Helpers/ImageLoading/ImageWithLoader";
 import { useRequest } from "../Request/RequestProvicer";
-
 export default function ProductView({ className, reportHandler, product }) {
 
-  const productsImg = product?.imageProducts;
+  // const productsImg = product?.imageProducts;
   const [isFavorite, setIsFavorite] = useState(false);
   const { startRequest, endRequest } = useRequest();
   const [src, setSrc] = useState(product?.imageProducts[0]?.name);
   const location = useLocation();
   const { showHour, showMinute, showSecound } = CountDown(product?.flashSaleDetail?.flashSale?.dateEnd);
+  const [isReport, setIsReport] = useState(false);
+  const { isRequesting } = useRequest();
 
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      const id_user = sessionStorage.getItem('id_account');
+      axios.get(`http://localhost:8080/api/v1/user/report/checkReport?id_user=${id_user}&id_product=${product?.id}`).then((response) => {
+        setIsReport(!(response.data.result));
+      }).catch((error) => {
+        console.error("fetch report error " + error);
+      });
+    } else {
+      setIsReport(false);
+    }
+  }, [location, isRequesting])
   // =================================== FLashSale
 
   // const [timeDifference, setTimeDifference] = useState({
@@ -92,9 +108,14 @@ export default function ProductView({ className, reportHandler, product }) {
       <div data-aos="fade-right" className="lg:w-1/2 xl:mr-[70px] lg:mr-[50px]">
         <div className="w-full">
           <div className="w-full h-[450px] border border-qgray-border flex justify-center items-center overflow-hidden relative mb-3">
-            <img
+            {/* <img
               src={src}
               alt=""
+              className="object-contain"
+            /> */}
+            <ImageWithLoader
+              src={src}
+              alt="Product Image"
               className="object-contain"
             />
             <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
@@ -110,10 +131,10 @@ export default function ProductView({ className, reportHandler, product }) {
                   key={img.id}
                   className="w-[110px] h-[110px] p-[15px] border border-qgray-border cursor-pointer"
                 >
-                  <img
+                  <ImageWithLoader
                     src={img?.name}
                     alt=""
-                    className={`w-full h-full object-contain ${src !== img.src ? "opacity-50" : ""
+                    className={`w-full h-full object-contain ${src !== img.name ? "opacity-50" : ""
                       } `}
                   />
                 </div>
@@ -253,7 +274,7 @@ export default function ProductView({ className, reportHandler, product }) {
             </p>
           </div>
 
-          {/* <div
+          {isReport ? (<div
             data-aos="fade-up"
             className="flex space-x-2 items-center mb-[20px]"
           >
@@ -278,7 +299,7 @@ export default function ProductView({ className, reportHandler, product }) {
               className="text-qred font-semibold text-[13px]">
               Báo cáo mục này
             </button>
-          </div> */}
+          </div>) : (<></>)}
 
           {/* <div
             data-aos="fade-up"

@@ -135,57 +135,59 @@ export default function Voucher({ vouchers }) {
           className="tabBox flex gap-6 list-none overflow-x-hidden overflow-y-hidden scroll-smooth"
         >
           {vouchers.map((voucher) => (
-            (new Date(voucher.dateEnd) < new Date() || voucher.delete == true) ? null : (
-              <li key={voucher.id} className="tab rounded-lg">
-                <div className="border border-sky-500 bg-sky-100 w-[250px] h-[100px] p-2 flex items-center select-none">
+            <li key={voucher.id} className="tab rounded-lg text-sm">
+              <div className={`border w-[250px] h-[100px] p-2 flex items-center select-none ${new Date(voucher.dateEnd) < new Date() || voucher.delete === true
+                  ? 'border-white-500 bg-gray-100'
+                  : 'border-sky-500 bg-sky-100'
+                }`}>
                   <div className="flex-row w-8/12 text-[7px] text-gray-600 justify-center">
-                    <p>{voucher.name}</p>
-                    <p>Đơn tối thiểu {voucher.totalPriceOrder}</p>
-                    <p>HSD: {voucher.dateEnd}</p>
-                  </div>
-                  <div className="flex w-4/12 items-end">
-                    <button
-                      className={`${voucher.isSaved
-                        ? 'border border-sky-500 text-sky-500'
-                        : 'bg-[#003EA1] text-white'
-                        } px-5 py-1 rounded-sm text-[15px] w-full hover:cursor-pointer`}
-                    >
-                      {voucher.isSaved ? 'Đã lưu' : 'Lưu'}
-                    </button>
-                  </div>
-                </div>
+                <p>{voucher.name}</p>
+                <p>Đơn tối thiểu {voucher.totalPriceOrder}</p>
+                <p>HSD: {voucher.dateEnd}</p>
+              </div>
+              <div className="flex w-4/12 items-end">
+                {/* <button
+                  className={`${voucher.isSaved
+                    ? 'border border-sky-500 text-sky-500'
+                    : 'bg-[#003EA1] text-white'
+                    } px-5 py-1 rounded-sm text-[15px] w-full hover:cursor-pointer`}
+                >
+                  {voucher.isSaved ? 'Dùng ngay' : 'Lưu'}
+                </button> */}
+              </div>
+            </div>
               </li>
-            )
+            
           ))}
-        </ul>
+      </ul>
 
-        {isRightArrowVisible && (
-          <div className="icon  cursor-pointer justify-end absolute top-0 right-0 h-[100%] w-[120px] flex items-center  ">
-            <div className="border rounded-full p-2  bg-white  hover:bg-whiter">
-              <svg
-                ref={(el) => (arrowRef.current[1] = el)}
-                id="right"
-                className="arrow w-[35px] h-[35px] text-[1.2rem]
+      {isRightArrowVisible && (
+        <div className="icon  cursor-pointer justify-end absolute top-0 right-0 h-[100%] w-[120px] flex items-center  ">
+          <div className="border rounded-full p-2  bg-white  hover:bg-whiter">
+            <svg
+              ref={(el) => (arrowRef.current[1] = el)}
+              id="right"
+              className="arrow w-[35px] h-[35px] text-[1.2rem]
                     text-center leading-[55px] rounded-[50%] right-0  bg-[linear-gradient(90deg,#fff_70%, trasparent)]
                     mr-[15px] "
-                onClick={() => handleArrowClick('right')}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width=""
-                stroke="currentColor"
-                class="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                />
-              </svg>
-            </div>
+              onClick={() => handleArrowClick('right')}
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width=""
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m8.25 4.5 7.5 7.5-7.5 7.5"
+              />
+            </svg>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
+    </div >
   );
 }

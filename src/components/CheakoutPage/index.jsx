@@ -391,7 +391,7 @@ export default function CheakoutPage() {
   const createPaymentLink = async () => {
     const idUser = sessionStorage.getItem("id_account");
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/user/create-payment-link?id_user=' + idUser + "&id_address=" + addressActive?.id, data);
+      const response = await axios.post('http://localhost:8080/api/v1/user/create-payment-link?id_user=' + idUser + "&id_address=" + addressActive?.id + "&total=" + (total + totalServiceFee - totalSale), data);
 
       // Nhận URL thanh toán từ backend
       const checkoutUrl = response.data.checkoutUrl;
@@ -548,9 +548,6 @@ export default function CheakoutPage() {
             <div onClick={() => setIsPaymentMethod("PAYOS")} className={`border p-1 ${isPaymentMethod == "PAYOS" ? "border-blue-700" : "border-gray-300 p-1"}`}>
               <p className={`text-base font-normal cursor-pointer  ${isPaymentMethod == "PAYOS" ? "text-blue-600" : ""}`}>Thanh toán PAYOS</p>
             </div>
-            <div onClick={() => setIsPaymentMethod("PAYOS")} className={`border p-1 ${isPaymentMethod == "PAYOS" ? "border-blue-700" : "border-gray-300 p-1"}`}>
-              <p className={`text-base font-normal cursor-pointer  ${isPaymentMethod == "PAYOS" ? "text-blue-600" : ""}`}>Thanh toán PAYOS</p>
-            </div>
           </div>
         </div>
       </div>
@@ -561,7 +558,7 @@ export default function CheakoutPage() {
               <p>Tổng tiền hàng</p>
             </div>
             <div className="text-left">
-              <p>tổng tiền phí vận chuyển</p>
+              <p>Tổng tiền phí vận chuyển</p>
             </div>
             <div className="text-left">
               <p>Tổng giảm giá</p>
@@ -576,7 +573,7 @@ export default function CheakoutPage() {
               <p>{Intl.NumberFormat().format(total)}<sup>đ</sup></p>
             </div>
             <div className="text-right">
-              <p className='text-red-600'>-{Intl.NumberFormat().format(totalServiceFee)}<sup>đ</sup></p>
+              <p className='text-red-600'>+{Intl.NumberFormat().format(totalServiceFee)}<sup>đ</sup></p>
             </div>
             <div className="text-right">
               <p className='text-red-600'>-{Intl.NumberFormat().format(totalSale)}<sup>đ</sup></p>

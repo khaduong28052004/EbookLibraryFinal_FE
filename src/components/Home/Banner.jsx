@@ -179,11 +179,11 @@ export default function Banner({ className }) {
                 className="flex-1 flex  w-full xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto gap-2"
               >
               
-                <div className="bg-white rounded bg-opacity-50 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
+                <div className="bg-white rounded bg-opacity-0 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
                   <div
                     className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat "
                     style={{
-                      backgroundImage: "url('https://via.placeholder.com/500')", // Thay bằng đường dẫn ảnh của bạn
+                     // Thay bằng đường dẫn ảnh của bạn
                       backgroundPosition: 'center',
                       backgroundSize: 'cover'
                     }}

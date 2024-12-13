@@ -9,7 +9,6 @@ import OtpService from "../../../service/optService";
 import { Link, useNavigate } from "react-router-dom";
 import axios, { Axios } from "axios";
 // import { toast } from "react-toastify";
-
 const RegistrationForm = () => {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
@@ -96,10 +95,14 @@ const RegistrationForm = () => {
         return () => clearInterval(timer);
     }, [countdown]);
 
+    const [trangThai, setTrangThai] = useState(true);
     // Format countdown time
     const formatTime = (time) => {
         const minutes = Math.floor(time / 60);
         const seconds = time % 60;
+        if (seconds == 0) {
+            setTrangThai(false);
+        }
         return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
     };
     const handleInputChange = (e) => {
@@ -233,7 +236,7 @@ const RegistrationForm = () => {
             seterrorFrom((prev) => ({ ...prev, emailF: 1 }));// toast.error("Vui lòng điền email!");
             isValid = false;
             // return;
-
+            //    /(84|0[3|5|7|8|9])+([0-9]{8})\b/g
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             errors.email = 'Email không đúng định dạng!';
             seterrorFrom((prev) => ({ ...prev, emailF: 1 }));
@@ -256,7 +259,16 @@ const RegistrationForm = () => {
             isValid = false;
             seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
             // return;
-        } else {
+        } else if (!/[A-Z]/.test(formData.password)) {
+            errors.password = 'Mật khẩu phải có ít nhất một kí tự viết Hoa!';
+            isValid = false;
+            seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+        } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+            errors.password = 'Mật khẩu phải có ít nhất một kí tự đặt biệt!!';
+            isValid = false;
+            seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+        }
+        else {
             seterrorFrom((prev) => ({ ...prev, passwordF: 0 }));
         }
 
@@ -293,7 +305,7 @@ const RegistrationForm = () => {
 
     const [showRequirements, setShowRequirements] = useState(false); // Quản lý trạng thái hiển thị
 
-    const apiCheckEmail = async () => {
+    const apiCheckEmail = async () => {// không dùng được
         const token = import.meta.env.VITE_TOKEN_HUNTER;
         const response = await axios(`https://api.hunter.io/v2/email-verifier?email=${formData.email}&api_key=${token}`);
         console.log(response);
@@ -380,10 +392,48 @@ const RegistrationForm = () => {
         }
     };
 
+
+    const sendOTP = async () => {
+        console.log("data methor:", formData);
+        console.log("methor:", otpMethod);
+        const requestData = {
+            method: otpMethod,
+            phone: formData.phone,
+            email: formData.email,
+            fullname: formData.fullname,
+            username: formData.username,
+            password: formData.password
+        };
+
+        try {
+            const response = await OtpService.otpV2(requestData);
+            console.log(response);
+            if (response.status == 200) {
+                setStep(3);
+                toast.success("Gửi Opt thành công!");
+            }
+            setStep(3);
+        } catch (error) {
+            if (error?.response?.status == 409) {
+                toast.error(error?.response?.data?.message || "lỗi1!");
+            }
+        }
+    }
+
     const handleRegister = async () => {
         try {
+            console.log("data methor:", formData);
+            console.log("methor:", otpMethod);
+            const requestData = {
+                method: otpMethod,
+                phone: formData.phone,
+                email: formData.email,
+                fullname: formData.fullname,
+                username: formData.username,
+                password: formData.password
+            };
             console.log("otp: ", otp);
-            const response = await OtpService.registerV2(formData, otp);
+            const response = await OtpService.registerV2(requestData, otp);
             if (response.status === 200) {
                 toast.success("Đăng ký thành công");
                 setTimeout(() => {
@@ -617,7 +667,7 @@ const RegistrationForm = () => {
                                         </div>
                                         <div className="flex sm:flex-row flex-col space-y-5 sm:space-y-0 sm:space-x-5 mb-5">
                                             <div className='w-[50%] flex justify-start' onMouseEnter={() => setShowRequirements(true)} onMouseLeave={() => setShowRequirements(false)}>
-                                                <span className='text-gray-400 text-start'>
+                                                <span className='text-black-400 text-start'>
                                                     {error ? (
                                                         <>{error?.message}</>
                                                     ) : (
@@ -636,9 +686,9 @@ const RegistrationForm = () => {
                                             </div>
 
                                             <div className='w-[50%] flex justify-end'>
-                                                <span className='bg-blue-400 text-white shadow-sm' onClick={generatePassword}>
+                                                <button className='bg-blue-400 text-white shadow-sm' onClick={generatePassword}>
                                                     Gợi ý!
-                                                </span>
+                                                </button>
                                             </div>
                                         </div>
                                         {/* {Object.keys(error).length > 0 && (
@@ -760,15 +810,24 @@ const RegistrationForm = () => {
                                         <div className="flex flex-row items-center justify-center mx-auto w-full max-w-xs">
                                             <OTPInput length={6} onComplete={setOtp} />
                                         </div>
-                                        <p className="text-center text-sm text-gray-500">
+                                        {trangThai ? (<p className="text-center text-sm text-gray-500">
                                             Thời gian còn lại: <span className="font-bold">{formatTime(countdown)}</span>
-                                        </p>
-                                        <button
+                                        </p>) : (<p className="text-center text-sm text-gray-500">
+                                            <span onClick={sendOTP} className="font-bold">Gửi lại!</span>
+                                        </p>)}
+
+                                        {otp.length == 6 ? (<button
                                             onClick={handleRegister}
                                             className="black-btn mb-6 text-sm text-white w-full h-[50px] font-semibold flex justify-center bg-purple items-center"
                                         >
                                             Hoàn tất Đăng ký
-                                        </button>
+                                        </button>) : (<button
+                                            onClick={(per) => toast.warn("Vui lòng điền đủ otp")}
+                                            className="black-btn mb-6 text-sm text-slate-500 w-full h-[50px] font-semibold flex justify-center bg-purple items-center"
+                                        >
+                                            Hoàn tất Đăng ký
+                                        </button>)}
+
                                     </div>
                                 </form>
                                 {error.registration && <p className="text-red-500 mt-2 text-center">{error.registration}</p>}
