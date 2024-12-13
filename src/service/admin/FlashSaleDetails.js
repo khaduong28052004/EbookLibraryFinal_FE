@@ -22,17 +22,17 @@ const flashSaleDetails = {
         return axiosAuth(token, "get", url);
     },
     post: ({ data }) => {
-        const url = `/api/v1/admin/flashsaledetails`;
+        const url = `/api/v1/admin/flashsaledetails?accountID=${sessionStorage.getItem("id_account")}`;
         console.log(token);
         return axiosAuth(token, "post", url, data);
     },
     put: ({ data }) => {
-        const url = `/api/v1/admin/flashsaledetails`;
+        const url = `/api/v1/admin/flashsaledetails?accountID=${sessionStorage.getItem("id_account")}`;
         console.log(token);
         return axiosAuth(token, "put", url, data);
     },
     delete: ({ id }) => {
-        const url = `/api/v1/admin/flashsaledetails?id=${id}`;
+        const url = `/api/v1/admin/flashsaledetails?id=${id}&accountID=${sessionStorage.getItem("id_account")}`;
         console.log(token);
         return axiosAuth(token, "delete", url);
     }

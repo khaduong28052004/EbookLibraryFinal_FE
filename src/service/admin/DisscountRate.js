@@ -11,9 +11,9 @@ const chietKhauService = {
     findById: (id) =>
         axiosAuth(token, "get", url("", `?id=${id}`))
     ,
-    post: (data) => axiosAuth(token, "post", url("", ""), data),
-    put: (data) => axiosAuth(token, "put", url("", ""), data),
-    delete: (id) => axiosAuth(token, "delete", url("", `?&id=${id}`))
+    post: (data) => axiosAuth(token, "post", url("", `?accountID=${sessionStorage.getItem("id_account")}`), data),
+    put: (data) => axiosAuth(token, "put", url("", `?accountID=${sessionStorage.getItem("id_account")}`), data),
+    delete: (id) => axiosAuth(token, "delete", url("", `?&id=${id}&accountID=${sessionStorage.getItem("id_account")}`))
 
 }
 export default chietKhauService;

@@ -391,7 +391,7 @@ export default function CheakoutPage() {
   const createPaymentLink = async () => {
     const idUser = sessionStorage.getItem("id_account");
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/user/create-payment-link?id_user=' + idUser + "&id_address=" + addressActive?.id, data);
+      const response = await axios.post('http://localhost:8080/api/v1/user/create-payment-link?id_user=' + idUser + "&id_address=" + addressActive?.id + "&total=" + (total + totalServiceFee - totalSale), data);
 
       // Nhận URL thanh toán từ backend
       const checkoutUrl = response.data.checkoutUrl;

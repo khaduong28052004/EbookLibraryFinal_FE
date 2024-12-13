@@ -3,11 +3,13 @@ import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLongDownIcon, ArrowLongUpIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
 import Modal from "./ModalThongBao";
 import accountService from '../../../service/admin/Account';
+import productService from '../../../service/admin/Product';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
 
 const TableTwo = () => {
     const [data, setData] = useState([]);
+
     const [searchItem, setSearchItem] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
@@ -16,6 +18,8 @@ const TableTwo = () => {
     const [contents, setContents] = useState("");
     const [id, setId] = useState('');
     const [option, setOption] = useState("");
+    const [optionEntity, setOptionEntity] = useState("");
+
     const [isOpen, setIsOpen] = useState(false);
 
     const handlePageChange = (newPage) => {
@@ -44,9 +48,34 @@ const TableTwo = () => {
         }
     };
 
-    const putStatus = async () => {
+    const findAllProductReport = async () => {
         try {
-            const response = await accountService.putStatusAccountReport({ id, contents });
+            const response = await productService.findAllProductReport({ option, page: currentPage, size: 10, searchItem, sortColumn, sortBy });
+            console.log("content: " + response.data.result.content);
+            setData(response.data.result);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    };
+
+    const putStatusAccount = async () => {
+        try {
+            const response = await accountService.putStatus({ id, contents });
+            console.log("Mã Code status: " + response.data.code);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
+            }
+            setContents("");
+            findAllAccountReport();
+        } catch (error) {
+            toast.error(error.response.data.message);
+            console.log("Error: " + error);
+        }
+    }
+
+    const putStatusProduct = async () => {
+        try {
+            const response = await productService.putStatus({ id, contents });
             console.log("Mã Code status: " + response.data.code);
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
@@ -60,12 +89,20 @@ const TableTwo = () => {
     }
 
     const handleConfirm = () => {
-        putStatus();
+        if (optionEntity === "product") {
+            putStatusProduct();
+        } else {
+            putStatusAccount();
+        }
     };
 
     useEffect(() => {
-        findAllAccountReport();
-    }, [searchItem, currentPage, sortBy, sortColumn, option]);
+        if (optionEntity === "product") {
+            findAllProductReport();
+        } else {
+            findAllAccountReport();
+        }
+    }, [optionEntity, searchItem, currentPage, sortBy, sortColumn, option]);
     ;
     const handleExport = async () => {
         const sheetNames = ['Danh Sách Báo Cáo'];
@@ -125,18 +162,30 @@ const TableTwo = () => {
 
                         {/* Dropdown Option */}
                         <select
+                            value={optionEntity}
+                            onChange={(e) => {
+                                setOptionEntity(e.target.value);
+                                setCurrentPage(0);
+                            }}
+                            className="w-50 mr-5 bg-transparent  text-black focus:outline-none dark:text-white"
+                        >
+                            <option value="macdinh" disabled>Đối tượng lọc</option>
+                            <option value="shop">Shop</option>
+                            <option value="product">Sách</option>
+                        </select>
+                        {/* Dropdown Option */}
+                        <select
                             value={option}
                             onChange={(e) => {
                                 setOption(e.target.value);
                                 setCurrentPage(0);
                             }}
-                            className="w-70 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+                            className="w-50 bg-transparent text-black focus:outline-none dark:text-white"
                         >
-                            <option value="macdinh" disabled>Lọc theo</option>
+                            <option value="macdinh" disabled>Nội dung lọc</option>
                             <option value="chuaphanhoi">Chưa phản hồi</option>
                             <option value="daphanhoi">Đã phản hồi</option>
                         </select>
-
                     </div>
                 </form>
                 <form onSubmit={handleSubmit}
@@ -177,7 +226,7 @@ const TableTwo = () => {
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white ">Shop bị báo cáo</span>
+                                <span className="text-sm text-black dark:text-white "> {optionEntity === "product" ? "Sản phẩm bị báo cáo" : "Shop bị báo cáo"}</span>
                                 <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "shop.shopName" ? "text-black" : "text-gray-500"} text-black`} />
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "shop.shopName" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
@@ -227,8 +276,7 @@ const TableTwo = () => {
 
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-
-                                    {entity.shop.shopName}
+                                    {optionEntity === "product" ? entity?.product?.name : entity?.shop?.shopName}
                                 </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
