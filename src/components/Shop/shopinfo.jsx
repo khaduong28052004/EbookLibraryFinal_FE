@@ -1,16 +1,23 @@
 import React, { useEffect, useState, useRef } from 'react';
 import homeShopService from "../../service/Seller/homeShopService";
 import ReportModal from "../Shop/reportModal"
+import { Navigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function ShopInfo({ shopData, idUser }) {
   const [shopInfo, setShopInfo] = useState({});
   const [rating, setRating] = useState([]);  // Initialize as an empty array
   const [isFollowed, setIsFollowed] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const token = sessionStorage.getItem("token");
 
 
   const handleFollow = async (idShop) => {
-    try {
+    if (!token) {
+      toast.warn("Vui lòng đăng nhập!.");
+      return <Navigate to="/login" />;
+    }
+     try {
       if (isFollowed) {
         await homeShopService.createFollower(idUser, idShop);
         setIsFollowed(false);
@@ -22,7 +29,6 @@ export default function ShopInfo({ shopData, idUser }) {
       console.error("Error updating follow status:", error);
     }
   };
-
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -42,6 +48,7 @@ export default function ShopInfo({ shopData, idUser }) {
 
   return (
     <div className="container-x mx-auto">
+      <ToastContainer />
       <ReportModal accountId={idUser} shopId={shopInfo.idSeller} isOpen={isModalOpen} handleClose={closeModal} />
 
       <div className="rounded-md py-5 px-5 flex">
@@ -205,11 +212,9 @@ export default function ShopInfo({ shopData, idUser }) {
               <p>Địa chỉ:</p>
               <span className="text-gray-600">{shopInfo.district}</span>
             </div>
-
           </div>
         </div>
       </div>
-
     </div>
   );
 }

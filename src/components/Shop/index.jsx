@@ -36,7 +36,6 @@ const shopDataEX = {
     }
 };
 
-
 const vouchersdfEAsd = [
     {
         "id": 2,
@@ -148,12 +147,11 @@ export default function ShopHome() {
     const [isLoading, setIsLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true); // Có còn sản phẩm để tải không
     const [page, setPage] = useState(1); // Trang hiện tại
-
     const [isFollowed, setIsFollowed] = useState(false);
+    const [size, setSize] = useState(8);
     const local = useLocation();
     const query = new URLSearchParams(local.search);
     const { Id } = useParams();
-    const [size, setSize] = useState(8);
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -162,7 +160,6 @@ export default function ShopHome() {
     const closeModal = () => {
         setIsModalOpen(false);
     };
-
 
     const fetchDataSelectAll = async () => {
         const id_account = sessionStorage.getItem("id_account") || 0;
@@ -331,7 +328,7 @@ export default function ShopHome() {
                         <SectionStyleThreeHomeShop
                             className="new-products mb-[60px] "
                             seeMoreUrl="/all-products"
-                            products={products} isLoading={isLoading}
+                            products={products}
                         />
                     </div>
                     <div className=''>
