@@ -181,7 +181,6 @@ export default function ShopHome() {
                 const data = response.data.result;
                 data != null ? setShopInfo(data) : setShopInfo(null);
                 setIsFollowed(response.data.result.shopDataEX.isFollowed);
-                setIsLoading(true);
             } else {
                 setShopInfo(data);
                 ;
