@@ -28,7 +28,7 @@ import ProductsCompaire from "./components/ProductsCompaire/index";
 import { RequestProvider } from "./components/Request/RequestProvicer.jsx";
 import SallerPage from "./components/SallerPage/index.jsx";
 import Sallers from "./components/Sellers/index.jsx";
-import HomeShop from "./components/Shop/index.jsx";
+// import HomeShop from "./components/Shop/index.jsx";
 import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
