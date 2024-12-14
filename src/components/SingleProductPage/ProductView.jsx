@@ -175,7 +175,14 @@ export default function ProductView({ className, reportHandler, product }) {
               product?.flashSaleDetail != null ? (<div className=" w-full">
                 <div className="p-2 pl-5 bg-gradient-to-r from-red-500 to-orange-400  flex justify-between items-center">
                   <span className="font-semibold text-white">FLASHSALE</span>
-                  <span className="font-medium text-white">KẾT THÚC SAU <span className="bg-black">{showHour}:{showMinute}:{showSecound}</span></span>
+                  <span className="flex items-center">
+                    <div className="font-medium text-white">KẾT THÚC SAU</div>
+                    <div className="flex items-center ml-5 space-x-2">
+                      <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showHour < 10 ? "0" + showHour : showHour}</p>
+                      <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showMinute < 10 ? "0" + showMinute : showMinute}</p>
+                      <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showSecound < 10 ? "0" + showSecound : showSecound}</p>
+                    </div>
+                  </span>
                 </div>
 
                 <div className="pl-5 h-15 flex items-center bg-gradient-to-r from-gray-50 to-orange-50 ">

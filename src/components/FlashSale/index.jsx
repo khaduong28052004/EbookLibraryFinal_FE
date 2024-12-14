@@ -133,7 +133,7 @@ export default function FlashSale() {
                   <div className="countdown-item">
                     <div className="countdown-number sm:w-[50px] sm:h-[50px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#2F80ED]">
-                        {showHour}
+                        {showHour < 10 ? "0" + showHour : showHour}
                       </span>
                     </div>
                     <p className="sm:text-[18px] text-xs font-500 text-center leading-8 text-white">
@@ -143,7 +143,7 @@ export default function FlashSale() {
                   <div className="countdown-item">
                     <div className="countdown-number sm:w-[50px] sm:h-[50px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#219653]">
-                        {showMinute}
+                        {showMinute < 10 ? "0" + showMinute : showMinute}
                       </span>
                     </div>
                     <p className="sm:text-[18px] text-xs font-500 text-center leading-8 text-white">
@@ -153,7 +153,7 @@ export default function FlashSale() {
                   <div className="countdown-item">
                     <div className="countdown-number sm:w-[50px] sm:h-[50px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#EF5DA8]">
-                        {showSecound}
+                        {showSecound < 10 ? "0" + showSecound : showSecound}
                       </span>
                     </div>
                     <p className="sm:text-[18px] text-xs font-500 text-center leading-8 text-white">
