@@ -101,11 +101,9 @@ export default function Home() {
       {loading ? (
         // <div className="flex justify-center items-center h-screen">
         <Loader />
-
-
       ) : (<Layout>
         <Banner className="banner-wrapper" />
-        <div className="bg-red-500">
+        <div className="bg-red-500 mt-10">
           <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
         </div>
 
