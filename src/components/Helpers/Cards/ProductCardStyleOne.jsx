@@ -4,8 +4,6 @@ import { FaStar } from 'react-icons/fa'; // Font Awesome
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRequest } from "../../Request/RequestProvicer";
-import Compair from "../icons/Compair";
-import QuickViewIco from "../icons/QuickViewIco";
 import ThinLove from "../icons/ThinLove";
 import ImageLoader from "../ImageLoading/ImageWithLoader.jsx";
 export default function ProductCardStyleOne({ datas, type }) {
@@ -175,11 +173,11 @@ export default function ProductCardStyleOne({ datas, type }) {
             <QuickViewIco />
           </span>
         </a> */}
-        <a className="cursor-pointer">
+        <p className="cursor-pointer">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
             <ThinLove isFavorite={isFavorite} createFavorite={createFavorite} />
           </span>
-        </a>
+        </p>
         {/* <a href="#">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
             <Compair createFavorite={handleShare} />

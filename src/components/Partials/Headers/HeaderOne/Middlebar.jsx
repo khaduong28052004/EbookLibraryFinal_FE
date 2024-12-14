@@ -108,8 +108,6 @@ export default function Middlebar({ className, type }) {
           setTotalFavorite(response.data.result.datas?.length);
         }).catch(error => console.error("fetch cart error " + error));
       }
-
-
     }
   }, [isRequesting]);
 
