@@ -492,7 +492,7 @@ const ShopSeller = () => {
                 <span className="font-semibold text-black dark:text-white">
                   {data.posts}
                 </span>
-                <span className="text-sm">Posts</span>
+                <span className="text-sm">Sản Phẩm</span>
               </div>
               <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
                 <span className="font-semibold text-black dark:text-white">

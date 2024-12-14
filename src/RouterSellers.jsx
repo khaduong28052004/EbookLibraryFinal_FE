@@ -11,7 +11,7 @@ import ThongKeSanPham from "./pages/Seller/ThongKeSanPhamSeller"
 import ThongKeKhachHang from "./pages/Seller/ThongKeKhachHangSeller"
 import DanhGiaSeller from "./pages/Seller/DanhGiaSeller"
 import VoucherDetailSeller from "./pages/Seller/VoucherDetailSeller"
-import ChatBot from "./pages/Seller/ChatBot2"
+import ChatBot from "./pages/Seller/ChatBot"
 import Shop from "./pages/Seller/ThongTinShopSeller"
 import { useEffect, useState } from "react";
 import NotificationModal from "./components/Notification/NotificationModal";

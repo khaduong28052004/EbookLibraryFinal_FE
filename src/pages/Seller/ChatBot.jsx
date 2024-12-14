@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PhotoIcon } from '@heroicons/react/24/solid';
 import SearchService from '../../service/user/search';
+import checkService from "../../service/Seller/apiCheck";
 const ChatBubbleApp = () => {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -74,13 +75,14 @@ const ChatBubbleApp = () => {
                     const aiResponse = await generateAIResponse(input);
                     const categoryResponse = await SearchService.searchCategory(input);
                     let productsInfo;
+                    let emotion;
                     if (categoryResponse?.data?.result?.products?.length > 0) {
                         productsInfo = categoryResponse?.data?.result?.products;
+                        emotion = categoryResponse?.data?.result?.emotion;
                     }
-                    console.log("Product", productsInfo);
                     setMessages((prevMessages) => [
                         ...prevMessages,
-                        { text: aiResponse, product: productsInfo, sender: 'ai' },
+                        { text: aiResponse, product: productsInfo, emotion: emotion, sender: 'ai' },
                     ]);
                 } catch (error) {
                     console.error("Lỗi khi gọi AI response:", error);
@@ -95,16 +97,13 @@ const ChatBubbleApp = () => {
                 if (!normalizedInput.includes("đơn hàng")) {
                     const response = await checkService.apiChatBot(input);
                     if (response?.data?.result?.length > 0) {
-                        const productName = response.data.result[0].name;
-                        const linkProduct = `/productdetail?idProduct=${response.data.result[0].id}`;
+                        const products = response.data.result;
                         setMessages((prevMessages) => [
                             ...prevMessages,
                             {
-                                text: productName,
                                 sender: 'ai',
-                                isLink: true,
-                                link: linkProduct,
-                                status: 'product'
+                                status: 'product',
+                                products: products
 
                             },
                         ]);
@@ -117,21 +116,13 @@ const ChatBubbleApp = () => {
                 } else {
                     const response = await checkService.apiChatBotBill(input);
                     if (response?.data?.result?.length > 0) {
-                        const billId = response.data.result[0].id;
-                        const statusBill = response.data.result[0].orderStatus.name;
-                        const price = response.data.result[0].totalPrice;
-                        const linkProduct = `/profile#order`;
-                        sessionStorage.setItem("billId", billId);
+                        const bills = response.data.result;
                         setMessages((prevMessages) => [
                             ...prevMessages,
                             {
-                                text: billId,
-                                statusBill: statusBill,
                                 sender: 'ai',
-                                isLink: true,
-                                link: linkProduct,
-                                price: price,
                                 status: 'bill',
+                                bills: bills
 
                             },
                         ]);
@@ -159,15 +150,6 @@ const ChatBubbleApp = () => {
     }, [isFirstInteraction]);
 
 
-
-    // const handleKeyPress = (e) => {
-    //     if (e.key === 'Enter') {
-    //         e.preventDefault();
-    //         handleSend();
-    //     }
-    // };
-
-
     const handleFileUpload = async (file) => {
         const data = new FormData();
         data.append("file", file);
@@ -179,20 +161,17 @@ const ChatBubbleApp = () => {
         ]);
         try {
             const response = await SearchService.searchImage(data);
-            console.log("Image: ", response);
             const responseProduct = await SearchService.searchByIds(response.data.similar_product_ids, 0);
-            console.log("Product: ", responseProduct);
             setIsLoading(false);
             if (Array.isArray(responseProduct.data.result.content) && responseProduct.data.result.content.length > 0) {
-                const productName = responseProduct.data.result.content[0].name;
-                const linkProduct = `/productdetail?idProduct=${responseProduct.data.result.content[0].id}`;
+                const products = responseProduct?.data?.result?.content;
+
                 setMessages((prevMessages) => [
                     ...prevMessages,
                     {
-                        text: productName,
                         sender: 'ai',
                         isLink: true,
-                        link: linkProduct,
+                        products: products,
                         status: 'product'
                     },
                 ]);
@@ -258,49 +237,78 @@ const ChatBubbleApp = () => {
                                         <div className="text-sm text-gray-500 mb-1">🤖 Phucsy:</div>
                                     )}
                                     {msg.status == 'product' ? (
-                                        // Dùng sự kiện onClick để điều hướng
                                         <>
-                                            <span>Sản phẩm: </span>
-                                            <span
-                                                onClick={() => navigate(msg.link)}
-                                                style={{
-                                                    color: "blue",
-                                                    textDecoration: "underline",
-                                                    cursor: "pointer",
-                                                }}
-                                            >
-                                                {msg.text}
-                                            </span>
+                                            {msg.products?.length > 0 ? (<span className="text-sm text-justify">
+                                                <span> - Các sản phẩm tìm thấy: </span>
+                                                {msg.products?.length > 0 ? (
+                                                    msg.products.map((entity) => (
+                                                        <p className='pl-4'> +
+                                                            <span> Tên: {entity.name}</span>
+                                                            <span> ({entity.category.name})</span>
+                                                            <span
+                                                                onClick={() => {
+                                                                    navigate(`/productdetail?idProduct=${entity.id}`);
+                                                                }}
+                                                                className='text-blue-500 hover:underline ml-2'
+                                                            >Xem chi tiết</span>
+                                                        </p>
+                                                    ))
+                                                ) : (
+                                                    <></>
+                                                )}
+                                            </span>) : (<></>)}
                                         </>
                                     ) : msg.status === 'bill' ? (
-                                        <>
-                                            <span>Đơn hàng: {msg.text}</span>
-                                            <span>, tổng tiền: {msg.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</span>
-                                            <span>, trạng thái: {msg.statusBill} </span>
-                                            <span
-                                                onClick={() => navigate(msg.link)}
-                                                style={{
-                                                    color: "blue",
-                                                    textDecoration: "underline",
-                                                    cursor: "pointer",
-                                                }}
-                                            >
-                                                Xem đơn hàng
+                                        msg.bills?.length > 0 ? (
+                                            <span className="text-sm text-justify">
+                                                <span> - Thông tin đơn hàng của bạn: </span>
+                                                {msg.bills?.length > 0 ? (
+                                                    msg.bills.map((entity) => (
+                                                        <p className='pl-4'> +
+                                                            <span> Mã đơn hàng: {entity.id}</span>
+                                                            <span>, tổng tiền: {entity.totalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</span>
+                                                            <span>, trạng thái: {entity.orderStatus.name}</span>
+                                                            <span
+                                                                onClick={() => {
+                                                                    sessionStorage.setItem("billId", entity.id);
+                                                                    navigate(`/profile#order`);
+                                                                }}
+                                                                className='text-blue-500 hover:underline ml-2'
+                                                            >Xem chi tiết</span>
+                                                        </p>
+                                                    ))
+                                                ) : (
+                                                    <></>
+                                                )}
                                             </span>
-                                        </>) : (
+                                        ) : (<></>)
+                                    ) : (
                                         <span>
                                             {msg.file ? (<img src={URL.createObjectURL(msg.file)} alt="" className='w-40 h-60' />
-                                            ) : (<div className="text-sm text-justify ">{msg.text}
+                                            ) : (<div className="text-sm text-justify">{msg.text}
                                                 {
                                                     msg.product?.length > 0 ?
                                                         (
                                                             <>
-                                                                <p> - Mình gợi ý cho bạn những sản phẩm này nhé: </p>
+                                                                <p>
+                                                                    {msg.emotion == 'vui' ? "- Hãy để mình gợi ý cho bạn những cuốn sách thú vị này nhé: " : ""}
+                                                                    {msg.emotion == 'gian' ? "- Mình biết bạn đang rất bận rộn, nhưng mình có một số cuốn sách tuyệt vời muốn chia sẻ với bạn, hy vọng bạn sẽ tìm được điều thú vị nhé: " : ""}</p>
+                                                                {msg.emotion == 'buon' ? "- Nếu bạn đang tìm một cuốn sách để thư giãn hoặc tìm sự an ủi, mình có vài gợi ý cho bạn đây: " : ""}
+                                                                {msg.emotion == 'chan' ? "- Nếu bạn cảm thấy chán nản, có thể thử một vài cuốn sách này để làm mới tinh thần nhé: " : ""}
+                                                                {msg.emotion == 'met' ? "- Sau một ngày dài mệt mỏi, mình có thể giúp bạn tìm một cuốn sách thú vị để thư giãn không? Hãy tham khảo những gợi ý dưới đây nhé: " : ""}
+                                                                {msg.emotion == 'yeu' ? "- Nếu bạn yêu thích những câu chuyện hay hoặc muốn tìm một món quà đặc biệt, mình có vài cuốn sách rất đáng yêu dành cho bạn: " : ""}
+                                                                {msg.emotion == 'that tinh' ? "- Nếu bạn đang cảm thấy buồn, những cuốn sách dưới đây có thể giúp bạn tìm lại niềm vui hoặc ít nhất là giúp quên đi chút ít nỗi buồn: " : ""}
                                                                 {
                                                                     msg.product?.map((entity) => (
-
-                                                                        <p className='pl-4'>+ {entity.name} <Link className="" to={`/productdetail?idProduct=${entity.id}`}>Xem sản phẩm</Link></p>
-                                                                    ))}
+                                                                        <p className='pl-4'>+ {entity.name} ({entity.category.name})
+                                                                            <span
+                                                                                className="text-blue-500 hover:underline ml-2"
+                                                                                onClick={() => navigate(`/productdetail?idProduct=${entity.id}`)}>
+                                                                                Xem sản phẩm
+                                                                            </span>
+                                                                        </p>
+                                                                    ))
+                                                                }
                                                             </>
                                                         )
                                                         :
@@ -324,21 +332,23 @@ const ChatBubbleApp = () => {
                     </div>
 
                     {/* Suggestion Buttons */}
-                    {!isLoading && isFirstInteraction && (
-                        <div className="p-4 text-center space-y-2 bg-gray-50">
-                            <div className="">
-                                {suggestions.map((suggestion, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => handleSuggestionClick(suggestion)}
-                                        className="px-4 my-2 py-2 w-full bg-blue-500  text-white rounded-full hover:bg-blue-600"
-                                    >
-                                        {suggestion}
-                                    </button>
-                                ))}
+                    {
+                        !isLoading && isFirstInteraction && (
+                            <div className="p-4 text-center space-y-2 bg-gray-50">
+                                <div className="">
+                                    {suggestions.map((suggestion, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleSuggestionClick(suggestion)}
+                                            className="px-4 my-2 py-2 w-full bg-blue-500  text-white rounded-full hover:bg-blue-600"
+                                        >
+                                            {suggestion}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )
+                    }
 
                     {/* Input */}
                     <div className="p-4 border-t border-gray-200 flex items-center space-x-3 bg-white">
@@ -375,7 +385,7 @@ const ChatBubbleApp = () => {
 
                         {/* Button gửi */}
                         <button
-                            onClick={() => handleSend(input)}
+                            onClick={() => { if (input.length > 0) { handleSend(input) } }}
                             className={`bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full shadow flex items-center justify-center transition ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"}`}
                             disabled={isLoading}
                         >
@@ -423,7 +433,7 @@ const ChatBubbleApp = () => {
                     <div className="text-sm text-center text-gray-500 py-2">
                         Powered by <a href="https://google.com" className="text-blue-500">Google AI</a>
                     </div>
-                </div>
+                </div >
             )
             }
         </div >

@@ -1,27 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
 import { ExportExcel } from "./ExportExcel"
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, sortBy, setSortBy, sortColumn, setSortColumn }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [statusProduct, setStatusProduct] = useState(false);
-  const [isOpenModalSP, setIsOpenModalSP] = useState(false);
-  const handleConfirm = () => {
-    setIsOpen(false);
-  };
 
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Thống Kê Khách Hàng'];
     try {
       const response = await ThongKeService.khachHang(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
-      if (!response || response.data.result.totalElements === 0) {
+      if (!response || response.data.result.khachHang.totalElements === 0) {
         toast.error("Không có dữ liệu");
       } else {
-        return ExportExcel("Danh Sách Thống Kê Khách Hàng.xlsx", sheetNames, [response.data.result.content]);
+        return ExportExcel("Danh Sách Thống Kê Khách Hàng.xlsx", sheetNames, [response.data.result.khachHang.content]);
       }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
@@ -31,6 +25,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <ToastContainer/>
       <div className="py-6 flex flex-col md:flex-row justify-between px-4 md:px-6 xl:px-7.5 space-y-4 md:space-y-0">
         <form>
           <div className="relative pt-3 flex items-center space-x-4">
@@ -206,6 +201,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={pageSize}
       />
 
     </div>

@@ -17,7 +17,7 @@ const TableVoucher = () => {
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
-  const [size, setSize] = useState(5);
+  const [size, setSize] = useState(10);
   const searchParams = new URLSearchParams(location.search);
   const voucher_id = searchParams.get('voucher_id');
   const loca = useLocation();
@@ -221,6 +221,7 @@ const TableVoucher = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
     </div>
   );

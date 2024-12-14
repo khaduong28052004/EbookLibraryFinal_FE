@@ -32,7 +32,7 @@ import HomeShop from "./components/Shop/index.jsx";
 import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
-import ChatBot from "./pages/Seller/ChatBot2.jsx";
+import ChatBot from "./pages/Seller/ChatBot.jsx";
 
 // const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));

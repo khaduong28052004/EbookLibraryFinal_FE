@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import {ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ArrowPathIcon, TrashIcon} from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
-import ModalSanPham from './ModalSanPham';
 import CategoryService from '../../../service/Seller/categoryService';
 import Pagination from './pagination';
 import { toast, ToastContainer } from 'react-toastify';
@@ -30,12 +29,8 @@ const TableCategory = () => {
   const [idParent, setidParent] = useState(null);
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
-  const [size, setSize] = useState(5);
+  const [size, setSize] = useState(10);
   const location = useLocation();
-
-  const handleConfirm = () => {
-    setIsOpen(false);
-  };
 
   const handlePrevious = () => {
     if (pageNumber > 0) {
@@ -399,6 +394,7 @@ const TableCategory = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
     </div>
   );
