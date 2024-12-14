@@ -32,14 +32,14 @@ export default function Footer({ type }) {
           <div className="lg:w-full h-[1px] bg-[#E9E9E9]"></div>
         </div>
         <div className="lg:flex justify-between mb-[50px]">
-          <div className="lg:w-[424px] lg:mb-0  ml-0 mb-10 w-[1500px] ">
+          <div className="lg:w-[450px] xl:w-[450px] xl:mb-0 lg:mr-5 xl:w-[450px]   w-[600px]  ml-0 mb-10 w-full ">
             <h1 className="text-[18] font-500 text-[#2F2F2F] mb-5">Giới thiệu về chúng tôi</h1>
-            <p className="text-[#9A9A9A] text-[15px] w-[600px] leading-[28px]">
+            <p className=" text-[#9A9A9A] text-[15px] leading-[28px]">
               Chúng tôi biết rằng có rất nhiều nhà phát triển tiềm năng nhưng chúng tôi tự hào là một công ty trong ngành.
             </p>
           </div>
-          <div className="flex lg:flex">
-            <div className="lg:w-1/3 w-full mb-10 lg:mb-0">
+          <div className="flex lg:flex w-full">
+            <div className="lg:w-2/3 w-full mb-10 lg:mb-0">
               <div className="mb-5">
                 <h6 className="text-[18] font-500 text-[#2F2F2F]">Về chúng tôi</h6>
               </div>
@@ -69,7 +69,7 @@ export default function Footer({ type }) {
                 </ul>
               </div>
             </div>
-            <div className="lg:w-1/3 lg:flex lg:flex-col items-center w-full mb-10 lg:mb-0 ">
+            <div className="lg:w-2/3 lg:flex lg:flex-col items-center w-full mb-10 lg:mb-0 ">
               <div>
                 <div className="mb-5">
                   <h6 className="text-[18] font-500 text-[#2F2F2F]">
@@ -104,7 +104,7 @@ export default function Footer({ type }) {
                 </div>
               </div>
             </div>
-            <div className="lg:w-1/3 lg:flex lg:flex-col items-center w-full mb-10 lg:mb-0">
+            <div className="lg:w-2/3 lg:flex lg:flex-col items-center w-full mb-10 lg:mb-0">
               <div>
                 <div className="mb-5">
                   <h6 className="text-[18] font-500 text-[#2F2F2F]">Dành cho người bán</h6>
