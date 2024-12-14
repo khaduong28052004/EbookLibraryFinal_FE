@@ -27,8 +27,8 @@ const ModalFlashSaleDetails = ({
             setFormData((prev) => ({
                 ...prev,
                 [name]: value,
-                product: product.id,
-                flashSale: flashSaleId,
+                product: product.id || "",
+                flashSale: flashSaleId || "",
 
             }));
         } else {
@@ -89,8 +89,8 @@ const ModalFlashSaleDetails = ({
                 id: entity.id || '',
                 quantity: entity.quantity || '',
                 sale: entity.sale || '',
-                product: entity.product.id || '',
-                flashSale: entity.flashSale.id || '',
+                // product: entity.product.id || '',
+                // flashSale: entity.flashSale.id || '',
             })
         }
     }, [entity]);

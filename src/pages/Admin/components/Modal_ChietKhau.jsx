@@ -75,11 +75,18 @@ const ModalSanPham = ({
             setFormData({
                 id: entity.id,
                 discount: entity.discount || '',
-                dateStart: entity.dateStart || '',
+                dateStart: formatDateToISO(new Date(entity.dateStart)) || '',
             });
         }
     }, [entity]);
-    
+
+    function formatDateToISO(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />

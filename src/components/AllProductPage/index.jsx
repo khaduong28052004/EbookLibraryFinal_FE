@@ -4,7 +4,8 @@ import BreadcrumbCom from "../BreadcrumbCom";
 import axios from "axios";
 import LazyLoad from "react-lazyload";
 import { useLocation } from "react-router-dom";
-import Pagination from '../../pages/Seller/components/pagination';
+import Pagination from '../../pages/Admin/components/Pagination';
+// import Pagination from '../../pages/Seller/components/pagination';
 import SearchService from "../../service/user/search";
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
@@ -51,6 +52,7 @@ export default function AllProductPage() {
   const [currentPage, setCurrentPage] = useState(0);
 
   const [volume, setVolume] = useState([200, 500]);
+  // const [volume, setVolume] = useState([0,0]);
 
   const location = useLocation();
 
@@ -69,6 +71,13 @@ export default function AllProductPage() {
 
   const [datas, setDatas] = useState([]);
   const [dataPagination, setDataPagination] = useState([]);
+
+  const [listCategory, setListCategory] = useState([]);
+
+  const [status, setStatus] = useState(null);
+
+  const [min, setMin] = useState('');
+  const [max, setMax] = useState('');
 
 
   // Toggle the dropdown open/close
@@ -90,9 +99,28 @@ export default function AllProductPage() {
         setDatas([]);
         console.error("ID product không hợp lệ");
       }
-    } else
+    } else if (status === "category") {
+      filtercategoryAudio(listCategory);
+      console.log("CATEGORY");
+      // setStatus("");
+    } else if (status === "price") {
+      filterPriceAudio(min, max);
+      console.log("PRICE");
+      // setStatus("");
+    } else {
       if (textAudio) {
-        searchAudio(textAudio);
+        if (status === "search") {
+          searchAudio(textAudio);
+        } else {
+          axios.get("http://localhost:8080/api/v1/user/search?text=" + text)
+            .then(response => {
+              setDatas(response.data.result.datas);
+              setCategories(response.data.result.categories);
+              setDataPagination([]);
+              // console.log("text " + response.data.result.datas);
+            })
+            .catch(error => console.error("fetch data search error " + error));
+        }
       } else {
         axios.get("http://localhost:8080/api/v1/user/search?text=" + text)
           .then(response => {
@@ -103,7 +131,8 @@ export default function AllProductPage() {
           })
           .catch(error => console.error("fetch data search error " + error));
       }
-  }, [location, currentPage]);
+    }
+  }, [location, currentPage, status]);
 
   const handlePageChange = (newPage) => {// newPage
     if (newPage >= 0 && newPage < data.totalPages) {
@@ -133,6 +162,7 @@ export default function AllProductPage() {
 
   const searchAudio = async (text) => {  // tìm audio (tuyến)
     try {
+      setStatus("search");
       const response = await SearchService.searchAudio(text, currentPage);
       setDatas(response.data.result.product.content);
       setDataPagination(response.data.result.product);
@@ -142,32 +172,71 @@ export default function AllProductPage() {
     }
   }
 
+  const filtercategoryAudio = async (validSelected) => {  // tìm audio (tuyến)
+    try {
+      const response = await SearchService.filtercategoryAudio(validSelected, currentPage);
+      setDatas(response.data.result.content);  // Cập nhật dữ liệu
+      setDataPagination(response.data.result);
+      // console.log()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+
+  const filterPriceAudio = async (priceMin, priceMax) => {  // tìm audio (tuyến)
+    try {
+      const response = await SearchService.filterPriceAudio(priceMin, priceMax, currentPage);
+      setDatas(response.data.result.content);  // Cập nhật dữ liệu
+      setDataPagination(response.data.result);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const handleSelected = (value) => { //filer theo  danh mục theo giá (kha)
+    const textAudio = query.get("textAudio"); // Lấy tham số 'textAudio'
+    setStatus("category");
+
     // Tạo mảng validSelected chứa các key có giá trị true
     const validSelected = Object.keys(value)
       .filter(key => value[key] === true)  // Lọc các khóa có giá trị true
       .map(key => Number(key));  // Chuyển các key thành số (vì key là chuỗi)
     console.log("selected " + value?.length);
     if (validSelected.length > 0) {
-      // Gửi request chỉ khi có ít nhất một category được chọn
-      axios.get(`http://localhost:8080/api/v1/user/filtercategory?id_categories=${validSelected.join(',')}`)
-        .then(response => {
-          setDatas(response.data.result.datas);  // Cập nhật dữ liệu
-        })
-        .catch(error => console.error("fetch filter by category error " + error));
+      if (textAudio) {
+        setListCategory(validSelected.join(','));
+        filtercategoryAudio(validSelected.join(','));
+      } else {
+        // Gửi request chỉ khi có ít nhất một category được chọn
+        axios.get(`http://localhost:8080/api/v1/user/filtercategory?id_categories=${validSelected.join(',')}`)
+          .then(response => {
+            setDatas(response.data.result.datas);  // Cập nhật dữ liệu
+          })
+          .catch(error => console.error("fetch filter by category error " + error));
+      }
     } else {
       console.log("No categories selected");
     }
   }
 
   useEffect(() => { //filer theo  danh mục theo giá (kha)
-    const filterPrice = () => {
-      axios.get(`http://localhost:8080/api/v1/user/filterprice?priceMin=${volume[0]}&priceMax=${volume[1]}`).then(response => {
-        setDatas(response.data.result.datas);
-      }).catch(error => console.log("fetch filtẻ price error " + error));
+    const textAudio = query.get("textAudio"); // Lấy tham số 'textAudio'
+    if (textAudio) {
+      setMin(volume[0]);
+      setMax(volume[1]);
+      filterPriceAudio(volume[0], volume[1]);
+      console.log("SearchPrice.");
+    } else {
+      const filterPrice = () => {
+        axios.get(`http://localhost:8080/api/v1/user/filterprice?priceMin=${volume[0]}&priceMax=${volume[1]}`).then(response => {
+          setDatas(response.data.result.datas);
+        }).catch(error => console.log("fetch filtẻ price error " + error));
+      }
+      filterPrice();
     }
-    filterPrice();
-  }, [volume])
+  }, [volume, status === 'price'])
 
   return (
     <>
@@ -183,7 +252,7 @@ export default function AllProductPage() {
                   filters={filters}
                   checkboxHandler={checkboxHandler}
                   volume={volume}
-                  volumeHandler={(value) => setVolume(value)}
+                  volumeHandler={(value) => { setVolume(value); setStatus("price") }}
                   storage={storage}
                   filterstorage={filterStorage}
                   className="mb-[30px]"
@@ -245,21 +314,21 @@ export default function AllProductPage() {
                             key={datas?.id}
                             height={100}
                             offset={[-100, 100]}
-                            // placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-                            //   <div class="animate-pulse flex space-x-4">
-                            //     <div class="flex-1 space-y-3 py-1">
-                            //       <div class="rounded-none bg-slate-700 h-[165px] w-full"></div>
-                            //       <div class="h-5 bg-slate-700 rounded"></div>
-                            //       <div class="h-5 bg-slate-700 rounded"></div>
-                            //       <div class="space-y-3">
-                            //         <div class="grid grid-cols-4 gap-4">
-                            //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                            //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                            //         </div>
-                            //       </div>
-                            //     </div>
-                            //   </div>
-                            // </div>}
+                          // placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                          //   <div class="animate-pulse flex space-x-4">
+                          //     <div class="flex-1 space-y-3 py-1">
+                          //       <div class="rounded-none bg-slate-700 h-[165px] w-full"></div>
+                          //       <div class="h-5 bg-slate-700 rounded"></div>
+                          //       <div class="h-5 bg-slate-700 rounded"></div>
+                          //       <div class="space-y-3">
+                          //         <div class="grid grid-cols-4 gap-4">
+                          //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                          //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                          //         </div>
+                          //       </div>
+                          //     </div>
+                          //   </div>
+                          // </div>}
                           >
 
                             <ProductCardStyleOne datas={datas} />
