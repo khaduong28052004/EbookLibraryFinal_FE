@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import ProductCardStyleOne from "../components/Helpers/Cards/ProductCardStyleOne";
+
 import axios from "axios";
 
 const ProductCarousel = () => {
@@ -120,16 +121,16 @@ const ProductCarousel = () => {
     };
 
     return (
-        <div className="w-full  max-w-screen-lg mx-auto mt-6  bg-red-300 rounded-lg">
+        <div className="section-style-one ml-40 mr-40  bg-red-500 rounded-lg shadow-2">
             {/* Tabs w-full h-[500px] text-red-500*/}
             <div className="flex justify-between p-3 border-b ">
-                <h1 className="text-2xl font-bold text-slate-800"> XU HƯƠNG MUA SẮM</h1>
+                <h1 className="text-2xl font-bold text-white "> XU HƯƠNG MUA SẮM</h1>
             </div>
             {/* <div className="bg-blue-50"> */}
-            <div className="bg-slate-50">
+            <div className="bg-white rounded-lg ">
 
 
-                <div className="  flex justify-between border-b bg-slate-50">
+                <div className="  flex justify-between border-b bg-white">
                     {tabs.map((tab, index) => (
                         <button
                             key={index}
@@ -146,6 +147,7 @@ const ProductCarousel = () => {
 
                 {/* Carousel Wrapper */}
                 {activeTab === 0 && (
+
                     <div className="relative mt-4">
                         {/* Left Button */}
                         <button
@@ -203,9 +205,9 @@ const ProductCarousel = () => {
                         <h1>Bestseller Ngoại Văn</h1>
                     </div>
                 )}
-                <div className="text-center border-b p-5">
+                {/* <div className="text-center border-b p-5 rounded-lg">
                     xem thêm
-                </div>
+                </div> */}
             </div>
         </div>
     );
