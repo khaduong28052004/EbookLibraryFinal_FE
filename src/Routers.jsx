@@ -28,11 +28,18 @@ import ProductsCompaire from "./components/ProductsCompaire/index";
 import { RequestProvider } from "./components/Request/RequestProvicer.jsx";
 import SallerPage from "./components/SallerPage/index.jsx";
 import Sallers from "./components/Sellers/index.jsx";
-import HomeShop from "./components/Shop/index.jsx";
+// import HomeShop from "./components/Shop/index.jsx";
 import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
+
+import HomeShop from "./components/Shop/index.jsx"
+import ChinhSachNguoiBan from "./components/ChinhSachNguoiBan";
+import QuyCheHoatDong from "./components/QuyCheHoatDong";
+import HuongDanBanHang from "./components/HuongDanBanHang";
+
 import ChatBot from "./pages/Seller/ChatBot2.jsx";
+
 
 // const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));
@@ -116,6 +123,9 @@ export default function Routers() {
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/faq" element={<Faq />} />
           <Route exact path="/login" element={<Login />} />
+          <Route exact path="/chinh-sach" element={<ChinhSachNguoiBan />} />
+          <Route exact path="/quyche-hoatdong" element={<QuyCheHoatDong />} />
+          <Route exact path="/ban-hang" element={<HuongDanBanHang />} />
 
           <Route exact path="/signup" element={<RegistrationForm />} />
           <Route exact path="/haha" element={<Signup />} />
