@@ -259,7 +259,7 @@ export default function CardPage({ cart = true }) {
                           <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total - totalSale)} VND</p>
                         </div>
                       </div>
-                      <a onClick={handSubmitPay}>
+                      <a onClick={handSubmitPay} className="hover:cursor-pointer">
                         <div className="w-full h-[50px] black-btn flex justify-center items-center">
                           <span className="text-sm font-semibold">
                             Mua hàng

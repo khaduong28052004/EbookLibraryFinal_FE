@@ -4,22 +4,35 @@ import { Link } from "react-router-dom";
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import CountDown from "../Helpers/CountDown";
 import DataIteration from "../Helpers/DataIteration";
-
 export default function FlashSale({ products, lastDate, totalProducts }) {
     const { showHour, showMinute, showSecound } = CountDown(lastDate);
     const [loading, setLoading] = useState(true);
     return (
-
         <div className={`w-full lg:h-auto`}>
             <div className="container-x mx-auto h-full">
-                {/* <div className="lg:flex xl:space-x-[30px] lg:space-x-5 items-center h-full"> */}
-                {/* <div className="bg-white py-8 p-10"> */}
-                <div className="">
+                <div className="pt-5">
                     {/* Flash Sale Header */}
-                    <div className="container mx-auto mb-6">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-2xl font-bold text-red-500">Flash Sale</h2>
-                            <div className="flex items-center space-x-2">
+                    <div className="container mx-auto mb-6 bg-white p-5 rounded-lg pl-5">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <h2 className="text-2xl font-bold text-red-600">FLASH SALE</h2>
+                                <p className="ml-5">Kết thúc trong</p>
+                                <div className="flex items-center ml-5 space-x-2">
+                                    <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showHour < 10 ? "0" + showHour : showHour}</p>
+                                    <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showMinute < 10 ? "0" + showMinute : showMinute}</p>
+                                    <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showSecound < 10 ? "0" + showSecound : showSecound}</p>
+
+                                </div>
+                            </div>
+                            <div>
+                                <Link to="/flash-sale" className="text-sm text-red-500 no-underline flex items-center">
+                                    Xem tất cả
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round"  stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                </Link>
+                            </div>
+                            {/* <div className="flex items-center space-x-2">
                                 <div className="flex items-center space-x-2">
                                     <div className="text-center">
                                         <span className="text-lg font-bold">{showHour}</span>
@@ -37,7 +50,7 @@ export default function FlashSale({ products, lastDate, totalProducts }) {
                                 <Link to="/flash-sale" className="text-sm text-red-500 underline">
                                     Xem tất cả
                                 </Link>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
@@ -83,7 +96,7 @@ export default function FlashSale({ products, lastDate, totalProducts }) {
 
                         <DataIteration datas={products} startLength={0} endLength={products?.length}>
                             {({ datas }) => (
-                                <div data-aos="fade-up" key={datas.id} className="item">
+                                <div data-aos="fade-up" key={datas.id} className="item mb-10">
                                     <LazyLoad
                                         // once={true}
                                         key={datas?.product?.id}
@@ -106,9 +119,9 @@ export default function FlashSale({ products, lastDate, totalProducts }) {
                                             </div>
                                         </div>}
                                     >
-                                    
-                                            <ProductCardStyleOne datas={datas.product} />
-                                       
+
+                                        <ProductCardStyleOne datas={datas.product} />
+
                                     </LazyLoad>
                                 </div>
                             )}
