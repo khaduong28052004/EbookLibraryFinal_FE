@@ -104,17 +104,22 @@ export default function Home() {
 
       ) : (<Layout>
         <Banner className="banner-wrapper mb-6" />
-        <div className="bg-red-50 pb-6">
+        <div className="bg-red-500">
           <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
         </div>
-        <div className="w-full bg-blue-50 pt-5 pb-5 mb-10">
+
+        <div>
+          <div className="bg-blue-400 text-white ml-40 mr-40 mt-5 text-[25px] rounded-t-lg pl-5 p-2">
+            Gợi ý hôm nay
+          </div>
           <SectionStyleThree
             products={suggests}
-            sectionTitle="Gợi ý hôm nay"
+            sectionTitle=""
             seeMoreUrl="/all-products"
-            className="new-products mb-[60px]"
+            className="bg-white mb-[60px] ml-40 mr-40"
           />
         </div>
+
         <SectionStyleThree
           products={data_ProductAll}
           sectionTitle="Sản phẩm"

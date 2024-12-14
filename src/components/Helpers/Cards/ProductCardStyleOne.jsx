@@ -70,7 +70,7 @@ export default function ProductCardStyleOne({ datas, type }) {
 
   return (
     <div
-      className="product-card-one w-full h-full bg-white relative group overflow-hidden"
+      className="hover:shadow-2xl transition-shadow duration-600 product-card-one w-full h-full bg-white relative group overflow-hidden rounded-lg shadow-sm "
     // style={{ boxShadow: "0px 15px 64px 0px rgba(0, 0, 0, 0.05)" }}
     >
       <div
