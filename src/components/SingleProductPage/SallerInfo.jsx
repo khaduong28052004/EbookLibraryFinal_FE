@@ -2,10 +2,11 @@ import { UserMinusIcon, UserPlusIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
-import { useLocation,Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
+import ImageLoader from "../Helpers/ImageLoading/ImageWithLoader";
 import Star from "../Helpers/icons/Star";
 export default function SallerInfo({ seller, datas }) {
   const local = useLocation();
@@ -42,7 +43,7 @@ export default function SallerInfo({ seller, datas }) {
         <Link to={`/home-shop/${seller.id}`}>
           <div className="sm:flex sm:space-x-5 items-center sm:w-1.5/4">
             <div className="saller w-[73px] h-[73px] rounded-full overflow-hidden">
-              <img
+              <ImageLoader
                 src={seller?.avatar}
                 alt="saller"
                 className="w-full h-full object-cover"
@@ -149,22 +150,21 @@ export default function SallerInfo({ seller, datas }) {
                   key={datas?.id}
                   height={100}
                   offset={[-100, 100]}
-                  placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-                    <div class="animate-pulse flex space-x-4">
-                      <div class="flex-1 space-y-3 py-1">
-                        <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
-                        <div class="h-5 bg-slate-700 rounded"></div>
-                        <div class="h-5 bg-slate-700 rounded"></div>
-                        <div class="space-y-3">
-                          <div class="grid grid-cols-4 gap-4">
-                            <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                            <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                          </div>
-                          {/* <div class="h-2 bg-slate-700 rounded"></div> */}
-                        </div>
-                      </div>
-                    </div>
-                  </div>}
+                  // placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                  //   <div class="animate-pulse flex space-x-4">
+                  //     <div class="flex-1 space-y-3 py-1">
+                  //       <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
+                  //       <div class="h-5 bg-slate-700 rounded"></div>
+                  //       <div class="h-5 bg-slate-700 rounded"></div>
+                  //       <div class="space-y-3">
+                  //         <div class="grid grid-cols-4 gap-4">
+                  //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                  //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                  //         </div>
+                  //       </div>
+                  //     </div>
+                  //   </div>
+                  // </div>}
                 >
                   <div>
                     <ProductCardStyleOne datas={datas} />

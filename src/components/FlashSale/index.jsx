@@ -106,7 +106,7 @@ export default function FlashSale() {
   // Tính toán đếm ngược mỗi khi lastDate thay đổi
   return (
     <Layout>
-      <div className="flashsale-wrapper w-full">
+      <div className="flashsale-wrapper w-full ">
         <div className="container-x mx-auto">
           <div className="w-full">
             <div

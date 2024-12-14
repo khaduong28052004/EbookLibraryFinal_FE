@@ -1,15 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import LazyLoad from "react-lazyload";
+import { FaStar } from 'react-icons/fa'; // Font Awesome
 import { useNavigate } from "react-router-dom";
-import ClipLoader from "react-spinners/ClipLoader";
 import { toast } from "react-toastify";
 import { useRequest } from "../../Request/RequestProvicer";
 import Compair from "../icons/Compair";
 import QuickViewIco from "../icons/QuickViewIco";
-import Star from "../icons/Star";
 import ThinLove from "../icons/ThinLove";
-
+import ImageLoader from "../ImageLoading/ImageWithLoader.jsx";
 export default function ProductCardStyleOne({ datas, type }) {
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState();
@@ -72,29 +70,27 @@ export default function ProductCardStyleOne({ datas, type }) {
 
   return (
     <div
-      className="product-card-one w-full h-full bg-white relative group overflow-hidden"
-      style={{ boxShadow: "0px 15px 64px 0px rgba(0, 0, 0, 0.05)" }}
+      className="hover:shadow-2xl transition-shadow duration-600 product-card-one w-full h-full bg-white relative group overflow-hidden rounded-lg shadow-sm "
+    // style={{ boxShadow: "0px 15px 64px 0px rgba(0, 0, 0, 0.05)" }}
     >
       <div
-        className="product-card-img w-full h-[300px] flex justify-center"
+        className="product-card-img w-full h-[200px] flex justify-center"
       >
+        <div className="relative">
+          <ImageLoader
+            src={datas?.imageProducts[0]?.name || ""}
+            alt="Product Image"
+            className="h-[100%] w-full p-4"
+          />
+        </div>
 
-        <LazyLoad
-          once={true}
-          placeholder={<div className="flex justify-center mt-30">
-            <ClipLoader size={50} color={"#3498db"} loading={true} />
-          </div>}
-        >
-          <img src={datas?.imageProducts[0]?.name} alt="" className="h-[100%] w-full p-7" />
-
-        </LazyLoad>
         {/* product available progress */}
       </div>
       <div className="product-card-details px-[30px] pb-[15px] relative text-white">
         {/* add to card button */}
         <div onClick={() => {
           handleCreateCart();
-        }} className="absolute w-full h-10 px-[30px] left-0 top-40 group-hover:top-[80px] transition-all duration-300 ease-in-out z-50">
+        }} className="absolute w-full h-10 px-[30px] left-0 top-40 group-hover:top-[105px] transition-all duration-300 ease-in-out z-50">
           <button
             type="button"
             className={type === 3 ? "flex items-center justify-center h-full w-full bg-[#FFBB38] text-[13px] font-semibold text-[#1d1d1d] leading-none" : "flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none"}
@@ -116,40 +112,61 @@ export default function ProductCardStyleOne({ datas, type }) {
             </div>
           </button>
         </div>
-        <div className="reviews flex space-x-[1px] mb-3 ">
-          <div className="flex space-x-[1px]">
-            {Array.from(Array(datas.star), () => (
-              <span>
-                <Star />
-              </span>
-            ))}
-          </div>
-          {/* <sup className="text-qred font-semibold ml-2 bg-yellow-300 text-[12px]"><FontAwesomeIcon icon={faBolt} className='text-[15px]' />-{datas.flashSaleDetail?.sale}%</sup> */}
-
-        </div>
         <a className="cursor-pointer hover:text-blue-500" onClick={() => { navigate("/productdetail?idProduct=" + datas.id); window.scrollTo({ top: 0, behavior: "smooth" }) }}>
-          <p className="title mb-2 text-[15px] font-600 text-qblack leading-[24px] line-clamp-2 hover:text-blue-600 h-[45px]">
+          <p className="title mb-2 text-[15px] font-400 text-qblack leading-[24px] line-clamp-2 hover:text-blue-600 h-[45px]">
             {datas?.name}
           </p>
         </a>
         <p className="price">
           {datas?.flashSaleDetail?.id > 0 ?
             (<>
-              <span className=" text-qred text-[20px] font-extrabold mr-1">
-                {Intl.NumberFormat().format(
-                  datas?.price - ((datas?.price * datas?.sale) / 100) - ((datas?.price - ((datas?.price * datas?.sale) / 100)) * (datas?.flashSaleDetail?.sale / 100))
-                )}<sup>đ</sup>
-              </span>
-              <span className="text-[15px] font-normal text-gray-600 line-through">
-                {Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup>
-              </span>
+              <div className="grid grid-cols-1">
+                <div className="flex items-center">
+                  <span className=" text-qred text-[20px] font-extrabold mr-1">
+                    {Intl.NumberFormat().format(
+                      datas?.price - ((datas?.price * datas?.sale) / 100) - ((datas?.price - ((datas?.price * datas?.sale) / 100)) * (datas?.flashSaleDetail?.sale / 100))
+                    )}<sup>đ</sup>
+                  </span>
+                  <div className="bg-red-600 rounded-[4px] flex items-center">
+                    <span className="text-[12px] font-semibold p-[4px] text-center justify-center">-{datas?.flashSaleDetail?.sale}%</span>
+                  </div>
+                </div>
+                <span className="text-[15px] font-normal text-gray-600 line-through">
+                  {Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup>
+                </span>
+              </div>
+
+
+
             </>) :
             (<>
-              <span className="text-[20px] font-bold text-red-600 mr-1">{Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup></span>
-              <span className="text-[15px] font-normal text-gray-600 line-through">{Intl.NumberFormat().format(datas?.price)}<sup>đ</sup></span>
+              <div className="grid grid-cols-1">
+                <div className="flex items-center">
+                  <span className="text-[17px] font-semibold text-red-700 mr-1">{Intl.NumberFormat().format(datas?.price - ((datas?.price * datas?.sale) / 100))}<sup>đ</sup></span>
+                  <div className="bg-red-600 rounded-[4px] flex items-center">
+                    <span className="text-[12px] font-semibold p-[4px] text-center justify-center">-{datas?.sale}%</span>
+                  </div>
+                </div>
+                <span className="text-[15px] font-normal text-gray-600 line-through">{Intl.NumberFormat().format(datas?.price)}<sup>đ</sup></span>
+              </div>
             </>)}
 
         </p>
+        <div>
+          <div className="reviews flex space-x-[1px] mb-3 mt-2">
+            <div className="flex space-x-[1px]">
+              <div className="flex ">
+                {Array.from(Array(datas?.star), () => (
+                  <span>
+                    <FaStar size={15} color="gold" /> {/* Font Awesome Star */}
+                  </span>
+                ))}
+                {datas?.star > 0 ? (<span className="text-gray-300 text-[12px] font-extralight">({datas?.quantityEvalue}) | </span>) : (<div className="h-[18px]"></div>)}
+              </div>
+              <span className="text-gray-500 font-light text-[12px]">Đã bán <span className="text-black-2">{datas?.sold > 1000 ? datas?.sold / 1000 + "k" : datas?.sold}</span></span>
+            </div>
+          </div>
+        </div>
       </div>
       {/* quick-access-btns */}
       <div className="quick-access-btns flex flex-col space-y-2 absolute group-hover:right-4 -right-10 top-20  transition-all duration-300 ease-in-out">
@@ -174,3 +191,5 @@ export default function ProductCardStyleOne({ datas, type }) {
     </div>
   );
 }
+
+
