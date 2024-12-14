@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import ProductCardStyleOne from "../components/Helpers/Cards/ProductCardStyleOne";
 
@@ -121,7 +121,7 @@ const ProductCarousel = () => {
     };
 
     return (
-        <div className="section-style-one ml-40 mr-40  bg-red-500 rounded-lg shadow-2">
+        <div className="section-style-one ml-27 mr-27  bg-red-500 rounded-lg shadow-2">
             {/* Tabs w-full h-[500px] text-red-500*/}
             <div className="flex justify-between p-3 border-b ">
                 <h1 className="text-2xl font-bold text-white "> XU HƯƠNG MUA SẮM</h1>
