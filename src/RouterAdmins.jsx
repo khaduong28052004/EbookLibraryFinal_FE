@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import PageTitle from './components/PageTitle';
 import DefaultLayout from './layout/DefaultLayout';
-import TrangChuAdmin from "./pages/Admin/TrangChuAdmin"
+import TrangChuAdmin from "./pages/Admin/TrangChuAdmin.jsx"
 import ShopAdmin from "./pages/Admin/ShopAdmin"
 import DanhMucAdmin from "./pages/Admin/DanhMucAdmin"
 import SanPhamAdmin from "./pages/Admin/SanPhamAdmin"
