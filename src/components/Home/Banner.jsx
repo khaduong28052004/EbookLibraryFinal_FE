@@ -179,7 +179,7 @@ export default function Banner({ className }) {
                 className="flex-1 flex  w-full xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto gap-2"
               >
               
-                <div className="bg-white rounded bg-opacity-0 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
+                <div className="bg-white rounded-lg shadow-2 bg-opacity-0 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
                   <div
                     className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat "
                     style={{
@@ -208,7 +208,7 @@ export default function Banner({ className }) {
 
             <div
               data-aos="fade-up"
-              className="best-services w-full bg-white flex flex-col space-y-10 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center lg:h-[110px] px-10 lg:py-0 py-10  "
+              className="rounded-lg shadow-2 best-services w-full bg-white flex flex-col space-y-10 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center lg:h-[110px] px-10 lg:py-0 py-10  "
             > 
               <div className="item">
                 <div className="flex space-x-5 items-center">
