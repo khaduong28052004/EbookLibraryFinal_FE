@@ -104,7 +104,7 @@ export default function Home() {
 
       ) : (<Layout>
         <Banner className="banner-wrapper mb-6" />
-        <div className="bg-red-50">
+        <div className="bg-red-50 pb-6">
           <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
         </div>
         <div className="w-full bg-blue-50 pt-5 pb-5 mb-10">
