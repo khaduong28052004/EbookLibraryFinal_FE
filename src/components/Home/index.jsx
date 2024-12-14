@@ -7,7 +7,8 @@ import Layout from "../Partials/Layout";
 import { useRequest } from "../Request/RequestProvicer";
 import Banner from "./Banner";
 import FlashSale from "./FlashaSale";
-export default function Home() {
+import ProductCarousel from '../ProductCarousel';
+export default function Home() {  
   const [data_FlashSale, setData_FlashSale] = useState([]);
   const [data_ProductAll, setData_ProducAll] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -104,8 +105,11 @@ export default function Home() {
 
       ) : (<Layout>
         <Banner className="banner-wrapper mb-6" />
-        <div className="bg-red-50">
+        <div className="bg-red-50 pb-6">
           <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
+        </div>
+        <div className="w-full bg-blue-50 pt-5 pb-5 mb-10">
+          <ProductCarousel/>
         </div>
         <div className="w-full bg-blue-50 pt-5 pb-5 mb-10">
           <SectionStyleThree
