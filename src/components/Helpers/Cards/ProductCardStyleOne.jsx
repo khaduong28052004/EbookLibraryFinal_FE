@@ -170,23 +170,23 @@ export default function ProductCardStyleOne({ datas, type }) {
       </div>
       {/* quick-access-btns */}
       <div className="quick-access-btns flex flex-col space-y-2 absolute group-hover:right-4 -right-10 top-20  transition-all duration-300 ease-in-out">
-        <a href="#">
+        {/* <a href="#">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
             <QuickViewIco />
           </span>
-        </a>
+        </a> */}
         <a className="cursor-pointer">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
             <ThinLove isFavorite={isFavorite} createFavorite={createFavorite} />
           </span>
         </a>
-        <a href="#">
+        {/* <a href="#">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
             <Compair createFavorite={handleShare} />
-            {/* chia sẻ */}
-            {/* <ShareModal datas={datas}/> */}
+            chia sẻ
+            <ShareModal datas={datas}/>
           </span>
-        </a>
+        </a> */}
       </div>
     </div>
   );
