@@ -106,7 +106,7 @@ export default function FlashSale() {
   // Tính toán đếm ngược mỗi khi lastDate thay đổi
   return (
     <Layout>
-      <div className="flashsale-wrapper w-full">
+      <div className="flashsale-wrapper w-full ">
         <div className="container-x mx-auto">
           <div className="w-full">
             <div
@@ -133,7 +133,7 @@ export default function FlashSale() {
                   <div className="countdown-item">
                     <div className="countdown-number sm:w-[50px] sm:h-[50px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#2F80ED]">
-                        {showHour}
+                        {showHour < 10 ? "0" + showHour : showHour}
                       </span>
                     </div>
                     <p className="sm:text-[18px] text-xs font-500 text-center leading-8 text-white">
@@ -143,7 +143,7 @@ export default function FlashSale() {
                   <div className="countdown-item">
                     <div className="countdown-number sm:w-[50px] sm:h-[50px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#219653]">
-                        {showMinute}
+                        {showMinute < 10 ? "0" + showMinute : showMinute}
                       </span>
                     </div>
                     <p className="sm:text-[18px] text-xs font-500 text-center leading-8 text-white">
@@ -153,7 +153,7 @@ export default function FlashSale() {
                   <div className="countdown-item">
                     <div className="countdown-number sm:w-[50px] sm:h-[50px] w-[50px] h-[50px] rounded-full bg-white flex justify-center items-center">
                       <span className="font-700 sm:text-[30px] text-base text-[#EF5DA8]">
-                        {showSecound}
+                        {showSecound < 10 ? "0" + showSecound : showSecound}
                       </span>
                     </div>
                     <p className="sm:text-[18px] text-xs font-500 text-center leading-8 text-white">
@@ -195,22 +195,22 @@ export default function FlashSale() {
                       key={datas?.product?.id}
                       height={100}
                       offset={[-100, 100]}
-                      placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-                        <div class="animate-pulse flex space-x-4">
-                          <div class="flex-1 space-y-3 py-1">
-                            <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
-                            <div class="h-5 bg-slate-700 rounded"></div>
-                            <div class="h-5 bg-slate-700 rounded"></div>
-                            <div class="space-y-3">
-                              <div class="grid grid-cols-4 gap-4">
-                                <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                                <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                              </div>
-                              {/* <div class="h-2 bg-slate-700 rounded"></div> */}
-                            </div>
-                          </div>
-                        </div>
-                      </div>}
+                      // placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                      //   <div class="animate-pulse flex space-x-4">
+                      //     <div class="flex-1 space-y-3 py-1">
+                      //       <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
+                      //       <div class="h-5 bg-slate-700 rounded"></div>
+                      //       <div class="h-5 bg-slate-700 rounded"></div>
+                      //       <div class="space-y-3">
+                      //         <div class="grid grid-cols-4 gap-4">
+                      //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                      //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                      //         </div>
+                      //         {/* <div class="h-2 bg-slate-700 rounded"></div> */}
+                      //       </div>
+                      //     </div>
+                      //   </div>
+                      // </div>}
                     >
                       <div>
                         <ProductCardStyleOne datas={datas?.product} />

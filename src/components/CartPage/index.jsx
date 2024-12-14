@@ -242,15 +242,6 @@ export default function CardPage({ cart = true }) {
                   <ProductsTable className="mb-[30px]" datas={data?.datas} handleSaveProduct={handleSaveProduct} removeCart={removeCart} handleQuantityCartIndex={handleQuantityCartIndex} />
                   <div className="w-full mt-[30px] flex sm:justify-end">
                     <div className="sm:w-[520px] w-full border border-[#EDEDED] px-[30px] py-[26px]">
-                      <div className="sub-total mb-6">
-                        <div className=" flex justify-between mb-6">
-                          <p className="text-[15px] font-medium text-qblack">
-                            Tổng thu
-                          </p>
-                          <p className="text-[15px] font-medium text-qred">{Intl.NumberFormat().format(total)} VND</p>
-                        </div>
-                        <div className="w-full h-[1px] bg-[#EDEDED]"></div>
-                      </div>
                       <div className="total mb-6">
                         <div className=" flex justify-between">
                           <p className="text-[18px] font-medium text-qblack">
@@ -259,7 +250,7 @@ export default function CardPage({ cart = true }) {
                           <p className="text-[18px] font-medium text-qred">{Intl.NumberFormat().format(total - totalSale)} VND</p>
                         </div>
                       </div>
-                      <a onClick={handSubmitPay}>
+                      <a onClick={handSubmitPay} className="hover:cursor-pointer">
                         <div className="w-full h-[50px] black-btn flex justify-center items-center">
                           <span className="text-sm font-semibold">
                             Mua hàng

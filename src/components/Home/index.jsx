@@ -4,10 +4,11 @@ import { useLocation } from "react-router-dom";
 import Loader from "../../common/Loader";
 import SectionStyleThree from "../Helpers/SectionStyleThree";
 import Layout from "../Partials/Layout";
+import ProductCarousel from '../ProductCarousel';
 import { useRequest } from "../Request/RequestProvicer";
 import Banner from "./Banner";
 import FlashSale from "./FlashaSale";
-export default function Home() {
+export default function Home() {  
   const [data_FlashSale, setData_FlashSale] = useState([]);
   const [data_ProductAll, setData_ProducAll] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -93,28 +94,37 @@ export default function Home() {
     fetchSuggests();
     fetchDataFlashSale();
     fetchDataSelectAll();
-  }, [location, isRequesting]);
+  }, [location]);
 
   return (
     <>
       {loading ? (
         // <div className="flex justify-center items-center h-screen">
         <Loader />
-
-
       ) : (<Layout>
-        <Banner className="banner-wrapper mb-6" />
-        <div className="bg-red-50">
+        <Banner className="banner-wrapper" />
+        <div className="bg-red-500 mt-10">
           <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
         </div>
-        <div className="w-full bg-blue-50 pt-5 pb-5 mb-10">
+
+        <div className="w-full  pt-5 pb-5">
+          <ProductCarousel/>
+        </div>
+
+
+        <div>
+          <div className="bg-blue-700 font-bold text-white ml-27 mr-27 mt-5 text-[25px] rounded-t-lg pl-5 p-2">
+            GỢI Ý HÔM NAY
+          </div>
+
           <SectionStyleThree
             products={suggests}
-            sectionTitle="Gợi ý hôm nay"
+            sectionTitle=""
             seeMoreUrl="/all-products"
-            className="new-products mb-[60px]"
+            className="bg-white mb-[60px] ml-27 mr-27 rounded-b-lg"
           />
         </div>
+
         <SectionStyleThree
           products={data_ProductAll}
           sectionTitle="Sản phẩm"
