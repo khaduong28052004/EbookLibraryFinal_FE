@@ -1,25 +1,30 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import Loader from "../../common/Loader";
 import SectionStyleThree from "../Helpers/SectionStyleThree";
 import Layout from "../Partials/Layout";
+import { useRequest } from "../Request/RequestProvicer";
 import Banner from "./Banner";
 import FlashSale from "./FlashaSale";
-
 export default function Home() {
   const [data_FlashSale, setData_FlashSale] = useState([]);
   const [data_ProductAll, setData_ProducAll] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const location = useLocation();
-
+  const [suggests, setSuggests] = useState([]);
+  const { isRequesting } = useRequest();
+  const [loading, setLoading] = useState(false);
   // Fetch dữ liệu Flash Sale
   const fetchDataFlashSale = async () => {
     const id_account = sessionStorage.getItem("id_account") || 0;
+    setLoading(true);
     try {
       const response = await axios.get("http://localhost:8080/api/v1/user/home/flashsale?id_Shop=" + id_account);
       const data = response.data.result;
       setData_FlashSale(data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching flash sale data:", error);
     }
@@ -30,9 +35,9 @@ export default function Home() {
     const id_account = sessionStorage.getItem("id_account") || 0;
     await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account + "&page=" + currentPage)
       .then(response => {
-        if (currentPage > 0) {
+        if (currentPage > 0 && currentPage < totalPages) {
           setData_ProducAll((prev) => [...prev, ...response.data.result?.datas]);
-        } else {
+        } else if (currentPage == 0) {
           setData_ProducAll(response.data.result?.datas);
         }
         setTotalPages(response.data.result?.totalPages);
@@ -40,6 +45,18 @@ export default function Home() {
         console.log("fetch selectall error " + error);
       });
   };
+
+  const fetchSuggests = async () => {
+    var id_user = 0;
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      id_user = sessionStorage.getItem("id_account");
+    }
+    await axios.get("http://localhost:8080/api/v1/user/home/suggest?id_user=" + id_user).then(response => {
+      setSuggests(response.data.result);
+
+    }).catch(error => console.error("fetch suggest error : " + error));
+  }
 
 
   const checkScroll = () => {
@@ -73,22 +90,38 @@ export default function Home() {
 
   // Lắng nghe thay đổi location và fetch dữ liệu khi trang thay đổi
   useEffect(() => {
+    fetchSuggests();
     fetchDataFlashSale();
     fetchDataSelectAll();
-  }, [location]);
+  }, [location, isRequesting]);
 
   return (
     <>
-      <Layout>
+      {loading ? (
+        // <div className="flex justify-center items-center h-screen">
+        <Loader />
+
+
+      ) : (<Layout>
         <Banner className="banner-wrapper mb-6" />
-        <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
+        <div className="bg-red-50 pb-6">
+          <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
+        </div>
+        <div className="w-full bg-blue-50 pt-5 pb-5 mb-10">
+          <SectionStyleThree
+            products={suggests}
+            sectionTitle="Gợi ý hôm nay"
+            seeMoreUrl="/all-products"
+            className="new-products mb-[60px]"
+          />
+        </div>
         <SectionStyleThree
           products={data_ProductAll}
           sectionTitle="Sản phẩm"
           seeMoreUrl="/all-products"
           className="new-products mb-[60px]"
         />
-      </Layout>
+      </Layout>)}
     </>
   );
 }

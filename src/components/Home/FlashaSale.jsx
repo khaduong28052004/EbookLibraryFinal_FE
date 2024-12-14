@@ -10,10 +10,11 @@ export default function FlashSale({ products, lastDate, totalProducts }) {
     const [loading, setLoading] = useState(true);
     return (
 
-        <div className={`w-full lg:h-auto mb-6`}>
+        <div className={`w-full lg:h-auto`}>
             <div className="container-x mx-auto h-full">
                 {/* <div className="lg:flex xl:space-x-[30px] lg:space-x-5 items-center h-full"> */}
-                <div className="bg-white py-8 p-10">
+                {/* <div className="bg-white py-8 p-10"> */}
+                <div className="">
                     {/* Flash Sale Header */}
                     <div className="container mx-auto mb-6">
                         <div className="flex justify-between items-center">
@@ -91,7 +92,7 @@ export default function FlashSale({ products, lastDate, totalProducts }) {
                                         placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
                                             <div class="animate-pulse flex space-x-4">
                                                 <div class="flex-1 space-y-3 py-1">
-                                                    <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
+                                                    <div class="rounded-none bg-slate-700 h-[165px] w-full"></div>
                                                     <div class="h-5 bg-slate-700 rounded"></div>
                                                     <div class="h-5 bg-slate-700 rounded"></div>
                                                     <div class="space-y-3">
@@ -105,9 +106,9 @@ export default function FlashSale({ products, lastDate, totalProducts }) {
                                             </div>
                                         </div>}
                                     >
-                                        <div>
+                                    
                                             <ProductCardStyleOne datas={datas.product} />
-                                        </div>
+                                       
                                     </LazyLoad>
                                 </div>
                             )}

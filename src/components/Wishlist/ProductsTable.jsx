@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import InputQuantityCom from "../Helpers/InputQuantityCom";
 import { lazyload } from "react-lazyload";
+import ImageWithLoader from "../Helpers/ImageLoading/ImageWithLoader";
 export default function ProductsTable({ className, datas, handleDelete }) {
   const [quantity, setQuantity] = useState();
   const [favorites, setFavorites] = useState();
@@ -49,7 +50,7 @@ export default function ProductsTable({ className, datas, handleDelete }) {
                 <td className="pl-10  py-4 ">
                   <div className="flex space-x-6 items-center">
                     <div className="w-[80px] h-[80px] overflow-hidden flex justify-center items-center border border-[#EDEDED]">
-                      <img
+                      <ImageWithLoader
                         src={favorite?.product?.imageProducts[0]?.name}
                         alt="product"
                         className="w-full h-full object-contain"

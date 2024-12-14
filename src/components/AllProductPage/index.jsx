@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import BreadcrumbCom from "../BreadcrumbCom";
 // import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import axios from "axios";
+import LazyLoad from "react-lazyload";
 import { useLocation } from "react-router-dom";
+import Pagination from '../../pages/Seller/components/pagination';
+import SearchService from "../../service/user/search";
 import ProductCardStyleOne from "../Helpers/Cards/ProductCardStyleOne";
 import DataIteration from "../Helpers/DataIteration";
 import Layout from "../Partials/Layout";
 import ProductsFilter from "./ProductsFilter";
-import LazyLoad from "react-lazyload";
-import SearchService from "../../service/user/search";
-import Pagination from '../../pages/Seller/components/pagination';
 
 export default function AllProductPage() {
 
@@ -245,26 +245,25 @@ export default function AllProductPage() {
                             key={datas?.id}
                             height={100}
                             offset={[-100, 100]}
-                            placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
-                              <div class="animate-pulse flex space-x-4">
-                                <div class="flex-1 space-y-3 py-1">
-                                  <div class="rounded-none bg-slate-700 h-[265px] w-full"></div>
-                                  <div class="h-5 bg-slate-700 rounded"></div>
-                                  <div class="h-5 bg-slate-700 rounded"></div>
-                                  <div class="space-y-3">
-                                    <div class="grid grid-cols-4 gap-4">
-                                      <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                                      <div class="h-5 bg-slate-700 rounded col-span-2"></div>
-                                    </div>
-                                    {/* <div class="h-2 bg-slate-700 rounded"></div> */}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>}
+                            // placeholder={<div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                            //   <div class="animate-pulse flex space-x-4">
+                            //     <div class="flex-1 space-y-3 py-1">
+                            //       <div class="rounded-none bg-slate-700 h-[165px] w-full"></div>
+                            //       <div class="h-5 bg-slate-700 rounded"></div>
+                            //       <div class="h-5 bg-slate-700 rounded"></div>
+                            //       <div class="space-y-3">
+                            //         <div class="grid grid-cols-4 gap-4">
+                            //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                            //           <div class="h-5 bg-slate-700 rounded col-span-2"></div>
+                            //         </div>
+                            //       </div>
+                            //     </div>
+                            //   </div>
+                            // </div>}
                           >
-                            <div>
-                              <ProductCardStyleOne datas={datas} />
-                            </div>
+
+                            <ProductCardStyleOne datas={datas} />
+
                           </LazyLoad>
                         </div>
                       )}
