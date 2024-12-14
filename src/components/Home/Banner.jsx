@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
+import { Link } from "react-router-dom";
 import Voucher from '../Home/Banner/voucher';
 import BestSeller from '../Home/Banner/bestseller';
 import AuthService from '../../service/authService';
@@ -145,6 +146,11 @@ export default function Banner({ className }) {
       console.log(error);
     }
   }
+  const imagesEXEX = [
+    { id: 1, url: "https://www.nxbgd.vn/Attachments/images/Sach%20moi/CMLBT_BANNER-WEB-BOOKIZ.png" },
+    { id: 2, url: "https://via.placeholder.com/800x250?text=Image+2" },
+    { id: 3, url: "https://via.placeholder.com/800x250?text=Image+3" },
+  ]
 
   useEffect(() => {
     topProducts();
@@ -160,7 +166,7 @@ export default function Banner({ className }) {
       .then((data) => {
         setImages(data.images);  // Lưu các URL vào state
       })
-      .catch((error) => console.error('Error fetching images:', error));
+      .catch((error) => { console.error('Error fetching images:', error); setImages(imagesEXEX); });
   }, []);
 
   // Chuyển ảnh mỗi 3 giây
@@ -178,47 +184,43 @@ export default function Banner({ className }) {
         <div className="container-x mx-auto ">
           <div className="main-wrapper w-full">
             <div className="banner-card xl:flex xl:space-x-[30px] xl:h-[250px]   mb-6 ">
-              <div className="bg-white">
+              <div className="bg-white rounded-lg shadow-3">
                 <div data-aos="fade-right" className="xl:w-full w-full xl:h-full h-full rounded-sm">
-                  <a href="/single-product">
+                  <Link href="/single-product">
 
 
-<div>
-  {images.length > 0 && (
-    <picture
-      className="xl:h-full h-[600px]"
-      style={{ width: "800px", height: "250px" }} // Đặt cứng chiều rộng và chiều cao
-    >
-      <source
-        media="(min-width:1025px)"
-        srcSet={images[currentIndex].url} // Sử dụng URL ảnh hiện tại
-      />
-      <img
-        src={images[currentIndex]?.url} // Sử dụng URL ảnh hiện tại
-        alt="Platform image"
-        className="w-full h-full object-cover rounded-sm"
-        style={{ width: "800px", height: "250px" }} // Đặt cứng chiều rộng và chiều cao
-      />
-    </picture>
-  )}
-</div>
-
-
-
-
-                  </a>
+                    <div>
+                      {images.length > 0 && (
+                        <picture
+                          className="xl:h-full h-[600px]"
+                          style={{ width: "800px", height: "250px" }} // Đặt cứng chiều rộng và chiều cao
+                        >
+                          <source
+                            media="(min-width:1025px)"
+                            srcSet={images[currentIndex].url} // Sử dụng URL ảnh hiện tại
+                          />
+                          <img
+                            src={images[currentIndex]?.url} // Sử dụng URL ảnh hiện tại
+                            alt="Platform image"
+                            className="w-full h-full object-cover rounded-sm"
+                            style={{ width: "800px", height: "250px" }} // Đặt cứng chiều rộng và chiều cao
+                          />
+                        </picture>
+                      )}
+                    </div>
+                  </Link>
                 </div>
               </div>
               <div
                 data-aos="fade-left"
                 className="flex-1 flex  w-full xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto gap-2"
               >
-              
-                <div className="bg-white rounded bg-opacity-0 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
+
+                <div className="bg-white rounded-lg shadow-2 bg-opacity-0 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
                   <div
                     className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat "
                     style={{
-                     // Thay bằng đường dẫn ảnh của bạn
+                      // Thay bằng đường dẫn ảnh của bạn
                       backgroundPosition: 'center',
                       backgroundSize: 'cover'
                     }}
@@ -239,8 +241,8 @@ export default function Banner({ className }) {
 
             <div
               data-aos="fade-up"
-              className="best-services w-full bg-white flex flex-col space-y-10 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center lg:h-[110px] px-10 lg:py-0 py-10  "
-            > 
+              className="rounded-lg shadow-2 best-services w-full bg-white flex flex-col space-y-10 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center lg:h-[110px] px-10 lg:py-0 py-10  "
+            >
               <div className="item">
                 <div className="flex space-x-5 items-center">
                   <div>
