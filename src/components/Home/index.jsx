@@ -4,10 +4,10 @@ import { useLocation } from "react-router-dom";
 import Loader from "../../common/Loader";
 import SectionStyleThree from "../Helpers/SectionStyleThree";
 import Layout from "../Partials/Layout";
+import ProductCarousel from '../ProductCarousel';
 import { useRequest } from "../Request/RequestProvicer";
 import Banner from "./Banner";
 import FlashSale from "./FlashaSale";
-import ProductCarousel from '../ProductCarousel';
 export default function Home() {  
   const [data_FlashSale, setData_FlashSale] = useState([]);
   const [data_ProductAll, setData_ProducAll] = useState([]);
@@ -104,26 +104,26 @@ export default function Home() {
 
 
       ) : (<Layout>
-        <Banner className="banner-wrapper mb-6" />
+        <Banner className="banner-wrapper" />
         <div className="bg-red-500">
           <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
         </div>
 
-        <div className="w-full bg-blue-50 pt-5 pb-5 mb-10">
+        <div className="w-full  pt-5 pb-5">
           <ProductCarousel/>
         </div>
 
 
         <div>
-          <div className="bg-blue-400 text-white ml-40 mr-40 mt-5 text-[25px] rounded-t-lg pl-5 p-2">
-            Gợi ý hôm nay
+          <div className="bg-blue-700 font-bold text-white ml-40 mr-40 mt-5 text-[25px] rounded-t-lg pl-5 p-2">
+            GỢI Ý HÔM NAY
           </div>
 
           <SectionStyleThree
             products={suggests}
             sectionTitle=""
             seeMoreUrl="/all-products"
-            className="bg-white mb-[60px] ml-40 mr-40"
+            className="bg-white mb-[60px] ml-40 mr-40 rounded-b-lg"
           />
         </div>
 
