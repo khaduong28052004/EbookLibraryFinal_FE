@@ -98,6 +98,7 @@ const ProductCarousel = () => {
                 // }
                 // setTotalPages(response.data.result?.totalPages);
             }).catch(error => {
+                setData_ProducAll(data_Products1.datas);
                 console.log("fetch selectall error " + error);
             });
     };
@@ -122,88 +123,90 @@ const ProductCarousel = () => {
         <div className="w-full  max-w-screen-lg mx-auto mt-6  bg-red-300 rounded-lg">
             {/* Tabs w-full h-[500px] text-red-500*/}
             <div className="flex justify-between p-3 border-b ">
-                <h1 className="text-2xl font-bold text-slate-800"> XU HƯƠNG MUA SẮM</h1> 
+                <h1 className="text-2xl font-bold text-slate-800"> XU HƯƠNG MUA SẮM</h1>
             </div>
-            <div className="bg-blue-50">
-           
-            <div className="  flex justify-between border-b bg-blue-50">
-                {tabs.map((tab, index) => (
-                    <button
-                        key={index}
-                        className={`px-4 py-2 ${activeTab === index
-                            ? "border-b-2 border-red-500 text-red-500 font-semibold"
-                            : "text-gray-600 hover:text-red-500 font-medium"
-                            }`}
-                        onClick={() => setActiveTab(index)}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
+            {/* <div className="bg-blue-50"> */}
+            <div className="bg-slate-50">
 
-            {/* Carousel Wrapper */}
-            {activeTab === 0 && (
-                <div className="relative mt-4">
-                    {/* Left Button */}
-                    <button
-                        className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${carouselIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
-                        onClick={() => handleCarousel("prev")}
-                        disabled={carouselIndex === 0}
-                    >
-                        &#8592;
-                    </button>
 
-                    {/* Carousel */}
-                    <div className="overflow-hidden">
-                        <div
-                            className="flex transition-transform duration-300"
-                            style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                <div className="  flex justify-between border-b bg-slate-50">
+                    {tabs.map((tab, index) => (
+                        <button
+                            key={index}
+                            className={`px-4 py-2 ${activeTab === index
+                                ? "border-b-2 border-red-500 text-red-500 font-semibold"
+                                : "text-gray-600 hover:text-red-500 font-medium"
+                                }`}
+                            onClick={() => setActiveTab(index)}
                         >
-                            {Array.from({ length: totalSlides }).map((_, slideIndex) => (
-                                <div
-                                    key={slideIndex}
-                                    className="grid grid-cols-4 gap-4 w-full"
-                                    style={{ minWidth: "100%" }}
-                                >
-                                    {data_ProducAll
-                                        .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
-                                        .map((product) => (
-                                            <ProductCardStyleOne key={product.id} datas={product} />
-                                        ))}
-                                </div>
-                            ))}
+                            {tab}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Carousel Wrapper */}
+                {activeTab === 0 && (
+                    <div className="relative mt-4">
+                        {/* Left Button */}
+                        <button
+                            className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${carouselIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
+                            onClick={() => handleCarousel("prev")}
+                            disabled={carouselIndex === 0}
+                        >
+                            &#8592;
+                        </button>
+
+                        {/* Carousel */}
+                        <div className="overflow-hidden">
+                            <div
+                                className="flex transition-transform duration-300"
+                                style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+                            >
+                                {Array.from({ length: totalSlides }).map((_, slideIndex) => (
+                                    <div
+                                        key={slideIndex}
+                                        className="grid grid-cols-4 gap-4 w-full"
+                                        style={{ minWidth: "100%" }}
+                                    >
+                                        {data_ProducAll
+                                            .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
+                                            .map((product) => (
+                                                <ProductCardStyleOne key={product.id} datas={product} />
+                                            ))}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
+
+
+                        {/* Right Button */}
+                        <button
+                            className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${carouselIndex === totalSlides - 1 ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
+                            onClick={() => handleCarousel("next")}
+                            disabled={carouselIndex === totalSlides - 1}
+                        >
+                            &#8594;
+                        </button>
                     </div>
-
-
-                    {/* Right Button */}
-                    <button
-                        className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${carouselIndex === totalSlides - 1 ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
-                        onClick={() => handleCarousel("next")}
-                        disabled={carouselIndex === totalSlides - 1}
-                    >
-                        &#8594;
-                    </button>
+                )}
+                {activeTab === 1 && (
+                    <div>
+                        {/* Nội dung cho tab 2 */}
+                        <h1>Sách HOT - Giảm Sốc</h1>
+                    </div>
+                )}
+                {activeTab === 2 && (
+                    <div>
+                        {/* Nội dung cho tab 3 */}
+                        <h1>Bestseller Ngoại Văn</h1>
+                    </div>
+                )}
+                <div className="text-center border-b p-5">
+                    xem thêm
                 </div>
-            )}
-            {activeTab === 1 && (
-                <div>
-                    {/* Nội dung cho tab 2 */}
-                    <h1>Sách HOT - Giảm Sốc</h1>
-                </div>
-            )}
-            {activeTab === 2 && (
-                <div>
-                    {/* Nội dung cho tab 3 */}
-                    <h1>Bestseller Ngoại Văn</h1>
-                </div>
-            )}
-            <div className="text-center border-b p-5">
-                xem thêm
             </div>
-            </div> 
         </div>
     );
 };
