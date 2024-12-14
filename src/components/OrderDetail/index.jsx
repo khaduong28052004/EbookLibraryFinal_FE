@@ -183,7 +183,7 @@ export default function OrderDetail({ orderId, clearOrderId }) {
             <ToastContainer></ToastContainer>
             <div className="" key={order.bill.bill.id}>
                 <div className="border-b">
-                    <div className="rounded text-gray-500 font-light text-[5px] pb-2 flex inline-block  hover: cursor-pointer w-[100px]" onClick={clearOrderId}>
+                    <div className="rounded text-gray-500  text-[5px]  text-xl font-bold pb-2 flex inline-block  hover: cursor-pointer w-[100px]" onClick={clearOrderId}>
                         <img src="https://cdn-icons-png.flaticon.com/128/10728/10728732.png" alt="" className="w-[10px] mr-2" /> TRỞ LẠI
                     </div>
                 </div>

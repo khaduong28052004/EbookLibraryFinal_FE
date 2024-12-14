@@ -106,31 +106,33 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     const [sortField, setSortField] = useState(null);
     const local = useLocation();
     const [currentPage, setCurrentPage] = useState(0);
-    const [size, setSize] = useState(6);
     const [data, setData] = useState(null);
+    const [hasMore, setHasMore] = useState(true); // Có còn sản phẩm để tải không
+    const [size, setSize] = useState(8);
+    const [page, setPage] = useState(0);
 
     const getIdAccountFromSession = () => {
         const user = sessionStorage.getItem("user");
         if (user) {
             const userObject = JSON.parse(user);
-            return userObject; 
+            return userObject;
         }
     };
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (currentSize) => {
         try {
-            setLoading(true);
+            // setLoading(true);
 
             const orderStatusId = activeMenu;
             const userID = getIdAccountFromSession().id_account;
-            const response = await userOrderService.fetchOrder(userID, orderStatusId, currentPage, size);
+            const response = await userOrderService.fetchOrder(userID, orderStatusId, currentSize);
 
-            console.log('response.data.data', response.data);
-            if (response.data) {
-                const data = response.data;
-                setOrders(Array.isArray(data.data) ? data.data : []);
+            if (response.data.data) {
+                const data = response.data.data;
+                setOrders(Array.isArray(data) ? data : []);
+                setHasMore(data.length >= currentSize)
                 setData(data);
-                setCurrentPage(data.currentPage)
+                // setCurrentPage(data.currentPage)
             } else {
                 throw new Error('Không có dữ liệu');
             }
@@ -231,27 +233,18 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
     const sortedBills = [...orders];
 
-    const handlePageChange = (newPage) => {
-        if (newPage >= 0 && newPage < data.totalPages) {
-            setCurrentPage(newPage);
-            console.log("currentPage: " + newPage);
-        }
-    };
-    const handlePrevious = () => {
-        handlePageChange(currentPage - 1);
-    };
 
-    const handleNext = () => {
-        handlePageChange(currentPage + 1);
+
+    const handleLoadMore = () => {
+        console.log("hasMore && !setLoading",hasMore && !setLoading );
+        if (hasMore && setLoading)
+            setSize((prevSize) => prevSize + 8);
+
     };
 
     useEffect(() => {
-        fetchOrders();
+        fetchOrders(size);
     }, []);
-
-    useEffect(() => {
-        fetchOrders();
-    }, [currentPage]);
 
     useEffect(() => {
         fetchOrders();
@@ -259,12 +252,12 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
     }, [orderId]);
 
     useEffect(() => {
-        console.log(activeMenu);
-        fetchOrders();
+        console.log("activeMenu",activeMenu);
+        fetchOrders(size);
         if (taskCompleted) {
             setTaskCompleted(false);
         }
-    }, [activeMenu, taskCompleted]);
+    }, [activeMenu, taskCompleted, size]);
 
     useEffect(() => {
         const id = sessionStorage.getItem("billId");
@@ -274,6 +267,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
             sessionStorage.removeItem("billId");
         }
     }, [local]);
+
 
 
     if (loading) {
@@ -297,7 +291,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
 
     return (
         <>
-            <div className="relative w-full overflow-x-auto border-t mt-5 pt-5 h-[470px]">
+            <div className="relative w-full overflow-x-auto border-t mt-5 pt-5 ">
                 {sortedBills && sortedBills.length > 0 ? (
                     <>
                         <table className=" w-full text-sm text-left  text-white dark:text-gray-400 bg-white shadow border">
@@ -398,7 +392,17 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
                 )
                 }
             </div>
-            <div className="flex justify-end w-full  border-t">
+            {hasMore && (
+                <div className="flex justify-center mb-10  mt-10">
+                    <button
+                        onClick={handleLoadMore}
+                        // disabled={setLoading}
+                        className="load-more border rounded border-[#003EA1] text-[#003EA1] px-20 py-1 bg-white hover:bg-[#003EA1] hover:text-white">
+                        Xem thêm
+                    </button>
+                </div>
+            )}
+            {/* <div className="flex justify-end w-full  border-t">
                 {data?.totalItems > 0 ? (
                     <Pagination
                         pageNumber={data?.currentPage}
@@ -410,7 +414,7 @@ export default function OrderPage({ activeMenu, setActiveMenu, setIsInDetailMode
                         size={data?.pageSize}>
                     </Pagination>
                 ) : <></>}
-            </div>
+            </div> */}
         </>
     );
 }

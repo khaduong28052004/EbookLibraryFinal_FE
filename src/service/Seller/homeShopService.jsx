@@ -6,6 +6,7 @@ const homeShopService = {
 
     fetchShopInfo: (idSeller, userID) => {
         console.log("idSeller", idSeller)
+        console.log("userID", userID)
         const data = {
             userID: userID,
             sellerID: idSeller
@@ -24,8 +25,20 @@ const homeShopService = {
     },
 
 
-    fetchProductShopHome: (idSeller) => {
-        const url = `/api/v1/user/shop/selectall?id_Shop=${idSeller}`;
+    fetchProductShopHome: (idSeller,  size) => {        
+        const url = `/api/v1/user/shop/selectall?id_Shop=${idSeller}&size=${size}`;
+        console.log("idSeller", idSeller);
+        return axiosAuth("null", "get", url);   
+    },
+
+    // fetchProductShopHome: (idSeller, page = 1, size = 8) => {
+    //     const url = `/api/v1/user/shop/selectall?id_Shop=${idSeller}&page=${page}&size=${size}`;
+    //     console.log("idSeller", idSeller);
+    //     return axiosAuth("null", "get", url);
+    // },
+
+    fetchTopProducts: (idSeller) => {
+        const url = `/api/v1/user/shop/top3ProductShop?id_Shop=${idSeller}`;
         console.log("idSeller", idSeller);
         return axiosAuth("null", "get", url);
     },
@@ -39,23 +52,33 @@ const homeShopService = {
         return axiosAuth("null", "get", url);
     },
 
-    createReport: (idUser, idSeller, createAt, content, title) => {
-        console.log("idSeller", idSeller);
-        console.log("idUser", idUser);
-        console.log("createAt", createAt);
+    createReport: ({userId, sellerId, content, title, images}) => {
+        const url = `/api/v1/user/shop/createReport/saveImg`;
+
+        const formData = new FormData();
+        formData.append('accountId', userId);
+        formData.append('content', content || "");
+        formData.append('shopId', sellerId);
+        formData.append('status', false);
+        formData.append('createAt', new Date());
+        formData.append('title', title);
+        
+        // Thêm ảnh (MultipartFile array)
+         if (images && images.length > 0) {
+            images.forEach((image, index) => {
+                formData.append(`images[${index}]`, image);
+                console.log(`images[${index}]:`, image);
+            });
+        }
+    
+        console.log("idSeller formData", sellerId);
+        console.log("idUser formData", userId);
+        console.log("createAt", new Date());
         console.log("content", content);
         console.log("title", title);
-        
-        const url = `http://localhost:8080/api/v1/user/shop/createReport`;
-        const data = {
-            accountId: idUser,
-            shopId: idSeller,
-            status: false,
-            createAt: createAt,
-            content: content,
-            title: title
-        };
-        return axiosAuth("null", "post", url, data);
+        console.log("images", images);
+
+        return axiosAuth("null", "post", url, formData);
     }
 }
 export default homeShopService;
