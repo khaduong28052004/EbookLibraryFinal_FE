@@ -49,7 +49,7 @@ const ProductCarousel = () => {
             url = `http://localhost:8080/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
             // url = `http://localhost:8080/api/v1/user/actions_hot_books?account_id=${account_id}&page=${page}`;
         } else if (tab === "bestseller") {
-            url = `http://localhost:8080/api/v1/user/actions_bestseller_books?account_id=${account_id}&page=${page}`;
+            url = `http://localhost:8080/api/v1/user/actions_product_category1_Bestseller?account_id=${account_id}&page=${page}`;
             // url = `http://localhost:8080/api/v1/user/topLikeProducts`;
         }
 
