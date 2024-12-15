@@ -44,13 +44,13 @@ const ProductCarousel = () => {
         let url;
 
         if (tab === "xuhuong") {
-            url = `http://localhost:8080/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
+            url = `http://localhost:8080/api/v1/user/actions_product_category1_data?account_id=${account_id}&page=${page}`;
         } else if (tab === "hot") {
             url = `http://localhost:8080/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
             // url = `http://localhost:8080/api/v1/user/actions_hot_books?account_id=${account_id}&page=${page}`;
         } else if (tab === "bestseller") {
-            // url = `http://localhost:8080/api/v1/user/actions_bestseller_books?account_id=${account_id}&page=${page}`;
-            url = `http://localhost:8080/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
+            url = `http://localhost:8080/api/v1/user/actions_bestseller_books?account_id=${account_id}&page=${page}`;
+            // url = `http://localhost:8080/api/v1/user/topLikeProducts`;
         }
 
         try {
