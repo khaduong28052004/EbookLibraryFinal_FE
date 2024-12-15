@@ -266,7 +266,6 @@ const ShopSeller = () => {
         phone: account.phone || '', // Số điện thoại
         fullNameAddress: activeAddress.fullNameAddress || 'Chưa có địa chỉ',
         email: account.email || 'Chưa có email', // Email
-        shopName: account.shopName || 'Chưa có shopName', // Email
         street: activeAddress.street || '',
       });
 

@@ -4,8 +4,6 @@ import { FaStar } from 'react-icons/fa'; // Font Awesome
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRequest } from "../../Request/RequestProvicer";
-import Compair from "../icons/Compair";
-import QuickViewIco from "../icons/QuickViewIco";
 import ThinLove from "../icons/ThinLove";
 import ImageLoader from "../ImageLoading/ImageWithLoader.jsx";
 export default function ProductCardStyleOne({ datas, type }) {
@@ -70,7 +68,7 @@ export default function ProductCardStyleOne({ datas, type }) {
 
   return (
     <div
-      className="product-card-one w-full h-full bg-white relative group overflow-hidden"
+      className="hover:shadow-2xl transition-shadow duration-600 product-card-one w-full h-full bg-white relative group overflow-hidden rounded-lg shadow-sm "
     // style={{ boxShadow: "0px 15px 64px 0px rgba(0, 0, 0, 0.05)" }}
     >
       <div
@@ -170,23 +168,23 @@ export default function ProductCardStyleOne({ datas, type }) {
       </div>
       {/* quick-access-btns */}
       <div className="quick-access-btns flex flex-col space-y-2 absolute group-hover:right-4 -right-10 top-20  transition-all duration-300 ease-in-out">
-        <a href="#">
+        {/* <a href="#">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
             <QuickViewIco />
           </span>
-        </a>
-        <a className="cursor-pointer">
+        </a> */}
+        <p className="cursor-pointer">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
             <ThinLove isFavorite={isFavorite} createFavorite={createFavorite} />
           </span>
-        </a>
-        <a href="#">
+        </p>
+        {/* <a href="#">
           <span className="w-10 h-10 flex justify-center items-center bg-primarygray rounded">
             <Compair createFavorite={handleShare} />
-            {/* chia sẻ */}
-            {/* <ShareModal datas={datas}/> */}
+            chia sẻ
+            <ShareModal datas={datas}/>
           </span>
-        </a>
+        </a> */}
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ const token = sessionStorage.getItem("token")
 const createUrl = (path, params = '') => `/api/v1/user/bill/${path}${params}`;
 
 const userOrderService = {
-    fetchOrder: (userID, orderStatusId, page, limit) => axiosAuth('null', 'get', createUrl('read', `?userId=${userID}&orderStatusFind=${orderStatusId}&page=${page}&size=${limit}`)),
+    fetchOrder: (userID, orderStatusId,  limit) => axiosAuth('null', 'get', createUrl('read', `?userId=${userID}&orderStatusFind=${orderStatusId}&size=${limit}`)),
     cancelOrder: (billId) => axiosAuth('null', 'post', createUrl('update_status/cancel/', `${billId}`)),
     confirmOrder: (billId) => axiosAuth('null', 'post', createUrl('update_status/confirm/', `${billId}`)),
     reOrder: (billId) => axiosAuth('null', 'post', createUrl('create/reorder/', `${billId}`))

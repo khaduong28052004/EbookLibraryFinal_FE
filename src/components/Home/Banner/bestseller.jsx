@@ -27,7 +27,7 @@ const BestSeller = ({ products }) => {
     <div className="relative  group px-3 py-3 xl:h-full  lg:w-full lg:mt-0 mt-5 h-[250px] w-[730px] ">
       {/* Background image with gradient overlay */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat shadow-lg shadow-inner bg-[#7d9fd60f]"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat  "
         style={{
           
           // filter: 'blur(5px)', // Thêm mờ cho background
