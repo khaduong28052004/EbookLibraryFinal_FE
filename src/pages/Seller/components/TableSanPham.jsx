@@ -27,7 +27,8 @@ const TableSanPham = () => {
   const [sortColumn, setSortColumn] = useState("id");
   const [statusButton, setStatusButton] = useState(false);
   const [idProduct, setIdProduct] = useState(null);
-  const [dataProduct, setDataProduct] = useState({
+  const [
+    , setDataProduct] = useState({
     id: null,
     price: null,
     sale: null,

@@ -15,8 +15,10 @@ const TableTwo = () => {
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
     const [currentPage, setCurrentPage] = useState(0);
-    const [Entity, setEntity] = useState('');
     const [isOpen, setIsOpen] = useState(false);
+
+    const [entityList, setEntityList] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < data.totalPages) {
@@ -51,12 +53,13 @@ const TableTwo = () => {
 
     const deleteHistory = async () => {
         try {
-            const response = await historyService.delete({ id: Entity.id });
+            const response = await historyService.deleteList({ id: entityList });
             console.log("xóa: " + response.data.message);
             if (response.data.code === 1000) {
                 toast.success(response.data.message);
             }
             findAllHistory();
+            setEntityList([]);
         } catch (error) {
             toast.error(error.response.data.message);
             console.log("Error: " + error);
@@ -75,6 +78,33 @@ const TableTwo = () => {
             setExpandedRowId(id); // Mở hàng chi tiết
         }
     };
+
+    const handleCheckboxChange = (id, isChecked) => {
+        setEntityList((prev) => {
+            if (isChecked) {
+                // Nếu checkbox được check, thêm id vào mảng
+                if (!prev.includes(id)) {
+                    return [...prev, id];
+                }
+            } else {
+                // Nếu checkbox không được check, xóa id khỏi mảng
+                return prev.filter((item) => item !== id);
+            }
+            return prev;
+        });
+    };
+    const handleSelectAll = async (isChecked) => {
+        setSelectAll(isChecked);
+        const AccountID = sessionStorage.getItem("id_account");
+        const response = await historyService.findAllHistory({ searchItem, AccountID: AccountID, page: currentPage, size: data.totalElements, sortColumn, sortBy });
+        if (isChecked) {
+            const allIds = response.data.result.content.map((entity) => entity.id);
+            setEntityList(allIds);
+        } else {
+            setEntityList([]);
+        }
+    };
+
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <ToastContainer />
@@ -167,7 +197,14 @@ const TableTwo = () => {
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
-                        <th className="py-4.5 px-4 flex justify-center">
+                        <th className="py-4.5 md:px-6 text-left font-medium">
+                            <input
+                                type="checkbox"
+                                checked={selectAll}
+                                onChange={(e) => handleSelectAll(e.target.checked)}
+                                className="flex justify-start  w-4 h-4 items-start bg-gray-100 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 "
+
+                            />
                         </th>
                     </tr>
                 </thead>
@@ -221,17 +258,14 @@ const TableTwo = () => {
                                         {entity.account.fullname}
                                     </div>
                                 </td>
-                                <td className="py-4.5 ">
+                                <td className="py-4.5 md:px-6 text-left font-medium ">
                                     {sessionStorage.getItem("id_account") === "1" ?
-                                        <div className="flex justify-start px-4 ">
-                                            <button onClick={(event) => {
-                                                event.stopPropagation();
-                                                setEntity(entity);
-                                                setIsOpen(true);
-                                            }}>
-                                                <TrashIcon className="w-5 h-5 text-black hover:text-red-600 dark:text-white" />
-                                            </button>
-                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            checked={entityList.includes(entity.id)}
+                                            onChange={(e) => handleCheckboxChange(entity.id, e.target.checked)}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
                                         : <></>}
                                 </td>
                             </tr>
@@ -338,7 +372,7 @@ const TableTwo = () => {
                                                             </>
                                                         ) : null}
                                                         {entity.tableName === "FlashSale" ? (
-                                                            <div className={`pl-20 pt-2 gap-3 grid ${parsedDoiTuongNew ? 'grid-cols-1':'grid-cols-3'}`}>
+                                                            <div className={`pl-20 pt-2 gap-3 grid ${parsedDoiTuongNew ? 'grid-cols-1' : 'grid-cols-3'}`}>
                                                                 <p>
                                                                     Tiêu đề:
                                                                     <span className=" text-gray-900 px-2">
@@ -495,7 +529,7 @@ const TableTwo = () => {
                                                             </div>
                                                         ) : null}
                                                         {entity.tableName === "DiscountRate" ? (
-                                                            <div className={`pl-20 pt-2 gap-1 grid  ${parsedDoiTuongNew ? 'grid-cols-1':'grid-cols-2'}`}>
+                                                            <div className={`pl-20 pt-2 gap-1 grid  ${parsedDoiTuongNew ? 'grid-cols-1' : 'grid-cols-2'}`}>
                                                                 <p>
                                                                     Mức chiết khấu:
                                                                     <span className=" text-gray-900 px-2">
@@ -552,6 +586,20 @@ const TableTwo = () => {
                     ))}
                 </tbody>
             </table >
+            <div className='flex justify-end mr-5'>
+                <button
+                    onClick={() => {
+                        if (entityList.length === 0) {
+                            setIsOpen(false);
+                        } else {
+                            setIsOpen(true);
+                        }
+                    }}
+                    className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+                >
+                    Xóa
+                </button>
+            </div>
             <Pagination
                 pageNumber={currentPage}
                 totalPages={data?.totalPages}
