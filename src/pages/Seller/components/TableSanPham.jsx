@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon, ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { ArrowPathIcon, TrashIcon, ArrowUpTrayIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import SanPhamService from "../../../service/Seller/sanPhamService"
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
@@ -157,31 +157,28 @@ const TableSanPham = () => {
     const totalFiles = dataProduct.imageProducts.length + selectedFiles.length;
 
     if (totalFiles > 4) {
-      toast.error("Bạn chỉ được chọn tối đa 4 ảnh.");
+      setErrorMessage("Bạn chỉ được chọn tối đa 4 ảnh.");
       return;
     }
 
     if (selectedFiles.length < 1) {
-      toast.error("Bạn cần chọn ít nhất 1 ảnh.");
+      setErrorMessage("Bạn cần chọn ít nhất 1 ảnh.");
       return;
     }
 
     setErrorMessage("");
 
-    // Kiểm tra từng file
     const validFilesPromises = selectedFiles.map(async (file) => {
       const isValid = await checkImage(file);
       if (!isValid) {
-        toast.error(`Ảnh "${file.name}" không hợp lệ!`);
+        setErrorMessage(`Ảnh "${file.name}" không hợp lệ!`);
       }
       return isValid ? file : null;
     });
 
-    // Chờ tất cả kết quả
     const validFiles = (await Promise.all(validFilesPromises)).filter(Boolean);
 
     if (validFiles.length > 0) {
-      // Cập nhật state chỉ với các file hợp lệ
       setDataProduct((prevData) => ({
         ...prevData,
         imageProducts: [...prevData.imageProducts, ...validFiles],
@@ -255,11 +252,11 @@ const TableSanPham = () => {
     }
 
     // // Kiểm tra mô tả sản phẩm
-    if (await handleCheckText(dataProduct.introduce) === false) {
-      toast.error("Mô tả không hợp lệ");
-      setIsSubmitting(false);
-      return;
-    }
+    // if (await handleCheckText(dataProduct.introduce) === false) {
+    //   toast.error("Mô tả không hợp lệ");
+    //   setIsSubmitting(false);
+    //   return;
+    // }
 
     try {
       const formData = new FormData();
@@ -273,7 +270,7 @@ const TableSanPham = () => {
         [response] = await Promise.all([SanPhamService.create(dataProduct)]);
         const idProduct = response.data.result.id;
 
-        // await SanPhamService.createSaveImg(idProduct, formData);
+        await SanPhamService.createSaveImg(idProduct, formData);
       } else {
 
         [response] = await Promise.all([
@@ -511,9 +508,18 @@ const TableSanPham = () => {
                     {index + 1 + pageNumber * pageSize}
                   </td>
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                    <img className="h-15 w-12.5 rounded-md" src={item.imageProducts[0].name} alt="ImageProduct" />
-                    <p className="text-sm text-black dark:text-white truncate w-60">{item.name}</p>
+                    <div
+                      className="relative w-[80px] h-[120px] rounded-md overflow-hidden shadow-md bg-gray-100 flex-shrink-0"
+                    >
+                      <img
+                        className="h-full w-full object-cover object-center"
+                        src={item.imageProducts[0].name}
+                        alt="ImageProduct"
+                      />
+                    </div>
+                    <p className="text-sm text-black dark:text-white">{item.name}</p>
                   </td>
+
 
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                     <div className="flex items-center gap-1 hidden lg:flex">
@@ -569,7 +575,7 @@ const TableSanPham = () => {
                         </p>
 
                         <p>
-                          <strong>Thể Loại: </strong>
+                          <strong>Danh Mục Con: </strong>
                           {item.category.name}
                         </p>
 
@@ -599,6 +605,7 @@ const TableSanPham = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
 
       <Modal
@@ -692,51 +699,75 @@ const TableSanPham = () => {
                   </div>
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
 
-                    <div className="w-full xl:w-1/4">
+                    <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giá
                       </label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={dataProduct.price}
-                        onChange={handDataProduct}
-                        placeholder="Giá..."
-                        min={1000}
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          name="price"
+                          value={dataProduct.price}
+                          onChange={handDataProduct}
+                          placeholder="Giá..."
+                          min={1000}
+                          className="w-5/6 rounded-l border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                        <span
+                          className="w-1/6 text-center rounded-r border-[1.5px] border-l-0 border-stroke bg-transparent py-3 px-5 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                        >
+                          VNĐ
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="w-full xl:w-1/4">
+                    <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giảm Giá
                       </label>
-                      <input
-                        type="number"
-                        name="sale"
-                        value={dataProduct.sale}
-                        onChange={handDataProduct}
-                        min={0}
-                        max={100}
-                        placeholder="Giám giá..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          name="sale"
+                          value={dataProduct.sale}
+                          onChange={handDataProduct}
+                          min={0}
+                          max={100}
+                          placeholder="Giảm giá..."
+                          className="w-5/6 rounded-l border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                        <span
+                          className="w-1/6 text-center rounded-r border-[1.5px] border-l-0 border-stroke bg-transparent py-3 px-5 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                        >
+                          %
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="w-full xl:w-1/4">
+                  </div>
+                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+
+                    <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Khối Lượng
                       </label>
-                      <input
-                        type="number"
-                        name="weight"
-                        value={dataProduct.weight}
-                        onChange={handDataProduct}
-                        placeholder="Khối lượng..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          name="weight"
+                          value={dataProduct.weight}
+                          onChange={handDataProduct}
+                          placeholder="Khối lượng..."
+                          className="w-5/6 rounded-l border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                        <span
+                          className="w-1/6 text-center rounded-r border-[1.5px] border-l-0 border-stroke bg-transparent py-3 px-5 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                        >
+                          Gam
+                        </span>
+                      </div>
                     </div>
-                    <div className="w-full xl:w-1/4">
+                    <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Số Lượng
                       </label>
@@ -751,8 +782,8 @@ const TableSanPham = () => {
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
-
                   </div>
+
                   <div className="mb-6">
                     <label htmlFor="productImage" className="mb-2.5 block text-black dark:text-white">
                       Hình Ảnh Sản Phẩm
@@ -806,7 +837,7 @@ const TableSanPham = () => {
                     <div className="w-full xl:w-1/2">
                       <div className="mb-4.5">
                         <label className="mb-2.5 block text-black dark:text-white">
-                          Doanh Mục
+                          Danh Mục
                         </label>
                         <div className="relative z-20 bg-transparent dark:bg-form-input">
                           <select
@@ -848,7 +879,7 @@ const TableSanPham = () => {
                     <div className="w-full xl:w-1/2">
                       <div className="mb-4.5">
                         <label className="mb-2.5 block text-black dark:text-white">
-                          Thể Loại
+                          Danh Mục Con
                         </label>
                         <div className="relative z-20 bg-transparent dark:bg-form-input">
                           <select
@@ -897,7 +928,7 @@ const TableSanPham = () => {
                       Mô tả
                     </label>
                     <Editor
-                      apiKey='4wv4bl38ddxgu8et456s2co6syryav9f2t31hkjbnsfoyd6w'
+                      apiKey='nt6o2f934qqh01757mffmo7uq3ajflomlwhz6jzaa02xpimo'
                       init={{
                         plugins: [
                           'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',

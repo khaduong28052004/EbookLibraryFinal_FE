@@ -6,6 +6,7 @@ const SearchService = {
     searchImage: (data) => axiosAuthPython('null', 'post', `search-image`, data),
     filtercategoryAudio: (id_categories, page) => axiosAuth('null', 'get', `api/v1/user/filtercategory/audio?id_categories=${id_categories}&page=${page}`),
     filterPriceAudio: (priceMin, priceMax, page) => axiosAuth('null', 'get', `api/v1/user/filterprice/audio?priceMin=${priceMin}&priceMax=${priceMax}&page=${page}`),
+    searchCategory: (key) => axiosAuth('null','get', `api/v1/chatBot/searchCategory?key=${key}`)
 };
 
 export default SearchService;

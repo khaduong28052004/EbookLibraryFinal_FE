@@ -215,8 +215,8 @@ export default function Banner({ className }) {
                 data-aos="fade-left"
                 className="flex-1 flex  w-full xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto gap-2"
               >
-
-                <div className="bg-white rounded-lg shadow-2 bg-opacity-0 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
+                {/* bg-white  */}
+                <div className="bg-[#7d9fd60f]  rounded-lg shadow-2 bg-opacity-0 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
                   <div
                     className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat "
                     style={{

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
 import { ExportExcel } from "./ExportExcel"
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, setSortBy, setSortColumn, sortBy, sortColumn }) => {
 
@@ -24,6 +24,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
   }
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <ToastContainer/>
       <div className="py-6 flex flex-col md:flex-row justify-between px-4 md:px-6 xl:px-7.5 space-y-4 md:space-y-0">
         <form>
           <div className="relative pt-3 flex items-center space-x-4">
@@ -198,6 +199,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={pageSize}
       />
 
     </div>
