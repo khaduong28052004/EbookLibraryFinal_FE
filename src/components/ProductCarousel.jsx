@@ -124,7 +124,7 @@ const ProductCarousel = () => {
         <div className="section-style-one ml-27 mr-27  bg-red-500 rounded-lg shadow-2">
             {/* Tabs w-full h-[500px] text-red-500*/}
             <div className="flex justify-between p-3 border-b ">
-                <h1 className="text-2xl font-bold text-white "> XU HƯƠNG MUA SẮM</h1>
+                <h1 className="text-2xl font-bold text-white "> XU HƯỚNG MUA SẮM</h1>
             </div>
             {/* <div className="bg-blue-50"> */}
             <div className="bg-white rounded-lg ">
@@ -148,7 +148,7 @@ const ProductCarousel = () => {
                 {/* Carousel Wrapper */}
                 {activeTab === 0 && (
 
-                    <div className="relative mt-4">
+                    <div className="relative mt-4 ">
                         {/* Left Button */}
                         <button
                             className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${carouselIndex === 0 ? "opacity-50 cursor-not-allowed" : ""
