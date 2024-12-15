@@ -21,6 +21,7 @@ const ModalSanPham = ({
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        console.log(`Changing ${name} to ${value}`); // Debugging log
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -56,6 +57,7 @@ const ModalSanPham = ({
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log("Submitting formData:", formData); // Debugging log
         if (entity == null) {
             postChietKhau();
         } else {
@@ -63,20 +65,28 @@ const ModalSanPham = ({
         }
     }
     useEffect(() => {
+        console.log("Entity changed:", entity); // Debugging log
         if (entity == null) {
             setFormData({
                 discount: '',
                 dateStart: '',
-            })
+            });
         } else {
             setFormData({
                 id: entity.id,
                 discount: entity.discount || '',
-                dateStart: entity.dateStart || '',
-            })
+                dateStart: formatDateToISO(new Date(entity.dateStart)) || '',
+            });
         }
     }, [entity]);
-    ;
+
+    function formatDateToISO(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
     return (
         <Dialog open={open} onClose={() => setOpen(false)} className="relative z-999999">
             <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
@@ -114,7 +124,7 @@ const ModalSanPham = ({
                                             name="dateStart"
                                             value={formData.dateStart}
                                             onChange={handleChange}
-                                            type="datetime-local"
+                                            type="date"
                                             placeholder="Ngày bắt đầu..."
                                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
@@ -124,7 +134,6 @@ const ModalSanPham = ({
 
                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                 <button
-                                    onClick={handleSubmit}
                                     type="submit"
                                     className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
                                 >

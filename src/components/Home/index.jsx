@@ -94,7 +94,7 @@ export default function Home() {
     fetchSuggests();
     fetchDataFlashSale();
     fetchDataSelectAll();
-  }, [location, isRequesting]);
+  }, [location]);
 
   return (
     <>

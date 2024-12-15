@@ -38,7 +38,7 @@ const TableVoucher = () => {
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
-  const [size, setSize] = useState(5);
+  const [size, setSize] = useState(10);
   const [expandedRowId, setExpandedRowId] = useState(null);
   const location = useLocation();
 
@@ -350,31 +350,31 @@ const TableVoucher = () => {
                       <button>
                         <Link to={`/seller/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
                       </button>
-                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart) > new Date()? (                        <>
-                          <button
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              setIsOpen(true);
-                              setVoucherId(voucher.id);
-                              setStatusVoucher(voucher.delete);
-                            }}
-                          >
-                            {!voucher.delete ? (
-                              <NoSymbolIcon className="w-5 h-5 text-black hover:text-red-600 dark:text-white" />
-                            ) : (
-                              <ReceiptRefundIcon className="w-5 h-5 text-black hover:text-green-600 dark:text-white" />
-                            )}
-                          </button>
-                          <button
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              editVoucher(voucher.id);
-                              setIsStatus(true);
-                            }}
-                          >
-                            <ArrowPathIcon className="w-5 h-5 text-black hover:text-green-600 dark:text-white" />
-                          </button>
-                        </>
+                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart) > new Date() ? (<>
+                        <button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setIsOpen(true);
+                            setVoucherId(voucher.id);
+                            setStatusVoucher(voucher.delete);
+                          }}
+                        >
+                          {!voucher.delete ? (
+                            <NoSymbolIcon className="w-5 h-5 text-black hover:text-red-600 dark:text-white" />
+                          ) : (
+                            <ReceiptRefundIcon className="w-5 h-5 text-black hover:text-green-600 dark:text-white" />
+                          )}
+                        </button>
+                        <button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            editVoucher(voucher.id);
+                            setIsStatus(true);
+                          }}
+                        >
+                          <ArrowPathIcon className="w-5 h-5 text-black hover:text-green-600 dark:text-white" />
+                        </button>
+                      </>
                       ) : null}
 
                     </div>
@@ -384,17 +384,17 @@ const TableVoucher = () => {
                   <tr className="border-t border-stroke dark:border-strokedark bg-gray-50 dark:bg-gray-800">
                     <td colSpan={8} className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                       <div className="grid grid-cols-3 gap-x-8 gap-y-2">
-                        <p><strong>Điều Kiện:</strong>
+                        <p><strong>Điều Kiện: </strong>
                           {(voucher.minOrder || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                         </p>
 
                         <p>
-                          <strong>Giá Giảm Tối Đa:</strong>
+                          <strong>Giá Giảm Tối Đa: </strong>
                           {(voucher.totalPriceOrder || 0).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                         </p>
 
                         <p>
-                          <strong>Số Lượng:</strong>
+                          <strong>Số Lượng: </strong>
                           {voucher.quantity}
                         </p>
 
@@ -415,6 +415,7 @@ const TableVoucher = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
 
       <Modal
@@ -445,7 +446,7 @@ const TableVoucher = () => {
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl">
               <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                 <h3 className="font-semibold text-xl text-black dark:text-white">
                   Voucher
@@ -470,16 +471,14 @@ const TableVoucher = () => {
 
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Số Lượng
+                        Loại Voucher
                       </label>
-                      <input
-                        type="number"
-                        name="quantity"
-                        value={dataVoucher.quantity}
-                        onChange={handDataVoucher}
-                        placeholder="Số lượng..."
+                      <select name="tyVoucher" id=""
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+
+                      >
+                        <option value="">Giảm theo tổng hóa đơn</option>
+                      </select>
                     </div>
                   </div>
 
@@ -515,29 +514,38 @@ const TableVoucher = () => {
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Loại Voucher
+                        Số Lượng
                       </label>
-                      <select name="tyVoucher" id=""
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={dataVoucher.quantity}
+                        onChange={handDataVoucher}
+                        placeholder="Số lượng..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-
-                      >
-                        <option value="">Giảm theo tổng hóa đơn</option>
-                      </select>
+                      />
                     </div>
 
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Điều Kiện
+                        Điều Kiện Áp Dụng Voucher
                       </label>
-                      <input
-                        type="number"
-                        name="minOrder"
-                        value={dataVoucher.minOrder}
-                        onChange={handDataVoucher}
-                        min={0}
-                        placeholder="Điều kiện..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          name="minOrder"
+                          value={dataVoucher.minOrder}
+                          onChange={handDataVoucher}
+                          min={0}
+                          placeholder="Điều kiện áp dụng voucher"
+                          className="w-5/6 rounded-l border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                        <span
+                          className="w-1/6 text-center rounded-r border-[1.5px] border-l-0 border-stroke bg-transparent py-3 px-3 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                        >
+                          VNĐ
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -546,31 +554,45 @@ const TableVoucher = () => {
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giá Tối Đa Được Giảm
                       </label>
-                      <input
-                        type="number"
-                        min={0}
-                        name="totalPriceOrder"
-                        value={dataVoucher.totalPriceOrder}
-                        onChange={handDataVoucher}
-                        placeholder="Giá Tối Đa..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          min={0}
+                          name="totalPriceOrder"
+                          value={dataVoucher.totalPriceOrder}
+                          onChange={handDataVoucher}
+                          placeholder="Giá tối đa được giảm"
+                          className="w-5/6 rounded-l border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                        <span
+                          className="w-1/6 text-center rounded-r border-[1.5px] border-l-0 border-stroke bg-transparent py-3 px-3 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                        >
+                          VNĐ
+                        </span>
+                      </div>
                     </div>
 
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giảm Giá
                       </label>
-                      <input
-                        type="number"
-                        name="sale"
-                        min={0}
-                        max={100}
-                        value={dataVoucher.sale}
-                        onChange={handDataVoucher}
-                        placeholder="Giám giá..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          name="sale"
+                          min={0}
+                          max={100}
+                          value={dataVoucher.sale}
+                          onChange={handDataVoucher}
+                          placeholder="Giám giá..."
+                          className="w-5/6 rounded-l border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                        <span
+                          className="w-1/6 text-center rounded-r border-[1.5px] border-l-0 border-stroke bg-transparent py-3 px-3 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                        >
+                          %
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -583,7 +605,7 @@ const TableVoucher = () => {
                       name='note'
                       value={dataVoucher.note}
                       onChange={handDataVoucher}
-                      placeholder="Nội dung..."
+                      placeholder="Mô tả..."
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     ></textarea>
                   </div>
@@ -608,8 +630,8 @@ const TableVoucher = () => {
             </DialogPanel>
           </div>
         </div>
-      </Dialog>
-    </div>
+      </Dialog >
+    </div >
   );
 };
 
