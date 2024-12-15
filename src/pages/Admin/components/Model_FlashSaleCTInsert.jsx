@@ -23,15 +23,25 @@ const ModalFlashSaleDetails = ({
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-            product: product.id,
-            flashSale: flashSaleId,
+        if (entity == null) {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value,
+                product: product.id || "",
+                flashSale: flashSaleId || "",
 
-        }));
-    };
+            }));
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: value,
+                id: entity.id || '',
+                product: entity.product.id || '',
+                flashSale: entity.flashSale.id || '',
+            }));
+        };
 
+    }
     const postFlashSaleDetails = async () => {
         try {
             const response = await flashSaleDetails.post({ data: formData });
@@ -71,16 +81,16 @@ const ModalFlashSaleDetails = ({
             setFormData({
                 quantity: '',
                 sale: '',
-                product: product.id,
-                flashSale: flashSaleId,
+                product: product.id || '',
+                flashSale: flashSaleId || '',
             })
         } else {
             setFormData({
-                id: entity.id,
+                id: entity.id || '',
                 quantity: entity.quantity || '',
                 sale: entity.sale || '',
-                product: product.id,
-                flashSale: flashSaleId,
+                // product: entity.product.id || '',
+                // flashSale: entity.flashSale.id || '',
             })
         }
     }, [entity]);

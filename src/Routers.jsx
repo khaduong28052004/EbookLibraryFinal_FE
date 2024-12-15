@@ -28,24 +28,24 @@ import ProductsCompaire from "./components/ProductsCompaire/index";
 import { RequestProvider } from "./components/Request/RequestProvicer.jsx";
 import SallerPage from "./components/SallerPage/index.jsx";
 import Sallers from "./components/Sellers/index.jsx";
-// import HomeShop from "./components/Shop/index.jsx";
 import TermsCondition from "./components/TermsCondition/index";
 import TrackingOrder from "./components/TrackingOrder/index.jsx";
 import Wishlist from "./components/Wishlist/index.jsx";
 
-import HomeShop from "./components/Shop/index.jsx"
-import ChinhSachNguoiBan from "./components/ChinhSachNguoiBan";
-import QuyCheHoatDong from "./components/QuyCheHoatDong";
-import HuongDanBanHang from "./components/HuongDanBanHang";
+import ChatBot from "./pages/Seller/ChatBot.jsx";
 
-import ChatBot from "./pages/Seller/ChatBot2.jsx";
+import HomeShop from "./components/Shop/index.jsx";
 
 
 // const Home = lazy(() => import('./components/Home/index.jsx'));
 const CardPage = lazy(() => import('./components/CartPage/index.jsx'));
 const SingleProductPage = lazy(() => import('./components/SingleProductPage/index.jsx'))
 const CheakoutSuccess = lazy(() => import("./components/CheakoutPage/success.jsx"))
-
+// import HuongDanBanHang from "./components/HuongDanBanHang";
+import ChinhSachNguoiBan from "./components/ChinhSachNguoiBan";
+import QuyCheHoatDong from "./components/QuyCheHoatDong";
+import HuongDanBanHang from "./components/HuongDanBanHang";
+// import ChatBot from "./pages/Seller/ChatBot2.jsx";
 import RegistrationForm from './components/Auth/Signup/RegistrationForm.jsx';
 
 // import PageTitle from './components/PageTitle'; //thêm page vô nha 
@@ -142,7 +142,7 @@ export default function Routers() {
           <Route exact path="/singup2/*" element={<Signupv2 />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route exact path="/change-password/*" element={<UpdatePassword />} />
-          <Route exact path="/home-shop/:Id" element={<HomeShop/>} />
+          <Route exact path="/home-shop/:Id" element={<HomeShop />} />
         </Routes>
       </RequestProvider>
     </>

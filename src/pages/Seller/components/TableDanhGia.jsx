@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon, StarIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import ModalSanPham from './ModalDanhGia';
 import DanhGiaService from '../../../service/Seller/danhGiaService';
@@ -26,7 +26,7 @@ const TableTwo = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
-  const [size, setSize] = useState(5);
+  const [size, setSize] = useState(10);
   const [sortColumn, setSortColumn] = useState("id");
   const location = useLocation();
   useEffect(() => {
@@ -209,44 +209,68 @@ const TableTwo = () => {
 
         <tbody>
           {listDanhGia.map((danhGia, index) => (
-            <tr key={index} className="border-t border-stroke dark:border-strokedark">
-
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+            <tr
+              key={index}
+              className="border-t border-stroke dark:border-strokedark whitespace-nowrap text-ellipsis overflow-hidden"
+            >
+              {/* Số thứ tự */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white text-center">
                 {index + 1 + pageNumber * pageSize}
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                <p className="text-sm text-black dark:text-white truncate w-30">{danhGia.account.fullname}</p>
+
+              {/* Tên tài khoản */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5">
+                <p className="text-sm text-black dark:text-white truncate max-w-[100px]">
+                  {danhGia.account.fullname}
+                </p>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                <div className="flex items-center gap-1 hidden xl:flex truncate w-60">
+
+              {/* Tên sản phẩm */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                <div className="flex items-center gap-1 truncate max-w-[200px]">
                   {danhGia.product.name}
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {danhGia.imageEvalues.map((image) => (
-                    <img className="h-12.5 w-12.5 rounded-md" src={image.name} alt="Evalue" />
+
+              {/* Ảnh đánh giá */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                <div className="flex items-center gap-2 overflow-x-auto">
+                  {danhGia.imageEvalues.map((image, imgIndex) => (
+                    <img
+                      key={imgIndex}
+                      className="h-12 w-12 rounded-md border border-gray-300 shadow-sm"
+                      src={image.name}
+                      alt={`Evalue ${imgIndex}`}
+                    />
                   ))}
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden xl:flex truncate w-60">
+
+              {/* Nội dung đánh giá */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                <div className="truncate max-w-[300px]">
                   {danhGia.content}
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden lg:flex">
-                  {danhGia.star}/5 <StarIcon className='w-5 h-5 text-yellow-500' />
+
+              {/* Số sao */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white text-center">
+                <div className="flex items-center gap-1 justify-center">
+                  {danhGia.star}/5
+                  <StarIcon className="w-5 h-5 text-yellow-500" />
                 </div>
               </td>
+
+              {/* Hành động */}
               <td className="py-4 px-4 md:px-6 2xl:px-7.5">
-              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-4 justify-center">
                   <button
-                    className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
+                    className="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
                     onClick={(event) => {
                       event.stopPropagation();
-                      openModal(danhGia)
-                    }}>
+                      openModal(danhGia);
+                    }}
+                  >
                     Phản hồi
                   </button>
                 </div>
@@ -254,6 +278,7 @@ const TableTwo = () => {
             </tr>
           ))}
         </tbody>
+
       </table>
 
       <Pagination
@@ -263,6 +288,7 @@ const TableTwo = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
 
       <Modal

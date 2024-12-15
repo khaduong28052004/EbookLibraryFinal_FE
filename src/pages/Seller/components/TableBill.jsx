@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon} from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon, ExclamationTriangleIcon, ArrowUpCircleIcon} from '@heroicons/react/24/outline'
+import { ExclamationTriangleIcon, ArrowUpCircleIcon} from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import BillService from "../../../service/Seller/billSevice";
 import { toast, ToastContainer } from 'react-toastify';
@@ -24,7 +24,7 @@ const TableTwo = () => {
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
-  const [size, setSize] = useState(5);
+  const [size, setSize] = useState(10);
   const location = useLocation();
 
   const handlePrevious = () => {
@@ -348,6 +348,7 @@ const TableTwo = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
       <Modal
         open={isOpen}

@@ -103,7 +103,7 @@ const defaultProducts = [
   },
   {
     id: 5,
-    imageProducts: [{ name: 'https://307a0e78.vws.vegacdn.vn/view/v2/image/img.book/0/0/1/49612.jpg?v=1&w=350&h=510' }],
+    imageProducts: [{ name: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNB6eShdDAsu2YM5mkwqEkFgnIlD2nhomAVQ&s' }],
     title: "loe",
   },
 ];
@@ -215,8 +215,8 @@ export default function Banner({ className }) {
                 data-aos="fade-left"
                 className="flex-1 flex  w-full xl:flex-col flex-row xl:space-y-[0px] xl:h-full h-auto gap-2"
               >
-
-                <div className="bg-white rounded-lg shadow-2 bg-opacity-0 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
+                {/* bg-white  */}
+                <div className="bg-[#7d9fd60f]  rounded-lg shadow-2 bg-opacity-0 backdrop-blur-sm  lg:h-full lg:w-full w-full h-[250px]">
                   <div
                     className="w-[20rem] h-full rounded-sm bg-cover bg-center bg-no-repeat "
                     style={{

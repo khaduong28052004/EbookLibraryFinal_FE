@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import PageTitle from './components/PageTitle';
 import DefaultLayout from './layout/DefaultLayout';
-import TrangChuAdmin from "./pages/Admin/TrangChuAdmin"
+import TrangChuAdmin from "./pages/Admin/TrangChuAdmin.jsx"
 import ShopAdmin from "./pages/Admin/ShopAdmin"
 import DanhMucAdmin from "./pages/Admin/DanhMucAdmin"
 import SanPhamAdmin from "./pages/Admin/SanPhamAdmin"
@@ -18,7 +18,7 @@ import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
 import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
 import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
-import ChatBot from "./pages/Seller/ChatBot2"
+import ChatBot from "./pages/Seller/ChatBot"
 import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
 import RoleAdmin from './pages/Admin/RoleAdmin'
 import NotPermissionAdmin from './pages/Admin/NotPermissonAdmin.jsx'

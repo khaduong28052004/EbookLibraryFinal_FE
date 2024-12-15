@@ -94,18 +94,16 @@ export default function Home() {
     fetchSuggests();
     fetchDataFlashSale();
     fetchDataSelectAll();
-  }, [location, isRequesting]);
+  }, [location]);
 
   return (
     <>
       {loading ? (
         // <div className="flex justify-center items-center h-screen">
         <Loader />
-
-
       ) : (<Layout>
         <Banner className="banner-wrapper" />
-        <div className="bg-red-500">
+        <div className="bg-red-500 mt-10">
           <FlashSale products={data_FlashSale?.datas} lastDate={data_FlashSale?.lastDate} totalProducts={2} />
         </div>
 
@@ -115,7 +113,7 @@ export default function Home() {
 
 
         <div>
-          <div className="bg-blue-700 font-bold text-white ml-40 mr-40 mt-5 text-[25px] rounded-t-lg pl-5 p-2">
+          <div className="bg-blue-700 font-bold text-white ml-27 mr-27 mt-5 text-[25px] rounded-t-lg pl-5 p-2">
             GỢI Ý HÔM NAY
           </div>
 
@@ -123,7 +121,7 @@ export default function Home() {
             products={suggests}
             sectionTitle=""
             seeMoreUrl="/all-products"
-            className="bg-white mb-[60px] ml-40 mr-40 rounded-b-lg"
+            className="bg-white mb-[60px] ml-27 mr-27 rounded-b-lg"
           />
         </div>
 

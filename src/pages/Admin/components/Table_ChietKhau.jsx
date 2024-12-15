@@ -192,13 +192,31 @@ const TableTwo = () => {
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                 <p className="text-sm text-black dark:text-white">
-                                    {new Date(entity.dateInsert).toLocaleString("en-GB")}
+                                    {/* {new Date(entity.dateInsert).toLocaleString("en-GB")} */}
+                                    {new Date(entity.dateInsert).toLocaleString("vi-VN", {
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                        hour12: false, // Sử dụng định dạng 24 giờ
+                                    }) || ""}
                                 </p>
                             </td>
 
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                 <div className="flex items-center gap-1 hidden xl:flex">
-                                    {new Date(entity.dateStart).toLocaleString("en-GB")}
+                                    {/* {new Date(entity.dateStart).toLocaleString("en-GB")} */}
+                                    {new Date(entity.dateStart).toLocaleString("vi-VN", {
+                                        day: "2-digit",
+                                        month: "2-digit",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                        hour12: false, // Sử dụng định dạng 24 giờ
+                                    }) || ""}
                                 </div>
                             </td>
 
@@ -209,7 +227,7 @@ const TableTwo = () => {
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
                                 <div className="flex items-center gap-1 hidden lg:flex">
-                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.dateDelete == null ? (new Date(entity.dateStart).getTime() > new Date().getTime() ? 'bg-blue-600 text-blue-600' :'bg-success text-success' ): 'bg-danger text-danger'}`}>
+                                    <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.dateDelete == null ? (new Date(entity.dateStart).getTime() > new Date().getTime() ? 'bg-blue-600 text-blue-600' : 'bg-success text-success') : 'bg-danger text-danger'}`}>
                                         {entity.dateDelete == null ? (new Date(entity.dateStart).getTime() > new Date().getTime() ? 'Đang đợi' : 'Hoạt động') : 'Đã Ngừng'}
                                     </span>
                                 </div>
