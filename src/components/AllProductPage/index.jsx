@@ -74,7 +74,7 @@ export default function AllProductPage() {
 
   const [listCategory, setListCategory] = useState([]);
 
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState("search");
 
   const [min, setMin] = useState('');
   const [max, setMax] = useState('');
@@ -109,9 +109,8 @@ export default function AllProductPage() {
       // setStatus("");
     } else {
       if (textAudio) {
-        if (status === "search") {
-          searchAudio(textAudio);
-        } else {
+        searchAudio(textAudio);
+        if (datas?.length > 0) {
           axios.get("http://localhost:8080/api/v1/user/search?text=" + text)
             .then(response => {
               setDatas(response.data.result.datas);
@@ -162,11 +161,12 @@ export default function AllProductPage() {
 
   const searchAudio = async (text) => {  // tìm audio (tuyến)
     try {
-      setStatus("search");
+      // setStatus("search");
       const response = await SearchService.searchAudio(text, currentPage);
       setDatas(response.data.result.product.content);
       setDataPagination(response.data.result.product);
       setCategories(response.data.result.categories);
+      // console.log("data: " + datas?.length);
     } catch (error) {
       console.log(error)
     }
