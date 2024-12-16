@@ -14,6 +14,7 @@ import { useRequest } from '../../../Request/RequestProvicer';
 import SearchService from '../../../../service/user/search';
 export default function Middlebar({ className, type }) {
   const navigate = useNavigate();
+  const url_host = import.meta.env.VITE_API_BASEURL;
   const [totalCart, setTotalCart] = useState(0);
   const token = sessionStorage.getItem("token");
   const [listening, setListening] = useState(false);
@@ -86,7 +87,7 @@ export default function Middlebar({ className, type }) {
 
       if (token) {
         const id_account = sessionStorage.getItem("id_account");
-        axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
+        axios.get(`${url_host}/api/v1/user/cart/` + id_account).then(response => {
           setData(response.data.result.datas);
           var total = 0;
           response.data.result.datas?.forEach(seller => {
@@ -104,7 +105,7 @@ export default function Middlebar({ className, type }) {
       const token = sessionStorage.getItem("token");
       if (token) {
         const id_account = sessionStorage.getItem("id_account");
-        axios.get('http://localhost:8080/api/v1/user/favorite/getall/' + id_account).then(response => {
+        axios.get(`${url_host}/api/v1/user/favorite/getall/` + id_account).then(response => {
           setTotalFavorite(response.data.result.datas?.length);
         }).catch(error => console.error("fetch cart error " + error));
       }

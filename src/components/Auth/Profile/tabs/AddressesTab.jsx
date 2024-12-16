@@ -15,6 +15,7 @@ import ModelAddress from './AddressModel'; // Assuming ModelAddress is your addr
 import ConfirmDeleteModal from './ConfirmDeleteModal'; // Assuming ConfirmDeleteModal is your confirmation component
 
 export default function AddressesTab() {
+    const url_host = import.meta.env.VITE_API_BASEURL;
     const [showModal1, setShowModal1] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [addresses, setAddresses] = useState([]);
@@ -55,9 +56,10 @@ export default function AddressesTab() {
 
     const fetchAddresses = async () => {
         const id = sessionStorage.getItem('id_account') || 1;
+        
         try {
             const response = await axios.get(
-                `http://localhost:8080/api/v1/user/rest/address/fill/${id}`,
+                `${url_host}/api/v1/user/rest/address/fill/${id}`,
                 {
                     // params: { accountId }
                 },
@@ -81,7 +83,7 @@ export default function AddressesTab() {
         try {
             // Gọi API để đặt địa chỉ thành mặc định
             await axios.put(
-                `http://localhost:8080/api/v1/user/rest/address/updateStatus/${id}`,
+                `${url_host}/api/v1/user/rest/address/updateStatus/${id}`,
             );
 
             // Cập nhật lại danh sách địa chỉ
