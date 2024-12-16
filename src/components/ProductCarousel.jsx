@@ -32,7 +32,7 @@ const ProductCarousel = () => {
             await Promise.all([
                 fetchData("xuhuong", 0),
                 fetchData("hot", 0),
-                // fetchData("bestseller", 0),
+                fetchData("bestseller", 0),
             ]);
         };
 
@@ -46,12 +46,15 @@ const ProductCarousel = () => {
 
         if (tab === "xuhuong") {
             url = `${url_host}/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
+
         } else if (tab === "hot") {
             url = `${url_host}/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
             // url = `${url_host}/api/v1/user/actions_hot_books?account_id=${account_id}&page=${page}`;
         } else if (tab === "bestseller") {
             // url = `${url_host}/api/v1/user/actions_bestseller_books?account_id=${account_id}&page=${page}`;
             url = `${url_host}/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
+
+
         }
 
         try {
@@ -79,27 +82,59 @@ const ProductCarousel = () => {
     };
 
     // Handle carousel navigation
-    const handleCarousel = (direction) => {
+    const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
+
+ =======   // Hàm điều hướng carousel
+    const handleCarousel = async (direction) => {
         const tab = activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller";
-        const totalSlides = Math.ceil(data[tab].length / itemsPerSlide);
+        const totalSlides = Math.ceil(data[tab].length / itemsPerSlide); // Tổng số slide hiện tại
 
         if (direction === "next") {
+            // Kiểm tra nếu còn slide hoặc cần tải thêm dữ liệu
             if (carouselIndex < totalSlides - 1) {
-                setCarouselIndex(carouselIndex + 1);
+                setCarouselIndex(carouselIndex + 1); // Chuyển đến slide tiếp theo
             } else if (hasMorePages[tab]) {
+                setIsLoading(true); // Bật trạng thái loading
                 const nextPage = currentPages[tab] + 1;
+
+                // Cập nhật trạng thái trang hiện tại
                 setCurrentPages((prev) => ({
                     ...prev,
                     [tab]: nextPage,
                 }));
-                fetchData(tab, nextPage);
+
+                await fetchData(tab, nextPage); // Đợi dữ liệu được tải về
+
+                setCarouselIndex(carouselIndex + 1); // Chuyển đến slide mới sau khi dữ liệu đã sẵn sàng
+                setIsLoading(false); // Tắt trạng thái loading
             }
         }
 
         if (direction === "prev" && carouselIndex > 0) {
-            setCarouselIndex(carouselIndex - 1);
+            setCarouselIndex(carouselIndex - 1); // Quay về slide trước
         }
     };
+    // const handleCarousel = (direction) => {
+    //     const tab = activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller";
+    //     const totalSlides = Math.ceil(data[tab].length / itemsPerSlide);
+
+    //     if (direction === "next") {
+    //         if (carouselIndex < totalSlides - 1) {
+    //             setCarouselIndex(carouselIndex + 1);
+    //         } else if (hasMorePages[tab]) {
+    //             const nextPage = currentPages[tab] + 1;
+    //             setCurrentPages((prev) => ({
+    //                 ...prev,
+    //                 [tab]: nextPage,
+    //             }));
+    //             fetchData(tab, nextPage);
+    //         }
+    //     }
+
+    //     if (direction === "prev" && carouselIndex > 0) {
+    //         setCarouselIndex(carouselIndex - 1);
+    //     }
+    // };
 
     // Get data for the currently active tab
     const getCurrentTabData = () => {
@@ -132,13 +167,21 @@ const ProductCarousel = () => {
 
                 <div className="relative mt-4">
                     {/* Left Button */}
+                    {/* // Nút điều hướng (không thay đổi giao diện, chỉ thêm logic xử lý trạng thái) */}
                     <button
+                        className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${carouselIndex === 0 || isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                        onClick={() => handleCarousel("prev")}
+                        disabled={carouselIndex === 0 || isLoading} // Vô hiệu hóa nếu ở đầu hoặc đang tải
+                    >
+                        &#8592;
+                    </button>;
+                    {/* <button
                         className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${carouselIndex === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                         onClick={() => handleCarousel("prev")}
                         disabled={carouselIndex === 0}
                     >
                         &#8592;
-                    </button>
+                    </button> */}
 
                     {/* Carousel */}
                     <div className="overflow-hidden">
@@ -164,12 +207,19 @@ const ProductCarousel = () => {
 
                     {/* Right Button */}
                     <button
+                        className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${(!hasMorePages[tabs] && carouselIndex === totalSlides - 1) || isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                        onClick={() => handleCarousel("next")}
+                        disabled={(!hasMorePages[tabs] && carouselIndex === totalSlides - 1) || isLoading} // Vô hiệu hóa nếu không còn slide hoặc đang tải
+                    >
+                        &#8594;
+                    </button>;
+                    {/* <button
                         className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${!hasMorePages[activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller"] && carouselIndex === totalSlides - 1 ? "opacity-50 cursor-not-allowed" : ""}`}
                         onClick={() => handleCarousel("next")}
                         disabled={!hasMorePages[activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller"] && carouselIndex === totalSlides - 1}
                     >
                         &#8594;
-                    </button>
+                    </button> */}
                 </div>
             </div>
         </div>
