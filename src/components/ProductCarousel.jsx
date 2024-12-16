@@ -42,14 +42,15 @@ const ProductCarousel = () => {
     const fetchData = async (tab, page) => {
         const account_id = sessionStorage.getItem("id_account") || 0;
         let url;
-
+        const url_host = import.meta.env.VITE_API_BASEURL;
+        // `${url_host}/api/v1/user/home/flashsale?id_Shop=` 
         if (tab === "xuhuong") {
-            url = `http://localhost:8080/api/v1/user/actions_product_category1_data?account_id=${account_id}&page=${page}`;
+            url = `${url_host}/api/v1/user/actions_product_category1_data?account_id=${account_id}&page=${page}`;
         } else if (tab === "hot") {
-            url = `http://localhost:8080/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
+            url = `${url_host}/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
             // url = `http://localhost:8080/api/v1/user/actions_hot_books?account_id=${account_id}&page=${page}`;
         } else if (tab === "bestseller") {
-            url = `http://localhost:8080/api/v1/user/actions_product_category1_Bestseller?account_id=${account_id}&page=${page}`;
+            url = `${url_host}/api/v1/user/actions_product_category1_Bestseller?account_id=${account_id}&page=${page}`;
             // url = `http://localhost:8080/api/v1/user/topLikeProducts`;
         }
 

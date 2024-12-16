@@ -44,17 +44,19 @@ const homeShopService = {
     },
 
 
+// `${url_host}/api/v1/user/home/flashsale?id_Shop=` 
+
     createFollower: (idUser, idSeller) => {
         console.log("idSeller", idSeller);
         console.log("idUser", idUser);
-        const url = `http://localhost:8080/api/v1/user/follower/create?id_user=${idUser}&id_shop=${idSeller}`;
-
+        // const url_host = import.meta.env.VITE_API_BASEURL;
+        // const url = `http://localhost:8080/api/v1/user/follower/create?id_user=${idUser}&id_shop=${idSeller}`;
+        const url = `/api/v1/user/follower/create?id_user=${idUser}&id_shop=${idSeller}`;
         return axiosAuth("null", "get", url);
     },
 
     createReport: ({userId, sellerId, content, title, images}) => {
         const url = `/api/v1/user/shop/createReport/saveImg`;
-
         const formData = new FormData();
         formData.append('accountId', userId);
         formData.append('content', content || "");

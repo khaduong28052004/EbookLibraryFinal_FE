@@ -16,7 +16,7 @@ import Reviews from "./Reviews";
 import SallerInfo from "./SallerInfo";
 export default function SingleProductPage() {
   const [imageMultipart, setImageMultipart] = useState([]);
-
+  const url_host = import.meta.env.VITE_API_BASEURL;
   const [images, setImages] = useState([]);
 
   const [checkSubmit, setCheckSubmit] = useState(true);
@@ -78,7 +78,7 @@ export default function SingleProductPage() {
     if (token && checkSubmit) {
       setCheckSubmit(false);
       startRequest();
-      axios.post("http://localhost:8080/api/v1/user/report/product", {
+      axios.post(`${url_host}/api/v1/user/report/product`, {
         title: title,
         content: content,
         id_user: id_user,
@@ -105,7 +105,7 @@ export default function SingleProductPage() {
   const query = new URLSearchParams(local.search);
   const fetchProduct = async () => {
     setLoading(true);
-    await axios.get("http://localhost:8080/api/v1/user/productdetail/product/" + query.get("idProduct")).then(response => {
+    await axios.get(`${url_host}/api/v1/user/productdetail/product/` + query.get("idProduct")).then(response => {
       setProduct(response.data.result.product);
       setSeller(response.data.result.seller);
       setLoading(false);
@@ -115,13 +115,13 @@ export default function SingleProductPage() {
   };
 
   const fetchRelated = async () => {
-    await axios.get('http://localhost:8080/api/v1/user/productdetail/related').then(response => {
+    await axios.get(`${url_host}/api/v1/user/productdetail/related`).then(response => {
       setRelatedProduct(response.data.result);
     }).catch(error => console.error("fetch related product error " + error));
   };
 
   const fetchProductSeller = async () => {
-    await axios.get('http://localhost:8080/api/v1/user/productdetail/seller').then(response => {
+    await axios.get(`${url_host}/api/v1/user/productdetail/seller`).then(response => {
       setProductSeller(response.data.result);
     }).catch(error => console.error("fetch product seller error " + error));
   }

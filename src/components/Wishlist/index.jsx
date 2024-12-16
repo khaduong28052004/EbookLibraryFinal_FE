@@ -11,6 +11,7 @@ import { useRequest } from "../Request/RequestProvicer";
 import ProductsTable from "./ProductsTable";
 
 export default function Wishlist({ wishlist = true }) {
+  const url_host = import.meta.env.VITE_API_BASEURL;
   const [data, setData] = useState();
   const { startRequest, endRequest } = useRequest();
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function Wishlist({ wishlist = true }) {
       setLoading(true)
       const id_user = sessionStorage.getItem("id_account");
       if (id_user) {
-        axios("http://localhost:8080/api/v1/user/favorite/getall/" + id_user, {
+        axios(`${url_host}/api/v1/user/favorite/getall/` + id_user, {
           headers: {
             'Authorization': `Bearer ${token}`,
           }
@@ -40,7 +41,7 @@ export default function Wishlist({ wishlist = true }) {
     const token = sessionStorage.getItem("token");
     const id_user = sessionStorage.getItem("id_account");
     startRequest();
-    axios.delete("http://localhost:8080/api/v1/user/favorite/delete/" + id + "?id_user=" + id_user, {
+    axios.delete(`${url_host}/api/v1/user/favorite/delete/` + id + "?id_user=" + id_user, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
