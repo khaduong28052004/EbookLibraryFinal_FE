@@ -2,51 +2,6 @@ import React, { useEffect, useState } from "react";
 import ProductCardStyleOne from "../components/Helpers/Cards/ProductCardStyleOne";
 import axios from "axios";
 
-const sampleData = {
-  xuhuong: [
-    {
-      id: 1,
-      name: "Sách mẫu 1",
-      price: 100000,
-      sale: 10,
-      writerName: "Tác giả 1",
-      publishingCompany: "NXB 1",
-      quantity: 100,
-      active: true,
-      delete: false
-    },
-    // Add more sample items here...
-  ],
-  hot: [
-    {
-      id: 2,
-      name: "Sách mẫu 2",
-      price: 150000,
-      sale: 15,
-      writerName: "Tác giả 2",
-      publishingCompany: "NXB 2",
-      quantity: 80,
-      active: true,
-      delete: false
-    },
-    // Add more sample items here...
-  ],
-  bestseller: [
-    {
-      id: 3,
-      name: "Sách mẫu 3",
-      price: 200000,
-      sale: 20,
-      writerName: "Tác giả 3",
-      publishingCompany: "NXB 3",
-      quantity: 120,
-      active: true,
-      delete: false
-    },
-    // Add more sample items here...
-  ]
-};
-
 const ProductCarousel = () => {
     const [activeTab, setActiveTab] = useState(0); // Tab index
     const [carouselIndex, setCarouselIndex] = useState(0); // Carousel index
@@ -73,18 +28,11 @@ const ProductCarousel = () => {
     useEffect(() => {
         // Fetch data for all tabs during initial load
         const fetchInitialData = async () => {
-            try {
-                await Promise.all([
-                    fetchData("xuhuong", 0),
-                    fetchData("hot", 0),
-                    fetchData("bestseller", 0),
-                ]);
-            } catch (error) {
-                console.error("Error fetching initial data:", error);
-                useSampleData("xuhuong");
-                useSampleData("hot");
-                useSampleData("bestseller");
-            }
+            await Promise.all([
+                fetchData("xuhuong", 0),
+                fetchData("hot", 0),
+                fetchData("bestseller", 0),
+            ]);
         };
 
         fetchInitialData();
@@ -95,57 +43,33 @@ const ProductCarousel = () => {
         const account_id = sessionStorage.getItem("id_account") || 0;
         let url;
         const url_host = import.meta.env.VITE_API_BASEURL;
-    
+        // `${url_host}/api/v1/user/home/flashsale?id_Shop=` 
         if (tab === "xuhuong") {
             url = `${url_host}/api/v1/user/actions_product_category1_data?account_id=${account_id}&page=${page}`;
         } else if (tab === "hot") {
             url = `${url_host}/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
+            // url = `http://localhost:8080/api/v1/user/actions_hot_books?account_id=${account_id}&page=${page}`;
         } else if (tab === "bestseller") {
             url = `${url_host}/api/v1/user/actions_product_category1_Bestseller?account_id=${account_id}&page=${page}`;
+            // url = `http://localhost:8080/api/v1/user/topLikeProducts`;
         }
 
         try {
             const response = await axios.get(url);
-            if (response.data.code === 0) {
-                const newProducts = response.data.result.content || [];
-            
-                setData((prev) => ({
-                    ...prev,
-                    [tab]: [...prev[tab], ...newProducts],
-                }));
+            const newProducts = response.data.result.content || [];
 
-                setHasMorePages((prev) => ({
-                    ...prev,
-                    [tab]: !response.data.result.last,
-                }));
+            setData((prev) => ({
+                ...prev,
+                [tab]: [...prev[tab], ...newProducts],
+            }));
 
-                setCurrentPages((prev) => ({
-                    ...prev,
-                    [tab]: response.data.result.number,
-                }));
-            } else {
-                console.error(`Error fetching data for tab ${tab}: ${response.data.message}`);
-                useSampleData(tab);
-            }
+            setHasMorePages((prev) => ({
+                ...prev,
+                [tab]: newProducts.length === itemsPerPage,
+            }));
         } catch (error) {
             console.error(`Error fetching data for tab ${tab}:`, error);
-            useSampleData(tab);
         }
-    };
-
-    const useSampleData = (tab) => {
-      setData((prev) => ({
-        ...prev,
-        [tab]: sampleData[tab],
-      }));
-      setHasMorePages((prev) => ({
-        ...prev,
-        [tab]: false,
-      }));
-      setCurrentPages((prev) => ({
-        ...prev,
-        [tab]: 0,
-      }));
     };
 
     // Handle tab switching
@@ -160,24 +84,54 @@ const ProductCarousel = () => {
     // Hàm điều hướng carousel
     const handleCarousel = async (direction) => {
         const tab = activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller";
-        const totalSlides = Math.ceil(data[tab].length / itemsPerSlide);
+        const totalSlides = Math.ceil(data[tab].length / itemsPerSlide); // Tổng số slide hiện tại
 
         if (direction === "next") {
+            // Kiểm tra nếu còn slide hoặc cần tải thêm dữ liệu
             if (carouselIndex < totalSlides - 1) {
-                setCarouselIndex(carouselIndex + 1);
+                setCarouselIndex(carouselIndex + 1); // Chuyển đến slide tiếp theo
             } else if (hasMorePages[tab]) {
-                setIsLoading(true);
+                setIsLoading(true); // Bật trạng thái loading
                 const nextPage = currentPages[tab] + 1;
-                await fetchData(tab, nextPage);
-                setCarouselIndex(carouselIndex + 1);
-                setIsLoading(false);
+
+                // Cập nhật trạng thái trang hiện tại
+                setCurrentPages((prev) => ({
+                    ...prev,
+                    [tab]: nextPage,
+                }));
+
+                await fetchData(tab, nextPage); // Đợi dữ liệu được tải về
+
+                setCarouselIndex(carouselIndex + 1); // Chuyển đến slide mới sau khi dữ liệu đã sẵn sàng
+                setIsLoading(false); // Tắt trạng thái loading
             }
         }
 
         if (direction === "prev" && carouselIndex > 0) {
-            setCarouselIndex(carouselIndex - 1);
+            setCarouselIndex(carouselIndex - 1); // Quay về slide trước
         }
     };
+    // const handleCarousel = (direction) => {
+    //     const tab = activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller";
+    //     const totalSlides = Math.ceil(data[tab].length / itemsPerSlide);
+
+    //     if (direction === "next") {
+    //         if (carouselIndex < totalSlides - 1) {
+    //             setCarouselIndex(carouselIndex + 1);
+    //         } else if (hasMorePages[tab]) {
+    //             const nextPage = currentPages[tab] + 1;
+    //             setCurrentPages((prev) => ({
+    //                 ...prev,
+    //                 [tab]: nextPage,
+    //             }));
+    //             fetchData(tab, nextPage);
+    //         }
+    //     }
+
+    //     if (direction === "prev" && carouselIndex > 0) {
+    //         setCarouselIndex(carouselIndex - 1);
+    //     }
+    // };
 
     // Get data for the currently active tab
     const getCurrentTabData = () => {
@@ -218,6 +172,13 @@ const ProductCarousel = () => {
                     >
                         &#8592;
                     </button>;
+                    {/* <button
+                        className={`absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${carouselIndex === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                        onClick={() => handleCarousel("prev")}
+                        disabled={carouselIndex === 0}
+                    >
+                        &#8592;
+                    </button> */}
 
                     {/* Carousel */}
                     <div className="overflow-hidden">
@@ -243,12 +204,19 @@ const ProductCarousel = () => {
 
                     {/* Right Button */}
                     <button
-                        className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${(!hasMorePages[activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller"] && carouselIndex === totalSlides - 1) || isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                        className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${(!hasMorePages[tabs] && carouselIndex === totalSlides - 1) || isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                         onClick={() => handleCarousel("next")}
-                        disabled={(!hasMorePages[activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller"] && carouselIndex === totalSlides - 1) || isLoading} // Vô hiệu hóa nếu không còn slide hoặc đang tải
+                        disabled={(!hasMorePages[tabs] && carouselIndex === totalSlides - 1) || isLoading} // Vô hiệu hóa nếu không còn slide hoặc đang tải
                     >
                         &#8594;
                     </button>;
+                    {/* <button
+                        className={`absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 z-10 ${!hasMorePages[activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller"] && carouselIndex === totalSlides - 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                        onClick={() => handleCarousel("next")}
+                        disabled={!hasMorePages[activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller"] && carouselIndex === totalSlides - 1}
+                    >
+                        &#8594;
+                    </button> */}
                 </div>
             </div>
         </div>
@@ -256,4 +224,3 @@ const ProductCarousel = () => {
 };
 
 export default ProductCarousel;
-
