@@ -26,6 +26,7 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the
 import ProtectedRoutePermission from "./components/Auth/ProtectedRoutePERMISSION.jsx";
 import FlashSaleDetailsAdmin from './pages/Admin/FlashsaleDetails.jsx';
 import HistoryAdmin from './pages/Admin/HistoryAdmin.jsx';
+import ChinhSach from './pages/Admin/ChinhSachAdmin.jsx';
 
 
 import { useEffect, useState } from "react";
@@ -183,7 +184,16 @@ export default function RouterAdmins() {
             </>
           }
         />
+        <Route
 
+          path="/chinhsachsan"
+          element={
+            <>
+              <PageTitle title="Chính sách sàn" />
+              <ChinhSach />
+            </>
+          }
+        />
         <Route
           path="/thongKe/doanhThu"
           element={
@@ -247,7 +257,7 @@ export default function RouterAdmins() {
             </>
           }
         />
-         <Route
+        <Route
           path="/quanLy/history"
           element={
             <>
