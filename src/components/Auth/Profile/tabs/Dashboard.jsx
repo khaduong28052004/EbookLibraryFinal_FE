@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [index3, setIndex3] = useState(0);
   const [user, setUser] = useState({});
   const [formData, setFormData] = useState({});
+  const url_host = import.meta.env.VITE_API_BASEURL;
 
   useEffect(() => {
     const user = sessionStorage.getItem("user");
@@ -24,7 +25,7 @@ export default function Dashboard() {
 
   const fetchData = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/user/${id}`);
+      const response = await axios.get(`${url_host}/api/v1/user/${id}`);
       const userData = response.data;
       console.log("Fetched User Data:", userData);
       setFormData(userData);
@@ -34,7 +35,7 @@ export default function Dashboard() {
   }
   const loadDATA = async (ID, IDACCOUNT, setIndexFunction) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/user/bill/countOder/${ID}/${IDACCOUNT}`);
+      const response = await axios.get(`${url_host}/api/v1/user/bill/countOder/${ID}/${IDACCOUNT}`);
       console.log("Data received:", response.data.quantity);
       setIndexFunction(response.data.quantity);
     } catch (error) {

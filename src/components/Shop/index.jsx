@@ -35,7 +35,7 @@ const shopDataEX = {
 
     }
 };
-
+const url_host = import.meta.env.VITE_API_BASEURL;
 const vouchersdfEAsd = [
     {
         "id": 2,
@@ -163,7 +163,7 @@ export default function ShopHome() {
 
     const fetchDataSelectAll = async () => {
         const id_account = sessionStorage.getItem("id_account") || 0;
-        await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account).then(response => {
+        await axios.get(`${url_host}/api/v1/user/home/selectall?id_Shop=` + id_account).then(response => {
             setProducts(response.data.result);
         }).catch(error => {
             setProducts(data_Products1);

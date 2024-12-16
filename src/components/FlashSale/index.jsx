@@ -14,7 +14,7 @@ export default function FlashSale() {
   const [showHour, setHour] = useState(0);
   const [showMinute, setMinute] = useState(0);
   const [showSecound, setDateSecound] = useState(0);
-
+  const url_host = import.meta.env.VITE_API_BASEURL;
   // count Down
   const provideDate = new Date(lastDate);
   // format date
@@ -70,7 +70,7 @@ export default function FlashSale() {
   const location = useLocation();
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/v1/user/flashsale/getall")
+      .get(`${url_host}/api/v1/user/flashsale/getall`)
       .then((response) => {
         setFlashSale(response.data.result);
         response.data.result?.forEach(element => {
@@ -92,7 +92,7 @@ export default function FlashSale() {
   }, [location]);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/v1/user/flashsale/flashsaledetail/getallby/" + flashSaleActive?.id).then(
+    axios.get(`${url_host}/api/v1/user/flashsale/flashsaledetail/getallby/` + flashSaleActive?.id).then(
       response => {
         setFlashSaleDetail(response.data?.result);
         // alert("length " + response.data?.result.length);

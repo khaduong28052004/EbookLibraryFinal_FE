@@ -25,7 +25,7 @@ export default function CardPage({ cart = true }) {
   const localtion = useLocation();
   const [feeSeller, setFeeSeller] = useState({});
   const [loading, setLoading] = useState(false);
-
+  const url_host = import.meta.env.VITE_API_BASEURL;
 
   // token
   function isTokenExpired(token) {
@@ -66,7 +66,7 @@ export default function CardPage({ cart = true }) {
     retoken(token);
     if (token) {
       const id_account = sessionStorage.getItem("id_account");
-      axios.get('http://localhost:8080/api/v1/user/cart/' + id_account, {
+      axios.get(`${url_host}/api/v1/user/cart/` + id_account, {
         headers: {
           'Authorization': `Bearer ${token}`,
         }
@@ -184,11 +184,11 @@ export default function CardPage({ cart = true }) {
 
   const removeCart = (id_cart) => {
     startRequest();
-    axios.get(`http://localhost:8080/api/v1/user/cart/remove/` + id_cart).then(response => {
+    axios.get(`${url_host}/api/v1/user/cart/remove/` + id_cart).then(response => {
       if (response.data.code == 1000) {
         toast.success("Xóa thành công");
         const id_account = sessionStorage.getItem("id_account");
-        axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
+        axios.get(`${url_host}/api/v1/user/cart/` + id_account).then(response => {
           setData(response.data.result);
           setUser(response.data.result.user);
           endRequest();
@@ -199,10 +199,10 @@ export default function CardPage({ cart = true }) {
   }
   const handleQuantityCartIndex = (quantity, idCart) => {
     startRequest();
-    axios.get("http://localhost:8080/api/v1/user/cart/update/" + idCart + "?quantity=" + quantity).then(response => {
+    axios.get(`${url_host}/api/v1/user/cart/update/` + idCart + "?quantity=" + quantity).then(response => {
       if (response.data.result) {
         const id_account = sessionStorage.getItem("id_account");
-        axios.get('http://localhost:8080/api/v1/user/cart/' + id_account).then(response => {
+        axios.get(`${url_host}/api/v1/user/cart/` + id_account).then(response => {
           setData(response.data.result);
           setUser(response.data.result.user);
           endRequest();

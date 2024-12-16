@@ -10,10 +10,11 @@ export default function ProductCardStyleOne({ datas, type }) {
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState();
   const { startRequest, endRequest } = useRequest();
+  const url_host = import.meta.env.VITE_API_BASEURL;
   useEffect(() => {
     const id_user = sessionStorage.getItem("id_account");
     if (id_user) {
-      axios.get(`http://localhost:8080/api/v1/user/favorite/check?id_user=${id_user}&id_product=${datas?.id}`).then(response => {
+      axios.get(`${url_host}/api/v1/user/favorite/check?id_user=${id_user}&id_product=${datas?.id}`).then(response => {
         setIsFavorite(response.data.result);
       }).catch(error => console.error("fetch favorite error " + error));
     }
@@ -23,7 +24,7 @@ export default function ProductCardStyleOne({ datas, type }) {
     const id_user = sessionStorage.getItem("id_account");
     startRequest();
     if (id_user) {
-      axios.get(`http://localhost:8080/api/v1/user/favorite/add?id_user=${id_user}&id_product=${datas?.id}`).then(response => {
+      axios.get(`${url_host}/api/v1/user/favorite/add?id_user=${id_user}&id_product=${datas?.id}`).then(response => {
         setIsFavorite(response.data.result);
         endRequest();
       }).catch(error => console.error("create favorite error " + error));
@@ -34,7 +35,7 @@ export default function ProductCardStyleOne({ datas, type }) {
     const id_user = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
     if (token) {
-      axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${datas.id}&quantity=${1}`, {
+      axios.get(`${url_host}/api/v1/user/cart/add?id_user=${id_user}&id_product=${datas.id}&quantity=${1}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         }

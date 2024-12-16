@@ -1,7 +1,8 @@
 import axios from 'axios';
-
+const url_host = import.meta.env.VITE_API_BASEURL;
+// `${url_host}/api/v1/user/home/flashsale?id_Shop=` 
 const API_CHECK_CARDID = 'https://api.fpt.ai/vision/idr/vnm';
-const API_Java = 'http://localhost:8080/api/v1/user/registerSeller';
+const API_Java = `${url_host}/api/v1/user/registerSeller`;
 const API_KEY = 'aOL8KstO8whE27tr8Wv1SLqTPMfHXVpB';
 export const fetchCheckImgCard = async (image) => { // để gọi API
   try {
@@ -44,7 +45,7 @@ export const uploadImages = async (id, formData) => {
 export const uploadImages1 = async (id, formData) => {
   try {
     const response = await axios.post(
-      `http://localhost:8080/api/v1/user/saveImg/${id}`,
+      `${url_host}/api/v1/user/saveImg/${id}`,
       formData,
       {
         headers: {
@@ -62,7 +63,7 @@ export const uploadImages1 = async (id, formData) => {
 export const uploadImageAvt = async (id, formData) => {
   try {
     const response = await axios.post(
-      `http://localhost:8080/api/v1/user/uploadAvatar/${id}`,
+      `${url_host}/api/v1/user/uploadAvatar/${id}`,
       formData,
       {
         headers: {
@@ -80,7 +81,7 @@ export const uploadImageAvt = async (id, formData) => {
 export const uploadImageBR = async (id, formData) => {
   try {
     const response = await axios.post(
-      `http://localhost:8080/api/v1/user/uploadBackground/${id}`,
+      `${url_host}/api/v1/user/uploadBackground/${id}`,
       formData,
       {
         headers: {

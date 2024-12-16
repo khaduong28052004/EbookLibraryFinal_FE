@@ -8,6 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { uploadImageAvt,uploadImageBR } from "../../../../service/dangKySellerService";
 
 export default function ProfileTab() {
+  const url_host = import.meta.env.VITE_API_BASEURL;
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
@@ -30,9 +31,9 @@ export default function ProfileTab() {
       return;
     }
     try {
-      const userResponse = await axios.get(`http://localhost:8080/api/v1/user/${id}`);
+      const userResponse = await axios.get(`${url_host}/api/v1/user/${id}`);
       const userData = userResponse.data;
-      const addressResponse = await axios.get(`http://localhost:8080/api/v1/user/rest/address/active/${id}`);
+      const addressResponse = await axios.get(`${url_host}/api/v1/user/rest/address/active/${id}`);
       const addresses = addressResponse.data.data;
       const activeAddress = addresses.find(address => address.status === true) || 'Chưa có địa chỉ';
       setFormData({
