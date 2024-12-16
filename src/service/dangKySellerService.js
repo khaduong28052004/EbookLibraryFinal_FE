@@ -128,7 +128,7 @@ export const checkFaceAi = async (formData) => {
       formData,
       {
         headers: {
-          'api-key': 'Bph3Le2zhfTBPxOf2lAaDFBruXB0CmIB',
+          'api-key': '3CT6PAFJr8llQf1jZZTAOitFpWEz370K',
           'Content-Type': 'multipart/form-data',
         },
       },

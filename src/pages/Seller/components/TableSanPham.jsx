@@ -27,23 +27,23 @@ const TableSanPham = () => {
   const [sortColumn, setSortColumn] = useState("id");
   const [statusButton, setStatusButton] = useState(false);
   const [idProduct, setIdProduct] = useState(null);
-  const [
+  const [dataProduct
     , setDataProduct] = useState({
-    id: null,
-    price: null,
-    sale: null,
-    weight: null,
-    name: "",
-    introduce: "",
-    writerName: "",
-    publishingCompany: "",
-    isDelete: false,
-    quantity: null,
-    isActive: false,
-    account: sessionStorage.getItem("id_account"),
-    category: null,
-    imageProducts: []
-  });
+      id: null,
+      price: null,
+      sale: null,
+      weight: null,
+      name: "",
+      introduce: "",
+      writerName: "",
+      publishingCompany: "",
+      isDelete: false,
+      quantity: null,
+      isActive: false,
+      account: sessionStorage.getItem("id_account"),
+      category: null,
+      imageProducts: []
+    });
   const [listDoanhMuc, setListDoanhMuc] = useState([]);
   const [listTheLoai, setListTheLoai] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
