@@ -3,6 +3,7 @@ import ProductCardStyleOne from "../components/Helpers/Cards/ProductCardStyleOne
 import axios from "axios";
 
 const ProductCarousel = () => {
+    const url_host = import.meta.env.VITE_API_BASEURL;
     const [activeTab, setActiveTab] = useState(0); // Tab index
     const [carouselIndex, setCarouselIndex] = useState(0); // Carousel index
     const [data, setData] = useState({
@@ -44,13 +45,13 @@ const ProductCarousel = () => {
         let url;
 
         if (tab === "xuhuong") {
-            url = `http://localhost:8080/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
+            url = `${url_host}/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
         } else if (tab === "hot") {
-            url = `http://localhost:8080/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
-            // url = `http://localhost:8080/api/v1/user/actions_hot_books?account_id=${account_id}&page=${page}`;
+            url = `${url_host}/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
+            // url = `${url_host}/api/v1/user/actions_hot_books?account_id=${account_id}&page=${page}`;
         } else if (tab === "bestseller") {
-            // url = `http://localhost:8080/api/v1/user/actions_bestseller_books?account_id=${account_id}&page=${page}`;
-            url = `http://localhost:8080/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
+            // url = `${url_host}/api/v1/user/actions_bestseller_books?account_id=${account_id}&page=${page}`;
+            url = `${url_host}/api/v1/user/actions_product_category1?account_id=${account_id}&page=${page}`;
         }
 
         try {

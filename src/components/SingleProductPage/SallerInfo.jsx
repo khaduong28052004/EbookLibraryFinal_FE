@@ -10,12 +10,13 @@ import ImageLoader from "../Helpers/ImageLoading/ImageWithLoader";
 import Star from "../Helpers/icons/Star";
 export default function SallerInfo({ seller, datas }) {
   const local = useLocation();
+  const url_host = import.meta.env.VITE_API_BASEURL;
   const [isFollower, setIsFollower] = useState(false);
   useEffect(() => {
     const id_user = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
     if (token) {
-      axios.get(`http://localhost:8080/api/v1/user/follower/check?id_user=${id_user}&id_shop=${seller?.id}`).then(
+      axios.get(`${url_host}/api/v1/user/follower/check?id_user=${id_user}&id_shop=${seller?.id}`).then(
         response => {
           setIsFollower(response.data.result);
         }
@@ -28,7 +29,7 @@ export default function SallerInfo({ seller, datas }) {
     const id_user = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
     if (token) {
-      axios.get(`http://localhost:8080/api/v1/user/follower/create?id_user=${id_user}&id_shop=${seller?.id}`).then(
+      axios.get(`${url_host}/api/v1/user/follower/create?id_user=${id_user}&id_shop=${seller?.id}`).then(
         response => {
           setIsFollower(response.data.result);
         }

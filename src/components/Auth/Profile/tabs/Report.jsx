@@ -6,13 +6,13 @@ const ReportedShops = () => {
   const [reportedShops, setReportedShops] = useState([]);
   const [reportedProducts, setReportedProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-
+  const url_host = import.meta.env.VITE_API_BASEURL;
   useEffect(() => {
     const getReportedShops = async () => {
       const accountId = sessionStorage.getItem('id_account') || 1;
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/reports/${accountId}`,
+          `${url_host}/api/v1/reports/${accountId}`,
         );
         setReportedShops(response.data);
       } catch (error) {
@@ -27,7 +27,7 @@ const ReportedShops = () => {
       const accountId = sessionStorage.getItem('id_account') || 1;
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/reports/product/${accountId}`,
+          `${url_host}/api/v1/reports/product/${accountId}`,
         );
         setReportedProducts(response.data);
       } catch (error) {
