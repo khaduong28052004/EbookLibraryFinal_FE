@@ -1,50 +1,50 @@
 import React, { useEffect, useState } from "react";
-import ProductCardStyleOne from "../components/Helpers/Cards/ProductCardStyleOne";
+import ProductCardStyleOne from "../components/Helpers/Cards/ProductCardStyleOneKien";
 import axios from "axios";
 
 const sampleData = {
-  xuhuong: [
-    {
-      id: 1,
-      name: "Sách mẫu 1",
-      price: 100000,
-      sale: 10,
-      writerName: "Tác giả 1",
-      publishingCompany: "NXB 1",
-      quantity: 100,
-      active: true,
-      delete: false
-    },
-    // Add more sample items here...
-  ],
-  hot: [
-    {
-      id: 2,
-      name: "Sách mẫu 2",
-      price: 150000,
-      sale: 15,
-      writerName: "Tác giả 2",
-      publishingCompany: "NXB 2",
-      quantity: 80,
-      active: true,
-      delete: false
-    },
-    // Add more sample items here...
-  ],
-  bestseller: [
-    {
-      id: 3,
-      name: "Sách mẫu 3",
-      price: 200000,
-      sale: 20,
-      writerName: "Tác giả 3",
-      publishingCompany: "NXB 3",
-      quantity: 120,
-      active: true,
-      delete: false
-    },
-    // Add more sample items here...
-  ]
+    xuhuong: [
+        {
+            id: 1,
+            name: "Sách mẫu 1",
+            price: 100000,
+            sale: 10,
+            writerName: "Tác giả 1",
+            publishingCompany: "NXB 1",
+            quantity: 100,
+            active: true,
+            delete: false
+        },
+        // Add more sample items here...
+    ],
+    hot: [
+        {
+            id: 2,
+            name: "Sách mẫu 2",
+            price: 150000,
+            sale: 15,
+            writerName: "Tác giả 2",
+            publishingCompany: "NXB 2",
+            quantity: 80,
+            active: true,
+            delete: false
+        },
+        // Add more sample items here...
+    ],
+    bestseller: [
+        {
+            id: 3,
+            name: "Sách mẫu 3",
+            price: 200000,
+            sale: 20,
+            writerName: "Tác giả 3",
+            publishingCompany: "NXB 3",
+            quantity: 120,
+            active: true,
+            delete: false
+        },
+        // Add more sample items here...
+    ]
 };
 
 const ProductCarousel = () => {
@@ -95,7 +95,7 @@ const ProductCarousel = () => {
         const account_id = sessionStorage.getItem("id_account") || 0;
         let url;
         const url_host = import.meta.env.VITE_API_BASEURL;
-    
+
         if (tab === "xuhuong") {
             url = `${url_host}/api/v1/user/actions_product_category1_data?account_id=${account_id}&page=${page}`;
         } else if (tab === "hot") {
@@ -108,7 +108,7 @@ const ProductCarousel = () => {
             const response = await axios.get(url);
             if (response.data.code === 0) {
                 const newProducts = response.data.result.content || [];
-            
+
                 setData((prev) => ({
                     ...prev,
                     [tab]: [...prev[tab], ...newProducts],
@@ -134,18 +134,18 @@ const ProductCarousel = () => {
     };
 
     const useSampleData = (tab) => {
-      setData((prev) => ({
-        ...prev,
-        [tab]: sampleData[tab],
-      }));
-      setHasMorePages((prev) => ({
-        ...prev,
-        [tab]: false,
-      }));
-      setCurrentPages((prev) => ({
-        ...prev,
-        [tab]: 0,
-      }));
+        setData((prev) => ({
+            ...prev,
+            [tab]: sampleData[tab],
+        }));
+        setHasMorePages((prev) => ({
+            ...prev,
+            [tab]: false,
+        }));
+        setCurrentPages((prev) => ({
+            ...prev,
+            [tab]: 0,
+        }));
     };
 
     // Handle tab switching
@@ -220,7 +220,7 @@ const ProductCarousel = () => {
                     </button>;
 
                     {/* Carousel */}
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden ml-27 mr-27">
                         <div
                             className="flex transition-transform duration-300"
                             style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
@@ -228,12 +228,19 @@ const ProductCarousel = () => {
                             {Array.from({ length: totalSlides }).map((_, slideIndex) => (
                                 <div
                                     key={slideIndex}
-                                    className="grid grid-cols-4 gap-4 w-full"
+                                    className="grid grid-cols-4 gap-4 w-full "
                                     style={{ minWidth: "100%" }}
                                 >
                                     {currentTabData
                                         .slice(slideIndex * itemsPerSlide, (slideIndex + 1) * itemsPerSlide)
                                         .map((product) => (
+                                            // <SectionStyleThree 
+                                            // key={product.id}
+                                            //     products={product}
+                                            //     sectionTitle=""
+                                            //     // seeMoreUrl="/all-products"
+                                            //     // className="bg-white mb-[60px] ml-27 mr-27 rounded-b-lg"
+                                            // />
                                             <ProductCardStyleOne key={product.id} datas={product} />
                                         ))}
                                 </div>
