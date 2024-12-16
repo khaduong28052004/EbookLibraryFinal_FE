@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Voucher from '../Home/Banner/voucher';
 import BestSeller from '../Home/Banner/bestseller';
 import AuthService from '../../service/authService';
-
+import axios from 'axios';
 
 const vouchers = [
   {
@@ -161,12 +161,14 @@ export default function Banner({ className }) {
   const url_host = import.meta.env.VITE_API_BASEURL;
   useEffect(() => {
     // Fetch dữ liệu từ API
-    fetch(`${url_host}/api/v1/user/platforms/1`)
-      .then((response) => response.json())
-      .then((data) => {
-        setImages(data.images);  // Lưu các URL vào state
+    axios.get(`${url_host}/api/v1/user/platforms/1`)
+      .then((response) => {
+        setImages(response.data.images);  // Lưu các URL vào state
       })
-      .catch((error) => { console.error('Error fetching images:', error); setImages(imagesEXEX); });
+      .catch((error) => {
+        console.error('Error fetching images:', error);
+        setImages(imagesEXEX);  // Lưu giá trị mặc định nếu có lỗi
+      });
   }, []);
 
   // Chuyển ảnh mỗi 3 giây

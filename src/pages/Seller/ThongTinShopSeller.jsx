@@ -8,7 +8,7 @@ import {
   EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
-import ShopService from '../../service/Seller/ShopService';
+import ShopService from '../../service/Seller/shopService';
 import { toast, ToastContainer } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import axios from 'axios';
