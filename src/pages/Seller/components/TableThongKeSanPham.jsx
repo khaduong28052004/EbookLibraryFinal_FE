@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
 import { ExportExcel } from "./ExportExcel"
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, setSortBy, setSortColumn, sortBy, sortColumn }) => {
 
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Thống Kê Sản Phẩm'];
     try {
-      const response = await ThongKeService.sanPham(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
+      const response = await ThongKeService.sanPham(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -20,6 +24,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
   }
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <ToastContainer/>
       <div className="py-6 flex flex-col md:flex-row justify-between px-4 md:px-6 xl:px-7.5 space-y-4 md:space-y-0">
         <form>
           <div className="relative pt-3 flex items-center space-x-4">
@@ -86,23 +91,11 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Tên Sản Phẩm</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "nameSP" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "nameSP" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "nameSP" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "nameSP" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
-              onClick={() => {
-                setSortBy(!sortBy);
-                setSortColumn("theLoai");
-              }}
-            >
-              <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white ">Thể Loại</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "theLoai" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "theLoai" ? "text-black" : "text-gray-500"}`} />
-              </div>
-            </th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
               onClick={() => {
@@ -112,8 +105,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Lượt Bán</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotBan" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotBan" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotBan" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotBan" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -125,8 +118,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Lượt Đánh Giá</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -138,8 +131,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trung Bình Lượt Đánh Giá</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "trungBinhDanhGia" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "trungBinhDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "trungBinhDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "trungBinhDanhGia" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -152,8 +145,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Lượt Yêu Thích</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotYeuThich" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotYeuThich" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotYeuThich" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotYeuThich" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
           </tr>
@@ -167,12 +160,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
                   {index + 1 + pageNumber * pageSize}
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                  <p className="text-sm text-black dark:text-white truncate w-24">{item.name}</p>
-                </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                  <div className="flex items-center gap-1 hidden xl:flex">
-                    {item.theLoai}
-                  </div>
+                  <p className="text-sm text-black dark:text-white truncate w-30">{item.name}</p>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
@@ -211,6 +199,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={pageSize}
       />
 
     </div>

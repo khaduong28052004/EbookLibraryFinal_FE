@@ -1,3 +1,5 @@
+import LazyLoad from "react-lazyload";
+import ClipLoader from "react-spinners/ClipLoader";
 import Compair from "../icons/Compair";
 import QuickViewIco from "../icons/QuickViewIco";
 import Star from "../icons/Star";
@@ -7,17 +9,25 @@ export default function ProductCardRowStyleTwo({ className, datas, type }) {
   return (
     <div
       data-aos="fade-left"
-      className={`product-row-card-style-one w-full h-[250px] bg-white group relative overflow-hidden ${
-        className || ""
-      }`}
+      className={`product-row-card-style-one w-full h-[250px] bg-white group relative overflow-hidden ${className || ""
+        }`}
     >
       <div className="flex space-x-5 items-center w-full h-full lg:p-[30px] sm:p-5 p-2">
         <div className="lg:w-1/2 w-1/3 h-full">
-          <img
-            src={`/assets/images/${datas.image}`}
-            alt=""
-            className="w-full h-full object-contain"
-          />
+
+          <LazyLoad
+            once={true}
+            placeholder={<div className="flex justify-center mt-30">
+              <ClipLoader size={50} color={"#3498db"} loading={true} />
+            </div>}
+          >
+            <img
+              src={datas.imageProducts[0]?.name}
+              alt=""
+              className="w-full h-full object-contain"
+            />
+
+          </LazyLoad>
         </div>
         <div className="flex-1 flex flex-col justify-center h-full">
           <div>
@@ -31,7 +41,7 @@ export default function ProductCardRowStyleTwo({ className, datas, type }) {
             </div>
             <a href="/single-product">
               <p className="title mb-2 sm:text-[15px] text-[13px] font-600 text-qblack leading-[24px] line-clamp-2 hover:text-blue-600">
-                {datas.title}
+                {datas.name}
               </p>
             </a>
             <p className="price mb-[26px]">
@@ -43,7 +53,7 @@ export default function ProductCardRowStyleTwo({ className, datas, type }) {
               </span>
             </p>
             <button type="button" className="w-[110px] h-[30px]">
-              <span className={type === 3 ? "blue-btn" : "yellow-btn"}>
+              <span className={type === 3 ? "blue-btn" : "flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none"}>
                 {" "}
                 Add To Cart
               </span>

@@ -1,25 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import ProductOne from '../..//../images/product/product-01.png';
-import ProductTwo from '../../../images/product/product-02.png';
-import ProductThree from '../../../images/product/product-03.png';
-import ProductFour from '../../../images/product/product-04.png';
+import React, { useState } from 'react';
 import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
-import {ExportExcel} from "./ExportExcel"
- 
-const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEnd, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, handleSearch, sortBy, sortColumn, setSortBy, setSortColumn }) => {
+import { ExportExcel } from "./ExportExcel"
+import { toast, ToastContainer } from 'react-toastify';
 
-  const handleConfirm = () => {
-    setIsOpen(false);
-  };
+const TableThongKeDonHang = ({ list, dateStart, dateEnd, setDateStart, setDateEnd, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, handleSearch, sortBy, sortColumn, setSortBy, setSortColumn }) => {
 
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Thống Kê Đơn Hàng'];
     try {
-      const response = await ThongKeService.bill(dateStart, dateEnd, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [response.data.result.content]);
+      const response = await ThongKeService.bill(dateStart, dateEnd, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.bill.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        const formattedData = response.data.result.bill.content.flatMap(bill => {
+          return bill.billDetails.map(detail => ({
+            'Mã Đơn Hàng': bill.id,
+            'Ngày Đặt': new Date(bill.createAt).toLocaleDateString("en-GB"),
+            'Khách Hàng': bill.account.fullname,
+            'Số Điện Thoại': bill.address.phone,
+            'Địa Chỉ': bill.address.fullNameAddress,
+            'Trạng Thái': bill.orderStatus.name,
+            'Tên Sản Phẩm': detail.product.name,
+            'Số Lượng': detail.quantity,
+            'Giá': detail.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" }),
+            'Tổng Tiền Sản Phẩm': detail.quantity * detail.price,
+            "Ngày Hoàn Thành:": bill.finishAt == null ? "Chưa Hoàn Thành" : new Date(bill.finishAt).toLocaleDateString("en-GB")
+          }));
+        });
+
+        return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [formattedData]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -37,6 +49,7 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEn
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <ToastContainer />
       <div className="py-6 flex flex-col md:flex-row justify-between px-4 md:px-6 xl:px-7.5 space-y-4 md:space-y-0">
         <form>
           <div className="relative pt-3 flex items-center space-x-4">
@@ -94,7 +107,7 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEn
             Lọc
           </button>
           <button
-          onClick={handleExport}
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4 md:mb-0"
           >
             Excel
@@ -116,8 +129,8 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEn
             >
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Khách Hàng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -128,20 +141,20 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEn
               }}>
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Ngày Mua</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "createAt" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "createAt" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "createAt" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "createAt" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
               onClick={() => {
                 setSortBy(!sortBy);
-                setSortColumn("quantity");
+                setSortColumn("totalQuantity");
               }}>
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "quantity" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "quantity" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "totalQuantity" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "totalQuantity" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -152,8 +165,8 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEn
               }}>
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Tổng Tiền</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "totalPrice" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "totalPrice" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "totalPrice" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "totalPrice" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
@@ -163,8 +176,8 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEn
               }}>
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Trạng Thái</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "orderStatus.id" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "orderStatus.id" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "orderStatus.id" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "orderStatus.id" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -218,34 +231,57 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEn
                 <tr className="border-t border-stroke dark:border-strokedark bg-gray-50 dark:bg-gray-800">
                   <td colSpan={8} className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                     <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-                      <p><strong>Mã Đơn Hàng:</strong> {item.id || "Không có thông tin"}</p>
-
+                      <p><strong>Mã Đơn Hàng: </strong> {item.id || "Không có thông tin"}</p>
                       <p>
-                        <strong>Số Điện Thoại:</strong>
+                        <strong>Số Điện Thoại: </strong>
                         {item.address && item.address.phone ? item.address.phone : " Không có số điện thoại"}
                       </p>
 
                       <p>
-                        <strong>Phương Thức Thanh Toán:</strong>
+                        <strong>Phương Thức Thanh Toán: </strong>
                         {item.paymentMethod && item.paymentMethod.name ? item.paymentMethod.name : " Không xác định"}
                       </p>
 
                       <p>
-                        <strong>Ngày Hoàn Thành:</strong>
+                        <strong>Phí Vận Chuyển: </strong>
+                        <span>
+                          {item.priceShipping
+                            ? item.priceShipping.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+                            : "Không Có"}
+                        </span>
+                      </p>
+                      <p>
+                        <strong>Voucher: </strong>
+                        {item.voucherDetails && item.voucherDetails.length > 0 ? (
+                          item.voucherDetails.map((voucherDetails) => {
+                            if (voucherDetails.voucher.typeVoucher.id === 1) {
+                              return (<span key={voucherDetails.id}>Giảm {voucherDetails.voucher.sale}%</span>
+                              )
+                            }
+                            return null;
+                          })
+                        ) : (
+                          <span>Không có voucher</span>
+                        )
+                        }
+
+                      </p>
+                      <p>
+                        <strong>Ngày Hoàn Thành: </strong>
                         {item.finishAt
                           ? new Date(item.finishAt).toLocaleDateString("en-GB")
                           : "Chưa Hoàn Thành"}
                       </p>
 
                       <p>
-                        <strong>Sản Phẩm:</strong>
+                        <strong>Sản Phẩm: </strong>
                         {item.billDetails && item.billDetails.length > 0
                           ? item.billDetails.map((detail) => detail.product && detail.product.name ? detail.product.name : " Sản phẩm không xác định").join(', ')
                           : " Không có sản phẩm"}
                       </p>
 
                       <p>
-                        <strong>Địa Chỉ:</strong>
+                        <strong>Địa Chỉ: </strong>
                         {item.address && item.address.fullNameAddress ? item.address.fullNameAddress : " Không có địa chỉ"}
                       </p>
                     </div>
@@ -264,6 +300,7 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd ,setDateStart, setDateEn
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={pageSize}
       />
 
     </div>

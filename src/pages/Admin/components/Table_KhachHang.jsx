@@ -1,51 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
 import { toast, ToastContainer } from 'react-toastify';
 
-const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
+const TableTwo = () => {
+    const [data, setData] = useState([]);
     const [searchItem, setSearchItem] = useState('');
-    const [gender, setGender] = useState('');
     const [sortColumn, setSortColumn] = useState('');
     const [sortBy, setSortBy] = useState(true);
-    const [currentPage, setCurrentPage] = useState(entityData?.pageable?.pageNumber == undefined ? 0 : entityData?.pageable?.pageNumber);
+    const [currentPage, setCurrentPage] = useState(0);
 
     const [id, setId] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [statusentity, setStatusentity] = useState(false);
+    const [contents, setContents] = useState("");
+
     const handleConfirm = () => {
+        putStatusKhachHang();
         setIsOpen(false);
-        onIdChange(id);
     };
     const handlePageChange = (newPage) => {
-        if (newPage >= 0 && newPage < entityData.totalPages) {
-            onPageChange(searchItem, gender, newPage, sortBy, sortColumn);
+        if (newPage >= 0 && newPage < data.totalPages) {
+            setCurrentPage(newPage);
             console.log("currentPage: " + newPage);
         }
     };
 
     const handlePrevious = () => {
-        handlePageChange(entityData?.pageable?.pageNumber - 1);
+        handlePageChange(currentPage - 1);
     };
 
     const handleNext = () => {
-        handlePageChange(entityData?.pageable?.pageNumber + 1);
+        handlePageChange(currentPage + 1);
+    };
+
+    const putStatusKhachHang = async () => {
+        try {
+            const response = await accountService.putStatus({ id, contents });
+            console.log("Mã Code: " + response.data.code);
+            if (response.data.code === 1000) {
+                toast.success(response.data.message);
+            }
+            setContents("");
+            findAllAccount();
+        } catch (error) {
+            toast.error("Lỗi hệ thống");
+            console.log("Error: " + error);
+        }
+    }
+
+    const findAllAccount = async () => {
+        try {
+            const response = await accountService.findAllAccount({ currentPage, size: 10, role: "USER", searchItem, sortColumn, sortBy });
+            console.log("content: " + response.data.result.content);
+            setData(response.data.result);
+            console.log(data);
+        } catch (error) {
+            console.log("Error: " + error);
+        }
     };
 
     useEffect(() => {
-        onPageChange(searchItem, gender, currentPage, sortBy, sortColumn);
-    }, [searchItem, gender, currentPage, sortBy, sortColumn]);
-    ;
+        findAllAccount();
+    }, [searchItem, currentPage, sortBy, sortColumn]);
     const handleExport = async () => {
         const sheetNames = ['Danh Sách nhân viên'];
         try {
-            console.log("totalElements: " + entityData.totalElements);
-            const response = await accountService.findAllAccount({ currentPage: 0, size: entityData.totalElements, role: "USER", searchItem, gender: '', sortColumn, sortBy });
-            return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+            console.log("totalElements: " + data.totalElements);
+            const response = await accountService.findAllAccount({ currentPage: 0, size: data.totalElements === 0 ? 5 : data.totalElements, role: "USER", searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Khách Hàng.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -113,18 +144,6 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 <thead>
                     <tr className="border-t border-stroke dark:border-strokedark">
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
-                        <th
-                            onClick={() => {
-                                setSortColumn("username");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th>
 
                         <th
                             onClick={() => {
@@ -134,8 +153,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white ">Họ và tên</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -147,8 +166,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white">Giới tính</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "gender" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "gender" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -160,8 +179,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Email</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -173,8 +192,8 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Số điện thoại</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
                         <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -189,20 +208,14 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                 </thead>
 
                 <tbody>
-                    {entityData?.content?.map((entity, index) => (
+                    {data?.content?.map((entity, index) => (
                         <tr key={index} className="border-t border-stroke dark:border-strokedark">
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {entityData.pageable.pageNumber * entityData.size + index + 1}
+                                {data.pageable.pageNumber * data.size + index + 1}
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                 <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
-                            </td>
-
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.fullname}
-                                </div>
+                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.fullname}</p>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
@@ -229,8 +242,12 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                 <div className="flex space-x-3.5">
-                                    <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
-                                        {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                    <button onClick={() => {
+                                        setId(entity.id);
+                                        setIsOpen(true);
+                                        setStatusentity(entity.status);
+                                    }}>
+                                        {entity.status ? (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />)}
                                     </button>
                                 </div>
                             </td>
@@ -240,32 +257,34 @@ const TableTwo = ({ onPageChange, onIdChange, entityData }) => {
             </table>
             <Pagination
                 pageNumber={currentPage}
-                totalPages={entityData?.totalPages}
-                totalElements={entityData?.totalElements}
+                totalPages={data?.totalPages}
+                totalElements={data?.totalElements}
                 handlePrevious={handlePrevious}
                 handleNext={handleNext}
                 setPageNumber={setCurrentPage}
-                size={entityData.size}></Pagination>
+                size={data.size}></Pagination>
 
             <Modal
+                content={contents}
+                setContent={setContents}
                 open={isOpen}
                 setOpen={setIsOpen}
                 title={statusentity
                     ? 'Ngừng Hoạt Động'
                     : 'Khôi Phục'}
                 message={statusentity
-                    ? 'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'
-                    : 'Bạn có chắc muốn khôi phục sản phẩm này không?'}
+                    ? 'Bạn chắc chắn muốn ngừng hoạt động khách hàng này không?'
+                    : 'Bạn có chắc muốn khôi phục khách hàng này không?'}
                 onConfirm={handleConfirm}
                 confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
                 cancelText="Thoát"
                 icon={statusentity ? (
-                    <TrashIcon className="h-6 w-6 text-red-600" />
+                    <NoSymbolIcon className="h-6 w-6 text-red-600" />
                 ) : (
-                    <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+                    <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
                 )}
-                iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+                iconBgColor={statusentity ? 'bg-red-100' : 'bg-green-100'}
+                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-green-600'} />
         </div>
     );
 };

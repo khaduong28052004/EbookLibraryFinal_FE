@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLongDownIcon, ArrowLongUpIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
 import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
-import Modal from "./ModalThongBao";
+import Modal from "./Modal_ThongBao_NotMail";
 import ModalCategory from './Modal_Category';
 import category from '../../../service/admin/Category';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
@@ -55,7 +55,7 @@ const TableTwo = () => {
 
     const findAllCategory = async () => {
         try {
-            const response = await category.findAllCategory({ page: currentPage, size: 2, searchItem, sortColumn, sortBy });
+            const response = await category.findAllCategory({ page: currentPage, size: 10, searchItem, sortColumn, sortBy });
             console.log("content: " + response.data.result.content);
             setData(response.data.result);
             toast.success(response.data.message);
@@ -76,13 +76,16 @@ const TableTwo = () => {
     };
 
     const handleExport = async () => {
-        const sheetNames = ['Danh Sách nhân viên'];
+        const sheetNames = ['Danh Sách danh mục'];
         try {
             console.log("data.totalElements: " + data.totalElements);
-            const response = await category.findAllCategory({ page: currentPage, size: data.totalElements, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+            const response = await category.findAllCategory({ page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách danh mục.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
-            console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
         }
     }
@@ -177,8 +180,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
                                 <span className="text-sm text-black dark:text-white">Tên danh mục </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -190,8 +193,8 @@ const TableTwo = () => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white ">Người tạo</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -212,8 +215,8 @@ const TableTwo = () => {
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                                     {data.pageable.pageNumber * data.size + index + 1}
                                 </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.name}</p>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 items-center">
+                                    <p className="text-sm text-black dark:text-white truncate w-40">{entity.name}</p>
                                 </td>
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
@@ -225,13 +228,15 @@ const TableTwo = () => {
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
-                                        <button onClick={() => {
+                                        <button onClick={(event) => {
+                                            event.stopPropagation();
                                             setEntityCategory(entity);
                                             setIsOpen(true);
                                         }}>
                                             <TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />
                                         </button>
-                                        <button onClick={() => {
+                                        <button onClick={(event) => {
+                                            event.stopPropagation();
                                             setPost(false);
                                             setEntityCategory(entity);
                                             setIsOpenModalSP(true);
@@ -279,8 +284,8 @@ const TableTwo = () => {
             <Modal
                 open={isOpen}
                 setOpen={setIsOpen}
-                title={'Ngừng Hoạt Động'}
-                message={'Bạn chắc chắn muốn ngừng hoạt động sản phẩm này không?'}
+                title={'Xóa danh mục'}
+                message={'Bạn chắc chắn muốn xóa danh mục này không?'}
                 onConfirm={handleConfirm}
                 confirmText={'Xác Nhận'}
                 cancelText="Thoát"
@@ -294,7 +299,7 @@ const TableTwo = () => {
                 setStatus={setStatus}
                 open={isOpenModalSP}
                 setOpen={setIsOpenModalSP}
-                title="Thêm Sản Phẩm Mới"
+                title={post ? 'Thêm danh mục' : 'Cập nhật danh mục'}
                 confirmText="Lưu"
                 cancelText="Hủy" />
         </div>

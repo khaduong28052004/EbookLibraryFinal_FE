@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import {ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
+import { ArrowPathIcon, TrashIcon} from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
-import ModalSanPham from './ModalSanPham';
 import CategoryService from '../../../service/Seller/categoryService';
 import Pagination from './pagination';
 import { toast, ToastContainer } from 'react-toastify';
 import {ExportExcel} from "./ExportExcel"
-
+import { useLocation } from 'react-router-dom';
 const TableCategory = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
@@ -30,10 +29,8 @@ const TableCategory = () => {
   const [idParent, setidParent] = useState(null);
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
-  const [size, setSize] = useState(5);
-  const handleConfirm = () => {
-    setIsOpen(false);
-  };
+  const [size, setSize] = useState(10);
+  const location = useLocation();
 
   const handlePrevious = () => {
     if (pageNumber > 0) {
@@ -48,7 +45,7 @@ const TableCategory = () => {
   };
   useEffect(() => {
     loadTable();
-  }, [search, pageNumber, sortBy, sortColumn])
+  }, [location, search, pageNumber, sortBy, sortColumn])
 
   const loadTable = async () => {
     try {
@@ -220,9 +217,9 @@ const TableCategory = () => {
               }}
             >
               <div className="flex items-center gap-1">
-                <span className="text-sm text-black dark:text-white">Thể Loại</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-500"}`} />
+                <span className="text-sm text-black dark:text-white">Danh mục con</span>
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "name" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "name" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -232,10 +229,10 @@ const TableCategory = () => {
                 setSortColumn("parentName");
               }}
             >
-              <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white ">Danh Mục</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "parentName" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "parentName" ? "text-black" : "text-gray-500"}`} />
+              <div className="flex items-center gap-1">
+              <span className="text-sm text-black dark:text-white ">Danh Mục</span>
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "parentName" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "parentName" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -255,9 +252,7 @@ const TableCategory = () => {
                 <p className="text-sm text-black dark:text-white truncate ">{item.name}</p>
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {item.nameDanhMuc}
-                </div>
+              <p className="text-sm text-black dark:text-white truncate "> {item.nameDanhMuc}</p>
               </td>
 
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
@@ -314,13 +309,15 @@ const TableCategory = () => {
                     <div className="w-full xl:w-1/2">
                       <div className="mb-4.5">
                         <label className="mb-2.5 block text-black dark:text-white">
-                          Doanh Mục
+                          Danh Mục
                         </label>
                         <div className="relative z-20 bg-transparent dark:bg-form-input">
                           <select
                             onChange={handleCategory}
                             name='idParent'
-                            className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white`}
+                            className="w-full rounded border-[1.5px] appearance-none border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+
+                            // className={`relative z-20 truncate w-52 appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary text-black dark:text-white`}
                           >
                             <option value="" disabled className="text-body dark:text-bodydark">
                               {'Chọn doanh mục'}
@@ -356,14 +353,14 @@ const TableCategory = () => {
                     </div>
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Tên Loại
+                        Danh Mục Con
                       </label>
                       <input
                         type="text"
                         name="name"
                         value={dataCategory.name}
                         onChange={handleCategory}
-                        placeholder="Tên loại ..."
+                        placeholder="Danh mục con ..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
@@ -397,6 +394,7 @@ const TableCategory = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
     </div>
   );

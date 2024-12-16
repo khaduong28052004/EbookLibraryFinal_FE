@@ -5,10 +5,10 @@ import AuthService from "../../../../service/authService";
 import { PencilSquareIcon, PhotoIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import { uploadImages1 } from "../../../../service/dangKySellerService";
+import { uploadImageAvt,uploadImageBR } from "../../../../service/dangKySellerService";
 
 export default function ProfileTab() {
-  const [formData, setFormData] = useState({ 
+  const [formData, setFormData] = useState({
     fullname: "",
     email: "",
     birthday: "",
@@ -60,7 +60,7 @@ export default function ProfileTab() {
     if (name === 'birthday') {
       const today = new Date();
       const selectedDate = new Date(value);
-      
+
       if (selectedDate > today) {
         setFormErrors(prev => ({
           ...prev,
@@ -74,7 +74,7 @@ export default function ProfileTab() {
         }));
       }
     }
-    
+
     setFormData(prevData => ({
       ...prevData,
       [name]: value,
@@ -95,7 +95,7 @@ export default function ProfileTab() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(prev => ({ ...prev, [type]: false }));
-    
+
     const file = e.dataTransfer.files[0];
     if (file) {
       handleFile(file, type);
@@ -129,8 +129,8 @@ export default function ProfileTab() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setNotification({ message: "", type: "" }); 
-    setFormErrors({});  
+    setNotification({ message: "", type: "" });
+    setFormErrors({});
     let isValid = true;
 
     const validations = {
@@ -184,26 +184,36 @@ export default function ProfileTab() {
 
     try {
       const id = sessionStorage.getItem("id_account");
-      if (imgAvartar || imgBackgrourd) {
-        const formDataImages = new FormData();
-        if (imgAvartar) formDataImages.append('imgAvartar', imgAvartar);
-        if (imgBackgrourd) formDataImages.append('imgBackgrourd', imgBackgrourd);
-        await uploadImages1(id, formDataImages);
+    
+      // Upload avatar nếu có
+      if (imgAvartar) {
+        const formDataAvt = new FormData();
+        formDataAvt.append("imgAvatar", imgAvartar);
+        await uploadImageAvt(id, formDataAvt);
       }
+    
+      // Upload background nếu có
+      if (imgBackgrourd) {
+        const formDataBg = new FormData();
+        formDataBg.append("imgBackground", imgBackgrourd);
+        await uploadImageBR(id, formDataBg);
+      }
+    
+      // Cập nhật thông tin tài khoản
       const response = await AuthService.updateAccount(id, formData);
-      toast.success('Cập nhật tài khoản thành công!');
-      fetchData(); 
+      toast.success("Cập nhật tài khoản thành công!");
+      fetchData();
     } catch (error) {
-      toast.error("Cập nhật thất bại vui lòng kiểm tra lại!");
-      console.error(error);
+      toast.error("Cập nhật thất bại, vui lòng kiểm tra lại!");
+      console.error("Error:", error);
     }
+    
   };
 
   return (
-    <div className="flex flex-col space-y-8 py-10 items-center bg-white rounded-lg shadow-lg">
-      <ToastContainer /> 
-
-      <form onSubmit={handleSubmit} className="w-[750px]">
+    <div className="flex flex-col space-y-8 items-center bg-white rounded-lg">
+      <ToastContainer />
+      <form onSubmit={handleSubmit} className="xl:w-[750px] xl:mt-0 px-10">
         <div className=' border py-10 flex flex-row rounded-md'
           style={{
             backgroundImage: `url(${imgBackgrourd ? URL.createObjectURL(imgBackgrourd) : formData.imgBackgrourd})`,
@@ -214,14 +224,13 @@ export default function ProfileTab() {
             src={imgAvartar ? URL.createObjectURL(imgAvartar) : formData.imgAvartar} />
           <p className='font-bold p-3 mt-3 text-xl text-black'>{formData.nameShop}</p>
         </div>
-<br />
+        <br />
         <div className='flex flex-row gap-6 mb-8'>
           <div className='flex-1'>
             <label className="block text-sm font-medium text-gray-700 mb-2">Ảnh đại diện</label>
             <div
-              className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 ${
-                dragActive.avatar ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-              } border-dashed rounded-md hover:border-blue-500 transition-colors`}
+              className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 ${dragActive.avatar ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                } border-dashed rounded-md hover:border-blue-500 transition-colors`}
               onDragEnter={e => handleDrag(e, 'avatar')}
               onDragLeave={e => handleDrag(e, 'avatar')}
               onDragOver={e => handleDrag(e, 'avatar')}
@@ -244,9 +253,8 @@ export default function ProfileTab() {
           <div className='flex-1'>
             <label className="block text-sm font-medium text-gray-700 mb-2">Ảnh bìa</label>
             <div
-              className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 ${
-                dragActive.background ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-              } border-dashed rounded-md hover:border-blue-500 transition-colors`}
+              className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 ${dragActive.background ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                } border-dashed rounded-md hover:border-blue-500 transition-colors`}
               onDragEnter={e => handleDrag(e, 'background')}
               onDragLeave={e => handleDrag(e, 'background')}
               onDragOver={e => handleDrag(e, 'background')}
@@ -342,17 +350,20 @@ export default function ProfileTab() {
               />
             </div>
             <Link to="/profile#address" className="mt-7 ml-5 flex justify-end">
-              <button className="min-w-[85px] rounded-md md:block hidden transition-transform transform hover:scale-105 bg-[#83bef2] hover:bg-[#44dbe6bb] text-white p-2.5">
-                Thay đổi
+              <button className="flex items-center justify-center w-[100px] h-[35px] rounded text-[#003EA1] text-[15px]  
+                                                                                px-2 py-0 border border-[#003EA1] transition-all duration-500 ease-in-out hover:bg-gray-200 ">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#003EA1" class="size-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
               </button>
-              <PencilSquareIcon className="w-12 h-12 md:hidden block rounded-md bg-[#83bef2] hover:bg-[#44dbe6bb] text-white p-2" />
+              {/* <PencilSquareIcon className="w-12 h-12 md:hidden block rounded-md bg-[#83bef2] hover:bg-[#44dbe6bb] text-white p-2" /> */}
             </Link>
           </div>
         </div>
 
-        <div className="flex justify-center mt-8">
-          <button type="submit" className="min-w-[200px] rounded-md transition-transform transform hover:scale-105 bg-[#83bef2] hover:bg-[#44dbe6bb] text-white p-3">
-            Cập nhật thông tin
+        <div className="flex justify-end mt-8">
+          <button type="submit" className=" bg-[#003EA1]  rounded text-white  text-sm font-bold text-center px-6 py-1  hover:opacity-90 ">
+            Cập nhật
           </button>
         </div>
       </form>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import datas from "../../../data/products.json";
 import AuthService from "../../../service/authService";
 import BreadcrumbCom from "../../BreadcrumbCom";
@@ -14,50 +14,67 @@ import AddressesTab from "./tabs/AddressesTab";
 import Dashboard from "./tabs/Dashboard";
 import OrderTab from "./tabs/OrderTab";
 import PasswordTab from "./tabs/PasswordTab";
-import Payment from "./tabs/Payment";
 import ProfileTab from "./tabs/ProfileTab";
 import ReviewTab from "./tabs/ReviewTab";
-import SupportTab from "./tabs/SupportTab";
+import BecomeSeller from "./tabs/BecomSeller";
 import WishlistTab from "./tabs/WishlistTab";
+import ReportTab from "./tabs/Report";
+
+// import IcoPayment from './path/to/IcoPayment';
+import { toast } from "react-toastify";
+import { FaFlag } from "react-icons/fa"; // Hoặc biểu tượng khác bạn cần.
+import IcoPayment from './icons/IcoPayment'; // Đảm bảo đường dẫn chính xác
+
+
+const IcoReport = () => <FaFlag className="text-lg text-qgray group-hover:text-qblack" />;
 
 export default function Profile() {
+
   const [switchDashboard, setSwitchDashboard] = useState(false);
   const location = useLocation();
   const getHashContent = location.hash.split("#");
   const [active, setActive] = useState("dashboard");
   const [isToken, setIsToken] = useState(false);
+
+
+  const navigate = useNavigate();
   function isTokenExpired(token) {
     const [, payloadBase64] = token.split('.');
     const payload = JSON.parse(atob(payloadBase64));
-
     const expirationTime = payload.exp * 1000; // Chuyển đổi giây thành milliseconds
     const currentTimestamp = Date.now();
-
     return expirationTime < currentTimestamp;
   }
+
   //giai han
   const retoken = async (token) => {
     if (isTokenExpired(token)) {
       sessionStorage.removeItem("token");
       console.log("token het han")
+      return false;
     } else {
       console.log("Token còn hạn.");
-      try {
-        const response = await AuthService.tokenrenewal(token);
-        AuthService.setItem(response.data);
-      } catch (error) {
-        console.log("gia hạn lỗi");
-        console.error(error);
-      }
+      // try {
+      //   const response = await AuthService.tokenrenewal(token);
+      //   AuthService.setItem(response.data);
+      // } catch (error) {
+      //   console.log("gia hạn lỗi");
+      //   console.error(error);
+      // }
+      return true;
 
     }
   }
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    retoken(token);
-    if (token) {
-      setIsToken(true);
+    if (token == null) {
+      toast.warn("Vui lòng đăng nhập!");
+      setTimeout(() => {
+        navigate('/login')
+      }, 400);
+    } else {
+      retoken(token);
     }
     setActive(
       getHashContent && getHashContent.length > 1
@@ -80,8 +97,8 @@ export default function Profile() {
                 { name: "hồ sơ", path: "/profile" },
               ]}
             />
-            <div className="w-full bg-white px-10 py-9">
-              <div className="title-area w-full flex justify-between items-center">
+            <div className="xl:w-full bg-white md:px-10 md:w-[750px] xl:px-10 xl:py-9 w-[750px]">
+              <div className="title-area w-full flex justify-between items-center mb-[20px] mt-[20px]">
                 <h1 className="text-[22px] font-bold text-qblack">
                   Tài khoản
                 </h1>
@@ -99,9 +116,9 @@ export default function Profile() {
                   </button>
                 </div> */}
               </div>
-              <div className="profile-wrapper w-full mt-8 flex space-x-10">
-                <div className="w-[236px] min-h-[600px] border-r border-[rgba(0, 0, 0, 0.1)]">
-                  <div className="flex flex-col space-y-10">
+              <div className="xl:profile-wrapper xl:w-full xl:mt-8 flex xl:space-x-10 profile-wrapper w-full">
+                <div className="xl:w-[236px] xl:min-h-[600px] xl:border-r xl:border-[rgba(0, 0, 0, 0.1)] w-[120px]">
+                  <div className="xl:flex xl:flex-col xl:space-y-10 xl:w-full flex flex-col space-y-10 w-[120px]">
                     <div className="item group">
                       <Link to="/profile#dashboard">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
@@ -127,18 +144,20 @@ export default function Profile() {
                       </Link>
                     </div>
 
-                    {/* <div className="item group">
-                      <Link to="/profile#payment">
+                    <div className="item group">
+                      <Link to="/profile#become-seller">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
                           <span>
                             <IcoPayment />
                           </span>
                           <span className=" font-normal text-base">
-                            Phương thức thanh toán
+                            Trở thành người bán
                           </span>
                         </div>
                       </Link>
-                    </div> */}
+                    </div>
+
+
                     <div className="item group">
                       <Link to="/profile#order">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
@@ -197,6 +216,7 @@ export default function Profile() {
                         </div>
                       </Link>
                     </div>
+
                     {/* <div className="item group">
                       <Link to="/profile#support">
                         <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
@@ -209,6 +229,17 @@ export default function Profile() {
                         </div>
                       </Link>
                     </div> */}
+
+                    <div className="item group">
+                      <Link to="/profile#report">
+                        <div className="flex space-x-3 items-center text-qgray hover:text-qblack">
+                          <span>
+                            <IcoReport /> {/* Thay bằng biểu tượng báo cáo hoặc icon khác */}
+                          </span>
+                          <span className="font-normal text-base">Báo cáo</span>
+                        </div>
+                      </Link>
+                    </div>
                     {
                       isToken ? (<div className="item group">
                         <Link to="/login">
@@ -228,7 +259,7 @@ export default function Profile() {
                               <IcoLogout />
                             </span>
                             <span className=" font-normal text-base">
-                              Đăng nhập
+                              Đăng xuất
                             </span>
                           </div>
                         </Link>
@@ -238,25 +269,25 @@ export default function Profile() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="item-body dashboard-wrapper w-full">
+                  <div className="item-body dashboard-wrapper sm:w-auto md:w-auto lg:w-[900px] xl:w-full 2xl:w-full w-[500px] ">
                     {active === "dashboard" ? (
                       <Dashboard />
                     ) : active === "profile" ? (
                       <>
                         <ProfileTab />
                       </>
-                    ) : active === "payment" ? (
+                    ) : active === "become-seller" ? (
                       <>
-                        <Payment />
+                        <BecomeSeller />
                       </>
                     ) : active === "order" ? (
                       <>
-                        <OrderTab />
+                        <OrderTab />  
                       </>
                     ) : active === "wishlist" ? (
                       <>
-                        <WishlistTab />
-                      </>
+                          <WishlistTab />
+                        </>
                     ) : active === "address" ? (
                       <>
                         <AddressesTab />
@@ -273,6 +304,8 @@ export default function Profile() {
                       <>
                         <ReviewTab products={datas.products} />
                       </>
+                    ) : active === "report" ? ( // Logic hiển thị Báo cáo
+                      <ReportTab />
                     ) : (
                       ""
                     )}

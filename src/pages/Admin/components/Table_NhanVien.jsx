@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { NoSymbolIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import ModalNhanVien from './ModalNhanVien';
 import accountService from '../../../service/admin/Account';
@@ -20,6 +20,8 @@ const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusentity, setStatusentity] = useState(false);
   const [isOpenModalSP, setIsOpenModalSP] = useState(false);
+  const [contents, setContents] = useState("");
+
   const handleConfirm = () => {
     putStatusNhanVien(entityNhanVien.id);
     setIsOpen(false);
@@ -41,11 +43,12 @@ const TableTwo = () => {
 
   const putStatusNhanVien = async (id) => {
     try {
-      const response = await accountService.putStatus({ id });
+      const response = await accountService.putStatus({ id, contents });
       console.log("xóa: " + response.data.message);
       if (response.data.code === 1000) {
         toast.success(response.data.message);
       }
+      setContents("");
       findAllAccount();
     } catch (error) {
       toast.error("Cập nhật thất bại");
@@ -55,7 +58,7 @@ const TableTwo = () => {
 
   const findAllAccount = async () => {
     try {
-      const response = await accountService.findAllAccount({ page: currentPage, size: 2, role: "ADMINV1", searchItem, sortColumn, sortBy });
+      const response = await accountService.findAllNhanVien({ page: currentPage, size: 10, searchItem, sortColumn, sortBy });
       console.log("content: " + response.data.result.content);
       setData(response.data.result);
     } catch (error) {
@@ -71,8 +74,12 @@ const TableTwo = () => {
     const sheetNames = ['Danh Sách nhân viên'];
     try {
       console.log("data.totalElements: " + data.totalElements);
-      const response = await accountService.findAllAccount({ page: 0, size: data.totalElements, role: "ADMINV1", searchItem, sortColumn, sortBy });
-      return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+      const response = await accountService.findAllNhanVien({ page: 0, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -147,43 +154,28 @@ const TableTwo = () => {
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
             <th
               onClick={() => {
-                setSortColumn("username");
-                setSortBy(!sortBy);
-              }}
-              className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <div className="flex items-center gap-1">
-                <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-              </div>
-            </th>
-
-            <th
-              onClick={() => {
                 setSortColumn("fullname");
                 setSortBy(!sortBy);
               }}
               className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Họ và tên</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
-
             <th
               onClick={() => {
-                setSortColumn("gender");
+                setSortColumn("role.name");
                 setSortBy(!sortBy);
               }}
               className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Giới tính</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <span className="text-sm text-black dark:text-white ">Quyền </span>
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "role.name" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "role.name" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
-
             <th
               onClick={() => {
                 setSortColumn("email");
@@ -192,8 +184,8 @@ const TableTwo = () => {
               className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Email</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "email" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -205,8 +197,8 @@ const TableTwo = () => {
               className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số điện thoại</span>
-                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -222,26 +214,21 @@ const TableTwo = () => {
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 {data.pageable.pageNumber * data.size + index + 1}
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
-              </td>
-
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 <div className="flex items-center gap-1 hidden xl:flex">
-
                   {entity.fullname}
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                 <div className="flex items-center gap-1 hidden xl:flex">
-                  {entity.gender ? 'Nam' : 'Nữ'}
+                  {entity.role.name}
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {entity.email}
+              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black max-w-5 dark:text-white ">
+                <div className="flex items-center gap-1 xl:flex">
+                  <p className="text-sm text-black dark:text-white truncate w-40">{entity.email}</p>
                 </div>
+
               </td>
 
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -251,8 +238,12 @@ const TableTwo = () => {
               </td>
               <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                 <div className="flex space-x-3.5">
-                  <button onClick={() => { setEntityNhanVien(entity); setIsOpen(true); setStatusentity(entity.status); }}>
-                    {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                  <button onClick={() => {
+                    setEntityNhanVien(entity);
+                    setIsOpen(true);
+                    setStatusentity(entity.status);
+                  }}>
+                    {entity.status ? (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />)}
                   </button>
                 </div>
               </td>
@@ -270,6 +261,8 @@ const TableTwo = () => {
         size={data.size}></Pagination>
 
       <Modal
+        content={contents}
+        setContent={setContents}
         open={isOpen}
         setOpen={setIsOpen}
         title={statusentity
@@ -282,12 +275,12 @@ const TableTwo = () => {
         confirmText={statusentity ? 'Xác Nhận' : 'Khôi Phục'}
         cancelText="Thoát"
         icon={statusentity ? (
-          <TrashIcon className="h-6 w-6 text-red-600" />
+          <NoSymbolIcon className="h-6 w-6 text-red-600" />
         ) : (
-          <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
+          <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
         )}
-        iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-        buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+        iconBgColor={statusentity ? 'bg-red-100' : 'bg-green-100'}
+        buttonBgColor={statusentity ? 'bg-red-600' : 'bg-green-600'} />
 
       <ModalNhanVien
         status={status}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
+import { NoSymbolIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import ModalDuyetShop from "./Modal_DuyetShop";
 import accountService from '../../../service/admin/Account';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
@@ -37,7 +37,7 @@ const TableTwo = ({ status, setStatus }) => {
 
     const findAllSellerNotBrowse = async () => {
         try {
-            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: 2, searchItem, sortColumn, sortBy });
+            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: 10, searchItem, sortColumn, sortBy });
             console.log("FindAllSellerNotBrowse: ");
             setData(response.data.result);
             console.log(data);
@@ -48,14 +48,18 @@ const TableTwo = ({ status, setStatus }) => {
 
     useEffect(() => {
         findAllSellerNotBrowse();
-    }, [searchItem, currentPage, sortBy, sortColumn,status]);
-    
+    }, [searchItem, currentPage, sortBy, sortColumn, status]);
+
     const handleExport = async () => {
         const sheetNames = ['Danh Sách Đăng Ký Người Bán'];
         try {
             console.log("totalElements: " + data.totalElements);
-            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: data.totalElements, searchItem, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Đăng Ký Người Bán.xlsx", sheetNames, [response.data.result.content]);
+            const response = await accountService.findAllSellerNotBrowse({ currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+            if (!response || response.data.result.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Đăng Ký Người Bán.xlsx", sheetNames, [response.data.result.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -132,18 +136,18 @@ const TableTwo = ({ status, setStatus }) => {
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
-                                setSortColumn("username");
+                                setSortColumn("fullname");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <span className="text-sm text-black dark:text-white">Họ tên </span>
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
-                        {/* <th
+                        <th
                             onClick={() => {
                                 setSortColumn("numberId");
                                 setSortBy(!sortBy);
@@ -151,34 +155,33 @@ const TableTwo = ({ status, setStatus }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white">Số CCCD</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th> */}
-
-                        <th
-                            onClick={() => {
-                                setSortColumn("email");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Email</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "numberId" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "numberId" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
                         <th
                             onClick={() => {
-                                setSortColumn("phone");
+                                setSortColumn("afterIdImage");
                                 setSortBy(!sortBy);
                             }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Số điện thoại</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-5.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden xl:flex">
+                                <span className="text-sm text-black dark:text-white">Ảnh CCCD mặt trước</span>
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "afterIdImage" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "afterIdImage" ? "text-black" : "text-gray-500"} text-black`} />
+                            </div>
+                        </th>
+                        <th
+                            onClick={() => {
+                                setSortColumn("beforeIdImage");
+                                setSortBy(!sortBy);
+                            }}
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-5.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden xl:flex">
+                                <span className="text-sm text-black dark:text-white">Ảnh CCCD mặt sau</span>
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "beforeIdImage" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "beforeIdImage" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -206,30 +209,31 @@ const TableTwo = ({ status, setStatus }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                     {/* <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" /> */}
-                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
+                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.fullname}</p>
                                 </td>
 
-                                {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
                                         {entity.numberId}
                                     </div>
-                                </td> */}
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.email}
-                                    </div>
                                 </td>
-
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.phone}
-                                    </div>
+                                    <img className="h-12.5 w-15 rounded-md" src={entity.afterIdImage} alt="entity" />
                                 </td>
-
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <img className="h-12.5 w-15 rounded-md" src={entity.beforeIdImage} alt="entity" />
+                                </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
-                                        <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
-                                            {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
+                                        <button onClick={(event) => {
+                                            event.stopPropagation();
+                                            setId(entity.id);
+                                            setIsOpen(true);
+                                            setStatusentity(entity.status);
+                                        }}
+                                            className=" inline-flex items-center justify-center rounded-md bg-yellow-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+                                        >
+                                            Duyệt
                                         </button>
                                     </div>
                                 </td>
@@ -241,9 +245,11 @@ const TableTwo = ({ status, setStatus }) => {
                                         <div className="p-5 border border-gray-100 hover:bg-slate-100">
                                             <p><strong>Thông tin chi tiết:</strong></p>
                                             <div className="pl-20 pt-2 gap-1 grid grid-cols-3">
-                                                <p>Ngày gửi yêu cầu: {entity.createAtSeller}</p>
                                                 <p>Họ tên chủ shop: {entity.fullname}</p>
                                                 <p>Giới tính: {entity.gender ? 'Nam' : 'Nữ'}</p>
+                                                <p>Email: {entity.email}</p>
+                                                <p>Số điện thoại: {entity.phone}</p>
+
                                             </div>
                                         </div>
                                     </td>
@@ -269,19 +275,17 @@ const TableTwo = ({ status, setStatus }) => {
                 status={status}
                 setStatus={setStatus}
                 setOpen={setIsOpen}
-                title={statusentity ? 'Hủy' : 'Duyệt'}
-                message={statusentity
-                    ? 'Bạn chắc chắn không duyệt sản phẩm này không?'
-                    : 'Bạn có chắc muốn duyệt sản phẩm này không?'}
+                title={'Duyệt shop'}
+                message={'Bạn muốn duyệt shop này không?'}
                 confirmText={'Duyệt'}
-                cancelText={"Hủy"}
+                cancelText={"Không duyệt"}
                 icon={statusentity ? (
-                    <TrashIcon className="h-6 w-6 text-red-600" />
+                    <ArrowPathIcon className="h-6 w-6 text-yellow-600" />
                 ) : (
                     <ReceiptRefundIcon className="h-6 w-6 text-yellow-600" />
                 )}
-                iconBgColor={statusentity ? 'bg-red-100' : 'bg-yellow-100'}
-                buttonBgColor={statusentity ? 'bg-red-600' : 'bg-yellow-600'} />
+                iconBgColor={statusentity ? 'bg-yellow-100' : 'bg-yellow-100'}
+                buttonBgColor={statusentity ? 'bg-blue-600' : 'bg-yellow-600'} />
         </div >
     );
 };

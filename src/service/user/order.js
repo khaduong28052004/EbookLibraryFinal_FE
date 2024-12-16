@@ -1,43 +1,12 @@
-import { axiosAuth } from '../../config/configAxios';
+import axiosConfig, { axiosAuth } from "../../config/configAxios";
 
-const token = sessionStorage.getItem("token") 
+const token = sessionStorage.getItem("token")
+const createUrl = (path, params = '') => `/api/v1/user/bill/${path}${params}`;
 
 const userOrderService = {
-
-    fetchOrder: ({ userID, orderStatusId }) => {
-        console.log("token BILL" ,token);
-        console.log("orderStatusId BILL", orderStatusId)
-        console.log("userID BILL", userID)
-        
-        const url = `http://localhost:8080/api/v1/user/bill/read?userId=${userID}&orderStatusFind=${orderStatusId}`;
-        console.log("SAU FETCH BILL", userID)
-
-        return axiosAuth(token, "get", url);
-    },
-
-
-    cancelOrder: ({ billId }) => {
-        const url = `http://localhost:8080/api/v1/user/bill/update_status/cancel/${billId}`;
-        console.log(token);
-
-        return axiosAuth(token, "post", url);
-    },
-
-    confirmOrder: ({ billId }) => {
-        console.log(token);
-        console.log("billId", billId)
-
-        const url = `http://localhost:8080/api/v1/user/bill/update_status/confirm/${billId}`;
-
-        return axiosAuth(token, "post", url);
-    },
-
-    reOrder: ({ billId }) => {
-        const url = `http://localhost:8080/api/v1/user/bill/create/reorder/${billId}`;
-        console.log(token);
-
-        return axiosAuth(token, "post", url);
-    },
-
+    fetchOrder: (userID, orderStatusId,  limit) => axiosAuth('null', 'get', createUrl('read', `?userId=${userID}&orderStatusFind=${orderStatusId}&size=${limit}`)),
+    cancelOrder: (billId) => axiosAuth('null', 'post', createUrl('update_status/cancel/', `${billId}`)),
+    confirmOrder: (billId) => axiosAuth('null', 'post', createUrl('update_status/confirm/', `${billId}`)),
+    reOrder: (billId) => axiosAuth('null', 'post', createUrl('create/reorder/', `${billId}`))
 }
 export default userOrderService;

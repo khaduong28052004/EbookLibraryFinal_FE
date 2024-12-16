@@ -2,10 +2,10 @@ import axios from 'axios';
 
 const API_CHECK_CARDID = 'https://api.fpt.ai/vision/idr/vnm';
 const API_Java = 'http://localhost:8080/api/v1/user/registerSeller';
-const API_KEY = 'fuQcjc2PpqcvT7N1QNLo0mcOkoB1MMoX';
-export const fetchCheckImgCard = async (image) => {
+const API_KEY = 'aOL8KstO8whE27tr8Wv1SLqTPMfHXVpB';
+export const fetchCheckImgCard = async (image) => { // để gọi API
   try {
-    const response = await axios.post(API_CHECK_CARDID, image, {
+    const response = await axios.post(API_CHECK_CARDID, image, { // Gửi yc post image lên api
       headers: {
         'api-key': API_KEY,
         'Content-Type': 'multipart/form-data',
@@ -59,6 +59,42 @@ export const uploadImages1 = async (id, formData) => {
   }
 };
 
+export const uploadImageAvt = async (id, formData) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:8080/api/v1/user/uploadAvatar/${id}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading images:', error.response || error.message);
+    throw error;
+  }
+};
+
+export const uploadImageBR = async (id, formData) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:8080/api/v1/user/uploadBackground/${id}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading images:', error.response || error.message);
+    throw error;
+  }
+};
+
 export const getSeller = async (id) => {
   try {
     const response = await axios.get(`${API_Java}/${id}`, {});
@@ -91,7 +127,7 @@ export const checkFaceAi = async (formData) => {
       formData,
       {
         headers: {
-          'api-key': 'aOL8KstO8whE27tr8Wv1SLqTPMfHXVpB',
+          'api-key': 'Bph3Le2zhfTBPxOf2lAaDFBruXB0CmIB',
           'Content-Type': 'multipart/form-data',
         },
       },

@@ -4,17 +4,33 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import CountDown from "../Helpers/CountDown";
 import Star from "../Helpers/icons/Star";
+import ImageWithLoader from "../Helpers/ImageLoading/ImageWithLoader";
 import { useRequest } from "../Request/RequestProvicer";
-
 export default function ProductView({ className, reportHandler, product }) {
 
-  const productsImg = product?.imageProducts;
+  // const productsImg = product?.imageProducts;
   const [isFavorite, setIsFavorite] = useState(false);
   const { startRequest, endRequest } = useRequest();
   const [src, setSrc] = useState(product?.imageProducts[0]?.name);
   const location = useLocation();
   const { showHour, showMinute, showSecound } = CountDown(product?.flashSaleDetail?.flashSale?.dateEnd);
+  const [isReport, setIsReport] = useState(false);
+  const { isRequesting } = useRequest();
 
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      const id_user = sessionStorage.getItem('id_account');
+      axios.get(`http://localhost:8080/api/v1/user/report/checkReport?id_user=${id_user}&id_product=${product?.id}`).then((response) => {
+        setIsReport(!(response.data.result));
+      }).catch((error) => {
+        console.error("fetch report error " + error);
+      });
+    } else {
+      setIsReport(false);
+    }
+  }, [location, isRequesting])
   // =================================== FLashSale
 
   // const [timeDifference, setTimeDifference] = useState({
@@ -23,37 +39,21 @@ export default function ProductView({ className, reportHandler, product }) {
   //   seconds: 0,
   // });
 
-  // const end = new Date("2024-11-19 23:59:00.000000");
-
-  // const startInterval = () => {
-  //   const timer = setInterval(() => {
-  //     const now = new Date(); // Cập nhật 'now' mỗi lần setInterval gọi
-  //     console.log("vao r");
-  //     const second = differenceInSeconds(now, end);
-  //     if (second <= 0) {
-  //       clearInterval(timer);
-  //       return; // Dừng đồng hồ khi đã hết thời gian
-  //     }
-  //     setTimeDifference({
-  //       hours: differenceInHours(end, now) % 24,
-  //       minutes: differenceInMinutes(end, now) % 60,
-  //       seconds: differenceInSeconds(end, now) % 60,
-  //     });
-  //   }, 1000);
-  // };
-
-  // useEffect(() => {
-  //   startInterval();
-
-  // }, []);
-
   // =================================== END
   const changeImgHandhgler = (current) => {
     setSrc(current);
   };
   const [quantity, setQuantity] = useState(1);
   const increment = () => {
-    setQuantity((prev) => prev + 1);
+    if (product?.flashSaleDetail?.id > 0) {
+      if (quantity < product?.flashSaleDetail?.quantity) {
+        setQuantity((prev) => prev + 1);
+      }
+    } else {
+      if (quantity < product.quantity) {
+        setQuantity((prev) => prev + 1);
+      }
+    }
   };
   const decrement = () => {
     if (quantity > 1) {
@@ -62,16 +62,15 @@ export default function ProductView({ className, reportHandler, product }) {
   };
 
 
-  // useEffect(() => {
-  //   if (showHour<1) {
-  //     window.location.reload();
-  //   }
-  // }, []);
+  useEffect(() => {
+    setSrc(product?.imageProducts[0]?.name);
+  }, [product]);
 
   const handleCreateCart = () => {
     startRequest();
     const id_user = sessionStorage.getItem("id_account");
-    if (id_user) {
+    const token = sessionStorage.getItem("token");
+    if (token) {
       axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${product.id}&quantity=${quantity}`).then(response => {
         if (response.data.code = 1000) {
           toast.success("Thêm thành công");
@@ -109,9 +108,14 @@ export default function ProductView({ className, reportHandler, product }) {
       <div data-aos="fade-right" className="lg:w-1/2 xl:mr-[70px] lg:mr-[50px]">
         <div className="w-full">
           <div className="w-full h-[450px] border border-qgray-border flex justify-center items-center overflow-hidden relative mb-3">
-            <img
-              src={product?.imageProducts[0]?.name}
+            {/* <img
+              src={src}
               alt=""
+              className="object-contain"
+            /> */}
+            <ImageWithLoader
+              src={src}
+              alt="Product Image"
               className="object-contain"
             />
             <div className="w-[80px] h-[80px] rounded-full bg-qyellow text-qblack flex justify-center items-center text-xl font-medium absolute left-[30px] top-[30px]">
@@ -127,10 +131,10 @@ export default function ProductView({ className, reportHandler, product }) {
                   key={img.id}
                   className="w-[110px] h-[110px] p-[15px] border border-qgray-border cursor-pointer"
                 >
-                  <img
+                  <ImageWithLoader
                     src={img?.name}
                     alt=""
-                    className={`w-full h-full object-contain ${src !== img.src ? "opacity-50" : ""
+                    className={`w-full h-full object-contain ${src !== img.name ? "opacity-50" : ""
                       } `}
                   />
                 </div>
@@ -171,7 +175,14 @@ export default function ProductView({ className, reportHandler, product }) {
               product?.flashSaleDetail != null ? (<div className=" w-full">
                 <div className="p-2 pl-5 bg-gradient-to-r from-red-500 to-orange-400  flex justify-between items-center">
                   <span className="font-semibold text-white">FLASHSALE</span>
-                  <span className="font-medium text-white">KẾT THÚC SAU <span className="bg-black">{showHour}:{showMinute}:{showSecound}</span></span>
+                  <span className="flex items-center">
+                    <div className="font-medium text-white">KẾT THÚC SAU</div>
+                    <div className="flex items-center ml-5 space-x-2">
+                      <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showHour < 10 ? "0" + showHour : showHour}</p>
+                      <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showMinute < 10 ? "0" + showMinute : showMinute}</p>
+                      <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showSecound < 10 ? "0" + showSecound : showSecound}</p>
+                    </div>
+                  </span>
                 </div>
 
                 <div className="pl-5 h-15 flex items-center bg-gradient-to-r from-gray-50 to-orange-50 ">
@@ -251,7 +262,7 @@ export default function ProductView({ className, reportHandler, product }) {
             <div className="flex-1 h-full">
               <button onClick={() => handleCreateCart()}
                 type="button"
-                className="black-btn text-sm font-semibold w-full h-full"
+                className="black-btn text-white text-sm font-semibold w-full h-full"
               >
                 Thêm vào giỏ hàng
               </button>
@@ -266,11 +277,11 @@ export default function ProductView({ className, reportHandler, product }) {
               <span className="text-qblack">Tags :</span> Beer, Foamer
             </p> */}
             <p className="text-[13px] text-qgray leading-7">
-              <span className="text-qblack">Mã sản phẩm:</span> {product?.id}
+              <span className="text-qblack">Số lượng:</span> {product?.quantity}
             </p>
           </div>
 
-          <div
+          {isReport ? (<div
             data-aos="fade-up"
             className="flex space-x-2 items-center mb-[20px]"
           >
@@ -295,9 +306,9 @@ export default function ProductView({ className, reportHandler, product }) {
               className="text-qred font-semibold text-[13px]">
               Báo cáo mục này
             </button>
-          </div>
+          </div>) : (<></>)}
 
-          <div
+          {/* <div
             data-aos="fade-up"
             className="social-share flex  items-center w-full"
           >
@@ -349,7 +360,7 @@ export default function ProductView({ className, reportHandler, product }) {
                 </svg>
               </span>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

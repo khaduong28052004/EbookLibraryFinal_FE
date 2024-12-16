@@ -17,24 +17,25 @@ const TableVoucher = () => {
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
-  const [size, setSize] = useState(5);
-
-  // Lấy voucher_id từ query parameters
+  const [size, setSize] = useState(10);
   const searchParams = new URLSearchParams(location.search);
   const voucher_id = searchParams.get('voucher_id');
+  const loca = useLocation();
 
   const handleGoBack = () => {
-    navigate(-1);  // "-1" để quay lại trang trước đó
+    navigate(-1);
   };
+
   useEffect(() => {
     loadListVoucherDetail();
-  }, [search, pageNumber, sortBy, sortColumn]);
+  }, [loca, search, pageNumber, sortBy, sortColumn]);
 
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
     }
   };
+
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Voucher Chi Tiết'];
     try {
@@ -45,6 +46,7 @@ const TableVoucher = () => {
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
     }
   }
+
   const handleNext = () => {
     if (pageNumber < totalPages - 1) {
       setPageNumber(pageNumber + 1);
@@ -53,11 +55,10 @@ const TableVoucher = () => {
 
   const loadListVoucherDetail = async () => {
     try {
-      const response = await VoucherService.getDetail(voucher_id, search, pageNumber, sortBy, sortColumn, size);
+      const response = await VoucherService.getDetail(voucher_id, pageNumber, search,  sortBy, sortColumn, size);
       setListVoucherDetail(response.data.result);
-      console.log("SUCCESSFULLY LOAD LIST VOUCHER DETAIL", response.data.result);
     } catch (error) {
-      console.log("ERROR LOAD LIST VOUCHER DETAIL", error);
+      console.log(error);
     }
   }
 
@@ -200,12 +201,12 @@ const TableVoucher = () => {
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {item.totalPriceOrder}
+                    {item.voucher.minOrder.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
                   </div>
                 </td>
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                   <div className="flex items-center gap-1 hidden xl:flex">
-                    {item.sale}
+                    {item.voucher.sale}%
                   </div>
                 </td>
               </tr>
@@ -220,6 +221,7 @@ const TableVoucher = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
     </div>
   );

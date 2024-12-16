@@ -1,28 +1,30 @@
 import React, { useEffect, useState } from 'react';
 
-const VoucherDialog = ({ open, onClose, sellers, onSelectVoucher, selected, sellerId, totalOrderSeller }) => {
+const VoucherDialog = ({ open, onClose, sellers, onSelectVoucher, selected, sellerId, totalOrderSeller, datas }) => {
   const [selectedVoucher, setSelectedVoucher] = useState({});
-  const [datas, setDatas] = useState([]);
+  // const [datas, setDatas] = useState([]);
+  // useEffect(() => {
+  //   if (open) {
+  //     const filteredSellers = sellers.filter(seller => seller.id == sellerId);
+  //     setDatas(filteredSellers);
+  //     const selectedVouchers = selected.filter(seller => seller.id == sellerId);
+  //     setSelectedVoucher(selectedVouchers[0]);
+
+  //   }
+  // }, [open, selected, totalOrderSeller]);
+
   useEffect(() => {
-    if (open) {
-      const filteredSellers = sellers.filter(seller => seller.id == sellerId);
-      setDatas(filteredSellers);
-
-      // Lọc selected dựa trên sellerId và cập nhật state
-      const selectedVouchers = selected.filter(seller => seller.id == sellerId);
-      setSelectedVoucher(selectedVouchers[0]);
-    }
-  }, [open,selected]); 
+    setSelectedVoucher(selected);
+  }, [datas])
   const handleVoucherClick = (voucher) => {
-    const updatedVoucher = {
-      ...selectedVoucher,
-      vouchers: voucher
-    };
-
-    setSelectedVoucher(updatedVoucher);
-
-    onSelectVoucher(updatedVoucher);
-
+    if (totalOrderSeller > voucher?.minOrder) {
+      const updatedVoucher = {
+        "sellerId": sellerId,
+        voucher: voucher
+      };
+      setSelectedVoucher(voucher);
+      onSelectVoucher(updatedVoucher);
+    }
   };
 
 
@@ -72,44 +74,34 @@ const VoucherDialog = ({ open, onClose, sellers, onSelectVoucher, selected, sell
                     <div className="mt-2">
                       <ul className="divide-y divide-gray-200">
                         {
-                          datas.length > 0 && datas[0]?.vouchers?.length > 0 ? (
-                            datas[0].vouchers.map((voucher, index) => {
-                              // Kiểm tra điều kiện voucher.totalPriceOrder < totalOrderSeller
-                              if (voucher.totalPriceOrder < totalOrderSeller) {
-                                return (
-                                  <li key={index} className="py-3 list-none">
-                                    <button
-                                      className={`w-full flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium border-2 text-gray-700 ${selectedVoucher?.vouchers.id === voucher.id ? '' : 'hover:bg-gray-100'} focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 ${selectedVoucher?.vouchers.id === voucher.id ? 'bg-indigo-500 text-white' : ''}`}
-                                      onClick={() => handleVoucherClick(voucher)}
-                                    >
-                                      <div className="flex">
-                                        <div className="mr-3">
-                                          <img
-                                            src="https://cdn-icons-png.flaticon.com/512/5816/5816793.png"
-                                            alt={voucher.title}
-                                            className="h-auto w-20 border-r-2 pr-2"
-                                          />
-                                        </div>
-                                        <span className="flex flex-col text-left">
-                                          <span className="font-bold text-base">
-                                            Giảm {voucher.sale}<sup>%</sup>, {voucher.name}
-                                          </span>
-                                          <span className="font-bold text-sm">
-                                            Đơn giá tối thiểu {voucher.minOrder / 1000}k
-                                          </span>
-                                          <span className="font-normal text-xs">
-                                            Còn lại {voucher.quantity}, còn {date(voucher.dateEnd)}
-                                          </span>
-                                        </span>
-                                      </div>
-                                    </button>
-                                  </li>
-                                );
-                              } else {
-                                // Trả về thông báo nếu không có voucher hợp lệ
-                                return null;
-                              }
-                            })
+                          datas.length ? (
+                            datas.map((voucher, index) => (<li key={index} className="py-3 list-none">
+                              <button
+                                className={`w-full flex items-center justify-between px-4 py-2 rounded-md text-sm font-medium border-2 text-gray-700 ${selectedVoucher?.id === voucher.id ? '' : 'hover:bg-gray-100'} focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 ${selectedVoucher?.id === voucher.id ? 'bg-indigo-500 text-white' : ''}`}
+                                onClick={() => handleVoucherClick(voucher)}
+                              >
+                                <div className="flex">
+                                  <div className="mr-3">
+                                    <img
+                                      src="https://cdn-icons-png.flaticon.com/512/5816/5816793.png"
+                                      alt={voucher.title}
+                                      className="h-auto w-20 border-r-2 pr-2"
+                                    />
+                                  </div>
+                                  <span className="flex flex-col text-left">
+                                    <span className="font-bold text-base">
+                                      Giảm {voucher.sale}<sup>%</sup>, {voucher.name}
+                                    </span>
+                                    <span className="font-bold text-sm">
+                                      Đơn giá tối thiểu {voucher.minOrder / 1000}k
+                                    </span>
+                                    <span className="font-normal text-xs">
+                                      Còn lại {voucher.quantity}, còn {date(voucher.dateEnd)}
+                                    </span>
+                                  </span>
+                                </div>
+                              </button>
+                            </li>))
                           ) : (
                             <div>Không có voucher nào.</div>
                           )

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon} from '@heroicons/react/24/solid'
+import { ExclamationTriangleIcon, ArrowUpCircleIcon} from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import BillService from "../../../service/Seller/billSevice";
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './pagination';
-import {ExportExcel} from "./ExportExcel"
-
+import { ExportExcel } from "./ExportExcel"
+import { useLocation } from 'react-router-dom';
 const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState("");
@@ -24,7 +24,9 @@ const TableTwo = () => {
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
   const [sortColumn, setSortColumn] = useState("id");
-  const [size, setSize] = useState(5);
+  const [size, setSize] = useState(10);
+  const location = useLocation();
+
   const handlePrevious = () => {
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
@@ -38,7 +40,7 @@ const TableTwo = () => {
   };
   useEffect(() => {
     loadListBill();
-  }, [search, pageNumber, sortBy, sortColumn]);
+  }, [location, search, pageNumber, sortBy, sortColumn]);
 
   const loadListBill = async () => {
     try {
@@ -53,8 +55,12 @@ const TableTwo = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Đơn Hàng'];
     try {
-      const response = await BillService.getAll(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Đơn Hàng.xlsx", sheetNames, [response.data.result.content]);
+      const response = await BillService.getAll(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Đơn Hàng.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -76,6 +82,7 @@ const TableTwo = () => {
       const response = await BillService.huy(dataBill, content);
       toast.success(response.data.message);
       loadListBill();
+      setContent("");
     } catch (error) {
       console.log(error);
     }
@@ -132,7 +139,7 @@ const TableTwo = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
-          onClick={handleExport}
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
@@ -170,7 +177,7 @@ const TableTwo = () => {
               </div>
             </th>
 
-            <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
+            {/* <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
               onClick={() => {
                 setSortBy(!sortBy);
                 setSortColumn("totalQuantity");
@@ -181,7 +188,7 @@ const TableTwo = () => {
                 <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "totalQuantity" ? "text-black" : "text-gray-500"} text-black`} />
                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "totalQuantity" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
-            </th>
+            </th> */}
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
               onClick={() => {
@@ -210,7 +217,7 @@ const TableTwo = () => {
 
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-              <span className="text-sm text-black dark:text-white truncate w-24"></span>
+              <span className="text-sm text-black dark:text-white truncate w-30"></span>
             </th>
           </tr>
         </thead>
@@ -237,11 +244,11 @@ const TableTwo = () => {
                     {new Date(item.createAt).toLocaleDateString("en-GB")}
                   </div>
                 </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
                     {item.totalQuantity}
                   </div>
-                </td>
+                </td> */}
                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                   <div className="flex items-center gap-1 hidden xl:flex">
                     {item.totalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
@@ -254,68 +261,73 @@ const TableTwo = () => {
                     </span>
                   </div>
                 </td>
-                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                  <div className="flex space-x-3.5">
-                    <button>
-                      {item.orderStatus.id < 4 && (
-                        <ArrowPathIcon
-                          className="w-5 h-5 text-black hover:text-green-600 dark:text-white"
-                          onClick={() => {
-                            setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
-                            setOrderStatusId(true);
-                            setIsOpen(true);
-                          }}
-                        />
-                      )}
-                    </button>
-                    <button>
-                      {item.orderStatus.id <= 2 && (
-                        <TrashIcon
-                          className="w-5 h-5 text-black hover:text-red-600 dark:text-white"
-                          onClick={() => {
-                            setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
-                            setOrderStatusId(false);
-                            setIsOpen(true);
-                          }}
-                        />
-                      )}
-                    </button>
+                <td className="py-4 px-4 md:px-6 2xl:px-7.5">
+                  <div className="flex flex-wrap gap-4">
+                    {item.orderStatus.id < 4 && (
+                      <button
+                        className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
+                          setOrderStatusId(true);
+                          setIsOpen(true);
+                        }}
+                      >
+                        {item.orderStatus.id === 1 && "Đang xử lý"}
+                        {item.orderStatus.id === 2 && "Đang giao"}
+                        {item.orderStatus.id === 3 && "Đã giao"}
+                      </button>
+                    )}
+                    {item.orderStatus.id <= 2 && (
+                      <button
+                        className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setDataBill({ id: item.id, orderStatus: item.orderStatus.id });
+                          setOrderStatusId(false);
+                          setIsOpen(true);
+                        }}
+                      >
+                        Hủy
+                      </button>
+                    )}
                   </div>
                 </td>
+
               </tr>
 
               {expandedRowId === item.id && (
                 <tr className="border-t border-stroke dark:border-strokedark bg-gray-50 dark:bg-gray-800">
                   <td colSpan={8} className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
                     <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-                      <p><strong>Mã Đơn Hàng:</strong> {item.id || "Không có thông tin"}</p>
+                      <p><strong>Mã Đơn Hàng: </strong> {item.id || "Không có thông tin"}</p>
 
                       <p>
-                        <strong>Số Điện Thoại:</strong>
+                        <strong>Số Điện Thoại: </strong>
                         {item.address && item.address.phone ? item.address.phone : " Không có số điện thoại"}
                       </p>
 
                       <p>
-                        <strong>Phương Thức Thanh Toán:</strong>
+                        <strong>Phương Thức Thanh Toán: </strong>
                         {item.paymentMethod && item.paymentMethod.name ? item.paymentMethod.name : " Không xác định"}
                       </p>
 
                       <p>
-                        <strong>Ngày Hoàn Thành:</strong>
+                        <strong>Ngày Hoàn Thành: </strong>
                         {item.finishAt
                           ? new Date(item.finishAt).toLocaleDateString("en-GB")
                           : "Chưa Hoàn Thành"}
                       </p>
 
                       <p>
-                        <strong>Sản Phẩm:</strong>
+                        <strong>Sản Phẩm: </strong>
                         {item.billDetails && item.billDetails.length > 0
                           ? item.billDetails.map((detail) => detail.product && detail.product.name ? detail.product.name : " Sản phẩm không xác định").join(', ')
                           : " Không có sản phẩm"}
                       </p>
 
                       <p>
-                        <strong>Địa Chỉ:</strong>
+                        <strong>Địa Chỉ: </strong>
                         {item.address && item.address.fullNameAddress ? item.address.fullNameAddress : " Không có địa chỉ"}
                       </p>
                     </div>
@@ -336,6 +348,7 @@ const TableTwo = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
       <Modal
         open={isOpen}
@@ -357,9 +370,9 @@ const TableTwo = () => {
         cancelText="Thoát"
         icon={
           !orderStatusId ? (
-            <TrashIcon className="h-6 w-6 text-red-600" />
+            <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
           ) : (
-            <ReceiptRefundIcon className="h-6 w-6 text-green-600" />
+            <ArrowUpCircleIcon className="h-6 w-6 text-green-600" />
           )
         }
         iconBgColor={!orderStatusId ? 'bg-red-100' : 'bg-green-100'}

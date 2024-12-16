@@ -4,6 +4,7 @@ import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Thongke from '../../../service/admin/ThongKe';
 import Pagination from './Pagination';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableTwo = ({ onPageChange, entityData }) => {
     const [dateStart, setDateStart] = useState('');
@@ -39,8 +40,12 @@ const TableTwo = ({ onPageChange, entityData }) => {
         const sheetNames = ['Danh Sách Thống Kê Khách Hàng'];
         try {
             console.log("totalElements: " + entityData.totalElements);
-            const response = await Thongke.khachHang({ dateStart, dateEnd, searchItem, option, currentPage, size: entityData.totalElements, sortColumn, sortBy });
-            return ExportExcel("Danh Sách Thống Kê Khách Hàng.xlsx", sheetNames, [response.data.result.thongke.content]);
+            const response = await Thongke.khachHang({ dateStart, dateEnd, searchItem, option, currentPage, size: entityData.totalElements === 0 ? 5 : entityData.totalElements, sortColumn, sortBy });
+            if (!response || response.data.result.thongke.totalElements === 0) {
+                toast.error("Không có dữ liệu");
+            } else {
+                return ExportExcel("Danh Sách Thống Kê Khách Hàng.xlsx", sheetNames, [response.data.result.thongke.content]);
+            }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -61,6 +66,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
         };
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer />
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3 flex items-center space-x-4">
@@ -87,33 +93,29 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 />
                             </svg>
                         </button>
-
-                        {/* Input Start Date */}
-                        <input
-                            value={dateStart}
-                            onChange={(e) => {
-                                setDateStart(e.target.value);
-                            }}
-                            type="date"
-                            placeholder="Start Date"
-                            name="startDate"
-                            className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-                        />
-
-                        {/* Arrow Icon from Heroicons */}
-                        <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
-
-                        {/* Input End Date */}
-                        <input
-                            value={dateEnd}
-                            onChange={(e) => {
-                                setDateEnd(e.target.value);
-                            }}
-                            type="date"
-                            placeholder="End Date"
-                            name="endDate"
-                            className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
-                        />
+                        {option === "macdinh" ? (<></>) : (<>
+                            <input
+                                value={dateStart}
+                                onChange={(e) => {
+                                    setDateStart(e.target.value);
+                                }}
+                                type="date"
+                                placeholder="Start Date"
+                                name="startDate"
+                                className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+                            />
+                            <ArrowRightIcon className="w-5 h-5 text-black dark:text-white" />
+                            <input
+                                value={dateEnd}
+                                onChange={(e) => {
+                                    setDateEnd(e.target.value);
+                                }}
+                                type="date"
+                                placeholder="End Date"
+                                name="endDate"
+                                className="w-45 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
+                            />
+                        </>)}
                         <input
                             value={searchItem}
                             onChange={(e) => {
@@ -123,7 +125,6 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             type="text"
                             placeholder="Tìm kiếm..."
                             className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-50" />
-                        {/* Dropdown Option */}
                         <select
                             value={option}
                             onChange={(e) => setOption(e.target.value)}
@@ -157,27 +158,14 @@ const TableTwo = ({ onPageChange, entityData }) => {
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
-                                setSortColumn("username");
-                                setSortBy(!sortBy);
-                            }}
-                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1">
-                                <span className="text-sm text-black dark:text-white">Tài khoản </span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
-                            </div>
-                        </th>
-
-                        <th
-                            onClick={() => {
                                 setSortColumn("fullname");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white ">Họ và tên</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "fullname" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -189,8 +177,8 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Đơn trung bình</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "avgdonhang" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "avgdonhang" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
 
@@ -202,8 +190,8 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Đánh giá trung bình</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "avgStar" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "avgStar" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
                         <th
@@ -214,18 +202,11 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
                                 <span className="text-sm text-black dark:text-white">Tổng đơn hàng</span>
-                                <ArrowLongDownIcon className="h-4 w-4 text-black dark:text-white" />
-                                <ArrowLongUpIcon className="h-4 w-4 text-black dark:text-white" />
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "sumDonHang" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "sumDonHang" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
-                        <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Trạng thái</span>
-                            </div>
-                        </th>
-                        <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
-                            <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
-                        </th>
+
                     </tr>
                 </thead>
 
@@ -247,13 +228,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
                                     <img className="h-12.5 w-15 rounded-md" src={entity.avatar} alt="entity" />
-                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.username}</p>
-                                </td>
-
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                    <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.fullname}
-                                    </div>
+                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.fullname}</p>
                                 </td>
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
@@ -270,20 +245,6 @@ const TableTwo = ({ onPageChange, entityData }) => {
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
                                         {entity.sumDonHang}
-                                    </div>
-                                </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
-                                    <div className="flex items-center gap-1 hidden lg:flex">
-                                        <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${entity.status ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                                            {entity.status ? 'Hoạt Động' : 'Đã Ngừng'}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                                    <div className="flex space-x-3.5">
-                                        <button onClick={() => { setId(entity.id); setIsOpen(true); setStatusentity(entity.status); }}>
-                                            {entity.status ? (<TrashIcon className='w-5 h-5 text-black hover:text-red-600  dark:text-white' />) : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-yellow-600  dark:text-white' />)}
-                                        </button>
                                     </div>
                                 </td>
                             </tr>

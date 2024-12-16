@@ -2,6 +2,8 @@ import React, { Dispatch, SetStateAction, ReactNode } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 
 interface ModalProps {
+    content: string;
+    setContent: Dispatch<SetStateAction<string>>; // Updated to a setter function type
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
     title: string;
@@ -9,12 +11,14 @@ interface ModalProps {
     onConfirm?: () => void;
     confirmText?: string;
     cancelText?: string;
-    icon?: ReactNode; 
-    iconBgColor?: string; 
+    icon?: ReactNode;
+    iconBgColor?: string;
     buttonBgColor?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
+    content,
+    setContent,
     open,
     setOpen,
     title,
@@ -34,7 +38,7 @@ const Modal: React.FC<ModalProps> = ({
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                         <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                            <div className="sm:flex sm:items-start">
+                            <div className="sm:flex sm:items-start w-full pr-0 mr-0">
                                 <div
                                     className={`mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full ${iconBgColor} sm:mx-0 sm:h-10 sm:w-10`}
                                 >
@@ -47,7 +51,19 @@ const Modal: React.FC<ModalProps> = ({
                                     <div className="mt-2">
                                         <p className="text-sm text-gray-500">{message}</p>
                                     </div>
+                                    <div>
+                                        <label className="my-2.5 block text-black dark:text-white">
+                                            Nội dung:
+                                        </label>
+                                        <textarea cols={40} rows={5}
+                                            value={content}
+                                            placeholder="Nội dung..."
+                                            onChange={(e) => { setContent(e.target.value) }}
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            name="" id=""></textarea>
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
                         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
@@ -57,7 +73,10 @@ const Modal: React.FC<ModalProps> = ({
                                     onConfirm && onConfirm();
                                     setOpen(false);
                                 }}
+                                // disabled={content.length < 20}
+                                // className={`inline-flex w-full justify-center rounded-md ${content.length > 20 ? (buttonBgColor) : ('bg-gray-400')}  px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
                                 className={`inline-flex w-full justify-center rounded-md ${buttonBgColor} px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto`}
+
                             >
                                 {confirmText}
                             </button>

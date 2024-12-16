@@ -21,7 +21,7 @@ export default function FourZeroFour() {
                   <a href="/">
                     <div className="flex justify-center w-full ">
                       <div className="w-[180px] h-[50px] ">
-                        <span type="button" className="yellow-btn">
+                        <span type="button" className="flex items-center justify-center h-full w-full bg-[#003EA1] text-[13px] font-semibold text-[#1d1d1d] leading-none">
                           Back to Shop
                         </span>
                       </div>

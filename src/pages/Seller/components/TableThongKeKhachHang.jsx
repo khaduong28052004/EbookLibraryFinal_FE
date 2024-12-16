@@ -1,24 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowRightIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, EyeIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { ArrowLongDownIcon, ArrowLongUpIcon } from '@heroicons/react/24/solid'
 import ThongKeService from '../../../service/Seller/thongKeService';
 import Pagination from './pagination';
-import {ExportExcel} from "./ExportExcel"
+import { ExportExcel } from "./ExportExcel"
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, totalElements, totalPages, handlePrevious, handleNext, setPageNumber, sortBy, setSortBy, sortColumn, setSortColumn }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [statusProduct, setStatusProduct] = useState(false);
-  const [isOpenModalSP, setIsOpenModalSP] = useState(false);
-  const handleConfirm = () => {
-    setIsOpen(false);
-  };
 
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Thống Kê Khách Hàng'];
     try {
-      const response = await ThongKeService.khachHang(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Thống Kê Khách Hàng.xlsx", sheetNames, [response.data.result.content]);
+      const response = await ThongKeService.khachHang(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.khachHang.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Thống Kê Khách Hàng.xlsx", sheetNames, [response.data.result.khachHang.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -27,6 +25,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <ToastContainer/>
       <div className="py-6 flex flex-col md:flex-row justify-between px-4 md:px-6 xl:px-7.5 space-y-4 md:space-y-0">
         <form>
           <div className="relative pt-3 flex items-center space-x-4">
@@ -59,7 +58,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
               type="text"
               placeholder="Tìm kiếm..."
               name="search"
-              onChange={(e) => {setSearch(e.target.value); setPageNumber(0)}}
+              onChange={(e) => { setSearch(e.target.value); setPageNumber(0) }}
               className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
             />
 
@@ -72,7 +71,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
 
           </button>
           <button
-          onClick={handleExport}
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 w-1/2 md:w-1/3 lg:w-2/4 md:mb-0"
           >
             Excel
@@ -93,8 +92,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Khách Hàng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "khachHang" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "khachHang" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "khachHang" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "khachHang" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -106,8 +105,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Số Sản Phẩm Đã Mua</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "soSanPham" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "soSanPham" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "soSanPham" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "soSanPham" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -119,8 +118,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Lượt Mua</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotMua" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotMua" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotMua" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotMua" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -132,8 +131,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Số Lượt Đã Đánh Giá</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "luotDanhGia" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -145,8 +144,8 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số Tiền Đã Chi</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "soTien" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "soTien" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "soTien" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "soTien" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -202,6 +201,7 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={pageSize}
       />
 
     </div>

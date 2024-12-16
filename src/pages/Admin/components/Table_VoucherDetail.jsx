@@ -38,8 +38,12 @@ const TableVoucher = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Voucher Chi Tiết'];
     try {
-      const response = await VoucherService.getDetail(voucher_id, search, pageNumber, sortBy, sortColumn, size);
-      return ExportExcel("Danh Sách Voucher Chi Tiết.xlsx", sheetNames, [response.data.result.content]);
+      const response = await VoucherService.getDetail(voucher_id, search, pageNumber, sortBy, sortColumn, size === 0 ? 5 : size);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Voucher Chi Tiết.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -132,8 +136,8 @@ const TableVoucher = () => {
             >
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Tên</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "voucher.name" ? "text-black" : "text-gray-500"} text-black`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "voucher.name" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "voucher.name" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "voucher.name" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -145,8 +149,8 @@ const TableVoucher = () => {
             >
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white ">Khách Hàng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "account.fullname" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -158,8 +162,8 @@ const TableVoucher = () => {
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Điều Kiện</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "voucher.totalPriceOrder" ? "text-black" : "text-gray-500"} text-black`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "voucher.totalPriceOrder" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "voucher.totalPriceOrder" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "voucher.totalPriceOrder" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
 
@@ -171,8 +175,8 @@ const TableVoucher = () => {
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Giảm Giá</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "voucher.sale" ? "text-black" : "text-gray-500"} text-black`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "voucher.sale" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "voucher.sale" ? "text-black" : "text-gray-500"} text-black`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "voucher.sale" ? "text-black" : "text-gray-500"} text-black`} />
               </div>
             </th>
           </tr>

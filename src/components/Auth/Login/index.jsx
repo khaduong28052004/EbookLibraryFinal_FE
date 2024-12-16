@@ -1,5 +1,5 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,6 +11,11 @@ import Layout from "../../Partials/Layout";
 import FaceBookSingIn from "./FaceBookSingIn";
 import LoginGG from "./loginGG";
 import Thumbnail from "./Thumbnail";
+import { messaging } from '../../../config/firebase';
+import { getMessaging, getToken } from "firebase/messaging";
+
+import CryptoJS from 'crypto-js';
+import Cookies from 'js-cookie';
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -28,61 +33,113 @@ export default function Login() {
   const turnstileRef = useRef(null);
   const rememberMe = () => setChecked(!checked);
 
-
+  useEffect(() => {
+    try {
+      setUsername(Cookies.get('username'));
+      // const encryptedPassword = CryptoJS.AES.encrypt(Cookies.get('password'), 'secret_key').toString();
+      const decryptedPassword = CryptoJS.AES.decrypt(Cookies.get('password'), import.meta.env.VITE_SITEKEY_PASSWORDCOOKIES).toString(CryptoJS.enc.Utf8);
+      setPassword(decryptedPassword);
+    } catch (error) {
+      // console.error(error);
+    }
+  }, []);
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    if (username.trim() === "") {
+
+    if(!username||!password){
+      seterrorFrom((prev) => ({ ...prev, usernameF: 1,passwordF:1 }));
+    }
+    if (!username) {
       seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
       toast.error("Vui lòng kiểm tra tên đăng nhập!");
       return;
-    }else{
+    } else {
       seterrorFrom((prev) => ({ ...prev, usernameF: 0 }));
     }
-    
-    if (password.trim() === "") {
+    if (!password) {
       seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
-      toast.error("Vui lòng kiểm tra tên đăng nhập!");
+      toast.error("Vui lòng kiểm tra mật khẩu!");
       return;
-    } else{
+    } else {
       seterrorFrom((prev) => ({ ...prev, passwordF: 0 }));
     }
-    
+
 
     if (!captchaToken) {
-      toast.error("Please complete the captcha");
+      toast.error("Vui lòng tích capchat!");
       return;
     }
 
+    if (checked) {//import.meta.env.VITE_API_BASEURL
+      const SITEKEY = import.meta.env.VITE_SITEKEY_PASSWORDCOOKIES;
+      const encryptedPassword = CryptoJS.AES.encrypt(password, SITEKEY).toString();
+      Cookies.set('username', username, { expires: 3 });
+      Cookies.set('password', encryptedPassword, { expires: 3 });
+    } else {
+      Cookies.remove('username');
+      Cookies.remove('password');
+    }
     try {
       const response = await AuthService.login({
         username,
         password,
         captchaToken,
       });
-      seterrorFrom((prev) => ({ ...prev, passwordF: 2,usernameF:2 }));
-      if (response.status) {
+
+
+      if (response.data.code === 1000) {
+
+        seterrorFrom((prev) => ({ ...prev, passwordF: 2, usernameF: 2 }));
         setTimeout(() => {
-          if (response.data.roles === "USER") {
+          if (response.data.result.roles === "USER") {
             navigate('/');
-          } else if (response.data.roles === "SELLER") {
+          } else if (response.data.result.roles === "SELLER") {
             navigate('/seller/home');
           } else {
             navigate('/admin/home');
           }
         }, 2000);
+        AuthService.setItem(response.data.result);
         toast.success("Đăng nhập thành công!");
+
+        getToken(messaging, { vapidKey: 'BF6r8B0UNESGl3sKNmjDBBL6elWN-2zV_3n0InFn1Ipmap2j1L1r7ZLUMiFf-0-HFK_NP5z24mvP4hBYm1Fhf5I' }).then((currentToken) => {
+          if (currentToken) {
+            console.log("FCM TOKEN: ", currentToken)
+          } else {
+            console.log('No registration token available. Request permission to generate one.');
+          }
+        }).catch((err) => {
+          console.log('An error occurred while retrieving token. ', err);
+        })
+
+      } else if (response?.data?.code === 1001) {
+        const [errorFrom, seterrorFrom] = useState({
+          usernameF: 0,
+          passwordF: 0,
+        });
+
+        seterrorFrom((prev) => ({ ...prev, usernameF: 1 }));
+        toast.error("Tài khoản không tồn tại!");
+      } else if (response?.data?.code === 1002) {
+        seterrorFrom((prev) => ({ ...prev, passwordF: 1 }));
+        toast.error("Sai mật khẩu!");
+      } else if (response?.data?.code === 1003) {
+        seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
+        toast.error("Lỗi đăng nhập!");
       } else {
-        toast.error("Đăng nhập thất bại vui lòng kiểm tra lại!");
+        seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
+        toast.error("Lỗi đăng nhập!");
       }
-      AuthService.setItem(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Đăng nhập thất bại!");
+      seterrorFrom((prev) => ({ ...prev, passwordF: 1, usernameF: 1 }));
+      toast.error("Đăng nhập thất bại!");
     }
   };
 
   return (
-    <Layout childrenClasses="pt-0 pb-0">
+    <>
+      {/* // <Layout childrenClasses="pt-0 pb-0"> */}
       {/* <ToastContainer
         position="bottom-center"
         autoClose={5000}
@@ -106,6 +163,7 @@ export default function Login() {
                     <svg width="172" height="29" viewBox="0 0 172 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M1 5.08742C17.6667 19.0972 30.5 31.1305 62.5 27.2693C110.617 21.4634 150 -10.09 171 5.08727" stroke="#FFBB38" />
                     </svg>
+
                   </div>
                 </div>
 
@@ -116,16 +174,32 @@ export default function Login() {
                       label="Username*"
                       name="username"
                       type="text"
-                      inputClasses={
-                        errorFrom.usernameF === 1
-                          ? "border-red-500 bg-red-400" // Error state
-                          : errorFrom.usernameF === 2
-                            ? "border-green-500 bg-red-400" // Success state
-                            : "" // Default state
-                      }
+                      inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.usernameF === 1
+                        ? "border-red-300 bg-red-300" // Error state
+                        : errorFrom.usernameF === 2
+                          ? "border-green-300 bg-red-300" // Success state
+                          : ""}`}
+                      // =======
+                      //                         ? "ring-red-500 bg-red-100" // Lỗi
+                      //                         : errorFrom.usernameF === 2
+                      //                           ? "ring-green-500 bg-green-100" // Thành công
+                      //                           : "" // Mặc định
+                      //                         }`}
+
+                      // >>>>>>> Stashed changes
+
+
+
+                      // errorFrom.usernameF === 1
+                      //   ? "border-red-500 bg-red-400" // Error state
+                      //   : errorFrom.usernameF === 2
+                      //     ? "border-green-500 bg-red-400" // Success state
+                      //     : "" // Default state
+
                       value={username}
                       inputHandler={(e) => setUsername(e.target.value)}
                     />
+                    {/* inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${error.username?.error ? 'bg-red-100 ring-red-500' : ''}`} */}
 
                   </div>
                   <div className="input-item mb-5 relative">
@@ -134,13 +208,19 @@ export default function Login() {
                       label="Password*"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      inputClasses={
-                        errorFrom.passwordF === 1
-                          ? "border-red-500 bg-red-400" // Error state
-                          : errorFrom.passwordF === 2
-                            ? "border-green-500 bg-red-400" // Success state
-                            : "" // Default state
-                      }
+                      inputClasses={`block w-full rounded-md border-0 py-1.5 pl-2 text-gray-900 shadow-sm ring-1 ring-inset focus:outline-none sm:text-sm sm:leading-6 ${errorFrom.passwordF === 1
+                        ? "border-red-300 bg-red-300" // Error state
+                        : errorFrom.passwordF === 2
+                          ? "border-green-300 bg-red-300" // Success state
+                          : ""}`}
+                      // =======
+                      //                         ? "ring-red-500 bg-red-100" // Lỗi
+                      //                         : errorFrom.passwordF === 2
+                      //                           ? "ring-green-500 bg-green-100" // Thành công
+                      //                           : "" // Mặc định
+                      //                         }`}
+
+
                       value={password}
                       inputHandler={(e) => setPassword(e.target.value)}
                     >
@@ -169,16 +249,16 @@ export default function Login() {
                   )}
                   <div className="forgot-password-area flex justify-between items-center mb-7">
                     <div className="remember-checkbox flex items-center space-x-2.5">
-                      <button onClick={rememberMe} type="button" className="w-5 h-5 text-qblack flex justify-center items-center border border-light-gray">
+                      <button onClick={rememberMe} type="button" className="rounded-full w-4 h-4 text-qblack flex justify-center items-center border border-gray-300 hover:shadow-white shadow">
                         {checked && (
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         )}
                       </button>
-                      <span onClick={rememberMe} className="text-base text-black">Nhớ mật khẩu!</span>
+                      <span onClick={rememberMe} className="text-sm text-black">Nhớ mật khẩu</span>
                     </div>
-                    <Link to="/forgot-password" className="text-base text-qyellow">Quên mật khẩu!</Link>
+                    <Link to="/forgot-password" className="text-sm text-[#003EA1]">Quên mật khẩu?</Link>
                   </div>
                   <div className="mb-5">
                     <Turnstile
@@ -195,6 +275,9 @@ export default function Login() {
                     Đăng nhập
                   </button>
                 </form>
+                <p className="text-base text-qgraytwo font-normal flex justify-center">
+                  ___________Hoặc___________
+                </p>
                 <div className="social-login-buttons flex space-x-4 mt-6">
                   <button className="w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
                     <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENTID_GG}>
@@ -206,15 +289,21 @@ export default function Login() {
                     <FaceBookSingIn />
                   </button>
                 </div>
-                <div className="social-login-buttons flex space-x-4 mt-6">
-                  <Link to="/signup" className="text-base text-qyellow">Đăng ký tài khoản!</Link>
+                <div className="social-login-buttons flex space-x-1 mt-6 text-sm">
+                  <span className='text-gray-600'>Chưa có tài khoản?</span><Link to="/signup" className="text-[#003EA1]">Tạo tài khoản</Link>
                 </div>
+                {/* <div className="social-login-buttons flex space-x-4 mt-6">
+                  <Link to="/singupLinkFrom" className="text-base text-qyellow">Đăng ký tài khoản v2!</Link>
+                </div> */}
               </div>
             </div>
+
             <Thumbnail />
+
           </div>
         </div>
       </div>
-    </Layout>
+      {/* </Layout> */}
+    </>
   );
 }

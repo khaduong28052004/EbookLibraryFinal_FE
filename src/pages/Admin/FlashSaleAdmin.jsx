@@ -23,14 +23,14 @@ const FalshSaleAdmin = () => {
       setCurrentPage(0);
       findAllFlashSale();
     } catch (error) {
-      toast.error("Lỗi hệ thống");
+      toast.error(error.response.data.message);
       console.log("Error: " + error);
     }
   }
 
   const findAllFlashSale = async () => {
     try {
-      const response = await flashSale.findAllFlashSale({ dateStart, dateEnd, currentPage, size: 2, sortColumn, sortBy });
+      const response = await flashSale.findAllFlashSale({ dateStart, dateEnd, currentPage, size: 10, sortColumn, sortBy });
       console.log("content: " + response.data.result.content);
       setData(response.data.result);
       console.log(data);

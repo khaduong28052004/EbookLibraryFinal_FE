@@ -12,9 +12,30 @@ import ThongKeKhachHang from "./pages/Seller/ThongKeKhachHangSeller"
 import DanhGiaSeller from "./pages/Seller/DanhGiaSeller"
 import VoucherDetailSeller from "./pages/Seller/VoucherDetailSeller"
 import ChatBot from "./pages/Seller/ChatBot"
+import Shop from "./pages/Seller/ThongTinShopSeller"
+import { useEffect, useState } from "react";
+import NotificationModal from "./components/Notification/NotificationModal";
+
+
 export default function RouterSellers() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    const channel = new BroadcastChannel("notifications");
+    channel.addEventListener("message", (event) => {
+      console.log("Receive background: ", event.data);
+      setMessage(event.data.data.content || "Bạn có một thông báo mới!");
+      setIsOpen(true);
+    });
+
+  },[])
+  const handleClose = () => {
+    setIsOpen(false);
+    setMessage("");
+  };
   return (
     <SellerLayout>
+      <NotificationModal isOpen={isOpen} message={message} onClose={handleClose} />
       <ChatBot />
       <Routes>
         <Route
@@ -57,7 +78,7 @@ export default function RouterSellers() {
           path="/quanLy/category"
           element={
             <>
-              <PageTitle title="Thể Loại" />
+              <PageTitle title="Danh mục" />
               <CategorySeller />
             </>
           }
@@ -107,6 +128,13 @@ export default function RouterSellers() {
             </>
           }
         />
+        <Route path="shop"
+          element={
+            <>
+              <PageTitle title="Shop" />
+              <Shop/>
+            </>
+          } />
       </Routes>
     </SellerLayout>
   );

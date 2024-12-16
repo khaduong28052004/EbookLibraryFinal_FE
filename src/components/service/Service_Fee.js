@@ -1,30 +1,67 @@
 import axios from "axios";
 
 
-async function Service_Fee(weight, quantity, fromAddress, addressTo) {
-    console.log("district from" + fromAddress.district);
-    console.log("wardCode from" + fromAddress.wardCode);
-    console.log("district To " + addressTo.district);
-    console.log("wardCode to " + addressTo.wardCode);
-    console.log("id" + fromAddress.id)
+
+export const service = async (fromAddress, addressTo) => {
+    // console.log("district from" + fromAddress.district);
+    // console.log("wardCode from" + fromAddress.wardCode);
+    // console.log("district To " + addressTo.district);
+    // console.log("wardCode to " + addressTo.wardCode);
+    try {
+        const result = await axios.get(
+            "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services",
+            {
+                params: {
+                    "shop_id": 885,
+                    "from_district": fromAddress.district,
+                    "to_district": addressTo.district
+                },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': "87b48598-2325-11ef-a951-76299e96dead", // Token
+                },
+            }
+        );
+
+        // Lấy `service_id` từ kết quả
+        const { service_id } = result?.data?.data[0];
+        // if (!service_id) {
+        //     throw new Error("Service ID not found in response.");
+        // }
+        return { service_id };
+    } catch (error) {
+        console.error("Error fetching service:", error.response ? error.response.data : error.message);
+        throw error; // Quăng lỗi để xử lý phía trên (nếu cần)
+    }
+};
+
+
+async function Service_Fee(serviceId, weight, quantity, fromAddress, addressTo) {
+    // console.log("district from" + fromAddress.district);
+    // console.log("wardCode from" + fromAddress.wardCode);
+    // console.log("district To " + addressTo.district);
+    console.log("quantity " + quantity);
+    console.log("weight" + weight);
     try {
         // Gửi yêu cầu POST với dữ liệu trong phần 'data'
         const result = await axios.post("https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee", {
-            "service_id": 53321,
-            "from_district_id": 1823,
-            "from_ward_code": "640706",
-            "to_district_id": 1452,
-            "to_ward_code": "21010",
+            "service_id": serviceId,
+            "from_district_id": fromAddress.district,
+            "from_ward_code": fromAddress.wardCode,
+            "to_district_id": addressTo.district,
+            "to_ward_code": addressTo.wardCode,
             "weight": weight,
             "insurance_value": 0,
             "coupon": null,
-            "items": [
-                {
-                    "name": "TEST1",
-                    "quantity": quantity
+            // "quantity":2000,
+            // "items": [
+            //     {
+            //         "name": "TEST1",
+            //         "quantity": 2000,
+            //         "weight":4100
 
-                }
-            ]
+            //     }
+            // ]
         }, {
             headers: {
                 'Content-Type': 'application/json',

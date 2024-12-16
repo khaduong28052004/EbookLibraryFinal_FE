@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLongDownIcon, ArrowLongUpIcon, StarIcon } from '@heroicons/react/24/solid'
-import { ArrowPathIcon, TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
+import { TrashIcon, ReceiptRefundIcon } from '@heroicons/react/24/outline'
 import Modal from "./ModalThongBao";
 import ModalSanPham from './ModalDanhGia';
 import DanhGiaService from '../../../service/Seller/danhGiaService';
 import { toast, ToastContainer } from 'react-toastify';
 import Pagination from './pagination';
-import {ExportExcel} from "./ExportExcel"
-
+import { ExportExcel } from "./ExportExcel"
+import { useLocation } from 'react-router-dom';
 const TableTwo = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [statusProduct, setStatusProduct] = useState(false);
@@ -26,11 +26,12 @@ const TableTwo = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [sortBy, setSortBy] = useState(true);
-  const [size, setSize] = useState(5);
+  const [size, setSize] = useState(10);
   const [sortColumn, setSortColumn] = useState("id");
+  const location = useLocation();
   useEffect(() => {
     getList();
-  }, [search, pageNumber, sortBy, sortColumn]);
+  }, [location, search, pageNumber, sortBy, sortColumn]);
   useEffect(() => {
     if (isStatus) {
       getList();
@@ -68,8 +69,12 @@ const TableTwo = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Đánh Giá'];
     try {
-      const response = await DanhGiaService.getData(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Đánh Giá.xlsx", sheetNames, [response.data.result.content]);
+      const response = await DanhGiaService.getData(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        return ExportExcel("Danh Sách Đánh Giá.xlsx", sheetNames, [response.data.result.content]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -126,7 +131,7 @@ const TableTwo = () => {
         </form>
         <div className="flex items-center space-x-2">
           <button
-          onClick={handleExport}
+            onClick={handleExport}
             className="inline-flex items-center justify-center rounded-md bg-gray-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
           >
             Excel
@@ -147,8 +152,8 @@ const TableTwo = () => {
               }}>
               <div className="flex items-center gap-1">
                 <span className="text-sm text-black dark:text-white">Khách Hàng</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "account.fullname" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -160,14 +165,14 @@ const TableTwo = () => {
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white ">Sản Phẩm</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "product.name" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
               <div className="flex items-center gap-1 hidden xl:flex">
-                <span className="text-sm text-black dark:text-white">Hình Ảnh Đánh Giá</span>
+                <span className="text-sm text-black dark:text-white">Hình Ảnh</span>
               </div>
             </th>
             <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium"
@@ -178,8 +183,8 @@ const TableTwo = () => {
             >
               <div className="flex items-center gap-1 hidden xl:flex">
                 <span className="text-sm text-black dark:text-white">Nội Dung Đánh Giá</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false & sortColumn == "content" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -191,8 +196,8 @@ const TableTwo = () => {
             >
               <div className="flex items-center gap-1 hidden lg:flex">
                 <span className="text-sm text-black dark:text-white">Số Sao</span>
-                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
-                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
+                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "star" ? "text-black" : "text-gray-500"}`} />
               </div>
             </th>
 
@@ -204,46 +209,76 @@ const TableTwo = () => {
 
         <tbody>
           {listDanhGia.map((danhGia, index) => (
-            <tr key={index} className="border-t border-stroke dark:border-strokedark">
-
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+            <tr
+              key={index}
+              className="border-t border-stroke dark:border-strokedark whitespace-nowrap text-ellipsis overflow-hidden"
+            >
+              {/* Số thứ tự */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white text-center">
                 {index + 1 + pageNumber * pageSize}
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                <p className="text-sm text-black dark:text-white truncate w-24">{danhGia.account.fullname}</p>
+
+              {/* Tên tài khoản */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5">
+                <p className="text-sm text-black dark:text-white truncate max-w-[100px]">
+                  {danhGia.account.fullname}
+                </p>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                <div className="flex items-center gap-1 hidden xl:flex">
+
+              {/* Tên sản phẩm */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                <div className="flex items-center gap-1 truncate max-w-[200px]">
                   {danhGia.product.name}
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                <div className="flex items-center gap-1 hidden xl:flex">
-                  {danhGia.imageEvalues.map((image) => (
-                    <img className="h-12.5 w-12.5 rounded-md" src={image.name} alt="Evalue" />
+
+              {/* Ảnh đánh giá */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                <div className="flex items-center gap-2 overflow-x-auto">
+                  {danhGia.imageEvalues.map((image, imgIndex) => (
+                    <img
+                      key={imgIndex}
+                      className="h-12 w-12 rounded-md border border-gray-300 shadow-sm"
+                      src={image.name}
+                      alt={`Evalue ${imgIndex}`}
+                    />
                   ))}
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden xl:flex">
+
+              {/* Nội dung đánh giá */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                <div className="truncate max-w-[300px]">
                   {danhGia.content}
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                <div className="flex items-center gap-1 hidden lg:flex">
-                  {danhGia.star}/5 <StarIcon className='w-5 h-5 text-yellow-500' />
+
+              {/* Số sao */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white text-center">
+                <div className="flex items-center gap-1 justify-center">
+                  {danhGia.star}/5
+                  <StarIcon className="w-5 h-5 text-yellow-500" />
                 </div>
               </td>
-              <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                <div className="flex space-x-3.5">
-                  <button onClick={() => openModal(danhGia)}>
-                    <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600  dark:text-white' />
+
+              {/* Hành động */}
+              <td className="py-4 px-4 md:px-6 2xl:px-7.5">
+                <div className="flex flex-wrap gap-4 justify-center">
+                  <button
+                    className="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      openModal(danhGia);
+                    }}
+                  >
+                    Phản hồi
                   </button>
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
+
       </table>
 
       <Pagination
@@ -253,6 +288,7 @@ const TableTwo = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
 
       <Modal

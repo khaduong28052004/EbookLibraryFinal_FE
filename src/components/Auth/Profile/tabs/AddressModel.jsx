@@ -38,6 +38,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         wardCode: "",
         background: "",
         avatar: "",
+        street: "",
     });
     const fetchAddresses = async () => {
         const id = sessionStorage.getItem("id_account") || 1;
@@ -65,29 +66,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
     useEffect(() => {
         fetchAddresses();
     }, []);
-    // SỬA AND CẬP NHẬT
-    const fetchEdit = async (event) => {
-        event.preventDefault();
-        try {
-            const id = event.target.getAttribute("data-id");
-            console.log("Id address: " + id);
-            const data = await getOneAddress(id);
-            console.log(data);
-            setAddressData(data);
-            setSelectedProvince(data.province);
-            console.log("ID Province: " + data.province);
-            const districtsData = await loadDistricts(parseInt(data.province, 10));
-            setDistricts(districtsData);
-            setSelectedDistrict(data.district);
-            const wardsData = await loadWards(parseInt(data.district, 10));
-            setWards(wardsData);
-            setSelectedWard(data.wardCode);
-            toast.success("Tải dữ liệu chỉnh sửa thành công");
-        } catch (error) {
-            console.log("Error editing address: ", error);
-            toast.error("Lỗi khi tải dữ liệu chỉnh sửa");
-        }
-    };
     useEffect(() => {
         const fetchProvinces = async () => {
             setLoading(true);
@@ -114,6 +92,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                         parseInt(selectedProvince.id, 10)
                     );
                     setDistricts(districtsData);
+                    setWards([])
                     console.log(districtsData);
                 } catch (error) {
                     setError("Failed to load districts. Please try again.");
@@ -161,13 +140,42 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
         selectedWard,
     ]);
     const handleSave = async (event) => {
+        // Kiểm tra tính hợp lệ của dữ liệu
+        const validatePhone = (phone) => /^(09|03|08|07)\d{8}$/.test(phone);
+
+        if (!addressData.phone || addressData.phone.trim() === "") {
+            toast.error("Vui lòng nhập số điện thoại!");
+            return;
+        } else if (!validatePhone(addressData.phone)) {
+            toast.error("Số điện thoại phải bắt đầu bằng 09, 03 hoặc 07 và có 10 số.");
+            return;
+        }
+        if (!addressData.province || addressData.province === "default") {
+            toast.error("Vui lòng chọn Tỉnh/Thành Phố!");
+            return;
+        }
+        if (!addressData.district || addressData.district === "default") {
+            toast.error("Vui lòng chọn Quận/Huyện!");
+            return;
+        }
+        if (!addressData.wardCode || addressData.wardCode === "default") {
+            toast.error("Vui lòng chọn Xã/Phường!");
+            return;
+        }
         event.preventDefault();
         const id = sessionStorage.getItem("id_account") || 1;
         try {
             let data;
             if (addressData.id) {
-                const fullNameAddress = `${addressData.fullNameAddress}`;
-                // Tạo một bản sao của addressData và cập nhật fullNameAddress
+                // const fullNameAddress = `${addressData.fullNameAddress}`;
+                const fullNameAddress = [
+                    addressData.street,
+                    selectedWard?.name,
+                    selectedDistrict?.name,
+                    selectedProvince?.name
+                ]
+                    .filter((part) => part && part.trim() !== '') // Loại bỏ các phần tử null/undefined/rỗng
+                    .join(', '); // Ghép lại thành chuỗi                // Tạo một bản sao của addressData và cập nhật fullNameAddress
                 const updatedAddressData = {
                     ...addressData,
                     fullNameAddress: fullNameAddress,  // Cập nhật fullNameAddress vào bản sao
@@ -181,7 +189,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                 }
             } else {
                 // Creating new address
-                const fullNameAddress = `${addressData.fullNameAddress},${selectedWard.name}, ${selectedDistrict.name}, ${selectedProvince.name}`;
+                const fullNameAddress = `${addressData.street},${selectedWard.name}, ${selectedDistrict.name}, ${selectedProvince.name}`;
                 // Tạo một bản sao của addressData và cập nhật fullNameAddress
                 const postAddressData = {
                     ...addressData,
@@ -191,7 +199,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                 try {
                     data = await postAddress(id, postAddressData);
                     toast.success("Lưu địa chỉ thành công");
-                    } catch (error) {
+                } catch (error) {
                     toast.error("Có lỗi xảy ra khi cập nhật địa chỉ");
                 }
             }
@@ -203,26 +211,6 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             toast.error("Lỗi khi xử lý địa chỉ");
         }
     };
-    // useEffect(() => {
-    //     const fetchAddressData = async () => {
-    //         if (editingAddressId) {
-    //             try {
-    //                 const data = await getOneAddress(editingAddressId);
-    //                 setAddressData(data);
-    //                 setSelectedProvince({ id: data.province, name: data.provinceName });
-    //                 setSelectedDistrict({ id: data.district, name: data.districtName });
-    //                 setSelectedWard({ id: data.wardCode, name: data.wardsName });
-    //                 //toast.success("Tải dữ liệu chỉnh sửa thành công");
-    //                 console.log("Tải dữ liệu chỉnh sửa thành công")
-    //             } catch (error) {
-    //                 console.log("Lỗi khi tải dữ liệu chỉnh sửa");
-    //             }
-    //         }
-    //     };
-    //     fetchAddressData();
-    // }, [editingAddressId]);
-
-
 
     useEffect(() => {
         const fetchAddressData = async () => {
@@ -238,22 +226,32 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                     setSelectedWard({ id: data.wardCode, name: data.wardsName });
                     console.log("Tải dữ liệu chỉnh sửa thành công");
                 } catch (error) {
-                    console.log("Lỗi khi tải dữ liệu chỉnh sửa");
+                    console.log("Lỗi khi tải dữ liệu chỉnh sửa", error);
                 }
+            } else {
+                // Reset dữ liệu khi thêm mới
+                setAddressData({
+                    status: false, // Trạng thái mặc định của địa chỉ
+                    phone: "",
+                    street: "",
+                });
+                setSelectedProvince({ id: "", name: "" });
+                setSelectedDistrict({ id: "", name: "" });
+                setSelectedWard({ id: "", name: "" });
             }
         };
+    
         fetchAddressData();
     }, [editingAddressId]);
     
-
-
-
+    
 
     const handleChange = (e) => {
         const { id, value } = e.target;
         setAddressData((prevData) => ({
             ...prevData,
             [id]: value,
+
         }));
     };
     const handleProvinceChange = (e) => {
@@ -277,17 +275,23 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
             name: selectedOption.getAttribute("data-name"),
         });
     };
-    if (!isVisible) return null; 
+    if (!isVisible) return null;
     return (
         <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
             <div className="w-[600px] flex flex-col">
-                <button
-                    className="text-white text-xl place-self-end mb-1"
-                    onClick={onClose}
-                >
-                    X
-                </button>
-                <div className="bg-white p-2 rounded">
+
+                <div className="relative bg-white p-2 rounded">
+                    <div>
+                        <button
+                            className="absolute rounded-full px-[5px] opacity-80  text-sm place-self-end mb-1 top-5 right-4"
+                            onClick={onClose}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+
+                        </button>
+                    </div>
                     <div>
                         <h2 className="p-2.5 font-bold text-lg">Địa Chỉ</h2>
                         <hr className="border-gray-500" />
@@ -308,6 +312,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                     value={addressData.phone}
                                     onChange={handleChange}
                                     required
+
                                 />
                             </div>
                             <div className="col-span-6">
@@ -317,36 +322,16 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                 <input
                                     className="my-2 placeholder-gray-500 border border-gray-400 rounded-sm p-2 w-full"
                                     type="text"
-                                    id="fullNameAddress"
+                                    id="street"
                                     placeholder="Vui lòng nhập số nhà/đường"
-                                    value={addressData.fullNameAddress}
+                                    value={addressData.street}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
-                            <div className="col-span-6">
-                                <label className="text-base" htmlFor="wardCode">
-                                    Xã/Phường
-                                </label>
-                                <select
-                                    className="my-2 placeholder-gray-500 border border-gray-400 rounded-sm p-2 w-full"
-                                    id="wardCode"
-                                    value={selectedWard.id}
-                                    onChange={handleWardChange}
-                                    required
-                                >
-                                    <option value="">Chọn xã/phường</option>
-                                    {wardCode.map((ward) => (
-                                        <option
-                                            key={ward.WardCode}
-                                            value={ward.WardCode}
-                                            data-name={ward.WardName}
-                                        >
-                                            {ward.WardName}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+
+
+
                             <div className="col-span-6">
                                 <label className="text-base" htmlFor="province">
                                     Tỉnh/Thành Phố
@@ -394,37 +379,39 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
                                 </select>
                             </div>
                             <div className="col-span-12">
-                                <label className=" items-center">
-                                    <input
-                                        type="checkbox" value={addressData.status}
-                                        checked={addressData.status}
-                                        id="flexCheckChecked"
-                                        // onChange={() =>
-                                        //     setAddressData({
-                                        //         ...addressData,
-                                        //         status: !addressData.status,
-                                        //     })
-                                        // }
-
-                                        onChange={() =>
-                                            setAddressData((prevData) => ({
-                                                ...prevData,
-                                                status: !prevData.status,
-                                            }))
-                                        }
-
-                                        className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out"
-                                    />
-                                    <span className="ml-3 text-gray-800">Đặt làm mặc định</span>
+                                <label className="text-base" htmlFor="wardCode">
+                                    Xã/Phường
                                 </label>
+                                <select
+                                    className="my-2 placeholder-gray-500 border border-gray-400 rounded-sm p-2 w-full"
+                                    id="wardCode"
+                                    value={selectedWard.id}
+                                    onChange={handleWardChange}
+                                    required
+                                >
+                                    <option value="">Chọn xã/phường</option>
+                                    {wardCode.map((ward) => (
+                                        <option
+                                            key={ward.WardCode}
+                                            value={ward.WardCode}
+                                            data-name={ward.WardName}
+                                        >
+                                            {ward.WardName}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
+
                         </div>
-                        <button
-                            className="my-2 p-2 bg-blue-500 text-white rounded"
-                            onClick={handleSave}
-                        >
-                            Lưu địa chỉ
-                        </button>
+                        <div className="flex justify-end mt-2">
+                            <button
+                                className="w-[150px] h-[35px] rounded text-white text-[15px]  
+                            px-2 py-0 border bg-[#003EA1] transition-all duration-500 ease-in-out hover:opacity-90  mb-5"
+                                onClick={handleSave}
+                            >
+                                Lưu địa chỉ
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

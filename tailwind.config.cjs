@@ -17,19 +17,19 @@ module.exports = {
     },
     extend: {
       colors: {
-        primarygray: "#f8f8f8",
-        qblack: "#222222",
-        qyellow: "#FFBB38",
-        qred: "#EF262C",
-        qgray: "#797979",
-        qblacktext: "#1D1D1D",
-        qgraytwo: "#8E8E8E",
-        "qgray-border": "#EFEFEF",
-        "qblue-white": "#CBECFF",
-        "qh2-green": "#2D6F6D",
-        "qh4-pink": "#FDB2BB",
-        "qh5-bwhite": "#95D7DE",
-        "qh3-blue": "#1868D5",
+        primarygray: '#f8f8f8',
+        qblack: '#222222',
+        qyellow: '#FFBB38',
+        qred: '#EF262C',
+        qgray: '#797979',
+        qblacktext: '#1D1D1D',
+        qgraytwo: '#8E8E8E',
+        'qgray-border': '#EFEFEF',
+        'qblue-white': '#CBECFF',
+        'qh2-green': '#2D6F6D',
+        'qh4-pink': '#FDB2BB',
+        'qh5-bwhite': '#95D7DE',
+        'qh3-blue': '#1868D5',
         current: 'currentColor',
         transparent: 'transparent',
         white: '#FFFFFF',
@@ -37,7 +37,6 @@ module.exports = {
           ...colors.black,
           DEFAULT: '#1C2434',
           2: '#010101',
-
         },
         red: {
           ...colors.red,
@@ -55,8 +54,9 @@ module.exports = {
           DEFAULT: '#EFF4FB',
           2: '#F7F9FC',
           3: '#FAFAFA',
-        }, scale: {
-          60: "0.6",
+        },
+        scale: {
+          60: '0.6',
         },
         graydark: '#333A48',
         whiten: '#F1F5F9',
@@ -224,6 +224,8 @@ module.exports = {
         75: '18.75rem',
       },
       zIndex: {
+        99999999: '99999999',
+        9999999: '9999999',
         999999: '999999',
         99999: '99999',
         9999: '9999',
@@ -279,10 +281,11 @@ module.exports = {
         'spin-3': 'spin 3s linear infinite',
       },
     },
-  },variants: {
+  },
+  variants: {
     extend: {
-      textColor: ["focus-within"],
-      borderStyle: ["last"],
+      textColor: ['focus-within'],
+      borderStyle: ['last'],
     },
   },
   plugins: [],

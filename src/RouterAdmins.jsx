@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import PageTitle from './components/PageTitle';
 import DefaultLayout from './layout/DefaultLayout';
-import TrangChuAdmin from "./pages/Admin/TrangChuAdmin"
+import TrangChuAdmin from "./pages/Admin/TrangChuAdmin.jsx"
 import ShopAdmin from "./pages/Admin/ShopAdmin"
 import DanhMucAdmin from "./pages/Admin/DanhMucAdmin"
 import SanPhamAdmin from "./pages/Admin/SanPhamAdmin"
@@ -12,7 +12,6 @@ import VoucherAdmin from "./pages/Admin/VoucherAdmin"
 import ReportAdmin from "./pages/Admin/ReportAdmin"
 import PhanQuyenAdmin from "./pages/Admin/PhanQuyenAdmin"
 import ThongTinChungAdmin from "./pages/Admin/ThongTinChungAdmin"
-import SettingAdmin from "./pages/Admin/SettingAdmin"
 import ThongKeDoanhThuAdmin from "./pages/Admin/ThongKeDoanhThuAdmin"
 import ThongKeKhachHangAdmin from "./pages/Admin/ThongKeKhachHangAdmin"
 import ThongKeSanPhamAdmin from "./pages/Admin/ThongKeSanPhamAdmin"
@@ -20,36 +19,63 @@ import ThongKeDonHangAdmin from "./pages/Admin/ThongKeDonHangAdmin"
 import ThongKeNguoiBanAdmin from "./pages/Admin/ThongKeNguoiBanAdmin"
 import VoucherDetailAdmin from './pages/Admin/VoucherDetailAdmin'
 import ChatBot from "./pages/Seller/ChatBot"
+import DiscountRateAdmin from './pages/Admin/DiscountRateAdmin'
+import RoleAdmin from './pages/Admin/RoleAdmin'
+import NotPermissionAdmin from './pages/Admin/NotPermissonAdmin.jsx'
+import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx"; // Adjust the path as necessary
+import ProtectedRoutePermission from "./components/Auth/ProtectedRoutePERMISSION.jsx";
+import FlashSaleDetailsAdmin from './pages/Admin/FlashsaleDetails.jsx';
+import HistoryAdmin from './pages/Admin/HistoryAdmin.jsx';
+
+
+import { useEffect, useState } from "react";
 export default function RouterAdmins() {
+  // useEffect(() => {
+  //   const [permission, setPermission] = useState([]);
+  //   const getpermission = sessionStorage.getItem("permission");
+  //   console.warn(getpermission);
+
+  // },);
   return (
     <DefaultLayout>
-      <ChatBot/>
+      <ChatBot />
       <Routes>
         <Route
           path="/home"
           element={
-            <>
-              <PageTitle title="Trang Chủ" />
-              <TrangChuAdmin />
-            </>
+            <ProtectedRoute
+              element={
+                <>
+                  <PageTitle title="Trang Chủ" />
+                  <TrangChuAdmin />
+                </>
+              }
+            />
           }
         />
         <Route
           path="/quanLy/nhanVien"
           element={
-            <>
-              <PageTitle title="Nhân Viên" />
-              <NhanVienAdmin />
-            </>
+            <ProtectedRoute
+              element={<ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={
+                <>
+                  <PageTitle title="Nhân Viên" />
+                  <NhanVienAdmin />
+                </>
+              }
+              />
+              }
+            />
           }
         />
+
         <Route
           path="/quanLy/voucher"
           element={
-            <>
+            <ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={<>
               <PageTitle title="Voucher" />
               <VoucherAdmin />
-            </>
+            </>} />
           }
         />
         <Route
@@ -100,8 +126,32 @@ export default function RouterAdmins() {
         <Route
           path="/quanLy/phanQuyen"
           element={
+            <ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={<>
+              <PageTitle title="Voucher" />
+              <RoleAdmin />
+            </>} />
+            // <>
+            //   <PageTitle title="Phân Quyền" />
+            //   <RoleAdmin />
+            // </>
+          }
+        />
+        <Route
+
+          path="/quanLy/phanquyen/notpermission"
+          element={
             <>
-              <PageTitle title="Phân Quyền" />
+              <PageTitle title="Thêm Chi Tiết Quyền" />
+              <NotPermissionAdmin />
+            </>
+          }
+        />
+        <Route
+
+          path="/quanLy/quyenchitiet"
+          element={
+            <>
+              <PageTitle title="Chi Tiết Quyền" />
               <PhanQuyenAdmin />
             </>
           }
@@ -116,6 +166,15 @@ export default function RouterAdmins() {
           }
         />
         <Route
+          path="/quanLy/chietkhau"
+          element={
+            <>
+              <PageTitle title="Chiết khấu" />
+              <DiscountRateAdmin />
+            </>
+          }
+        />
+        <Route
           path="/thongTinChung"
           element={
             <>
@@ -124,15 +183,7 @@ export default function RouterAdmins() {
             </>
           }
         />
-        <Route
-          path="/setting"
-          element={
-            <>
-              <PageTitle title="Cài Đặt" />
-              <SettingAdmin />
-            </>
-          }
-        />
+
         <Route
           path="/thongKe/doanhThu"
           element={
@@ -164,7 +215,7 @@ export default function RouterAdmins() {
           path="/thongKe/seller"
           element={
             <>
-              <PageTitle title="Thống Kê Người Bán" />
+              <PageTitle title="Thống Kê Shop" />
               <ThongKeNguoiBanAdmin />
             </>
           }
@@ -184,6 +235,24 @@ export default function RouterAdmins() {
             <>
               <PageTitle title="Chi Tiết Voucher" />
               <VoucherDetailAdmin />
+            </>
+          }
+        />
+        <Route
+          path="/quanLy/flashsaledetails"
+          element={
+            <>
+              <PageTitle title="Chi Tiết Flash Sale" />
+              <FlashSaleDetailsAdmin />
+            </>
+          }
+        />
+         <Route
+          path="/quanLy/history"
+          element={
+            <>
+              <PageTitle title="Lịch sử hoạt động" />
+              <HistoryAdmin />
             </>
           }
         />
