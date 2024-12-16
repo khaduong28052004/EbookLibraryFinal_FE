@@ -90,7 +90,7 @@ export default function BecomeSaller() {
       mediaRecorderRef.current = new MediaRecorder(stream);
 
       mediaRecorderRef.current.ondataavailable = (e) => {
-        chunks.current.push(e.data); 
+        chunks.current.push(e.data);
       };
 
       mediaRecorderRef.current.onstop = () => {
@@ -105,7 +105,7 @@ export default function BecomeSaller() {
 
 
     // Đếm ngược thời gian
-    let timeLeft = 10;
+    let timeLeft = 5;
     setCountdown(timeLeft);
     const interval = setInterval(() => {
       timeLeft -= 1;
@@ -144,7 +144,7 @@ export default function BecomeSaller() {
       if (response.data.liveness.is_live === 'false') {
         // Kiểm tra nếu không phải là "live"
         toast.error(`Xác thực không thành công! ${response.data.liveness.message}`);
-      } else if (response.data.face_match.similarity < 60) {
+      } else if (response.data.face_match.similarity < 50) {
         // Kiểm tra nếu độ tương đồng giữa khuôn mặt thấp
         toast.error("Xác thực không thành công. Độ tương đồng khuôn mặt quá thấp.");
       } else {
@@ -462,7 +462,7 @@ export default function BecomeSaller() {
                           <div className="w-full relative">
                             <img
 
-                              src={imgBefore}
+                              src={imgBefore != null && (`https://firebasestorage.googleapis.com/v0/b/ebookstore-4fbb3.appspot.com/o/demo%2FCCCDMau_MatTruoc.jpg?alt=media`)}
                               alt="Mặt trước CCCD"
                               className="w-full h-[120px] rounded-lg overflow-hidden object-cover"
                             />
@@ -502,7 +502,7 @@ export default function BecomeSaller() {
                         <div className="flex justify-center">
                           <div className="w-full relative">
                             <img
-                              src={imgAfter}
+                              src={imgAfter != null && (`https://firebasestorage.googleapis.com/v0/b/ebookstore-4fbb3.appspot.com/o/demo%2FCCCDMau_MatSau.webp?alt=media`)}
                               alt="Mặt sau CCCD"
                               className="w-full h-[120px] rounded-lg overflow-hidden object-cover"
                             />
@@ -533,7 +533,7 @@ export default function BecomeSaller() {
                         </div>
                       </div>
 
-                      
+
                     </div>
                   </div>
                 </div>
@@ -569,58 +569,54 @@ export default function BecomeSaller() {
 
       <Dialog
         open={isOpen}
-        onClose={() => setIsOpen(true)}
-
+        onClose={() => setIsOpen(false)}
         className="relative z-50"
       >
         {/* Backdrop */}
         <div
-          className={`fixed inset-0 bg-gray-800 bg-opacity-75 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'
-            }`}
+          className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
         ></div>
 
         {/* Dialog Content */}
         <div
-          className={`fixed inset-0 z-50 flex items-center justify-center transition-transform duration-300 transform ${isOpen ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
-            }`}
+          className={`fixed inset-0 z-50 flex items-center justify-center transition-transform duration-500 transform ${isOpen ? 'scale-100 opacity-100' : 'scale-90 opacity-0'}`}
         >
-          <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg">
+          <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl">
             {/* Header */}
-            <div className="p-4 bg-blue-500 text-white text-lg font-semibold">
+            <div className="p-6 bg-blue-600 text-white text-lg font-semibold rounded-t-xl">
               Xác Thực Khuôn Mặt
             </div>
 
             {/* Camera View */}
-            <div className="p-6 flex flex-col items-center justify-center space-y-4">
+            <div className="p-6 flex flex-col items-center justify-center space-y-6">
               {error ? (
                 <p className="text-red-500 text-sm">{error}</p>
               ) : (
-                <div className="relative w-48 h-48 rounded-full border-4 border-blue-500 overflow-hidden">
+                <div className="relative w-60 h-60 rounded-full overflow-hidden border-6 border-dashed border-blue-600">
                   <video
                     ref={videoRef}
                     className="absolute inset-0 w-full h-full object-cover"
                     autoPlay
                     muted
                   ></video>
-                  {/* Spinning Border Animation */}
-                  <div className="absolute inset-0 border-t-4 border-blue-500 rounded-full animate-spin"></div>
+                  {/* Spinning Border (Optional) */}
+                  {/* <div className="absolute inset-0 border-4 border-blue-600 border-dashed rounded-full"></div> */}
                 </div>
               )}
-              <p className="text-sm text-gray-500">
-                Vui lòng đưa khuôn mặt vào khung camera để xác thực.
-              </p>
-              {/* <input type="file" name="imageTest" onChange={handleImageTest} /> */}
 
-              {countdown !== null && (
-                <p className="text-lg font-bold text-blue-500">{countdown}s</p>
-              )}
+
+              {countdown !== null ? (
+                <p className="text-xl font-bold text-blue-600">{countdown}s</p>
+              ) : (<p className="text-sm text-gray-600 text-center">
+                Vui lòng nhìn sang trái, sang phải và chớp mắt để hoàn tất xác thực.
+              </p>)}
             </div>
 
             {/* Footer */}
-            <div className="p-4 bg-gray-100 flex justify-end items-center">
+            <div className="p-6 bg-gray-100 flex justify-end items-center rounded-b-xl">
               <button
                 onClick={handleXacThuc}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                className="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors duration-300"
               >
                 Xác Thực
               </button>
@@ -628,6 +624,8 @@ export default function BecomeSaller() {
           </div>
         </div>
       </Dialog>
+
+
 
       <ToastContainer />
     </Layout>
