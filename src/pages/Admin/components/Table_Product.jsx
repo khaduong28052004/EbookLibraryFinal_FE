@@ -239,7 +239,7 @@ const TableTwo = () => {
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Nhà xuất bản</span>
+                                <span className="text-sm text-black dark:text-white">Tác giả</span>
                                 <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "publishingCompany" ? "text-black" : "text-gray-500"} text-black`} />
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "publishingCompany" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
@@ -247,14 +247,14 @@ const TableTwo = () => {
 
                         <th
                             onClick={() => {
-                                setSortColumn("writerName");
+                                setSortColumn("sumBaoCao");
                                 setSortBy(!sortBy);
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
-                                <span className="text-sm text-black dark:text-white">Tác giả</span>
-                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "writerName" ? "text-black" : "text-gray-500"} text-black`} />
-                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "writerName" ? "text-black" : "text-gray-500"} text-black`} />
+                                <span className="text-sm text-black dark:text-white">Số lượt báo cáo</span>
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "sumBaoCao" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "sumBaoCao" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
                         <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
@@ -285,7 +285,9 @@ const TableTwo = () => {
                                     {data.pageable.pageNumber * data.size + index + 1}
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                    <img className="h-12.5 w-15 rounded-md" src={entity.imageProducts[0].name} alt="entity" />
+                                    <img className="h-12.5 w-15 rounded-md"
+                                        src={entity.imageProducts.length > 0 ? entity.imageProducts[0].name : ''}
+                                        alt="entity" />
                                     <p className="text-sm text-black dark:text-white truncate w-25">{entity.name}</p>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
@@ -295,13 +297,13 @@ const TableTwo = () => {
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.publishingCompany}
+                                        {entity.writerName}
                                     </div>
                                 </td>
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.writerName}
+                                        {entity.sumBaoCao}
                                     </div>
                                 </td>
 
@@ -348,9 +350,9 @@ const TableTwo = () => {
                                                 <p>Shop: {entity.account.shopName}</p>
                                                 <p>Email: {entity.account.email}</p>
                                                 <p>Số điện thoại: {entity.account.phone}</p>
-                                                <p>Mã sản phẩm: {entity.id}</p>
                                                 <p>Tên sản phẩm: {entity.name}</p>
                                                 <p>Thể loại: {entity.category.name}</p>
+                                                <p>Nhà xuất bản: {entity.publishingCompany}</p>
                                             </div>
                                         </div>
                                     </td>

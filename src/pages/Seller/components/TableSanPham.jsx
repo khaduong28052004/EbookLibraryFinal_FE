@@ -513,7 +513,8 @@ const TableSanPham = () => {
                     >
                       <img
                         className="h-full w-full object-cover object-center"
-                        src={item.imageProducts[0].name}
+                        // src={item.imageProducts[0].name}
+                        src={item.imageProducts.length > 0 ? item.imageProducts[0].name : ''}
                         alt="ImageProduct"
                       />
                     </div>

@@ -149,7 +149,6 @@ const TableTwo = () => {
                         'Mã báo cáo': entity.id,
                         'Tiêu đề': entity.title,
                         'Ngày tạo': entity.createAt,
-                        'Ngày tạo': entity.createAt,
                         'Nội dung': entity.content,
                         'Trạng thái': entity.status ? 'Đã phản hồi' : 'Chưa giải quyết',
                         'Mã shop': entity.shop.id,
@@ -159,7 +158,6 @@ const TableTwo = () => {
                         'Số điện thoại': entity.shop.phone,
                         'Email': entity.shop.email,
                         'Ngày sinh': entity.shop.birthday,
-                        'Ngày tạo': entity.shop.createAt,
                         'Trạng thái': entity.shop.status ? 'Đang hoạt động' : 'Ngừng hoạt động'
                     }));
                     return ExportExcel("Danh sách báo cáo shop.xlsx", sheetNames, [formattedData]);
