@@ -29,7 +29,15 @@ const LoginGG = () => {
                 toast.success("Đăng nhập thành công!");
                 AuthService.setItem(response?.data);
                 setTimeout(() => {
-                    return navigate('/');
+                    setTimeout(() => {
+                        if (response.data.roles === "USER") {
+                          navigate('/');
+                        } else if (response.data.roles === "SELLER") {
+                          navigate('/seller/home');
+                        } else {
+                          navigate('/admin/home');
+                        }
+                      }, 2000);
                 }, 3000);
 
             } else if (response.status === 401) {

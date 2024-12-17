@@ -91,15 +91,15 @@ export default function Login() {
       if (response.data.code === 1000) {
 
         seterrorFrom((prev) => ({ ...prev, passwordF: 2, usernameF: 2 }));
-        setTimeout(() => {
-          if (response.data.result.roles === "USER") {
-            navigate('/');
-          } else if (response.data.result.roles === "SELLER") {
-            navigate('/seller/home');
-          } else {
-            navigate('/admin/home');
-          }
-        }, 2000);
+          setTimeout(() => {
+            if (response.data.result.roles === "USER") {
+              navigate('/');
+            } else if (response.data.result.roles === "SELLER") {
+              navigate('/seller/home');
+            } else {
+              navigate('/admin/home');
+            }
+          }, 2000);
         AuthService.setItem(response.data.result);
         toast.success("Đăng nhập thành công!");
 
