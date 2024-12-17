@@ -66,7 +66,7 @@ const ProductCarousel = () => {
         bestseller: true,
     });
     const [isLoading, setIsLoading] = useState(false);
-    const [autoScroll, setAutoScroll] = useState(true);
+    const [autoScroll, setAutoScroll] = useState(false);
     const autoScrollIntervalRef = useRef(null);
 
     const itemsPerSlide = 4;
@@ -208,12 +208,12 @@ const ProductCarousel = () => {
         <div className="section-style-one ml-27 mr-27 bg-red-500 rounded-lg shadow-2">
             <div className="flex justify-between p-3 border-b">
                 <h1 className="text-2xl font-bold text-white">XU HƯỚNG MUA SẮM</h1>
-                <button
-                    className={`px-4 py-2 rounded ${autoScroll ? 'bg-green-500' : 'bg-red-500'} text-white`}
+                {/* <button
+                    className={`px-4 py-2 rounded border border-white ${autoScroll ? ' hover:border-blue-800' : 'hover:border-blue-800'} text-white`}
                     onClick={() => setAutoScroll(!autoScroll)}
                 >
                     {autoScroll ? 'Tắt tự động' : 'Bật tự động'}
-                </button>
+                </button> */}
             </div>
             <div className="bg-white rounded-lg">
                 <div className="flex justify-between border-b bg-white">
