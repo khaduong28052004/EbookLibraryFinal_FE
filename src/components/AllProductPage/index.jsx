@@ -13,7 +13,7 @@ import Layout from "../Partials/Layout";
 import ProductsFilter from "./ProductsFilter";
 
 export default function AllProductPage() {
-
+  const url_host = import.meta.env.VITE_API_BASEURL;
   const [filters, setFilter] = useState({
     mobileLaptop: false,
     gaming: false,
@@ -74,7 +74,7 @@ export default function AllProductPage() {
 
   const [listCategory, setListCategory] = useState([]);
 
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState("search");
 
   const [min, setMin] = useState('');
   const [max, setMax] = useState('');
@@ -112,7 +112,8 @@ export default function AllProductPage() {
         if (status === "search") {
           searchAudio(textAudio);
         } else {
-          axios.get("http://localhost:8080/api/v1/user/search?text=" + text)
+          axios.get(`${url_host}/api/v1/user/search?text=` + text)
+
             .then(response => {
               setDatas(response.data.result.datas);
               setCategories(response.data.result.categories);
@@ -122,7 +123,7 @@ export default function AllProductPage() {
             .catch(error => console.error("fetch data search error " + error));
         }
       } else {
-        axios.get("http://localhost:8080/api/v1/user/search?text=" + text)
+        axios.get(`${url_host}/api/v1/user/search?text=` + text)
           .then(response => {
             setDatas(response.data.result.datas);
             setCategories(response.data.result.categories);
@@ -162,11 +163,12 @@ export default function AllProductPage() {
 
   const searchAudio = async (text) => {  // tìm audio (tuyến)
     try {
-      setStatus("search");
+      // setStatus("search");
       const response = await SearchService.searchAudio(text, currentPage);
       setDatas(response.data.result.product.content);
       setDataPagination(response.data.result.product);
       setCategories(response.data.result.categories);
+      // console.log("data: " + datas?.length);
     } catch (error) {
       console.log(error)
     }
@@ -210,7 +212,7 @@ export default function AllProductPage() {
         filtercategoryAudio(validSelected.join(','));
       } else {
         // Gửi request chỉ khi có ít nhất một category được chọn
-        axios.get(`http://localhost:8080/api/v1/user/filtercategory?id_categories=${validSelected.join(',')}`)
+        axios.get(`${url_host}/api/v1/user/filtercategory?id_categories=${validSelected.join(',')}`)
           .then(response => {
             setDatas(response.data.result.datas);  // Cập nhật dữ liệu
           })
@@ -230,7 +232,7 @@ export default function AllProductPage() {
       console.log("SearchPrice.");
     } else {
       const filterPrice = () => {
-        axios.get(`http://localhost:8080/api/v1/user/filterprice?priceMin=${volume[0]}&priceMax=${volume[1]}`).then(response => {
+        axios.get(`${url_host}/api/v1/user/filterprice?priceMin=${volume[0]}&priceMax=${volume[1]}`).then(response => {
           setDatas(response.data.result.datas);
         }).catch(error => console.log("fetch filtẻ price error " + error));
       }

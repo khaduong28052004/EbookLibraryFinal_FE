@@ -12,6 +12,7 @@ const success = () => {
     const query = new URLSearchParams(localtion.search);
     const navigate = useNavigate();
     const { getItem, startRequest, endRequest } = useRequest();
+    const url_host = import.meta.env.VITE_API_BASEURL;
     useEffect(() => {
         startRequest();
         setVnp_TransactionStatus(query.get("vnp_TransactionStatus"));
@@ -29,7 +30,7 @@ const success = () => {
         const token = sessionStorage.getItem("token");
         setVnp_PayDate(date);
         if (query.get("vnp_TransactionStatus") === "00" && getItem("data")) {
-            axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=2&id_address" + getItem("id_address"), getItem("data"), {
+            axios.post(`${url_host}/api/v1/user/pay/` + idUser + "?paymentMethod_id=2&id_address" + getItem("id_address"), getItem("data"), {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }

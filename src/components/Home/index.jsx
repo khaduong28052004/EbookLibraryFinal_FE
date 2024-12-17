@@ -8,7 +8,7 @@ import ProductCarousel from '../ProductCarousel';
 import { useRequest } from "../Request/RequestProvicer";
 import Banner from "./Banner";
 import FlashSale from "./FlashaSale";
-export default function Home() {  
+export default function Home() {
   const [data_FlashSale, setData_FlashSale] = useState([]);
   const [data_ProductAll, setData_ProducAll] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -18,11 +18,13 @@ export default function Home() {
   const { isRequesting } = useRequest();
   const [loading, setLoading] = useState(false);
   // Fetch dữ liệu Flash Sale
+
+  const url_host = import.meta.env.VITE_API_BASEURL;
   const fetchDataFlashSale = async () => {
     const id_account = sessionStorage.getItem("id_account") || 0;
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/user/home/flashsale?id_Shop=" + id_account);
+      const response = await axios.get(`${url_host}/api/v1/user/home/flashsale?id_Shop=` + id_account);
       const data = response.data.result;
       setData_FlashSale(data);
       setLoading(false);
@@ -34,7 +36,7 @@ export default function Home() {
   // Fetch tất cả sản phẩm với phân trang
   const fetchDataSelectAll = async () => {
     const id_account = sessionStorage.getItem("id_account") || 0;
-    await axios.get("http://localhost:8080/api/v1/user/home/selectall?id_Shop=" + id_account + "&page=" + currentPage)
+    await axios.get(`${url_host}/api/v1/user/home/selectall?id_Shop=` + id_account + "&page=" + currentPage)
       .then(response => {
         if (currentPage > 0 && currentPage < totalPages) {
           setData_ProducAll((prev) => [...prev, ...response.data.result?.datas]);
@@ -53,7 +55,7 @@ export default function Home() {
     if (token) {
       id_user = sessionStorage.getItem("id_account");
     }
-    await axios.get("http://localhost:8080/api/v1/user/home/suggest?id_user=" + id_user).then(response => {
+    await axios.get(`${url_host}/api/v1/user/home/suggest?id_user=` + id_user).then(response => {
       setSuggests(response.data.result);
 
     }).catch(error => console.error("fetch suggest error : " + error));
@@ -108,7 +110,7 @@ export default function Home() {
         </div>
 
         <div className="w-full  pt-5 pb-5">
-          <ProductCarousel/>
+          <ProductCarousel />
         </div>
 
 
@@ -125,12 +127,18 @@ export default function Home() {
           />
         </div>
 
-        <SectionStyleThree
-          products={data_ProductAll}
-          sectionTitle="Sản phẩm"
-          seeMoreUrl="/all-products"
-          className="new-products mb-[60px]"
-        />
+        <div>
+          <div className="bg-blue-700 font-bold text-white ml-27 mr-27 mt-5 text-[25px] rounded-t-lg pl-5 p-2">
+            DANH SÁCH SẢN PHẨM
+          </div>
+
+          <SectionStyleThree
+            products={suggests}
+            sectionTitle=""
+            seeMoreUrl="/all-products"
+            className="bg-white mb-[60px] ml-27 mr-27 rounded-b-lg"
+          />
+        </div>
       </Layout>)}
     </>
   );

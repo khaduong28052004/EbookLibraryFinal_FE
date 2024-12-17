@@ -14,6 +14,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
     const [addresses, setAddresses] = useState([]);
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
+    const url_host = import.meta.env.VITE_API_BASEURL;
     const [wardCode, setWards] = useState([]);
     const [selectedProvince, setSelectedProvince] = useState({
         id: "",
@@ -43,7 +44,7 @@ const ModelAddress = ({ isVisible, onClose, data, editingAddressId }) => {
     const fetchAddresses = async () => {
         const id = sessionStorage.getItem("id_account") || 1;
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/user/rest/address/fill/${id}`, {
+            const response = await axios.get(`${url_host}/api/v1/user/rest/address/fill/${id}`, {
                 params: { accountId }
             });
             setAddresses(response.data.data);
