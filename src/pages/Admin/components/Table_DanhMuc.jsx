@@ -83,7 +83,12 @@ const TableTwo = () => {
             if (!response || response.data.result.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách danh mục.xlsx", sheetNames, [response.data.result.content]);
+                const formattedData = response.data.result.content.map(entity => ({
+                    'Mã danh mục': entity.id,
+                    'Tên danh mục': entity.name,
+                    'Người tạo': entity.account.fullname,
+                }));
+                return ExportExcel("Danh Sách danh mục.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");

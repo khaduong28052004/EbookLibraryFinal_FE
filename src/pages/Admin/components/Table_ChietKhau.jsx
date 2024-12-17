@@ -76,7 +76,30 @@ const TableTwo = () => {
             if (!response || response.data.result.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách Chiết Khấu.xlsx", sheetNames, [response.data.result.content]);
+                const formattedData = response.data.result.content.map(entity => ({
+                    'Mã chiết khấu': entity.id,
+                    'Thời gian bắt đầu': new Date(entity.dateStart).toLocaleString("vi-VN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false, // Sử dụng định dạng 24 giờ
+                    }),
+                    'Thời gian tạo ': new Date(entity.dateInsert).toLocaleString("vi-VN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false, // Sử dụng định dạng 24 giờ
+                    }),
+                    'Người tạo': entity.account.fullname,
+                    'Trạng thái': entity.dateDelete === null ? (new Date(entity.dateStart).getTime() > new Date().getTime() ? 'Đang đợi' : 'Hoạt động') : 'Đã Ngừng'
+                }));
+                return ExportExcel("Danh Sách Chiết Khấu.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");

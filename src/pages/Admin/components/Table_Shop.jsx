@@ -78,7 +78,23 @@ const TableTwo = ({ status }) => {
             if (!response || response.data.result.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách Shop.xlsx", sheetNames, [response.data.result.content]);
+                const formattedData = response.data.result.content.map(entity => ({
+                    'Mã shop': entity.id,
+                    'Tài khoản': entity.username,
+                    'Họ tên': entity.fullname,
+                    'Tên shop': entity.shopName,
+                    'Giới tính': entity.gender ? 'Name' : 'Nữ',
+                    'Số điện thoại': entity.phone,
+                    'Email': entity.email,
+                    'Ngày sinh': entity.birthday,
+                    'Ngày tạo': entity.createAt,
+                    'Tổng sản phẩm': entity.sumProduct,
+                    'Lượt theo dõi': entity.sumFollower,
+                    'Trung bình đánh giá': entity.avgStar.toFixed(1),
+                    'Lượt báo cáo': entity.sumReport,
+                    'Trạng thái': entity.status ? 'Đang hoạt động' : 'Ngừng hoạt động'
+                }));
+                return ExportExcel("Danh Sách Shop.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -91,9 +107,9 @@ const TableTwo = ({ status }) => {
     };
     const toggleRow = (id) => {
         if (expandedRowId === id) {
-            setExpandedRowId(null); // Nếu đã mở thì click lại sẽ đóng
+            setExpandedRowId(null);
         } else {
-            setExpandedRowId(id); // Mở hàng chi tiết
+            setExpandedRowId(id);
         }
     };
 
@@ -259,7 +275,7 @@ const TableTwo = ({ status }) => {
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.avgStar}
+                                        {entity.avgStar.toFixed(1)}
                                     </div>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">

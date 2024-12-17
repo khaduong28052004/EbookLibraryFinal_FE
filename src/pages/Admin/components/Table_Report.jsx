@@ -108,11 +108,62 @@ const TableTwo = () => {
         const sheetNames = ['Danh Sách Báo Cáo'];
         try {
             console.log("data.totalElements: " + data.totalElements);
-            const response = await accountService.findAllAccountReport({ option, page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
-            if (!response || response.data.result.totalElements === 0) {
-                toast.error("Không có dữ liệu");
+            if (optionEntity === "product") {
+                const response = await productService.findAllProductReport({ option, page: currentPage, size: data.totalElements, searchItem, sortColumn, sortBy });
+                if (!response || response.data.result.totalElements === 0) {
+                    toast.error("Không có dữ liệu");
+                } else {
+                    const formattedData = response.data.result.content.map(entity => ({
+                        'Mã báo cáo': entity.id,
+                        'Tiêu đề': entity.title,
+                        'Ngày tạo': entity.createAt,
+                        'Ngày tạo': entity.createAt,
+                        'Nội dung': entity.content,
+                        'Trạng thái': entity.status ? 'Đã phản hồi' : 'Chưa giải quyết',
+                        'Mã sản phẩm': entity.product.id,
+                        'Tên sản phẩm': entity.product.name,
+                        'Giá bán (VNĐ)': entity.product.price.toFixed(0),
+                        'Giảm giá (%)': entity.product.sale,
+                        'Tác giả': entity.product.writerName,
+                        'Nhà xuất bản': entity.product.publishingCompany,
+                        'Ngày tạo': new Date(entity.product.createAt).toLocaleString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false, // Sử dụng định dạng 24 giờ
+                        }),
+                        'Số lượng': entity.product.quantity,
+                        'Shop bán': entity.product.account.shopName,
+                    }));
+                    return ExportExcel("Danh sách báo cáo sản phẩm.xlsx", sheetNames, [formattedData]);
+                }
             } else {
-                return ExportExcel("Danh sách báo cáo.xlsx", sheetNames, [response.data.result.content]);
+                const response = await accountService.findAllAccountReport({ option, page: currentPage, size: data.totalElements === 0 ? 5 : data.totalElements, searchItem, sortColumn, sortBy });
+                if (!response || response.data.result.totalElements === 0) {
+                    toast.error("Không có dữ liệu");
+                } else {
+                    const formattedData = response.data.result.content.map(entity => ({
+                        'Mã báo cáo': entity.id,
+                        'Tiêu đề': entity.title,
+                        'Ngày tạo': entity.createAt,
+                        'Ngày tạo': entity.createAt,
+                        'Nội dung': entity.content,
+                        'Trạng thái': entity.status ? 'Đã phản hồi' : 'Chưa giải quyết',
+                        'Mã shop': entity.shop.id,
+                        'Họ tên chủ shop': entity.shop.fullname,
+                        'Tên shop': entity.shop.shopName,
+                        'Giới tính': entity.shop.gender ? 'Name' : 'Nữ',
+                        'Số điện thoại': entity.shop.phone,
+                        'Email': entity.shop.email,
+                        'Ngày sinh': entity.shop.birthday,
+                        'Ngày tạo': entity.shop.createAt,
+                        'Trạng thái': entity.shop.status ? 'Đang hoạt động' : 'Ngừng hoạt động'
+                    }));
+                    return ExportExcel("Danh sách báo cáo shop.xlsx", sheetNames, [formattedData]);
+                }
             }
         } catch (error) {
             toast.error("Có lỗi xảy ra khi xuất dữ liệu");

@@ -7,6 +7,7 @@ import flashSale from '../../../service/admin/FlashSale';
 import { ExportExcel } from '../../../service/admin/ExportExcel';
 import Pagination from './Pagination';
 import { Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 
 const TableTwo = ({ onPageChange, onIdChange, entityData, status,
     setStatus }) => {
@@ -56,7 +57,37 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
             if (!response || response.data.result.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách FlashSale.xlsx", sheetNames, [response.data.result.content]);
+                const formattedData = response.data.result.content.flatMap(entity => {
+                    return entity.flashSaleDetails.map(detail => ({
+                        'Mã flash sale': entity.id,
+                        'Tiêu đề': entity.title,
+                        'Thời gian bắt đầu': new Date(entity.dateStart).toLocaleString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false, // Sử dụng định dạng 24 giờ
+                        }),
+                        'Thời gian kết thúc ': new Date(entity.dateEnd).toLocaleString("vi-VN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false, // Sử dụng định dạng 24 giờ
+                        }),
+                        'Người tạo': entity.account.fullname,
+                        'Mã chi tiết flash sale': detail.id,
+                        'Tên sản phẩm': detail.product.name,
+                        'Số Lượng': detail.quantity,
+                        'Sale (%)': detail.sale,
+                        'Trạng thái': entity.delete ? 'ngừng hoạt động' : 'Hoạt động'
+                    }));
+                });
+                return ExportExcel("Danh Sách FlashSale.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -70,6 +101,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <ToastContainer />
             <div className="py-6 flex justify-between px-4 md:px-6 xl:px-7.5">
                 <form method="POST">
                     <div className="relative pt-3">
@@ -185,7 +217,7 @@ const TableTwo = ({ onPageChange, onIdChange, entityData, status,
                                         minute: "2-digit",
                                         second: "2-digit",
                                         hour12: false, // Sử dụng định dạng 24 giờ
-                                    })}                                
+                                    })}
                                     {/* {entity.dateStart.toLocaleString("en-GB")} */}
                                 </div>
                             </td>

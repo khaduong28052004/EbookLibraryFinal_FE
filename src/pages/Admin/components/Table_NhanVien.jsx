@@ -78,7 +78,19 @@ const TableTwo = () => {
       if (!response || response.data.result.totalElements === 0) {
         toast.error("Không có dữ liệu");
       } else {
-        return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [response.data.result.content]);
+        const formattedData = response.data.result.content.map(entity => ({
+          'Mã nhân viên': entity.id,
+          'Tài khoản': entity.username,
+          'Họ tên': entity.fullname,
+          'Giới tính': entity.gender ? 'Name' : 'Nữ',
+          'Số điện thoại': entity.phone,
+          'Email': entity.email,
+          'Ngày tạo': entity.createAt,
+          'Mã quyền': entity.role.id,
+          'Tên quyền': entity.role.name,
+          'Mô tả': entity.role.description
+        }));
+        return ExportExcel("Danh Sách nhân viên.xlsx", sheetNames, [formattedData]);
       }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);

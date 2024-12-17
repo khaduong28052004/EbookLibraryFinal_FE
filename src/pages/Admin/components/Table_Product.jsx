@@ -100,7 +100,27 @@ const TableTwo = () => {
             if (!response || response.data.result.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách Sản phẩm.xlsx", sheetNames, [response.data.result.content]);
+                const formattedData = response.data.result.content.map(sp => ({
+                    'Mã sản phẩm': sp.id,
+                    'Tên sản phẩm': sp.name,
+                    'Giá bán (VNĐ)': sp.price.toFixed(0),
+                    'Giảm giá (%)': sp.sale,
+                    'Tác giả': sp.writerName,
+                    'Nhà xuất bản': sp.publishingCompany,
+                    'Ngày tạo': new Date(sp.createAt).toLocaleString("vi-VN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false, // Sử dụng định dạng 24 giờ
+                    }),
+                    'Số lượng': sp.quantity,
+                    'Shop bán': sp.account.shopName,
+                    'Trạng thái': sp.active ? (sp.delete ? 'Ngừng hoạt động' : 'Đang hoạt động') : 'Chờ duyệt',
+                }));
+                return ExportExcel("Danh Sách Sản phẩm.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);

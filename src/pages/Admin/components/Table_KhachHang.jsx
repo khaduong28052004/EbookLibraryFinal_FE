@@ -75,7 +75,17 @@ const TableTwo = () => {
             if (!response || response.data.result.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách Khách Hàng.xlsx", sheetNames, [response.data.result.content]);
+                const formattedData = response.data.result.content.map(entity => ({
+                    'Mã khách hàng': entity.id,
+                    'Tài khoản': entity.username,
+                    'Họ tên': entity.fullname,
+                    'Giới tính': entity.gender ? 'Name' : 'Nữ',
+                    'Số điện thoại': entity.phone,
+                    'Email': entity.email,
+                    'Ngày tạo': entity.createAt,
+                    'Trạng thái': entity.status ? 'Đang hoạt động' : 'Ngừng hoạt động'
+                }));
+                return ExportExcel("Danh Sách Khách Hàng.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -196,7 +206,7 @@ const TableTwo = () => {
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
-                                               <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                        <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Trạng thái</span>
                             </div>

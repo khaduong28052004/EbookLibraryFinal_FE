@@ -58,7 +58,20 @@ const TableTwo = ({ status, setStatus }) => {
             if (!response || response.data.result.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách Đăng Ký Người Bán.xlsx", sheetNames, [response.data.result.content]);
+                const formattedData = response.data.result.content.map(entity => ({
+                    'Mã shop': entity.id,
+                    'Tài khoản': entity.username,
+                    'Họ tên': entity.fullname,
+                    'Tên shop': entity.shopName,
+                    'CCCD': entity.numberId,
+                    'Giới tính': entity.gender ? 'Name' : 'Nữ',
+                    'Số điện thoại': entity.phone,
+                    'Email': entity.email,
+                    'Ngày sinh': entity.birthday,
+                    'Ngày tạo': entity.createAt,
+                    'Trạng thái': 'Chờ duyệt'
+                }));
+                return ExportExcel("Danh Sách Đăng Ký Người Bán.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -167,12 +180,12 @@ const TableTwo = ({ status, setStatus }) => {
                             }}
                             className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-5.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden xl:flex">
-                                <span className="text-sm text-black dark:text-white">Ảnh CCCD mặt trước</span>
+                                <span className="text-sm text-black dark:text-white">Tên shop</span>
                                 <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "afterIdImage" ? "text-black" : "text-gray-500"} text-black`} />
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "afterIdImage" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
-                        <th
+                        {/* <th
                             onClick={() => {
                                 setSortColumn("beforeIdImage");
                                 setSortBy(!sortBy);
@@ -183,7 +196,7 @@ const TableTwo = ({ status, setStatus }) => {
                                 <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "beforeIdImage" ? "text-black" : "text-gray-500"} text-black`} />
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "beforeIdImage" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
-                        </th>
+                        </th> */}
 
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <span className="text-sm text-black dark:text-white truncate w-24">Hành động</span>
@@ -218,11 +231,13 @@ const TableTwo = ({ status, setStatus }) => {
                                     </div>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                    <img className="h-12.5 w-15 rounded-md" src={entity.afterIdImage} alt="entity" />
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.shopName}
+                                    </div>
                                 </td>
-                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                {/* <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <img className="h-12.5 w-15 rounded-md" src={entity.beforeIdImage} alt="entity" />
-                                </td>
+                                </td> */}
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                                     <div className="flex space-x-3.5">
                                         <button onClick={(event) => {
