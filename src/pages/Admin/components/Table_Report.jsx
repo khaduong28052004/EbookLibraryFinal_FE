@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
-import { ArrowLongDownIcon, ArrowLongUpIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
+import { ChevronRightIcon, ChevronDownIcon, ArrowLongDownIcon, ArrowLongUpIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
+
 import Modal from "./ModalThongBao";
 import accountService from '../../../service/admin/Account';
 import productService from '../../../service/admin/Product';
@@ -21,6 +22,7 @@ const TableTwo = () => {
     const [optionEntity, setOptionEntity] = useState("");
 
     const [isOpen, setIsOpen] = useState(false);
+    const [expandedRowId, setExpandedRowId] = useState(null);
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < data.totalPages) {
@@ -172,6 +174,14 @@ const TableTwo = () => {
         e.preventDefault();
     };
 
+    const toggleRow = (id) => {
+        if (expandedRowId === id) {
+            setExpandedRowId(null);
+        } else {
+            setExpandedRowId(id);
+        }
+    };
+
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <ToastContainer />
@@ -254,6 +264,7 @@ const TableTwo = () => {
             <table className="w-full border-collapse border border-stroke dark:border-strokedark">
                 <thead>
                     <tr className="border-t border-stroke dark:border-strokedark">
+                        <th className="py-4.5 px-4 md:px-6 2xl:px-2.5"></th>
                         <th className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">#</th>
                         <th
                             onClick={() => {
@@ -293,7 +304,8 @@ const TableTwo = () => {
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "title" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
-
+                        {/* <th className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-6.5 text-left font-medium">Anh
+                        </th> */}
                         <th
                             onClick={() => {
                                 setSortColumn("createAt");
@@ -315,41 +327,82 @@ const TableTwo = () => {
 
                 <tbody>
                     {data?.content?.map((entity, index) => (
-                        <tr key={index} className="border-t border-stroke dark:border-strokedark">
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                {data.pageable.pageNumber * data.size + index + 1}
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
-                                <p className="text-sm text-black dark:text-white truncate w-24">{entity.account.username}</p>
-                            </td>
+                        <>
+                            <tr key={index} className={`border-t border-stroke dark:border-strokedark ${expandedRowId === entity.id ? `bg-slate-100` : `bg-white`}`} onClick={() => toggleRow(entity.id)}>
+                                <td
+                                    className="py-4.5 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    {expandedRowId === entity.id ? (
+                                        <ChevronDownIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
+                                    ) : (
+                                        <ChevronRightIcon className='text-sm h-5 w-5 text-black dark:text-white ml-auto' />
+                                    )
+                                    }
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    {data.pageable.pageNumber * data.size + index + 1}
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 flex items-center gap-4">
+                                    <p className="text-sm text-black dark:text-white truncate w-24">{entity.account.username}</p>
+                                </td>
 
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {optionEntity === "product" ? entity?.product?.name : entity?.shop?.shopName}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.title}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
-                                <div className="flex items-center gap-1 hidden xl:flex">
-                                    {entity.createAt}
-                                </div>
-                            </td>
-                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
-                                <div className="flex space-x-3.5">
-                                    <button onClick={() => { setId(entity.id); setIsOpen(true); }}>
-                                        {entity.status ? (<p className=' inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium bg-success text-success'>Đã phản hồi</p>) : (<button
-                                            className=" inline-flex items-center justify-center rounded-md bg-green-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
-                                        >Phản hồi</button>)}
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {optionEntity === "product" ? entity?.product?.name : entity?.shop?.shopName}
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.title}
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                    <div className="flex items-center gap-1 hidden xl:flex">
+                                        {entity.createAt}
+                                    </div>
+                                </td>
+                                <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
+                                    <div className="flex space-x-3.5">
+                                        <button onClick={(event) => {
+                                            event.stopPropagation();
+                                            setId(entity.id);
+                                            setIsOpen(true);
+                                        }}>
+                                            {entity.status ? (<p className=' inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium bg-success text-success'>Đã phản hồi</p>) : (<button
+                                                className=" inline-flex items-center justify-center rounded-md bg-green-600 py-2 px-3 text-center font-medium text-white hover:bg-opacity-90"
+                                            >Phản hồi</button>)}
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {expandedRowId === entity.id && (
+                                <tr>
+                                    <td colSpan="9">
+                                        <div className="p-5 border border-gray-100 hover:bg-slate-100">
+                                            <p><strong>Thông tin chi tiết:</strong></p>
+                                            <div className="pl-20 pt-2 gap-1 grid grid-cols-2">
+                                                <p className='flex flex-wrap gap-2'>Ảnh: {optionEntity === "product" ?
+                                                    (entity?.imageReportProducts?.length > 0 ?
+                                                        entity.imageReportProducts.map((entity, index) => (
+                                                            <img className='w-[50px] h-[60px] object-cover' src={entity.src} alt="image" key={index} />
+                                                        )) :
+                                                        <span className="text-gray-500">No images</span>
+                                                    ) :
+                                                    (entity?.imageAccountReports?.length > 0 ?
+                                                        entity.imageAccountReports.map((entity, index) => (
+                                                            <img className='w-[50px] h-[60px] object-cover' src={entity.src} alt="image" key={index} />
+                                                        )) :
+                                                        <span className="text-gray-500">No images</span>
+                                                    )
+                                                }</p>
+                                                <p>Nội dung: {entity.content}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </>
                     ))}
-                </tbody>
+                </tbody >
             </table>
             <Pagination
                 pageNumber={currentPage}

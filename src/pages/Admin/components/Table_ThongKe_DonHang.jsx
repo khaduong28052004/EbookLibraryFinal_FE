@@ -136,8 +136,8 @@ const TableTwo = ({ onPageChange, entityData }) => {
                             onChange={(e) => setOrderStatusId(e.target.value)}
                             className="xl:w-125 bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white"
                         >
-                            <option value="" disabled>Lọc theo</option>
-                            <option value="macdinh">Tất cả</option>
+                            {/* <option value="" disabled>Lọc theo</option> */}
+                            <option value="" >Tất cả</option>
                             <option value="1">Chờ xử lý</option>
                             <option value="2">Đang xử lý</option>
                             <option value="3">Đang giao</option>
