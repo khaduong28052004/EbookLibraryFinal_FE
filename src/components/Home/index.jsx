@@ -110,6 +110,9 @@ export default function Home() {
         </div>
 
         <div className="w-full  pt-5 pb-5">
+          <div className="bg-red-500 font-bold text-white ml-27 mr-27 mt-5 text-[25px] rounded-t-lg pl-5 p-2">
+            XU HƯỚNG MUA SẮM
+          </div>
           <ProductCarousel />
         </div>
 
@@ -123,7 +126,7 @@ export default function Home() {
             products={suggests}
             sectionTitle=""
             seeMoreUrl="/all-products"
-            className="bg-white mb-[60px] ml-27 mr-27 rounded-b-lg"
+            className="bg-white mb-[60px] ml-27 mr-27 rounded-b-lg shadow-3"
           />
         </div>
 
@@ -136,7 +139,7 @@ export default function Home() {
             products={suggests}
             sectionTitle=""
             seeMoreUrl="/all-products"
-            className="bg-white mb-[60px] ml-27 mr-27 rounded-b-lg"
+            className="bg-white mb-[60px] ml-27 mr-27 rounded-b-lg shadow-3"
           />
         </div>
       </Layout>)}

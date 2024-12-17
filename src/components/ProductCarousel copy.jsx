@@ -143,6 +143,7 @@ const ProductCarousel = () => {
 
     return (
         <div className="section-style-one ml-27 mr-27 bg-red-500 rounded-lg shadow-2">
+                <div className="products-section w-full">
             <div className="flex justify-between p-3 border-b">
                 <h1 className="text-2xl font-bold text-white">XU HƯỚNG MUA SẮM</h1>
             </div>
@@ -219,6 +220,8 @@ const ProductCarousel = () => {
                     </button> */}
                 </div>
             </div>
+            
+        </div>
         </div>
     );
 };
