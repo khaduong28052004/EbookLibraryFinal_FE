@@ -81,7 +81,18 @@ const TableVoucher = () => {
       if (!response || response.data.result.totalElements === 0) {
         toast.error("Không có dữ liệu");
       } else {
-        return ExportExcel("Danh Sách Thống Kê Voucher.xlsx", sheetNames, [response.data.result.content]);
+        const formattedData = response.data.result.content.map(sp => ({
+          'Mã voucher': sp.id,
+          'Tên voucher': sp.name,
+          'Giá giảm tối đa (VNĐ)': sp.totalPriceOrder.toFixed(0),
+          'Giảm giá (%)': sp.sale,
+          'Số lượng': sp.quantity,
+          'Điều kiện áp dụng voucher (VNĐ)': sp.minOrder,
+          'Ngày bắt đầu': new Date(sp.dateStart).toLocaleDateString("en-GB"),
+          'Ngày kết thúc': new Date(sp.dateEnd).toLocaleDateString("en-GB"),
+          'Người tạo': sp.account.fullname,
+        }));
+        return ExportExcel("Danh Sách Thống Kê Voucher.xlsx", sheetNames, [formattedData]);
       }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
@@ -341,36 +352,44 @@ const TableVoucher = () => {
                   </td>
                   <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
                     <div className="flex items-center gap-1 hidden lg:flex">
-                      <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${!voucher.delete ? 'bg-success text-success' : 'bg-danger text-danger'}`}>
-                        {!voucher.delete ? 'Hoạt Động' : 'Đã Ngừng'}
+                      <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${!voucher.delete ? (voucher.dateStart && new Date(voucher.dateStart).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0) ? 'bg-blue-600 text-blue-600' : 'bg-success text-success') : 'bg-danger text-danger'}`}>
+                        {!voucher.delete ? (voucher.dateStart && new Date(voucher.dateStart).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0) ? 'Đang đợi' : 'Hoạt Động') : 'Đã Ngừng'}
                       </span>
                     </div>
                   </td>
-                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 justify-start flex items-start">
+                  <td className="py-4.5 px-4 md:px-6 2xl:px-7.5">
                     <div className="flex space-x-3.5">
                       <button>
                         <Link to={`/admin/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
                       </button>
-                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart) > new Date() ? (
+                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0) ? (
                         <>
-                          <button onClick={(event) => {
-                            event.stopPropagation();
-                            setIsOpen(true);
-                            setVoucherId(voucher.id);
-                            setStatusVoucher(voucher.delete)
-                          }}>
-                            {!voucher.delete ? (<NoSymbolIcon className='w-5 h-5 text-black hover:text-red-600 dark:text-white' />)
-                              : (<ReceiptRefundIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />)}
+                          <button
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setIsOpen(true);
+                              setVoucherId(voucher.id);
+                              setStatusVoucher(voucher.delete);
+                            }}
+                          >
+                            {!voucher.delete ? (
+                              <NoSymbolIcon className="w-5 h-5 text-black hover:text-red-600 dark:text-white" />
+                            ) : (
+                              <ReceiptRefundIcon className="w-5 h-5 text-black hover:text-green-600 dark:text-white" />
+                            )}
                           </button>
-                          <button onClick={(event) => {
-                            event.stopPropagation();
-                            editVoucher(voucher.id);
-                            setIsStatus(true)
-                          }}>
-                            <ArrowPathIcon className='w-5 h-5 text-black hover:text-green-600 dark:text-white' />
+                          <button
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              editVoucher(voucher.id);
+                              setIsStatus(true);
+                            }}
+                          >
+                            <ArrowPathIcon className="w-5 h-5 text-black hover:text-green-600 dark:text-white" />
                           </button>
                         </>
-                      ) : (<></>)}
+                      ) : null}
+
                     </div>
                   </td>
                 </tr>
@@ -409,6 +428,7 @@ const TableVoucher = () => {
         handleNext={handleNext}
         handlePrevious={handlePrevious}
         setPageNumber={setPageNumber}
+        size={size}
       />
 
       <Modal
@@ -439,7 +459,7 @@ const TableVoucher = () => {
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl">
               <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                 <h3 className="font-semibold text-xl text-black dark:text-white">
                   Voucher
@@ -450,30 +470,28 @@ const TableVoucher = () => {
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Tên Sản Phẩm
+                        Tên Voucher
                       </label>
                       <input
                         type="text"
                         name="name"
                         value={dataVoucher.name}
                         onChange={handDataVoucher}
-                        placeholder="Tên sản phẩm..."
+                        placeholder="Tên voucher..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>
 
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Số Lượng
+                        Loại Voucher
                       </label>
-                      <input
-                        type="number"
-                        name="quantity"
-                        value={dataVoucher.quantity}
-                        onChange={handDataVoucher}
-                        placeholder="Số lượng..."
+                      <select name="typeVoucher" id=""
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+
+                      >
+                        <option value="">Giảm giá phí vận chuyển</option>
+                      </select>
                     </div>
                   </div>
 
@@ -509,28 +527,38 @@ const TableVoucher = () => {
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Loại Voucher
+                        Số Lượng
                       </label>
-                      <select name="tyVoucher" id=""
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={dataVoucher.quantity}
+                        onChange={handDataVoucher}
+                        placeholder="Số lượng..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-
-                      >
-                        <option value="">Giảm phí vận chuyển</option>
-                      </select>
+                      />
                     </div>
 
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Điều Kiện
+                        Điều Kiện Áp Dụng Voucher
                       </label>
-                      <input
-                        type="number"
-                        name="minOrder"
-                        value={dataVoucher.minOrder}
-                        onChange={handDataVoucher}
-                        placeholder="Điều kiện..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          name="minOrder"
+                          value={dataVoucher.minOrder}
+                          onChange={handDataVoucher}
+                          min={0}
+                          placeholder="Điều kiện áp dụng voucher"
+                          className="w-5/6 rounded-l border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                        <span
+                          className="w-1/6 text-center rounded-r border-[1.5px] border-l-0 border-stroke bg-transparent py-3 px-3 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                        >
+                          VNĐ
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -539,28 +567,45 @@ const TableVoucher = () => {
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giá Tối Đa Được Giảm
                       </label>
-                      <input
-                        type="number"
-                        name="totalPriceOrder"
-                        value={dataVoucher.totalPriceOrder}
-                        onChange={handDataVoucher}
-                        placeholder="Giá giảm tối đa..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          min={0}
+                          name="totalPriceOrder"
+                          value={dataVoucher.totalPriceOrder}
+                          onChange={handDataVoucher}
+                          placeholder="Giá tối đa được giảm"
+                          className="w-5/6 rounded-l border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                        <span
+                          className="w-1/6 text-center rounded-r border-[1.5px] border-l-0 border-stroke bg-transparent py-3 px-3 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                        >
+                          VNĐ
+                        </span>
+                      </div>
                     </div>
 
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Giảm Giá
                       </label>
-                      <input
-                        type="number"
-                        name="sale"
-                        value={dataVoucher.sale}
-                        onChange={handDataVoucher}
-                        placeholder="Giám giá..."
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                      />
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          name="sale"
+                          min={0}
+                          max={100}
+                          value={dataVoucher.sale}
+                          onChange={handDataVoucher}
+                          placeholder="Giám giá..."
+                          className="w-5/6 rounded-l border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                        />
+                        <span
+                          className="w-1/6 text-center rounded-r border-[1.5px] border-l-0 border-stroke bg-transparent py-3 px-3 text-black dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                        >
+                          %
+                        </span>
+                      </div>
                     </div>
                   </div>
 
@@ -573,7 +618,7 @@ const TableVoucher = () => {
                       name='note'
                       value={dataVoucher.note}
                       onChange={handDataVoucher}
-                      placeholder="Nội dung..."
+                      placeholder="Mô tả..."
                       className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     ></textarea>
                   </div>
@@ -598,8 +643,8 @@ const TableVoucher = () => {
             </DialogPanel>
           </div>
         </div>
-      </Dialog>
-    </div>
+      </Dialog >
+    </div >
   );
 };
 
