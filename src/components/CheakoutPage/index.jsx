@@ -33,6 +33,7 @@ export default function CheakoutPage() {
   const [adminSelected, setAdminSelected] = useState();
   const [feeSeller, setFeeSeller] = useState({});
   const [isPaymentMethod, setIsPaymentMethod] = useState("COD");
+  const url_host = import.meta.env.VITE_API_BASEURL;
   const getServiceFee = async (serviceId, idSeller, weight, addressFrom, addressTo) => {
     try {
       const { service_fee } = await Service_Fee(serviceId, weight, 0, addressFrom, addressTo);
@@ -83,7 +84,7 @@ export default function CheakoutPage() {
 
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/v1/user/pay/voucheradmin").then(response => {
+    axios.get(`${url_host}/api/v1/user/pay/voucheradmin`).then(response => {
       setVoucherAdmins(response.data.result.datas);
     }).catch(error => console.log("fetch voucher admin error " + error));
   }, [localtion]);
@@ -391,7 +392,7 @@ export default function CheakoutPage() {
   const createPaymentLink = async () => {
     const idUser = sessionStorage.getItem("id_account");
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/user/create-payment-link?id_user=' + idUser + "&id_address=" + addressActive?.id + "&total=" + (total + totalServiceFee - totalSale), data);
+      const response = await axios.post(`${url_host}/api/v1/user/create-payment-link?id_user=` + idUser + "&id_address=" + addressActive?.id + "&total=" + (total + totalServiceFee - totalSale), data);
 
       // Nhận URL thanh toán từ backend
       const checkoutUrl = response.data.checkoutUrl;
@@ -417,7 +418,7 @@ export default function CheakoutPage() {
       createPaymentLink();
     } else {
       startRequest();
-      axios.post("http://localhost:8080/api/v1/user/pay/" + idUser + "?paymentMethod_id=1&id_address=" + addressActive?.id, data, {
+      axios.post(`${url_host}/api/v1/user/pay/` + idUser + "?paymentMethod_id=1&id_address=" + addressActive?.id, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
         }

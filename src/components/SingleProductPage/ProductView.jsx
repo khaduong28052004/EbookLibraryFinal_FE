@@ -16,13 +16,13 @@ export default function ProductView({ className, reportHandler, product }) {
   const { showHour, showMinute, showSecound } = CountDown(product?.flashSaleDetail?.flashSale?.dateEnd);
   const [isReport, setIsReport] = useState(false);
   const { isRequesting } = useRequest();
-
+  const url_host = import.meta.env.VITE_API_BASEURL;
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     if (token) {
       const id_user = sessionStorage.getItem('id_account');
-      axios.get(`http://localhost:8080/api/v1/user/report/checkReport?id_user=${id_user}&id_product=${product?.id}`).then((response) => {
+      axios.get(`${url_host}/api/v1/user/report/checkReport?id_user=${id_user}&id_product=${product?.id}`).then((response) => {
         setIsReport(!(response.data.result));
       }).catch((error) => {
         console.error("fetch report error " + error);
@@ -71,7 +71,7 @@ export default function ProductView({ className, reportHandler, product }) {
     const id_user = sessionStorage.getItem("id_account");
     const token = sessionStorage.getItem("token");
     if (token) {
-      axios.get(`http://localhost:8080/api/v1/user/cart/add?id_user=${id_user}&id_product=${product.id}&quantity=${quantity}`).then(response => {
+      axios.get(`${url_host}/api/v1/user/cart/add?id_user=${id_user}&id_product=${product.id}&quantity=${quantity}`).then(response => {
         if (response.data.code = 1000) {
           toast.success("Thêm thành công");
           endRequest();
@@ -85,7 +85,7 @@ export default function ProductView({ className, reportHandler, product }) {
   useEffect(() => {
     const id_user = sessionStorage.getItem("id_account");
     if (id_user) {
-      axios.get(`http://localhost:8080/api/v1/user/favorite/check?id_user=${id_user}&id_product=${product?.id}`).then(response => {
+      axios.get(`${url_host}/api/v1/user/favorite/check?id_user=${id_user}&id_product=${product?.id}`).then(response => {
         setIsFavorite(response.data.result);
       }).catch(error => console.error("fetch favorite error " + error));
     }
@@ -94,7 +94,7 @@ export default function ProductView({ className, reportHandler, product }) {
   const createFavorite = () => {
     const id_user = sessionStorage.getItem("id_account");
     if (id_user) {
-      axios.get(`http://localhost:8080/api/v1/user/favorite/add?id_user=${id_user}&id_product=${product?.id}`).then(response => {
+      axios.get(`${url_host}/api/v1/user/favorite/add?id_user=${id_user}&id_product=${product?.id}`).then(response => {
         setIsFavorite(response.data.result);
       }).catch(error => console.error("create favorite error " + error));
     }

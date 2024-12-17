@@ -158,10 +158,10 @@ export default function Banner({ className }) {
   }, [])
   const [images, setImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0); // Theo dõi ảnh hiện tại
-
+  const url_host = import.meta.env.VITE_API_BASEURL;
   useEffect(() => {
     // Fetch dữ liệu từ API
-    fetch('http://localhost:8080/api/v1/user/platforms/1')
+    fetch(`${url_host}/api/v1/user/platforms/1`)
       .then((response) => response.json())
       .then((data) => {
         setImages(data.images);  // Lưu các URL vào state

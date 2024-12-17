@@ -232,7 +232,7 @@ const ThongTinChungAdmin = () => {
                     placeholder="Nhập email"
                   />
                 </div>
-                <Link className="w-full mt-5 flex justify-start">
+                <Link to="/admin/chinhsachsan" className="w-full mt-5 flex justify-start">
                   <button
                     className="bg-gray-500 text-white font-semibold px-6 rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
