@@ -42,7 +42,22 @@ const TableTwo = ({ onPageChange, entityData }) => {
             if (!response || response.data.result.thongke.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [response.data.result.thongke.content]);
+                const formattedData = response.data.result.thongke.content.flatMap(entity => {
+                    return entity.billDetails.map(detail => ({
+                        'Mã Đơn Hàng': entity.id,
+                        'Ngày Đặt': entity.createAt,
+                        'Khách Hàng': entity.account.fullname,
+                        'Số Điện Thoại': entity.address.phone,
+                        'Địa Chỉ': entity.address.fullNameAddress,
+                        'Trạng Thái': entity.orderStatus.name,
+                        'Tên Sản Phẩm': detail.product.name,
+                        'Số Lượng': detail.quantity,
+                        'Giá (VNĐ)': detail.price.toFixed(0),
+                        'Tổng Tiền Sản Phẩm (VNĐ)': (detail.quantity * detail.price).toFixed(0),
+                        "Ngày Hoàn Thành:": entity.finishAt == null ? "Chưa Hoàn Thành" : entity.finishAt
+                    }));
+                });
+                return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);

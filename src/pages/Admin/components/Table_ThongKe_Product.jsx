@@ -50,7 +50,19 @@ const TableTwo = ({ onPageChange, entityData }) => {
             if (!response || response.data.result.thongke.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách Thống Kê Sản phẩm.xlsx", sheetNames, [response.data.result.thongke.content]);
+                const formattedData = response.data.result.thongke.content.map(sp => ({
+                    'Mã sản phẩm': sp.id,
+                    'Tên sản phẩm': sp.name,
+                    'Giá bán (VNĐ)': sp.price.toFixed(0),
+                    'Giảm giá (%)': sp.sale,
+                    'Tác giả': sp.writerName,
+                    'Nhà xuất bản': sp.publishingCompany,
+                    'Ngày tạo': sp.createAt,
+                    'Số lượng': sp.quantity,
+                    'Shop bán': sp.account.shopName,
+                }));
+
+                return ExportExcel("Danh Sách Thống Kê Sản phẩm.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -63,7 +75,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
     };
 
 
-    const formatNumber = (number, decimals = 2) => {
+    const formatNumber = (number, decimals = 1) => {
         if (number === null || number === undefined || isNaN(number)) {
             return '0.00';
         }

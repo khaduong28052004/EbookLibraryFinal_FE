@@ -43,7 +43,22 @@ const TableTwo = ({ onPageChange, entityData }) => {
             if (!response || response.data.result.thongke.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách Thống Kê Người Bán.xlsx", sheetNames, [response.data.result.thongke.content]);
+                const formattedData = response.data.result.thongke.content.map(entity => ({
+                    'Mã shop': entity.id,
+                    'Tài khoản': entity.username,
+                    'Họ tên': entity.fullname,
+                    'Tên shop': entity.shopName,
+                    'Số điện thoại': entity.phone,
+                    'Email': entity.email,
+                    'Ngày sinh': entity.birthday,
+                    'Ngày tạo': entity.createAt,
+                    'Tổng sản phẩm': entity.sumProduct,
+                    'Lượt theo dõi': entity.sumFollower,
+                    'Trung bình đánh giá': entity.avgStar.toFixed(1),
+                    'Lượt báo cáo': entity.sumReport,
+
+                }));
+                return ExportExcel("Danh Sách Thống Kê Người Bán.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
@@ -261,7 +276,7 @@ const TableTwo = ({ onPageChange, entityData }) => {
 
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                     <div className="flex items-center gap-1 hidden xl:flex">
-                                        {entity.avgStar}
+                                        {entity.avgStar.toFixed(1)}
                                     </div>
                                 </td>
                                 <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">

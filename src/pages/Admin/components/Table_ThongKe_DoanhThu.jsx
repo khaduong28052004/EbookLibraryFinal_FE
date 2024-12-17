@@ -43,7 +43,18 @@ const TableTwo = ({ onPageChange, entityData }) => {
             if (!response || response.data.result.thongke.totalElements === 0) {
                 toast.error("Không có dữ liệu");
             } else {
-                return ExportExcel("Danh Sách Thống Kê Doanh Thu.xlsx", sheetNames, [response.data.result.thongke.content]);
+                const formattedData = response.data.result.thongke.content.map(entity => ({
+                    'Mã shop': entity.id,
+                    'Tên shop': entity.shopName,
+                    'Họ tên chủ shop': entity.fullname,
+                    'Số điện thoại': entity.phone,
+                    'Doanh thu shop (VNĐ)': entity.dtshop.toFixed(0),
+                    'Doanh thu sàn (VNĐ)': entity.dtsan.toFixed(0),
+                    'Phí sàn (VNĐ)': entity.phi.toFixed(0),
+                    'Lợi nhuận sàn (VNĐ)': entity.loiNhuan.toFixed(0),
+                }));
+
+                return ExportExcel("Danh Sách Thống Kê Doanh Thu.xlsx", sheetNames, [formattedData]);
             }
         } catch (error) {
             console.error("Đã xảy ra lỗi khi xuất Excel:", error.response ? error.response.data : error.message);
