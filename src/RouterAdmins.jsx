@@ -31,12 +31,21 @@ import ChinhSach from './pages/Admin/ChinhSachAdmin.jsx';
 
 import { useEffect, useState } from "react";
 export default function RouterAdmins() {
-  // useEffect(() => {
-  //   const [permission, setPermission] = useState([]);
-  //   const getpermission = sessionStorage.getItem("permission");
-  //   console.warn(getpermission);
+  const READ_ACCOUNT = import.meta.env.VITE_KEY_ACCOUNT;
+  const READ_VOUCHER = import.meta.env.VITE_KEY_ACCOUNT;
+  const nhanVien = import.meta.env.VITE_KEY_ACCOUNT;
+  const READ_ACCOUNT2 = import.meta.env.VITE_KEY_ACCOUNT;
+  const READ_ACCOUNT3 = import.meta.env.VITE_KEY_ACCOUNT;
+  const READ_ACCOUNT4 = import.meta.env.VITE_KEY_ACCOUNT;
+  const READ_ACCOUNT5 = import.meta.env.VITE_KEY_ACCOUNT;
+  useEffect(() => {
+    // const [permission, setPermission] = useState([]);
+    // const getpermission = sessionStorage.getItem("permission");
+    // console.warn(getpermission);
 
-  // },);
+    // const READ_ACCOUNT = import.meta.env.VITE_KEY_ACCOUNT;
+
+  },);
   return (
     <DefaultLayout>
       <ChatBot />
@@ -58,7 +67,7 @@ export default function RouterAdmins() {
           path="/quanLy/nhanVien"
           element={
             <ProtectedRoute
-              element={<ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={
+              element={<ProtectedRoutePermission requiredPermission="ADMIN" element={
                 <>
                   <PageTitle title="Nhân Viên" />
                   <NhanVienAdmin />
@@ -73,7 +82,7 @@ export default function RouterAdmins() {
         <Route
           path="/quanLy/voucher"
           element={
-            <ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={<>
+            <ProtectedRoutePermission requiredPermission="ADMINV1" element={<>
               <PageTitle title="Voucher" />
               <VoucherAdmin />
             </>} />
@@ -82,188 +91,222 @@ export default function RouterAdmins() {
         <Route
           path="/quanLy/product"
           element={
-            <>
-              <PageTitle title="Sản Phẩm" />
-              <SanPhamAdmin />
-            </>
+            <ProtectedRoute
+              element={<ProtectedRoutePermission requiredPermission="ADMINV1" element={
+                <>
+                  <PageTitle title="Sản Phẩm" />
+                  <SanPhamAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/flashSale"
           element={
-            <>
-              <PageTitle title="Flash Sale" />
-              <FlashSaleAdmin />
-            </>
+            <ProtectedRoute
+              element={<ProtectedRoutePermission requiredPermission="ADMINV1" element={
+                <>
+                  <PageTitle title="Flash Sale" />
+                  <FlashSaleAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/khachHang"
           element={
-            <>
-              <PageTitle title="Khách Hàng" />
-              <KhachHangAdmin />
-            </>
+            <ProtectedRoute
+              element={<ProtectedRoutePermission requiredPermission="ADMINV1" element={
+                <>
+                  <PageTitle title="Khách Hàng" />
+                  <KhachHangAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/shop"
           element={
-            <>
-              <PageTitle title="Shop" />
-              <ShopAdmin />
-            </>
+            <ProtectedRoute
+              element={<ProtectedRoutePermission requiredPermission="ADMINV1" element={
+                <>
+                  <PageTitle title="Shop" />
+                  <ShopAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/report"
-          element={
-            <>
-              <PageTitle title="Report" />
-              <ReportAdmin />
-            </>
+          element={<ProtectedRoute
+            element={<ProtectedRoutePermission requiredPermission="ADMINV1" element={
+              <>
+                <PageTitle title="Report" />
+                <ReportAdmin />
+              </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/phanQuyen"
           element={
-            <ProtectedRoutePermission requiredPermission="READ_VOUCHER" element={<>
-              <PageTitle title="Voucher" />
-              <RoleAdmin />
-            </>} />
-            // <>
-            //   <PageTitle title="Phân Quyền" />
-            //   <RoleAdmin />
-            // </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="phan Quyen" />
+                  <RoleAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
 
           path="/quanLy/phanquyen/notpermission"
           element={
-            <>
-              <PageTitle title="Thêm Chi Tiết Quyền" />
-              <NotPermissionAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Thêm Chi Tiết Quyền" />
+                  <NotPermissionAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
-
           path="/quanLy/quyenchitiet"
           element={
-            <>
-              <PageTitle title="Chi Tiết Quyền" />
-              <PhanQuyenAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Chi Tiết Quyền" />
+                  <PhanQuyenAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/danhMuc"
           element={
-            <>
-              <PageTitle title="Danh Mục" />
-              <DanhMucAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMINV1" element={
+                <>
+                  <PageTitle title="Danh Mục" />
+                  <DanhMucAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/chietkhau"
           element={
-            <>
-              <PageTitle title="Chiết khấu" />
-              <DiscountRateAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Chiết khấu" />
+                  <DiscountRateAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/thongTinChung"
           element={
-            <>
-              <PageTitle title="Thông Tin Chung" />
-              <ThongTinChungAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Thông Tin Chung" />
+                  <ThongTinChungAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
 
           path="/chinhsachsan"
           element={
-            <>
-              <PageTitle title="Chính sách sàn" />
-              <ChinhSach />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Chính sách sàn" />
+                  <ChinhSach />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/thongKe/doanhThu"
           element={
-            <>
-              <PageTitle title="Thống Kê Doanh Thu" />
-              <ThongKeDoanhThuAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Thống Kê Doanh Thu" />
+                  <ThongKeDoanhThuAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/thongKe/sanPham"
           element={
-            <>
-              <PageTitle title="Thống Kê Sản Phẩm" />
-              <ThongKeSanPhamAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Thống Kê Sản Phẩm" />
+                  <ThongKeSanPhamAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/thongKe/donHang"
           element={
-            <>
-              <PageTitle title="Thống Kê Đơn Hàng" />
-              <ThongKeDonHangAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Thống Kê Đơn Hàng" />
+                  <ThongKeDonHangAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/thongKe/seller"
           element={
-            <>
-              <PageTitle title="Thống Kê Shop" />
-              <ThongKeNguoiBanAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Thống Kê Shop" />
+                  <ThongKeNguoiBanAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/thongKe/khachHang"
           element={
-            <>
-              <PageTitle title="Thống Kê Khách Hàng" />
-              <ThongKeKhachHangAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Thống Kê Khách Hàng" />
+                  <ThongKeKhachHangAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/voucherDetail"
           element={
-            <>
-              <PageTitle title="Chi Tiết Voucher" />
-              <VoucherDetailAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMINV1" element={
+                <>
+                  <PageTitle title="Chi Tiết Voucher" />
+                  <VoucherDetailAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/flashsaledetails"
           element={
-            <>
-              <PageTitle title="Chi Tiết Flash Sale" />
-              <FlashSaleDetailsAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMINV1" element={
+                <>
+                  <PageTitle title="Chi Tiết Flash Sale" />
+                  <FlashSaleDetailsAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
         <Route
           path="/quanLy/history"
           element={
-            <>
-              <PageTitle title="Lịch sử hoạt động" />
-              <HistoryAdmin />
-            </>
+            <ProtectedRoute element={
+              <ProtectedRoutePermission requiredPermission="ADMIN" element={
+                <>
+                  <PageTitle title="Lịch sử hoạt động" />
+                  <HistoryAdmin />
+                </>}></ProtectedRoutePermission>}></ProtectedRoute>
           }
         />
       </Routes>
