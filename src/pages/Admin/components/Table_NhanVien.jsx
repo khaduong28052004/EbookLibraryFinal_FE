@@ -299,7 +299,7 @@ const TableTwo = () => {
         setStatus={setStatus}
         open={isOpenModalSP}
         setOpen={setIsOpenModalSP}
-        title="Thêm Sản Phẩm Mới"
+        title="Thêm Nhân viên Mới"
         confirmText="Lưu"
         cancelText="Hủy" />
     </div>

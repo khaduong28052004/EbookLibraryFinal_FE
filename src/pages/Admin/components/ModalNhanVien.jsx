@@ -157,7 +157,7 @@ const ModalSanPham = ({
                                         />
                                     </div>
                                     <div className="w-full xl:w-1/2">
-                                        <label className="mb-2.5 block text-black dark:text-white">
+                                        {/* <label className="mb-2.5 block text-black dark:text-white">
                                             Chọn quyền:
                                         </label>
                                         {data && data.length > 0 ? (
@@ -183,11 +183,37 @@ const ModalSanPham = ({
                                                 </button>
                                             </span>
 
-                                        )}
+                                        )} */}
+                                         <label className=" mr-2  block text-black dark:text-white">
+                                        Giới tính:
+                                    </label>
+                                    <label className="flex items-center">
+                                        <input
+                                            name="gender"
+                                            value="false"
+                                            checked={formData.gender === false}
+                                            onChange={handleChange}
+                                            type="radio"
+                                            className="mr-2"
+                                        />
+                                        Nữ
+                                    </label>
+
+                                    <label className="flex items-center">
+                                        <input
+                                            name="gender"
+                                            value="true"
+                                            checked={formData.gender === true}
+                                            onChange={handleChange}
+                                            type="radio"
+                                            className="mr-2"
+                                        />
+                                        Nam
+                                    </label>
                                     </div>
                                 </div>
 
-                                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                                {/* <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                                     <label className=" mr-2  block text-black dark:text-white">
                                         Giới tính:
                                     </label>
@@ -214,7 +240,7 @@ const ModalSanPham = ({
                                         />
                                         Nam
                                     </label>
-                                </div>
+                                </div> */}
 
                             </div>
 

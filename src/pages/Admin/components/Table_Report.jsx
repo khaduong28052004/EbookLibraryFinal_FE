@@ -379,7 +379,9 @@ const TableTwo = () => {
                                     <td colSpan="9">
                                         <div className="p-5 border border-gray-100 hover:bg-slate-100">
                                             <p><strong>Thông tin chi tiết:</strong></p>
-                                            <div className="pl-20 pt-2 gap-1 grid grid-cols-2">
+                                            <div className="pl-20 pt-2 gap-3 grid grid-cols-2">
+                                                <p>Họ tên người báo cáo: {entity.account.fullname}</p>
+                                                <p>Email người báo cáo: {entity.account.email}</p>
                                                 <p className='flex flex-wrap gap-2'>Ảnh: {optionEntity === "product" ?
                                                     (entity?.imageReportProducts?.length > 0 ?
                                                         entity.imageReportProducts.map((entity, index) => (

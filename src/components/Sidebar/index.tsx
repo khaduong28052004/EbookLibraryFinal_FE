@@ -395,7 +395,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             </li>
                           )}
 
-                          {hasPermission('ADMIN') && (
+                          {/* {hasPermission('ADMIN') && (
                             <li>
                               <NavLink
                                 to="/admin/quanLy/phanQuyen"
@@ -407,10 +407,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 Phân Quyền
                               </NavLink>
                             </li>
-                          )}
+                          )} */}
 
 
-                          {hasPermission('ADMIN') && (
+                          {/* {hasPermission('ADMIN') && (
                             <li>
                               <NavLink
                                 to="/admin/quanLy/phanQuyen"
@@ -423,7 +423,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               </NavLink>
                             </li>
 
-                          )}
+                          )} */}
 
 
                           {hasPermission('ADMINV1') && (
