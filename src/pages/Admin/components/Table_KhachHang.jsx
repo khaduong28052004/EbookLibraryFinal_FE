@@ -83,6 +83,7 @@ const TableTwo = () => {
                     'Số điện thoại': entity.phone,
                     'Email': entity.email,
                     'Ngày tạo': entity.createAt,
+                    'Tổng lượt hủy đơn trong ngày': entity.sumHuy,
                     'Trạng thái': entity.status ? 'Đang hoạt động' : 'Ngừng hoạt động'
                 }));
                 return ExportExcel("Danh Sách Khách Hàng.xlsx", sheetNames, [formattedData]);
@@ -206,6 +207,18 @@ const TableTwo = () => {
                                 <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "phone" ? "text-black" : "text-gray-500"} text-black`} />
                             </div>
                         </th>
+                        <th
+                            onClick={() => {
+                                setSortColumn("sumHuy");
+                                setSortBy(!sortBy);
+                            }}
+                            className="cursor-pointer py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
+                            <div className="flex items-center gap-1 hidden lg:flex">
+                                <span className="text-sm text-black dark:text-white">Tổng lượt hủy đơn</span>
+                                <ArrowLongDownIcon className={`h-4 w-4 dark:text-white ${sortBy == true && sortColumn == "sumHuy" ? "text-black" : "text-gray-500"} text-black`} />
+                                <ArrowLongUpIcon className={`h-4 w-4 dark:text-white ${sortBy == false && sortColumn == "sumHuy" ? "text-black" : "text-gray-500"} text-black`} />
+                            </div>
+                        </th>
                         <th className=" py-4.5 px-4 md:px-6 2xl:px-7.5 text-left font-medium">
                             <div className="flex items-center gap-1 hidden lg:flex">
                                 <span className="text-sm text-black dark:text-white">Trạng thái</span>
@@ -241,6 +254,11 @@ const TableTwo = () => {
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
                                 <div className="flex items-center gap-1 hidden xl:flex">
                                     {entity.phone}
+                                </div>
+                            </td>
+                            <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 text-sm text-black dark:text-white ">
+                                <div className="flex items-center gap-1 hidden xl:flex">
+                                    {entity.sumHuy}
                                 </div>
                             </td>
                             <td className="py-4.5 px-4 md:px-6 2xl:px-7.5 ">
