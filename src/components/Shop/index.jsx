@@ -301,9 +301,9 @@ export default function ShopHome() {
         );
     }
 
-    // if (!shopInfo || Object.keys(shopInfo).length === 0) return (
-    //     <ErrorThumb></ErrorThumb>
-    // )
+    if (!shopInfo || Object.keys(shopInfo).length === 0) return (
+        <ErrorThumb></ErrorThumb>
+    )
 
     return (
         <Layout childrenClasses="pt-0 pb-0">
