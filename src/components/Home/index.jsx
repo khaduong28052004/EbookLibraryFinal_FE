@@ -133,7 +133,7 @@ export default function Home() {
           </div>
 
           <SectionStyleThree
-            products={suggests}
+            products={data_ProductAll}
             sectionTitle=""
             seeMoreUrl="/all-products"
             className="bg-white mb-[60px] ml-27 mr-27 rounded-b-lg"
