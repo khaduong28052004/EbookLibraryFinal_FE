@@ -22,9 +22,11 @@ const ThongTinChungAdmin = () => {
   const [data, setData] = useState([]);
   const [formData, setFormData] = useState(initialFormData);
 
+const url = import.meta.env.VITE_API_BASEURL;
+
   useEffect(() => {
     // Fetch dữ liệu từ API
-    fetch('http://localhost:8080/api/v1/user/platforms/1')
+    fetch(`${url}/api/v1/user/platforms/1`)
       .then((response) => response.json())
       .then((data) => {
         setImages(data.images);  // Lưu các URL vào state
