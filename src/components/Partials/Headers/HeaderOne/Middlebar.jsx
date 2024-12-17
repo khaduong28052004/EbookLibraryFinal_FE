@@ -12,6 +12,7 @@ import ThinPeople from "../../../Helpers/icons/ThinPeople";
 import SearchBox from "../../../Helpers/SearchBox";
 import { useRequest } from '../../../Request/RequestProvicer';
 import SearchService from '../../../../service/user/search';
+import AuthService from '../../../../service/authService';
 export default function Middlebar({ className, type }) {
   const navigate = useNavigate();
   const url_host = import.meta.env.VITE_API_BASEURL;
@@ -22,9 +23,10 @@ export default function Middlebar({ className, type }) {
   const { isRequesting } = useRequest();
   const [isOpenModalImage, setIsOpenModelImage] = useState(false);
   const [isOpenEvent, setIsOpenEvent] = useState(false);
+  const id_account = sessionStorage.getItem("id_account");
   const changeCart = () => {
     if (token) {
-     window.location.href = "/cart"
+      window.location.href = "/cart"
     } else {
       toast.warn("Vui lòng đăng nhập");
     }
@@ -59,7 +61,7 @@ export default function Middlebar({ className, type }) {
       setListening(false);
     };
 
-    
+
     recognition.onend = (event) => {
       console.log("Quá trình nhận diện giọng nói đã kết thúc");
       if (event.results && event.results[0] && event.results[0][0]) {
@@ -118,7 +120,7 @@ export default function Middlebar({ className, type }) {
       e.preventDefault();
       e.stopPropagation();
       const url = window.location.pathname;
-      console.log("URL",url)
+      console.log("URL", url)
       if (!url.includes('/profile')) {
         if (e.dataTransfer && e.dataTransfer.items[0]?.type.startsWith("image/")) {
           setIsOpenModelImage(true);
@@ -201,7 +203,7 @@ export default function Middlebar({ className, type }) {
             </div>
 
             <div className="w-[717px] h-[44px] flex">
-              <SearchBox type={type} className="search-com" />
+              <SearchBox type={type} className="search-com shadow-inner" />
               <div onClick={() => { setListening(true) }} className="flex items-center justify-center   border rounded-full p-3 ml-2 cursor-pointer"><FaMicrophone size={20} color="gray" /></div>
               {/* mic */}
               {listening ? (<div className="fixed top-0 left-0 w-full h-[90px] z-[4000] bg-white flex items-center justify-center">
@@ -337,10 +339,58 @@ export default function Middlebar({ className, type }) {
               </div>
               <div>
                 <Link to="/profile">
-                  <span>
-                    <ThinPeople />
-                  </span>
+                  <div className="relative group">
+                    <span>
+                      <ThinPeople />
+                    </span>
+                    <div
+                      style={{ boxShadow: "0px 15px 50px 0px rgba(0, 0, 0, 0.14)" }}
+                      className={`absolute -right-[45px] z-50 hidden group-hover:block w-[175px] bg-white border-t-[3px]`}
+                    >
+                      <div className="">
+                        <div className="h-full p-3">
+                          <ul className='text-center'>
+                            {id_account ? (<>       <li className="w-full h-full flex hover:text-blue-500"><Link to="/profile"><h1>Thông tin của bạn</h1></Link></li>
+                              {/* <li className="w-full h-full flex hover:text-blue-500"><Link to="/signup"><h1>Đăng ký </h1></Link></li>
+                              <li className="w-full h-full flex hover:text-blue-500"><Link to="/become-saller"><h1>Đăng ký người bán</h1></Link></li> */}
+                              <li className="w-full h-full flex hover:text-blue-500"><h1 onClick={() => { AuthService.logout() }}>Đăng xuất</h1></li>
+                            </>) : (<>
+                              <li className="w-full h-full flex hover:text-blue-500"><Link to="/login"><h1>Đăng nhập</h1></Link></li>
+                              <li className="w-full h-full flex hover:text-blue-500"><Link to="/signup"><h1>Đăng ký </h1></Link></li>
+                              <li className="w-full h-full flex hover:text-blue-500"><Link to="/become-saller"><h1>Đăng ký người bán</h1></Link></li>
+                            </>)}
+
+
+                            {/* <li className="w-full h-full flex">
+                              <div className="flex space-x-[6px] justify-center items-center px-4 my-[20px]">
+                                <div className="w-[65px] h-full">
+                                  <img
+                                    src={null} // Replace null with `cartItem.image` if available
+                                    alt="Product"
+                                    className="w-full h-full object-contain"
+                                  />
+                                </div>
+                              </div>
+                              <span className="mt-[20px] mr-[15px] inline-flex cursor-pointer">
+                                <svg
+                                  width="8"
+                                  height="8"
+                                  viewBox="0 0 8 8"
+                                  fill="none"
+                                  className="inline fill-current text-[#AAAAAA] hover:text-qred"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M7.76 0.24C7.44 -0.08 6.96 -0.08 6.64 0.24L4 2.88L1.36 0.24C1.04 -0.08 0.56 -0.08 0.24 0.24C-0.08 0.56 -0.08 1.04 0.24 1.36L2.88 4L0.24 6.64C-0.08 6.96 -0.08 7.44 0.24 7.76C0.56 8.08 1.04 8.08 1.36 7.76L4 5.12L6.64 7.76C6.96 8.08 7.44 8.08 7.76 7.76C8.08 7.44 8.08 6.96 7.76 6.64L5.12 4L7.76 1.36C8.08 1.04 8.08 0.56 7.76 0.24Z" />
+                                </svg>
+                              </span>
+                            </li> */}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </Link>
+
 
               </div>
             </div>

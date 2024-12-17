@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductCardStyleOne from "../components/Helpers/Cards/ProductCardStyleOneKien";
 import axios from "axios";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const sampleData = {
     xuhuong: [
@@ -188,16 +189,16 @@ const ProductCarousel = () => {
     const totalSlides = Math.ceil(currentTabData.length / itemsPerSlide);
 
     return (
-        <div className="section-style-one ml-27 mr-27 bg-red-500 rounded-lg shadow-2">
+        <div className="section-style-one ml-27 mr-27 bg-red-500 rounded-lg shadow-3">
             <div className="flex justify-between p-3 border-b">
-                <h1 className="text-2xl font-bold text-white">XU HƯỚNG MUA SẮM</h1>
+                <h1 className="text-2xl font-bold text-white">XU HƯỚNG  MUA SẮM</h1>
             </div>
             <div className="bg-white rounded-lg">
-                <div className="flex justify-between border-b bg-white">
+                <div className="text-center border-b bg-white ">
                     {tabs.map((tab, index) => (
                         <button
                             key={index}
-                            className={`px-4 py-2 ${activeTab === index
+                            className={`px-4 py-2 mr-[20px] ml-[20px] ${activeTab === index
                                 ? "border-b-2 border-red-500 text-red-500 font-semibold"
                                 : "text-gray-600 hover:text-red-500 font-medium"
                                 }`}
@@ -217,7 +218,7 @@ const ProductCarousel = () => {
                         disabled={carouselIndex === 0 || isLoading} // Vô hiệu hóa nếu ở đầu hoặc đang tải
                     >
                         &#8592;
-                    </button>;
+                    </button>
 
                     {/* Carousel */}
                     <div className="overflow-hidden ml-27 mr-27">
@@ -255,7 +256,7 @@ const ProductCarousel = () => {
                         disabled={(!hasMorePages[activeTab === 0 ? "xuhuong" : activeTab === 1 ? "hot" : "bestseller"] && carouselIndex === totalSlides - 1) || isLoading} // Vô hiệu hóa nếu không còn slide hoặc đang tải
                     >
                         &#8594;
-                    </button>;
+                    </button>
                 </div>
             </div>
         </div>

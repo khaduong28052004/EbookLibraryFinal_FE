@@ -16,19 +16,25 @@ export default function FlashSale({ products, lastDate, totalProducts }) {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <h2 className="text-2xl font-bold text-red-600">FLASH SALE</h2>
-                                <p className="ml-5">Kết thúc trong</p>
-                                <div className="flex items-center ml-5 space-x-2">
-                                    <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showHour < 10 ? "0" + showHour : showHour}</p>
-                                    <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showMinute < 10 ? "0" + showMinute : showMinute}</p>
-                                    <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showSecound < 10 ? "0" + showSecound : showSecound}</p>
+                                {lastDate ? (<>  <p className="ml-5">Kết thúc trong</p>
+                                    <div className="flex items-center ml-5 space-x-2">
+                                        <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showHour < 10 ? "0" + showHour : showHour}</p>
+                                        <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showMinute < 10 ? "0" + showMinute : showMinute}</p>
+                                        <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">{showSecound < 10 ? "0" + showSecound : showSecound}</p>
 
-                                </div>
+                                    </div></>) : (<>  <p className="ml-5">Đã kết thúc</p>
+                                        <div className="flex items-center ml-5 space-x-2">
+                                            <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">00</p>
+                                            <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">00</p>
+                                            <p className="bg-black-2 text-white rounded-md w-8 h-8 flex items-center justify-center">00</p>
+                                        </div></>)}
+
                             </div>
                             <div>
                                 <Link to="/flash-sale" className="text-sm text-red-500 no-underline flex items-center">
                                     Xem tất cả
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                        <path stroke-linecap="round"  stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
                                     </svg>
                                 </Link>
                             </div>

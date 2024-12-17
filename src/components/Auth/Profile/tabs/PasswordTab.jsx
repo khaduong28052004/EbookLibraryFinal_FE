@@ -346,7 +346,7 @@ export default function PasswordTab() {
                 type="password"
                 id="new_password"
                 name="new_password"
-                value={new_password}
+                value={data.new_password}
                 onChange={handleData}
               />
               <div
@@ -385,7 +385,7 @@ export default function PasswordTab() {
                 type="password"
                 id="confirm_password"
                 name="confirm_password"
-                value={confirm_password}
+                value={data.confirm_password}
                 onChange={handleData}
               />
               <div
