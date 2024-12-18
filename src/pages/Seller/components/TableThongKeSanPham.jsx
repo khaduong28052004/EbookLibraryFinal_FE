@@ -12,10 +12,10 @@ const TableThongKeDonHang = ({ list, search, setSearch, pageSize, pageNumber, to
     const sheetNames = ['Danh Sách Thống Kê Sản Phẩm'];
     try {
       const response = await ThongKeService.sanPham(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
-      if (!response || response.data.result.totalElements === 0) {
+      if (!response || response.data.result.sanPham.totalElements === 0) {
         toast.error("Không có dữ liệu");
       } else {
-        return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.content]);
+        return ExportExcel("Danh Sách Thống Kê Sản Phẩm.xlsx", sheetNames, [response.data.result.sanPham.content]);
       }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);

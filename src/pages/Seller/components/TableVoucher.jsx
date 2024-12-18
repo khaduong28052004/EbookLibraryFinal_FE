@@ -80,8 +80,23 @@ const TableVoucher = () => {
   const handleExport = async () => {
     const sheetNames = ['Danh Sách Voucher'];
     try {
-      const response = await VoucherService.getDataAdmin(search, pageNumber, sortBy, sortColumn, totalElements);
-      return ExportExcel("Danh Sách Voucher.xlsx", sheetNames, [response.data.result.content]);
+      const response = await VoucherService.getData(search, pageNumber, sortBy, sortColumn, totalElements === 0 ? 5 : totalElements);
+      if (!response || response.data.result.totalElements === 0) {
+        toast.error("Không có dữ liệu");
+      } else {
+        const formattedData = response.data.result.content.map(sp => ({
+          'Mã voucher': sp.id,
+          'Tên voucher': sp.name,
+          'Giá giảm tối đa (VNĐ)': sp.totalPriceOrder.toFixed(0),
+          'Giảm giá (%)': sp.sale,
+          'Số lượng': sp.quantity,
+          'Điều kiện áp dụng voucher (VNĐ)': sp.minOrder,
+          'Ngày bắt đầu': new Date(sp.dateStart).toLocaleDateString("en-GB"),
+          'Ngày kết thúc': new Date(sp.dateEnd).toLocaleDateString("en-GB"),
+          'Người tạo': sp.account.fullname,
+        }));
+        return ExportExcel("Danh Sách Voucher.xlsx", sheetNames, [formattedData]);
+      }
     } catch (error) {
       console.error("Đã xảy ra lỗi khi xuất Excel:", error);
       toast.error("Có lỗi xảy ra khi xuất dữ liệu");
@@ -350,7 +365,8 @@ const TableVoucher = () => {
                       <button>
                         <Link to={`/seller/quanLy/voucherDetail?voucher_id=${voucher.id}`}><EyeIcon className='w-5 h-5 text-black hover:text-blue-600 dark:text-white' /></Link>
                       </button>
-                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart) > new Date() ? (<>
+                      {voucher.dateEnd && new Date(voucher.dateEnd) > new Date() && voucher.dateStart && new Date(voucher.dateStart).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0) ? (
+                        <>
                         <button
                           onClick={(event) => {
                             event.stopPropagation();
@@ -457,14 +473,14 @@ const TableVoucher = () => {
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
-                        Tên Sản Phẩm
+                        Tên Voucher
                       </label>
                       <input
                         type="text"
                         name="name"
                         value={dataVoucher.name}
                         onChange={handDataVoucher}
-                        placeholder="Tên sản phẩm..."
+                        placeholder="Tên voucher..."
                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       />
                     </div>

@@ -145,6 +145,7 @@ const ThongKeSanPham = () => {
           handlePrevious={handlePrevious}
           setPageNumber={setPageNumber}
           setSearch={setSearch}
+          search={search}
           sortBy={sortBy}
           sortColumn={sortColumn}
           setSortBy={setSortBy}

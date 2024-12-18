@@ -200,9 +200,9 @@ const TableSanPham = () => {
         introduce: product.introduce,
         writerName: product.writerName,
         publishingCompany: product.publishingCompany,
-        isDelete: product.delete,
+        isDelete: product.isDelete,
         quantity: product.quantity,
-        isActive: product.active,
+        isActive: product.isActive,
         account: sessionStorage.getItem("id_account"),
         category: product.category.id,
         imageProducts: []

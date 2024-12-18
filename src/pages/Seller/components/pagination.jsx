@@ -46,7 +46,7 @@ const Pagination = ({
           <p className="text-sm text-gray-700 dark:text-white">
             Showing
             <span className="font-medium"> {pageNumber * size + 1} </span>
-            to+
+            to
             <span className="font-medium"> {Math.min((pageNumber + 1) * size, totalElements)} </span>
             of
             <span className="font-medium"> {totalElements} </span>

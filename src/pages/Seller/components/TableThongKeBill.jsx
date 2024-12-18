@@ -14,20 +14,40 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd, setDateStart, setDateEn
       if (!response || response.data.result.bill.totalElements === 0) {
         toast.error("Không có dữ liệu");
       } else {
+        let totalAmount = 0;
         const formattedData = response.data.result.bill.content.flatMap(bill => {
-          return bill.billDetails.map(detail => ({
-            'Mã Đơn Hàng': bill.id,
-            'Ngày Đặt': new Date(bill.createAt).toLocaleDateString("en-GB"),
-            'Khách Hàng': bill.account.fullname,
-            'Số Điện Thoại': bill.address.phone,
-            'Địa Chỉ': bill.address.fullNameAddress,
-            'Trạng Thái': bill.orderStatus.name,
-            'Tên Sản Phẩm': detail.product.name,
-            'Số Lượng': detail.quantity,
-            'Giá': detail.price.toLocaleString("vi-VN", { style: "currency", currency: "VND" }),
-            'Tổng Tiền Sản Phẩm': detail.quantity * detail.price,
-            "Ngày Hoàn Thành:": bill.finishAt == null ? "Chưa Hoàn Thành" : new Date(bill.finishAt).toLocaleDateString("en-GB")
-          }));
+          return bill.billDetails.map(detail => {
+            const totalPrice = detail.quantity * detail.price; // Tổng tiền cho sản phẩm
+            totalAmount += totalPrice; // Cộng dồn vào tổng tiền
+            return {
+              'Mã Đơn Hàng': bill.id,
+              'Ngày Đặt': new Date(bill.createAt).toLocaleDateString("en-GB"),
+              'Khách Hàng': bill.account.fullname,
+              'Số Điện Thoại': bill.address.phone,
+              'Địa Chỉ': bill.address.fullNameAddress,
+              'Trạng Thái': bill.orderStatus.name,
+              'Tên Sản Phẩm': detail.product.name,
+              'Số Lượng': detail.quantity,
+              'Giá (VNĐ)': detail.price,
+              'Tổng Tiền Sản Phẩm (VNĐ)': totalPrice,
+              "Ngày Hoàn Thành": bill.finishAt == null ? "Chưa Hoàn Thành" : new Date(bill.finishAt).toLocaleDateString("en-GB")
+            };
+          });
+        });
+
+        // Bước 2: Thêm dòng tổng vào cuối mảng dữ liệu
+        formattedData.push({
+          'Mã Đơn Hàng': 'TỔNG',
+          'Ngày Đặt': '',
+          'Khách Hàng': '',
+          'Số Điện Thoại': '',
+          'Địa Chỉ': '',
+          'Trạng Thái': '',
+          'Tên Sản Phẩm': '',
+          'Số Lượng': '',
+          'Giá': '',
+          'Tổng Tiền Sản Phẩm': totalAmount,
+          "Ngày Hoàn Thành": ''
         });
 
         return ExportExcel("Danh Sách Thống Kê Đơn Hàng.xlsx", sheetNames, [formattedData]);
@@ -251,14 +271,14 @@ const TableThongKeDonHang = ({ list, dateStart, dateEnd, setDateStart, setDateEn
                         </span>
                       </p>
                       <p>
-                        <strong>Voucher: </strong>
+                        <strong>Voucher Shop: </strong>
                         {item.voucherDetails && item.voucherDetails.length > 0 ? (
                           item.voucherDetails.map((voucherDetails) => {
                             if (voucherDetails.voucher.typeVoucher.id === 1) {
                               return (<span key={voucherDetails.id}>Giảm {voucherDetails.voucher.sale}%</span>
                               )
                             }
-                            return null;
+                            return (<span>Không có voucher</span>);
                           })
                         ) : (
                           <span>Không có voucher</span>

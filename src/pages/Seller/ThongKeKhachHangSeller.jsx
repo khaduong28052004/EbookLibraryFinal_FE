@@ -143,6 +143,7 @@ const ThongKeKhachHang = () => {
           handlePrevious={handlePrevious}
           setPageNumber={setPageNumber}
           setSearch={setSearch}
+          search={search}
           sortBy={sortBy}
           setSortBy={setSortBy}
           sortColumn={sortColumn}
