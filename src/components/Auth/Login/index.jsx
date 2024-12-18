@@ -275,19 +275,19 @@ export default function Login() {
                     Đăng nhập
                   </button>
                 </form>
-                <p className="text-base text-qgraytwo font-normal flex justify-center">
+                {/* <p className="text-base text-qgraytwo font-normal flex justify-center">
                   ___________Hoặc___________
-                </p>
+                </p> */}
                 <div className="social-login-buttons flex space-x-4 mt-6">
                   <button className="w-full flex justify-center items-center bg-[#FAFAFA] text-black font-medium rounded-md">
                     <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENTID_GG}>
                       <LoginGG />
                     </GoogleOAuthProvider>
                   </button>
-                  <h1>||</h1>
-                  <button className="w-full flex justify-center items-center text-bg-[#3b5998] font-medium rounded-md">
+                  {/* <h1>||</h1> */}
+                  {/* <button className="w-full flex justify-center items-center text-bg-[#3b5998] font-medium rounded-md">
                     <FaceBookSingIn />
-                  </button>
+                  </button> */}
                 </div>
                 <div className="social-login-buttons flex space-x-1 mt-6 text-sm">
                   <span className='text-gray-600'>Chưa có tài khoản?</span><Link to="/signup" className="text-[#003EA1]">Tạo tài khoản</Link>
